@@ -1,0 +1,25 @@
+export const FIELD_LABELS: Record<string, string> = {
+  "business.need_summary": "Behov / problem som ska lösas",
+  "business.processes": "Processer som ska stödjas",
+  "business.complement_or_replace": "Komplement, ersättare eller helt nytt",
+  "business.users_affected": "Berörda roller / användare",
+  "business.strategic_alignment": "Strategisk koppling",
+  "information.data_outputs": "Information som produceras",
+  "information.data_inputs": "Information som konsumeras",
+  "information.owner": "Informationsägare",
+  "information.info_objects": "Informationsobjekt",
+  "information.info_sources": "Informationskällor",
+  "information.personal_data": "Personuppgifter (GDPR)",
+  "information.classification": "Klassificering",
+  "application.integrates_with": "Integration med befintliga applikationer",
+  "application.ux_notes": "Krav på användarupplevelse",
+  "application.lifecycle_expected": "Förväntad livscykel",
+  "application.vendor_strategy": "Anskaffningsstrategi",
+  "technology.hosting": "Driftform",
+  "technology.auth_method": "Autentiseringsmetod",
+  "technology.mfa_required": "MFA-krav",
+  "technology.security_classification": "Säkerhetsklassificering / krav",
+  "technology.tech_components": "Beroende teknikkomponenter",
+};
+
+export const fieldLabel = (path: string): string => FIELD_LABELS[path] ?? path;

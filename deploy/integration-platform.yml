@@ -1,0 +1,20 @@
+# Connects the portal to an Integration Platform running on the same server,
+# over the shared Docker network "arkitekturportalen" instead of through the
+# host. Pairs with the platform's deploy/shared-network.yml.
+#
+# Create the network once per server:  docker network create arkitekturportalen
+# and load this file from .env:
+#   COMPOSE_FILE=docker-compose.yml:deploy/integration-platform.yml
+
+services:
+  api:
+    networks:
+      - default
+      - arkitekturportalen
+    environment:
+      INTEGRATION_PLATFORM_URL: ${INTEGRATION_PLATFORM_URL:-http://integration-platform:8000/api/v1}
+
+networks:
+  arkitekturportalen:
+    name: arkitekturportalen
+    external: true

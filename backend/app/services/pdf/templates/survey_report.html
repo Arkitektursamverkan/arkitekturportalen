@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ report.name }} — {{ report.survey_title }}</title>
+    <link rel="stylesheet" href="{{ css_url }}">
+    <style>:root { --brand-color: {{ brand_color }}; }</style>
+    <style>
+        /* One block per response rather than a wide table: free-text answers
+           are the point of most reports and would be unreadable in columns. */
+        .report-row { margin-bottom: 6mm; page-break-inside: avoid; }
+        .report-row h3 { margin: 0 0 1mm 0; font-size: 11pt; }
+        .report-row .meta { font-size: 8pt; color: #555; margin-bottom: 2mm; }
+        .report-row .answer { margin-bottom: 2mm; }
+        .report-row .answer .q { font-size: 8pt; color: #555; display: block; }
+        .report-row .answer .a { white-space: pre-wrap; }
+        .criteria { font-size: 9pt; margin-bottom: 6mm; }
+        .criteria li { margin-bottom: 1mm; }
+    </style>
+</head>
+<body>
+
+{% if logo_url %}
+<div class="brand">
+    <img src="{{ logo_url }}" alt="{{ org_name }}">
+</div>
+{% endif %}
+
+<h1>{{ report.name }}</h1>
+
+<div class="version-meta">
+    <strong>{{ report.survey_title }}</strong><br>
+    Genererad {{ generated_date }} — {{ report.matching_count }} av {{ report.answered_count }} inkomna svar
+</div>
+
+<div class="criteria">
+    {% if report.conditions %}
+    <strong>Urval:</strong>
+    <ul>
+        {% for condition in report.conditions %}
+        <li>{{ condition }}</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <strong>Urval:</strong> samtliga inkomna svar.
+    {% endif %}
+</div>
+
+{% if report.rows %}
+{% for row in report.rows %}
+<div class="report-row">
+    <h3>{{ row.object_name or row.recipient or "Utan objekt" }}</h3>
+    <div class="meta">
+        {# An anonymised report carries no respondent — only the date is left. #}
+        {% if report.anonymous %}{{ row.submitted_at }}{% else %}{{ row.submitted_by or row.recipient or "okänd" }}{% if row.submitted_at %} · {{ row.submitted_at }}{% endif %}{% endif %}
+    </div>
+    {% for question in report.questions %}
+    <div class="answer">
+        <span class="q">{{ question.label }}</span>
+        <span class="a">{{ row.answers[question.id] or "—" }}</span>
+    </div>
+    {% endfor %}
+</div>
+{% endfor %}
+{% else %}
+<p>Inga svar uppfyller rapportens urval.</p>
+{% endif %}
+
+</body>
+</html>

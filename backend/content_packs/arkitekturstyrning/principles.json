@@ -1,0 +1,93 @@
+[
+  {
+    "name": "Verksamhetsnytta styr IT-besluten",
+    "description": "",
+    "attributes": {
+      "identifier": "Ö-1",
+      "domain": "Övergripande",
+      "purpose": "• Investeringar ska ge mätbar nytta för verksamheten\n• Gemensamma prioriteringar framför enskilda önskemål",
+      "not": "Teknik väljs för teknikens skull.",
+      "but": "Varje lösning motiveras av ett verksamhetsbehov.",
+      "means": "• Nyttan beskrivs innan en lösning väljs\n• Uppföljning visar om nyttan uppnåddes",
+      "status": "Förslag"
+    }
+  },
+  {
+    "name": "Processerna styr systemstödet",
+    "description": "",
+    "attributes": {
+      "identifier": "V-1",
+      "domain": "Verksamhet",
+      "purpose": "• Systemen stödjer hur arbetet faktiskt utförs\n• Ansvaret för processer och system hänger ihop",
+      "not": "Arbetssätten anpassas efter systemen.",
+      "but": "Systemen väljs och konfigureras efter processerna.",
+      "means": "• Processen beskrivs innan systemstöd upphandlas\n• Varje process har en ägare",
+      "status": "Förslag"
+    }
+  },
+  {
+    "name": "Information är en gemensam tillgång",
+    "description": "",
+    "attributes": {
+      "identifier": "I-1",
+      "domain": "Information",
+      "purpose": "• Samma information ska inte behöva registreras flera gånger\n• Beslut fattas på korrekt och aktuell information",
+      "not": "Information ägs av det system där den råkar finnas.",
+      "but": "Varje informationsmängd har en ansvarig och en huvudkälla.",
+      "means": "• Begrepp definieras i ordlistan\n• Informationsobjekt har en utpekad huvudkälla",
+      "status": "Förslag"
+    }
+  },
+  {
+    "name": "Återanvänd före köp, köp före bygg",
+    "description": "",
+    "attributes": {
+      "identifier": "A-1",
+      "domain": "Applikation",
+      "purpose": "• Färre system att förvalta\n• Lägre kostnad och kortare införandetid",
+      "not": "Varje behov löses med en ny lösning.",
+      "but": "Befintliga lösningar prövas först, därefter standardprodukter.",
+      "means": "• Applikationslandskapet granskas innan nyanskaffning\n• Egenutveckling kräver särskild motivering",
+      "status": "Förslag"
+    }
+  },
+  {
+    "name": "Integrationer sker genom dokumenterade gränssnitt",
+    "description": "",
+    "attributes": {
+      "identifier": "A-2",
+      "domain": "Applikation",
+      "purpose": "• System kan bytas ut utan att andra påverkas\n• Beroenden är kända och går att följa upp",
+      "not": "System kopplas direkt mot varandras databaser.",
+      "but": "System kommunicerar via dokumenterade och versionerade gränssnitt.",
+      "means": "• Varje integration är beskriven och har en ansvarig\n• Nya system ska erbjuda standardiserade gränssnitt",
+      "status": "Förslag"
+    }
+  },
+  {
+    "name": "Säkerhet är inbyggd från början",
+    "description": "",
+    "attributes": {
+      "identifier": "T-1",
+      "domain": "Teknik",
+      "purpose": "• Skydd av information och kontinuitet i verksamheten\n• Lägre kostnad än säkerhet som läggs till i efterhand",
+      "not": "Säkerhet hanteras när lösningen redan är byggd.",
+      "but": "Säkerhetskrav ställs och prövas redan vid behovsanalysen.",
+      "means": "• Informationsklassning görs tidigt\n• Behörigheter följer principen om minsta möjliga åtkomst",
+      "status": "Förslag"
+    }
+  },
+  {
+    "name": "Standardiserad teknisk plattform",
+    "description": "",
+    "attributes": {
+      "identifier": "T-2",
+      "domain": "Teknik",
+      "purpose": "• Effektivare drift och förvaltning\n• Kompetens kan delas mellan lösningar",
+      "not": "Varje lösning har sin egen tekniska miljö.",
+      "but": "Lösningar byggs på organisationens valda plattformar.",
+      "means": "• Avsteg från plattformen beslutas i arkitekturforum\n• Plattformarnas livscykel planeras",
+      "status": "Förslag"
+    }
+  }
+]

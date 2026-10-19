@@ -1,0 +1,41 @@
+{
+  "content": {
+    "sections": [
+      {
+        "id": "text-sammanfattning",
+        "title": "Sammanfattning",
+        "body": "Sammanfatta de viktigaste iakttagelserna och vad de betyder för det fortsatta arbetet."
+      },
+      {
+        "id": "text-syfte-och-omfattning",
+        "title": "Syfte och omfattning",
+        "body": "Beskriv varför nulägesanalysen görs och vilka delar av verksamheten och IT-landskapet den omfattar."
+      },
+      {
+        "id": "text-metod",
+        "title": "Metod",
+        "body": "Beskriv hur underlaget har tagits fram: intervjuer, workshoppar, inventering i portalen eller annat."
+      },
+      {
+        "id": "text-verksamhet",
+        "title": "Verksamhet",
+        "body": "Beskriv nuläget för processer, ansvar och styrning."
+      },
+      {
+        "id": "text-information",
+        "title": "Information",
+        "body": "Beskriv nuläget för begrepp, informationsägarskap och informationskvalitet."
+      },
+      {
+        "id": "text-applikation",
+        "title": "Applikationer",
+        "body": "Beskriv applikationslandskapet: överlapp, luckor, integrationer och livscykel."
+      },
+      {
+        "id": "text-teknik",
+        "title": "Teknik",
+        "body": "Beskriv nuläget för plattformar, infrastruktur och drift."
+      }
+    ]
+  }
+}

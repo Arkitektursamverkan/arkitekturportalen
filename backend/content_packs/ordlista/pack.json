@@ -1,0 +1,9 @@
+{
+  "format": "arkitekturportalen.content-pack",
+  "version": 1,
+  "name": "ordlista",
+  "description": "Grundbegrepp inom enterprise-arkitektur att utgå från i organisationens ordlista.",
+  "modules": [
+    "glossary"
+  ]
+}

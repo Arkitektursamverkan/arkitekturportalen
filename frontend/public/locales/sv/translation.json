@@ -1,0 +1,1304 @@
+{
+  "app": {
+    "title": "EA-portalen",
+    "tagline": "Enterprise Architecture – Proof of Concept"
+  },
+  "nav": {
+    "home": "Hem",
+    "explorer": "IT-landskapet",
+    "domain.business": "Verksamhet",
+    "domain.application": "Applikation",
+    "domain.information": "Information",
+    "domain.technology": "Teknik",
+    "processExplorer": "Affärsprocesser",
+    "businessCalendar": "Verksamhetskalender",
+    "systemView": "Applikationer",
+    "infoObjects": "Informationsobjekt",
+    "infoSources": "Informationskällor",
+    "techComponents": "Teknikkomponenter",
+    "servers": "Servrar",
+    "landscape": "Integrationer",
+    "nulaagesanalys": "Nulägesanalys",
+    "gapAnalys": "GAP-analys",
+    "architectureGovernance": "Arkitekturstyrning",
+    "architecturePrinciples": "Arkitekturprinciper",
+    "targetArchitecture": "Målarkitektur",
+    "glossary": "Ordlista",
+    "mySurveys": "Mina enkäter",
+    "solutionSketches": "Lösningsskiss",
+    "surveys": "Enkäter",
+    "connections": "Kopplingar",
+    "platformImport": "Integrationsplattform",
+    "import": "Importera data",
+    "dataManagement": "Datahantering",
+    "adminFunctions": "Datarensning",
+    "userManagement": "Användarhantering",
+    "syncProfiles": "Synkprofiler",
+    "orgSettings": "Organisation",
+    "users": "Användare",
+    "reports": "Rapporter",
+    "reportMaturity": "EA-mognad",
+    "reportProcessSupport": "Process–Applikation",
+    "reportPortfolio": "Applikationsportfölj",
+    "reportRedundancy": "Redundansanalys",
+    "reportOverlapGaps": "Överlapp & Luckor",
+    "reportOwners": "Ägaröversikt",
+    "reportIntegrations": "Integrationsanalys",
+    "reportVendors": "Leverantörsberoende",
+    "reportClassification": "Dataklassificering",
+    "reportHosting": "Driftformsöversikt",
+    "reportLifecycle": "Livscykelstatus",
+    "reportRisk": "Riskregister",
+    "reportBIA": "Verksamhetspåverkan",
+    "reportNIS2": "NIS2-efterlevnad",
+    "reportGDPR": "Behandlingsregister",
+    "reportAuth": "Autentisering",
+    "reportTechDebt": "Teknisk skuld",
+    "reportTechVendors": "Teknikleverantörer",
+    "reportTechPortfolio": "Teknikportfölj",
+    "reportCosts": "Kostnadsöversikt",
+    "reportRoadmap": "Strategisk färdplan",
+    "reportPrinciplesDocument": "Principdokument",
+    "reportGapProgress": "GAP-analys progress",
+    "reportManualObjects": "Manuellt tillagda objekt",
+    "reportFlaggedObjects": "Flaggade objekt",
+    "create": "Skapa objekt",
+    "settings": "Inställningar",
+    "collaboration": "Samarbete",
+    "assignments": "Uppdrag",
+    "workgroups": "Arbetsgrupper",
+    "accessManagement": "Behörigheter",
+    "serverServices": "Servertjänster",
+    "architectureJourney": "Arkitekturresan",
+    "navigationSettings": "Meny"
+  },
+  "home": {
+    "welcome": "Välkommen till EA-portalen",
+    "description": "Visualisering och analys av organisationens digitala IT-miljö",
+    "quickLinks": "Snabblänkar",
+    "blocks": {
+      "about": "Om EA-portalen",
+      "empty": "Inget innehåll än. Klicka på pennan för att skriva något.",
+      "edit": "Redigera",
+      "save": "Spara",
+      "cancel": "Avbryt",
+      "aboutTooltip": "Om EA-portalen"
+    },
+    "stats": {
+      "processes": "Processer",
+      "applications": "Applikationer",
+      "infoObjects": "Informationsobjekt",
+      "infoSources": "Informationskällor",
+      "techComponents": "Teknikkomponenter",
+      "servers": "Servrar",
+      "serverServices": "Servertjänster",
+      "connections": "Kopplingar"
+    },
+    "definitions": {
+      "process": "En affärsprocess är en strukturerad uppsättning aktiviteter som producerar en specifik tjänst eller produkt för en viss kund eller marknad.",
+      "application": "En applikation är ett mjukvarusystem som stöder en eller flera affärsprocesser genom att tillhandahålla specifik funktionalitet.",
+      "informationObject": "Ett informationsobjekt är ett logiskt begrepp som representerar en typ av affärsdata — t.ex. en faktura, kundpost eller order.",
+      "informationSource": "En informationskälla är det fysiska eller logiska system som lagrar och ger åtkomst till informationsobjekt — t.ex. en databas eller modul.",
+      "technologyComponent": "En teknikkomponent är den underliggande infrastrukturen — servrar, molntjänster, databaser eller plattformar — som applikationer körs på.",
+      "server": "En server är en enskild installation – fysisk, virtuell eller i molnet – som teknikkomponenter och applikationer körs på, t.ex. en larmserver.",
+      "connection": "En koppling representerar en relation mellan två objekt — t.ex. att en applikation stöder en process eller körs på en teknikkomponent.",
+      "serverService": "En servertjänst är en tjänst som levereras från servrarna, t.ex. extern DNS eller nätverk (LAN/WiFi). Listan kommer från Servertjänster i integrationsplattformen."
+    },
+    "seed": {
+      "button": "Ladda demodata",
+      "description": "Fyll databasen med exempeldata (SharePoint + 2C8 + relationer)",
+      "success": "Demodata inläst!",
+      "loading": "Laddar demodata..."
+    },
+    "shortcuts": {
+      "editStart": "Anpassa genvägar",
+      "editDone": "Klar",
+      "add": "Lägg till",
+      "remove": "Ta bort genväg",
+      "empty": "Inga genvägar än. Klicka på Lägg till, eller dra hit en sida från menyn.",
+      "emptyReadOnly": "Inga genvägar än. Klicka på pennan för att anpassa.",
+      "hint": "Dra menyalternativ från sidomenyn hit för att lägga till. Dra korten för att sortera. Anpassningsläget stängs av efter 60 sekunder utan aktivitet.",
+      "pickerTitle": "Lägg till genväg",
+      "noCandidates": "Inga fler sidor att lägga till."
+    }
+  },
+  "targetArchitecture": {
+    "title": "Målarkitektur",
+    "subtitle": "Önskat läge för IT-arkitekturen",
+    "readMore": "Läs mer"
+  },
+  "domainOverview": {
+    "title": "Domän — BDAT-modellen",
+    "subtitle": "Verksamhet · Information · Applikation · Teknik",
+    "heading": "Fyra lager som hänger ihop",
+    "intro1": "EA-portalen beskriver organisationens arkitektur i fyra lager enligt BDAT-modellen. Varje lager svarar på sin egen fråga: verksamheten på varför, informationen på vad, applikationerna på hur och tekniken på med vad.",
+    "intro2": "Verksamheten sätter riktningen genom processerna — det vi faktiskt gör. Informationen är det verksamheten hanterar: begreppen, informationsobjekten och de källor de lagras i. Applikationerna är stödet som utför arbetet, och tekniken är plattformen de körs på.",
+    "intro3": "Varje objekt i portalen hör hemma i ett av lagren, och det är kopplingarna mellan lagren som gör det möjligt att svara på frågor som \"vilka applikationer stödjer den här processen?\" eller \"vilken information påverkas om den här servern försvinner?\". Välj ett lager i pyramiden eller ett kort nedan för att utforska domänen.",
+    "pyramidCaption": "Klicka på ett lager för att gå till domänen",
+    "describes": "Beskriver",
+    "answers": "Svarar på",
+    "openTargetArchitecture": "Läs mer i Målarkitekturen",
+    "domains": {
+      "business": {
+        "question": "Varför",
+        "describes": "Strategi, mål och de processer som verksamheten faktiskt utför.",
+        "answers": "Vad gör vi, i vilken ordning och vem ansvarar för det?"
+      },
+      "data": {
+        "question": "Vad",
+        "describes": "Begrepp, informationsobjekt och de källor där informationen lagras.",
+        "answers": "Vilken information hanterar vi, vad betyder den och var finns den?"
+      },
+      "application": {
+        "question": "Hur",
+        "describes": "Applikationer och tjänster som stödjer processerna och hanterar informationen.",
+        "answers": "Vilket systemstöd har vi, hur hänger det ihop och var överlappar det?"
+      },
+      "technology": {
+        "question": "Med vad",
+        "describes": "Infrastruktur och plattform som applikationerna körs på.",
+        "answers": "Var körs våra applikationer och vilken teknik är vi beroende av?"
+      }
+    }
+  },
+  "banners": {
+    "add": "Nytt driftmeddelande",
+    "edit": "Redigera",
+    "delete": "Ta bort",
+    "deleteConfirm": "Ta bort detta driftmeddelande?",
+    "dismiss": "Dölj",
+    "disabled": "Inaktiverad",
+    "dismissedByYou": "Dold av dig"
+  },
+  "solutionSketch": {
+    "title": "Lösningsskiss",
+    "subtitle": "Strukturerat stöd för nya digitala initiativ — fyll i en skiss för att hitta överlapp, relevanta principer och frågor inför upphandling.",
+    "new": "Ny skiss"
+  },
+  "processExplorer": {
+    "title": "Processutforskaren",
+    "selectProcess": "Välj en process",
+    "e2eGraph": "Ändpunkt-till-ändpunkt-graf",
+    "noSelection": "Välj en process i listan till vänster för att se E2E-grafen."
+  },
+  "systemView": {
+    "title": "Applikationslandskap",
+    "selectApplication": "Välj en applikation",
+    "noSelection": "Välj en applikation i listan till vänster för att se applikationsvyn."
+  },
+  "infoObjectExplorer": {
+    "select": "Välj ett informationsobjekt",
+    "noSelection": "Välj ett informationsobjekt i listan till vänster för att se dess kopplingar."
+  },
+  "infoSourceExplorer": {
+    "select": "Välj en informationskälla",
+    "noSelection": "Välj en informationskälla i listan till vänster för att se dess kopplingar."
+  },
+  "techComponentExplorer": {
+    "select": "Välj en teknikkomponent",
+    "noSelection": "Välj en teknikkomponent i listan till vänster för att se dess kopplingar."
+  },
+  "serverView": {
+    "select": "Servrar",
+    "newServer": "Ny server",
+    "noServers": "Inga servrar upplagda ännu.",
+    "noSelection": "Välj en server i listan till vänster, eller lägg upp en ny.",
+    "name": "Namn",
+    "description": "Beskrivning",
+    "create": "Skapa",
+    "created": "Servern {{name}} har lagts upp",
+    "edit": "Redigera servern",
+    "components": "Teknikkomponenter på servern",
+    "applications": "Applikationer som körs på servern",
+    "addComponents": "Lägg till teknikkomponenter...",
+    "addApplications": "Lägg till applikationer...",
+    "noComponents": "Inga teknikkomponenter kopplade ännu.",
+    "noApplications": "Inga applikationer kopplade ännu.",
+    "remove": "Ta bort från servern",
+    "added": "{{name}} kopplad till {{server}}",
+    "noAccess": "Du har inte behörighet till Servrar. Be en administratör om åtkomst.",
+    "serverServices": "Servertjänster på servern",
+    "addServerServices": "Lägg till servertjänster...",
+    "noServerServices": "Inga servertjänster kopplade ännu."
+  },
+  "landscape": {
+    "title": "Applikationslandskap",
+    "description": "Alla applikationer och deras integrationer",
+    "filterKategori": "Kategori...",
+    "filterStatus": "Livscykelfas...",
+    "filterDriftform": "Driftform...",
+    "filterAvdelning": "Avdelning/enhet...",
+    "filterSystem": "Filtrera på applikation..."
+  },
+  "overlapGaps": {
+    "title": "Överlapp & Luckor",
+    "overlaps": "Överlapp",
+    "gaps": "Luckor",
+    "overlappingProcesses": "Processer med flera applikationer",
+    "overlappingInfoObjects": "Informationsobjekt med flera applikationer",
+    "unsupportedProcesses": "Processer utan applikationsstöd",
+    "unrealizedInfoObjects": "Informationsobjekt utan realisering",
+    "orphanedApplications": "Applikationer utan processstöd",
+    "appCount": "Antal applikationer",
+    "applications": "Applikationer"
+  },
+  "graph": {
+    "export": "Exportera",
+    "exportPng": "Exportera PNG",
+    "exportSvg": "Exportera SVG",
+    "fitScreen": "Anpassa till skärm",
+    "zoomIn": "Zooma in",
+    "zoomOut": "Zooma ut",
+    "resetLayout": "Återställ layout",
+    "legend": "Teckenförklaring",
+    "legendNodes": "Noder",
+    "legendEdges": "Kanter",
+    "noData": "Ingen grafdata att visa",
+    "domains": "Domäner:",
+    "showAllDomains": "Visa alla",
+    "legendDirection": "Integrationens riktning"
+  },
+  "nodeTypes": {
+    "Process": "Process",
+    "Application": "Applikation",
+    "InformationObject": "Informationsobjekt",
+    "InformationSource": "Informationskälla",
+    "TechnologyComponent": "Teknikkomponent",
+    "Server": "Server",
+    "ServerService": "Servertjänst"
+  },
+  "edgeTypes": {
+    "USES": "Använder",
+    "SUPPORTS": "Stöder",
+    "HANDLES": "Hanterar",
+    "REALIZES": "Realiserar",
+    "CONTAINS": "Innehåller",
+    "RUNS_ON": "Körs på",
+    "INTEGRATES_WITH": "Integrerar med"
+  },
+  "edgeTypeDescriptions": {
+    "USES": "En process använder en applikation eller informationsresurs för att utföra sitt arbete.",
+    "SUPPORTS": "En applikation ger funktionellt stöd till en process.",
+    "HANDLES": "En applikation läser, skriver eller bearbetar ett informationsobjekt.",
+    "REALIZES": "En informationskälla är det fysiska eller logiska lager som lagrar ett informationsobjekt.",
+    "CONTAINS": "En applikation äger eller är värd för en informationskälla (t.ex. en databas).",
+    "RUNS_ON": "En applikation eller teknikkomponent är driftsatt på en teknikkomponent eller server.",
+    "INTEGRATES_WITH": "Två applikationer utbyter data eller funktionalitet direkt med varandra."
+  },
+  "externalSource": {
+    "NONE": "Intern",
+    "SHAREPOINT": "SharePoint",
+    "2C8": "2C8",
+    "CSV": "CSV"
+  },
+  "quickAdd": {
+    "tooltip": "Lägg till objekt",
+    "title": "Lägg till objekt",
+    "subtitle": "Objektet kopplas automatiskt till \"{{name}}\".",
+    "selectType": "Vilken typ av koppling?",
+    "tabNew": "Skapa ny",
+    "tabExisting": "Välj befintlig",
+    "searchExisting": "Sök {{type}}...",
+    "create": "Skapa & koppla",
+    "createAndClose": "Skapa, koppla & stäng",
+    "link": "Koppla",
+    "linkAndClose": "Koppla & stäng",
+    "success": "{{type}} \"{{name}}\" skapad och kopplad.",
+    "linked": "\"{{name}}\" kopplad.",
+    "linkSelected": "Länka {{num}} valda",
+    "linkSelectedAndClose": "Länka & stäng",
+    "linkedMultiple": "{{num}} kopplingar skapade",
+    "error": "Kunde inte utföra åtgärden. Försök igen."
+  },
+  "createNode": {
+    "title": "Skapa nytt objekt",
+    "subtitle": "Välj typ, fyll i uppgifter och lägg eventuellt till kopplingar till befintliga objekt.",
+    "details": "Uppgifter",
+    "attributes": "Attribut",
+    "connectionsTitle": "Kopplingar (valfritt)",
+    "addConnection": "Lägg till koppling",
+    "noConnections": "Inga kopplingar tillagda. Klicka ovan för att koppla till befintliga objekt.",
+    "direction": "Riktning",
+    "directionTo": "→ Till",
+    "directionFrom": "← Från",
+    "selectNode": "Välj objekt",
+    "submit": "Skapa objekt",
+    "success": "Objekt skapat!",
+    "error": "Kunde inte skapa objektet. Försök igen.",
+    "connectionError": "Kunde inte skapa koppling till",
+    "createdMessage": "har skapats.",
+    "parentProcess": "Huvudprocess",
+    "selectParentProcess": "Välj huvudprocess..."
+  },
+  "attributes": {
+    "vendor": "Leverantör",
+    "category": "Kategori",
+    "owner": "Ägare",
+    "application_owner": "Systemägare",
+    "business_owner": "Verksamhetsägare",
+    "lifecycle_stage": "Livscykelfas",
+    "hosting": "Hosting",
+    "definition": "Definition",
+    "data_owner": "Dataägare",
+    "classification": "Klassificering",
+    "domain": "Domän",
+    "system": "Applikation",
+    "frequency": "Frekvens",
+    "ägare": "Ägare",
+    "kategori": "Kategori",
+    "leverantör": "Leverantör",
+    "avdelning": "Avdelning/enhet",
+    "status": "Status",
+    "driftform": "Driftform",
+    "systemägare": "Systemägare",
+    "systemförvaltare": "Systemförvaltare",
+    "systemadministratör": "Systemadministratör",
+    "frekvens": "Frekvens",
+    "klassificering": "Klassificering",
+    "typ": "Typ",
+    "component_type": "Komponenttyp",
+    "platform": "OS / Plattform",
+    "version": "Version",
+    "capacity": "Kapacitet / Storlek",
+    "technical_owner": "Teknisk ägare",
+    "support_team": "Supportteam",
+    "maintenance_schedule": "Underhållsschema",
+    "security_classification": "Säkerhetsklassificering",
+    "hostnamn": "Hostnamn",
+    "servertyp": "Servertyp",
+    "operativsystem": "Operativsystem",
+    "miljö": "Miljö",
+    "placering": "Placering",
+    "ansvarig": "Ansvarig",
+    "planerad_driftstart": "Planerad driftstart",
+    "planerad_avveckling": "Planerad avveckling",
+    "livscykelstatus": "Livscykelstatus"
+  },
+  "flags": {
+    "addFlag": "Flagga objekt",
+    "dialogTitle": "Flagga objekt",
+    "flagType": "Flaggtyp",
+    "description": "Beskrivning",
+    "descriptionPlaceholder": "Beskriv vad som är felaktigt eller saknas…",
+    "submit": "Skicka flagga",
+    "sectionTitle": "Flaggor",
+    "createSuccess": "Flagga skapad",
+    "createError": "Kunde inte skapa flagga",
+    "deleteSuccess": "Flagga borttagen",
+    "deleteError": "Kunde inte ta bort flagga",
+    "types": {
+      "INCOMPLETE": "Ofullständig information",
+      "OUTDATED": "Föråldrad information",
+      "INCORRECT": "Felaktig information"
+    }
+  },
+  "nodeDetail": {
+    "edit": "Redigera",
+    "saveSuccess": "Ändringar sparade",
+    "deleteTitle": "Ta bort objekt?",
+    "deleteBody": "Är du säker på att du vill ta bort {{type}} \"{{name}}\"? Eventuella kopplingar till detta objekt tas också bort. Åtgärden kan inte ångras.",
+    "connections": "Kopplingar",
+    "from": "Från",
+    "to": "Till",
+    "replace": "Byt",
+    "replaceWith": "Byt till...",
+    "replaceSuccess": "Kopplingen har uppdaterats.",
+    "deleteEdgeTitle": "Ta bort koppling?",
+    "deleteEdgeBody": "Är du säker på att du vill ta bort kopplingen \"{{type}}\"? Åtgärden kan inte ångras."
+  },
+  "common": {
+    "loading": "Laddar...",
+    "error": "Fel",
+    "noData": "Inga data",
+    "name": "Namn",
+    "description": "Beskrivning",
+    "type": "Typ",
+    "source": "Källa",
+    "created": "Skapad",
+    "updated": "Uppdaterad",
+    "actions": "Åtgärder",
+    "close": "Stäng",
+    "save": "Spara",
+    "cancel": "Avbryt",
+    "delete": "Ta bort",
+    "add": "Lägg till",
+    "search": "Sök",
+    "filter": "Filtrera",
+    "language": "Språk"
+  },
+  "csvImport": {
+    "title": "Importera via CSV",
+    "subtitle": "Välj typ, ladda ner mallen, fyll i data och ladda upp filen för att importera.",
+    "entities": {
+      "processes": "Processer",
+      "applications": "Applikationer",
+      "informationObjects": "Informationsobjekt",
+      "informationSources": "Informationskällor",
+      "techComponents": "Teknikkomponenter"
+    },
+    "columns": {
+      "id": "ID",
+      "name": "Namn",
+      "description": "Beskrivning",
+      "owner": "Ägare",
+      "category": "Kategori",
+      "frequency": "Frekvens",
+      "vendor": "Leverantör",
+      "application_owner": "Systemägare",
+      "business_owner": "Verksamhetsägare",
+      "lifecycle_stage": "Livscykelfas",
+      "hosting": "Hosting",
+      "definition": "Definition",
+      "data_owner": "Dataägare",
+      "classification": "Klassificering",
+      "domain": "Domän",
+      "system": "Applikation",
+      "type": "Typ",
+      "parent_id": "Huvudprocess",
+      "component_type": "Komponenttyp",
+      "platform": "OS / Plattform",
+      "version": "Version",
+      "capacity": "Kapacitet / Storlek",
+      "technical_owner": "Teknisk ägare",
+      "support_team": "Supportteam",
+      "maintenance_schedule": "Underhållsschema",
+      "security_classification": "Säkerhetsklassificering"
+    },
+    "step1": {
+      "title": "Ladda ner mall",
+      "description": "Mallen innehåller rätt kolumnrubriker och exempelrader. Öppna den i Excel eller annat kalkylprogram, fyll i dina poster och spara som CSV.",
+      "download": "Ladda ner mall ({{entity}})",
+      "columns": "Kolumner i mallen",
+      "required": "Obligatorisk"
+    },
+    "step2": {
+      "title": "Välj CSV-fil",
+      "dropzone": "Dra och släpp din CSV-fil här",
+      "or": "eller klicka för att välja fil"
+    },
+    "step3": {
+      "title": "Förhandsgranska ({{count}} rader)",
+      "noRows": "Inga giltiga rader hittades i filen.",
+      "import": "Importera {{count}} {{entity}}",
+      "importing": "Importerar..."
+    },
+    "parseWarnings": "Varningar vid tolkning av filen",
+    "previewError": "Kunde inte läsa filen. Kontrollera att det är en giltig CSV.",
+    "importError": "Importen misslyckades.",
+    "success": "Import klar! {{created}} skapade, {{updated}} uppdaterade.",
+    "modes": {
+      "perType": "Per typ",
+      "unified": "Komplett"
+    },
+    "unified": {
+      "description": "Importera alla objekttyper och kopplingar från en enda CSV-fil.",
+      "templateDesc": "Mallen innehåller alla objekttyper ([NODES]) och kopplingar ([CONNECTIONS]) i en fil. Fyll i och spara som CSV.",
+      "downloadTemplate": "Ladda ner komplett mall",
+      "previewTitle": "Förhandsgranskning ({{nodes}} objekt, {{edges}} kopplingar)",
+      "nodes": "Objekt",
+      "connections": "Kopplingar",
+      "importButton": "Importera {{nodes}} objekt + {{edges}} kopplingar",
+      "success": "Import klar! {{nodes}} objekt och {{edges}} kopplingar importerade.",
+      "resultSummary": "{{nodesCreated}} objekt skapade, {{nodesUpdated}} uppdaterade, {{edgesCreated}} kopplingar skapade."
+    },
+    "export": {
+      "button": "Exportera alla som CSV"
+    },
+    "result": {
+      "title": "Importresultat",
+      "summary": "{{created}} {{entity}} skapades, {{updated}} uppdaterades.",
+      "importMore": "Importera fler"
+    }
+  },
+  "settings": {
+    "title": "Inställningar",
+    "resetDefaults": "Återställ standardvärden",
+    "logo": {
+      "title": "Logotyp",
+      "upload": "Ladda upp bild",
+      "urlLabel": "Eller ange bild-URL",
+      "remove": "Ta bort logotyp"
+    },
+    "colors": {
+      "title": "Färger",
+      "primary": "Primär",
+      "secondary": "Sekundär",
+      "background": "Bakgrund"
+    },
+    "font": {
+      "title": "Typografi",
+      "family": "Teckensnittsfamilj",
+      "preview": "Förhandsvisning"
+    },
+    "inspire": {
+      "title": "Webplatsinspiration",
+      "description": "Ange en webbplats-URL så hämtar vi färger och teckensnitt som inspiration för ditt tema.",
+      "urlLabel": "Webbplats-URL",
+      "extract": "Hämta tema",
+      "foundColors": "Hittade färger — klicka för att tilldela",
+      "foundFonts": "Hittade teckensnitt — klicka för att använda",
+      "noResults": "Inga färger eller teckensnitt hittades på sidan.",
+      "error": "Kunde inte nå URL:en. Kontrollera att den är offentligt tillgänglig."
+    },
+    "language": {
+      "title": "Språk"
+    },
+    "role": {
+      "title": "Roll",
+      "description": "Växla mellan administratör och användare för att se olika åtkomstnivåer.",
+      "label": "Aktuell roll",
+      "admin": "Administratör",
+      "user": "Användare"
+    },
+    "tabs": {
+      "general": "Allmänt",
+      "auditLog": "Ändringslogg",
+      "data": "Datahantering"
+    },
+    "data": {
+      "title": "Datahantering",
+      "description": "Ta bort processdata från databasen. Dessa åtgärder kan inte ångras.",
+      "deleteDemoProcesses": "Ta bort demoproceser",
+      "deleteDemoHint": "Tar bort processer importerade från 2C8-demodata",
+      "deleteAllProcesses": "Ta bort alla processer",
+      "deleteAllHint": "Tar bort samtliga processer oavsett källa",
+      "deleteDemoTitle": "Ta bort demoproceser?",
+      "deleteDemoBody": "Detta tar permanent bort alla processer importerade från 2C8-demodata. Åtgärden kan inte ångras.",
+      "deleteAllTitle": "Ta bort alla processer?",
+      "deleteAllBody": "Detta tar permanent bort samtliga processer i databasen. Åtgärden kan inte ångras.",
+      "deleted": "{{count}} processer togs bort.",
+      "deleteError": "Borttagning misslyckades. Försök igen."
+    }
+  },
+  "connections": {
+    "title": "Kopplingar",
+    "subtitle": "Skapa och hantera relationer mellan noder i er företagsarkitektur.",
+    "createSuccess": "Koppling skapad.",
+    "deleteSuccess": "Koppling borttagen.",
+    "error": "Något gick fel. Försök igen.",
+    "tabs": {
+      "table": "Tabell",
+      "visual": "Visuell"
+    },
+    "graph": {
+      "hint": "Klicka på en nod för att välja källnod, klicka sedan på en annan nod för att skapa en koppling.",
+      "clickTarget": "är vald. Klicka på en målnod.",
+      "validTargetsHint": "markerade noder är giltiga mål",
+      "invalidTarget": "Ingen giltig kopplingstyp finns mellan dessa nodtyper.",
+      "dialogTitle": "Välj relationstyp",
+      "selectedEdge": "Vald koppling",
+      "deleteEdge": "Ta bort koppling"
+    },
+    "filter": {
+      "nodeType": "Filtrera på nodtyp...",
+      "edgeType": "Filtrera på relationstyp...",
+      "system": "Filtrera på applikation...",
+      "clear": "Rensa filter",
+      "showing": "Visar {{edges}} av {{total}} kopplingar"
+    },
+    "guide": {
+      "title": "Kopplingsguide",
+      "description": "Översikt över alla tillåtna kopplingstyper mellan nodtyper."
+    },
+    "replaceSource": "Byt från-objekt",
+    "replaceTarget": "Byt till-objekt",
+    "replaceWith": "Byt till...",
+    "replaceSave": "Byt",
+    "replaceSuccess": "Koppling uppdaterad.",
+    "createSection": {
+      "title": "Skapa ny koppling",
+      "source": "Från (källnod)",
+      "edgeType": "Relationstyp",
+      "target": "Till (målnod)",
+      "create": "Skapa koppling"
+    },
+    "listSection": {
+      "title": "Befintliga kopplingar",
+      "source": "Från",
+      "type": "Relation",
+      "target": "Till",
+      "noData": "Inga kopplingar hittades."
+    },
+    "directionSuccess": "Riktningen uppdaterad"
+  },
+  "dataManagement": {
+    "title": "Datahantering",
+    "subtitle": "Ta bort data från databasen. Dessa åtgärder kan inte ångras.",
+    "deleteSelected": "Ta bort markerade",
+    "deleted": "{{count}} poster togs bort.",
+    "deleteError": "Borttagning misslyckades. Försök igen.",
+    "confirmTitle": "Bekräfta borttagning",
+    "confirmDemoBody": "Detta tar permanent bort demodata för de markerade typerna. Åtgärden kan inte ångras.",
+    "confirmAllBody": "Detta tar permanent bort ALLA poster av de markerade typerna, oavsett källa. Åtgärden kan inte ångras.",
+    "demoSection": {
+      "title": "Ta bort demodata",
+      "description": "Tar bort data som importerades via demoimport (2C8 och SharePoint). Övrig data påverkas inte."
+    },
+    "allSection": {
+      "title": "Ta bort alla poster",
+      "warning": "Detta tar bort alla poster av vald typ oavsett källa, inklusive CSV-importerad och manuellt skapad data."
+    },
+    "admin": {
+      "title": "Administrativa funktioner",
+      "description": "Säkerhetskopiera, återställ och skapa versioner av databasen.",
+      "exportButton": "Exportera databas (JSON)",
+      "exportHint": "Ladda ner hela databasen som en JSON-fil.",
+      "exportSuccess": "Databas exporterad.",
+      "exportError": "Export misslyckades.",
+      "restoreButton": "Återställ från fil",
+      "restoreHint": "Ladda upp en tidigare exporterad JSON-fil för att återställa databasen.",
+      "restoreSuccess": "Återställning klar: {{nodes}} noder och {{edges}} kopplingar.",
+      "restoreError": "Återställning misslyckades.",
+      "restoreConfirmTitle": "Bekräfta återställning",
+      "restoreConfirmBody": "Detta ersätter ALL befintlig data med innehållet i den valda säkerhetskopian. Åtgärden kan inte ångras. Skapa en snapshot först om du vill kunna gå tillbaka.",
+      "restoreConfirm": "Återställ",
+      "snapshotTitle": "Snapshots / Versioner",
+      "snapshotDescription": "Skapa en versionspunkt av nuvarande databasläge, t.ex. före en migration, stora datamodellförändringar eller en import.",
+      "snapshotLabelPlaceholder": "T.ex. \"Före migration 2026-03\"",
+      "createSnapshot": "Skapa snapshot",
+      "snapshotCreated": "Snapshot skapad.",
+      "snapshotDeleted": "Snapshot borttagen.",
+      "snapshotError": "Åtgärden misslyckades.",
+      "noSnapshots": "Inga snapshots har skapats ännu.",
+      "snapshotLabel": "Beskrivning",
+      "snapshotDate": "Datum",
+      "snapshotNodes": "Noder",
+      "snapshotEdges": "Kopplingar",
+      "snapshotActions": "Åtgärder",
+      "restoreSnapshot": "Återställ denna snapshot"
+    },
+    "graphSnapshots": {
+      "title": "Grafversioner",
+      "description": "Historiska bilder av hela applikationslandskapet — noder och kopplingar vid en given tidpunkt. Skapas automatiskt vid dokumentexport och manuellt på begäran.",
+      "labelPlaceholder": "Etikett, t.ex. \"Inför styrgruppsmöte Q2\" (valfritt)",
+      "createButton": "Ta grafbild nu",
+      "created": "Grafbild skapad.",
+      "error": "Kunde inte skapa grafbild.",
+      "noSnapshots": "Inga grafbilder har skapats ännu.",
+      "columnNumber": "#",
+      "columnDate": "Datum",
+      "columnBy": "Av",
+      "columnNodes": "Noder",
+      "columnEdges": "Kanter",
+      "columnSource": "Källa",
+      "columnLabel": "Etikett",
+      "triggerManual": "Manuell",
+      "triggerExport": "Dokumentexport",
+      "changesTitle": "Förändringar sedan föregående bild",
+      "noChanges": "Inga registrerade förändringar sedan föregående bild."
+    }
+  },
+  "auditLog": {
+    "title": "Ändringslogg",
+    "description": "Spåra alla ändringar av objekt och kopplingar.",
+    "entries": "poster",
+    "filters": {
+      "entityType": "Objekttyp",
+      "action": "Åtgärd",
+      "all": "Alla"
+    },
+    "columns": {
+      "timestamp": "Tidpunkt",
+      "action": "Åtgärd",
+      "entityType": "Typ",
+      "entityName": "Namn",
+      "actions": "Åtgärder"
+    },
+    "actions": {
+      "CREATE": "Skapad",
+      "UPDATE": "Uppdaterad",
+      "DELETE": "Borttagen",
+      "PROPOSE": "Ändringsförslag",
+      "PROPOSE_DONE": "Förslag släckt",
+      "PROPOSE_APPROVE": "Förslag fastställt",
+      "PROPOSE_REJECT": "Förslag avslaget",
+      "PROPOSE_WITHDRAW": "Förslag tillbakadraget",
+      "DOWNLOAD": "Nedladdad"
+    },
+    "entityTypes": {
+      "node": "Objekt",
+      "change_entry": "Förändring",
+      "calendar_event": "Kalenderpost",
+      "edge": "Koppling",
+      "document": "Dokument",
+      "access": "Behörighet"
+    },
+    "restore": "Återställ",
+    "restored": "Återställd",
+    "restoreConfirm": {
+      "title": "Återställ borttaget objekt?",
+      "body": "Detta återskapar {{type}} \"{{name}}\" med ursprungliga data.",
+      "restoreEdges": "Återställ även kopplingar",
+      "success": "\"{{name}}\" har återställts.",
+      "error": "Återställning misslyckades. Objektet kan ha beroenden som inte längre finns."
+    },
+    "clear": "Rensa logg",
+    "clearConfirm": {
+      "title": "Rensa ändringsloggen?",
+      "body": "Detta tar permanent bort alla {{count}} loggposter. Borttagna objekt kan inte längre återställas. Åtgärden kan inte ångras.",
+      "success": "Ändringsloggen har rensats."
+    },
+    "noEntries": "Inga loggposter hittades.",
+    "snapshot": {
+      "before": "Tillstånd före",
+      "after": "Tillstånd efter"
+    }
+  },
+  "import": {
+    "title": "Importera data",
+    "sharepoint": "Importera från SharePoint",
+    "twoC8": "Importera från 2C8",
+    "mode": "Läge",
+    "mockMode": "Testläge (JSON-data)",
+    "apiMode": "API-läge (live)",
+    "run": "Kör import",
+    "success": "Import klar: {{created}} skapade, {{updated}} uppdaterade",
+    "error": "Import misslyckades"
+  },
+  "reports": {
+    "maturity": {
+      "title": "EA-mognadsdashboard",
+      "description": "Hur komplett och välkopplad är företagsarkitekturmodellen?",
+      "coverage": "Täckningsgrad",
+      "health": "Hälsoindikatorer",
+      "appsSupporting": "Applikationer som stödjer en process",
+      "processesSupported": "Processer med applikationsstöd",
+      "infoObjRealized": "Informationsobjekt med realiserande källa",
+      "nodesWithDesc": "Noder med beskrivning",
+      "orphans": "Föräldralösa noder (inga kopplingar)",
+      "unsupportedProcesses": "Processer utan applikationsstöd (luckor)",
+      "appsNoProcess": "Applikationer utan processkoppling",
+      "completeness": "Modellens fullständighetspoäng"
+    },
+    "processSupport": {
+      "title": "Process–Applikationsstöd",
+      "description": "Vilka applikationer stödjer vilka processer? Luckor (röd) saknar applikationsstöd. Överlapp (orange) har flera.",
+      "process": "Process",
+      "status": "Status",
+      "supportingApps": "Stödjande applikationer",
+      "count": "Antal",
+      "gap": "Lucka",
+      "overlap": "Överlapp",
+      "covered": "Täckt",
+      "noSupport": "Inget applikationsstöd",
+      "all": "Alla",
+      "filterLabel": "Filter"
+    },
+    "portfolio": {
+      "title": "Applikationsportfölj",
+      "description": "Komplett inventering av alla applikationer med metadata och anslutningsantal.",
+      "name": "Namn",
+      "category": "Kategori",
+      "status": "Status",
+      "hosting": "Driftform",
+      "department": "Avdelning",
+      "vendor": "Leverantör",
+      "processes": "Processer",
+      "integrations": "Integrationer",
+      "search": "Sök..."
+    },
+    "redundancy": {
+      "title": "Redundansanalys",
+      "description": "Processer som stöds av flera applikationer — potential för rationalisering och kostnadsminskning.",
+      "processesWithRedundancy": "processer med redundant stöd",
+      "noRedundancy": "Ingen redundans upptäckt. Varje process stöds av högst en applikation.",
+      "process": "Process",
+      "appCount": "Antal appar",
+      "supportingApps": "Stödjande applikationer"
+    },
+    "owners": {
+      "title": "Ägaröversikt — Applikationer",
+      "description": "Vem ansvarar för vilka applikationer? Identifiera applikationer utan ägare.",
+      "groupBy": "Gruppera efter",
+      "systemOwner": "Systemägare",
+      "systemManager": "Systemförvaltare",
+      "department": "Avdelning",
+      "unassigned": "Ej tilldelad",
+      "unassignedDesc": "inte satt"
+    },
+    "integrations": {
+      "title": "Integrationsanalys",
+      "description": "Integrationshubbar och felkritisk analys. Applikationer med många integrationer och hög verksamhetskritikalitet är störst risk.",
+      "integrationLinks": "integrationslänkar",
+      "connectedApps": "anslutna applikationer",
+      "highDegreeHubs": "höggradig hubbar",
+      "application": "Applikation",
+      "integrationCount": "Integrationer",
+      "processCount": "Processer",
+      "riskScore": "Riskpoäng",
+      "riskLevel": "Risknivå",
+      "critical": "Kritisk",
+      "high": "Hög",
+      "medium": "Medel",
+      "low": "Låg",
+      "hubAnalysis": "Hubbanalys",
+      "allPairs": "Alla par",
+      "source": "Källa",
+      "direction": "Riktning",
+      "target": "Mål",
+      "view": "Vy"
+    },
+    "vendors": {
+      "title": "Leverantörsberoende",
+      "description": "Hur många applikationer beror på varje leverantör? Identifierar koncentrationsrisk.",
+      "vendorCount": "leverantörer",
+      "appCount": "applikationer",
+      "distribution": "Leverantörsfördelning",
+      "vendor": "Leverantör",
+      "count": "Antal appar",
+      "share": "Andel",
+      "applications": "Applikationer"
+    },
+    "classification": {
+      "title": "Dataklassificeringsmatris",
+      "description": "Vilken känslighetsnivå har informationsobjekten och vilka applikationer hanterar dem?",
+      "infoObject": "Informationsobjekt",
+      "classification": "Klassificering",
+      "handlingApps": "Hanterande applikationer",
+      "noClassification": "Ej klassificerad",
+      "open": "Öppen",
+      "internal": "Intern",
+      "confidential": "Konfidentiell",
+      "secret": "Hemlig",
+      "allLevels": "Alla nivåer"
+    },
+    "hosting": {
+      "title": "Driftformsöversikt",
+      "description": "Var driftas varje applikation? Visar fördelning mellan driftformer.",
+      "driftform": "Driftform",
+      "count": "Antal",
+      "share": "Andel",
+      "applications": "Applikationer",
+      "distribution": "Fördelning per driftform",
+      "unknown": "Ej angiven"
+    },
+    "lifecycle": {
+      "title": "Livscykelstatus",
+      "description": "Livscykelstatus för alla applikationer. Identifiera applikationer som åldras eller planeras för avveckling.",
+      "status": "Status",
+      "count": "Antal",
+      "application": "Applikation",
+      "department": "Avdelning",
+      "distribution": "Statusfördelning",
+      "active": "Aktiv",
+      "planned": "Planerad",
+      "phaseOut": "Avveckling",
+      "retired": "Avvecklad",
+      "unknown": "Ej angiven"
+    },
+    "risk": {
+      "title": "Riskregister — Applikationsriskpoäng",
+      "description": "Poängsätt varje applikations risknivå baserat på verksamhetskritikalitet, datakänslighet, integreringsexponering och teknisk risk.",
+      "application": "Applikation",
+      "businessCriticality": "Verksamhetskritikalitet",
+      "dataSensitivity": "Datakänslighet",
+      "integrationExposure": "Integrationsexponering",
+      "compositeScore": "Total riskpoäng",
+      "riskLevel": "Risknivå",
+      "critical": "Kritisk",
+      "high": "Hög",
+      "medium": "Medel",
+      "low": "Låg",
+      "scoring": "Poängsättning",
+      "scoringDesc": "Poängen beräknas från: antal processer (verksamhetskritikalitet), antal informationsobjekt (datakänslighet) och antal integrationer (exponering)."
+    },
+    "bia": {
+      "title": "Verksamhetspåverkan (BIA)",
+      "description": "Vad händer om en applikation blir otillgänglig? Visar påverkade processer, data och kaskadeffekter via integrationer.",
+      "application": "Applikation",
+      "affectedProcesses": "Påverkade processer",
+      "affectedData": "Data i riskzonen",
+      "cascadeApps": "Kaskadpåverkan (via integrationer)",
+      "impactScore": "Påverkanspoäng",
+      "severity": "Allvarlighetsgrad",
+      "critical": "Kritisk",
+      "high": "Hög",
+      "medium": "Medel",
+      "low": "Låg",
+      "selectApp": "Välj en applikation för detaljerad analys",
+      "processes": "processer",
+      "infoObjects": "informationsobjekt",
+      "cascadeDepth": "kaskadled"
+    },
+    "nis2": {
+      "title": "NIS2-efterlevnadsrapport",
+      "description": "Kartlägg kritiska processer och applikationer mot NIS2-krav. Identifiera luckor i säkerhetsåtgärder.",
+      "process": "Process",
+      "category": "NIS2-kategori",
+      "supportingApps": "Stödjande applikationer",
+      "securityMeasures": "Säkerhetsåtgärder",
+      "essential": "Väsentlig",
+      "important": "Viktig",
+      "notClassified": "Ej klassificerad",
+      "noMeasures": "Inga åtgärder dokumenterade",
+      "hint": "Sätt attributet 'nis2_category' (essential/important) på processer och 'security_measures' på applikationer."
+    },
+    "gdpr": {
+      "title": "Behandlingsregister (GDPR Art. 30)",
+      "description": "Register över behandlingar av personuppgifter. Kopplar informationsobjekt till applikationer, ändamål och rättslig grund.",
+      "infoObject": "Personuppgiftskategori",
+      "handlingApps": "Behandlande applikationer",
+      "processes": "Ändamål (processer)",
+      "legalBasis": "Rättslig grund",
+      "retentionPeriod": "Lagringstid",
+      "personalData": "Personuppgifter",
+      "yes": "Ja",
+      "no": "Nej",
+      "notSet": "Ej angiven",
+      "allObjects": "Alla informationsobjekt",
+      "personalDataOnly": "Bara personuppgifter",
+      "hint": "Sätt attribut på informationsobjekt: 'contains_personal_data' (true/false), 'legal_basis', 'retention_period'."
+    },
+    "auth": {
+      "title": "Autentiseringslandskap",
+      "description": "Hur autentiserar användare till varje applikation? Identifiera applikationer utan SSO eller MFA.",
+      "application": "Applikation",
+      "authMethod": "Autentiseringsmetod",
+      "mfa": "MFA",
+      "enabled": "Aktiverad",
+      "disabled": "Ej aktiverad",
+      "notSet": "Ej angiven",
+      "hint": "Sätt attribut på applikationer: 'auth_method' (SSO/SAML/Local/LDAP), 'mfa_enabled' (true/false)."
+    },
+    "techDebt": {
+      "title": "Teknisk skuld — EOL-heatmap",
+      "description": "Föråldrade teknikkomponenter som närmar sig eller passerat end-of-life.",
+      "component": "Teknikkomponent",
+      "type": "Typ",
+      "vendor": "Leverantör",
+      "endOfSupport": "End of support",
+      "endOfLife": "End of life",
+      "dependentApps": "Beroende appar",
+      "expired": "Utgången",
+      "warning": "Snart",
+      "ok": "OK",
+      "unknown": "Okänd",
+      "hint": "Sätt attribut på teknikkomponenter: 'end_of_support', 'end_of_life' (ÅÅÅÅ-MM-DD)."
+    },
+    "techVendors": {
+      "title": "Teknikleverantörer",
+      "description": "Hur många teknikkomponenter kommer från varje leverantör, och hur många applikationer körs på dem? Visar inlåsning och koncentrationsrisk i tekniken.",
+      "vendorCount": "leverantörer",
+      "componentCount": "teknikkomponenter",
+      "appCount": "applikationer körs på dem",
+      "distribution": "Fördelning per leverantör",
+      "vendor": "Leverantör",
+      "count": "Antal komponenter",
+      "share": "Andel",
+      "apps": "Applikationer",
+      "types": "Komponenttyper",
+      "components": "Teknikkomponenter",
+      "unassigned": "Ej angiven"
+    },
+    "techPortfolio": {
+      "title": "Teknikportfölj",
+      "description": "Teknikkomponenterna per komponenttyp och hosting – hur stor del som ligger i moln respektive on-prem, och var det finns många komponenter av samma slag.",
+      "componentCount": "teknikkomponenter",
+      "matrix": "Komponenttyp × hosting",
+      "type": "Komponenttyp",
+      "total": "Totalt",
+      "components": "Teknikkomponenter",
+      "unknownType": "Komponenttyp saknas",
+      "unknownHosting": "Ej angiven"
+    },
+    "costs": {
+      "title": "Kostnadsöversikt per applikation",
+      "description": "Ägandekostnad per applikation. Identifiera kandidater för rationalisering.",
+      "application": "Applikation",
+      "annualCost": "Årskostnad (kr)",
+      "licenseModel": "Licensmodell",
+      "costPerProcess": "Kostnad/process",
+      "totalCost": "Total kostnad",
+      "noCostData": "Inga kostnadsuppgifter tillgängliga",
+      "hint": "Sätt attribut på applikationer: 'annual_cost' (siffra), 'license_model'."
+    },
+    "roadmap": {
+      "title": "Strategisk färdplan",
+      "description": "Planerade förändringar i applikationslandskapet över tid.",
+      "application": "Applikation",
+      "status": "Status",
+      "goLive": "Driftsättning",
+      "retirement": "Planerad avveckling",
+      "department": "Avdelning",
+      "noDateData": "Inga datumuppgifter tillgängliga",
+      "hint": "Fyll i fälten \"Planerad driftstart\" och \"Planerad avveckling\" (ÅÅÅÅ-MM-DD) på applikationerna."
+    },
+    "manualObjects": {
+      "title": "Manuellt tillagda objekt",
+      "description": "Visar objekt som lagts till direkt i EA-portalen och inte är synkade från en extern källa (SharePoint, 2C8 eller liknande). Används för att säkerställa att inga objekt saknas i ursprungssystemen.",
+      "addedAt": "Tillagt",
+      "empty": "Inga manuellt tillagda objekt hittades.",
+      "noMatch": "Inga objekt matchar sökningen."
+    },
+    "flaggedObjects": {
+      "title": "Flaggade objekt",
+      "description": "Sammanställning av alla objekt som flaggats med kvalitetsproblem. Klicka på en rad för att navigera till objektet.",
+      "flaggedBy": "Flaggad av",
+      "flaggedAt": "Datum",
+      "total": "flaggor",
+      "empty": "Inga flaggade objekt hittades.",
+      "noMatch": "Inga flaggor matchar sökningen."
+    },
+    "overview": {
+      "manageTags": "Hantera taggar",
+      "editTags": "Ändra taggar",
+      "untagged": "Övrigt"
+    },
+    "groupBy": {
+      "byTag": "Grupperat på tagg",
+      "alphabetical": "Sorterat A–Ö"
+    },
+    "tags": {
+      "help": "Ordningen styr var taggen hamnar i menyn — lägre tal först. Tar du bort en tagg blir rapporterna under den otaggade, inget annat händer.",
+      "count": "{{count}} rapp.",
+      "newName": "Ny tagg…",
+      "none": "Otaggad"
+    },
+    "overlapGaps": {
+      "description": "Processer utan applikationsstöd och applikationer som stödjer samma process — luckorna och överlappen i landskapet."
+    },
+    "principlesDocument": {
+      "description": "Arkitekturprinciperna samlade som ett dokument, redo att läsas igenom eller exporteras."
+    },
+    "gapProgress": {
+      "description": "Hur långt GAP-analysens uppgifter har kommit mot målbilden, viktat efter uppgifternas omfattning."
+    },
+    "rename": {
+      "action": "Byt namn på rapporten",
+      "help": "Namnet visas i menyn och som rubrik på rapporten, på både svenska och engelska.",
+      "original": "Ursprungligt namn: {{name}}",
+      "reset": "Återställ"
+    }
+  },
+  "flowScene": {
+    "tabGraph": "Graf",
+    "tabFlow": "Flödesschema",
+    "version": "version",
+    "owner": "Processägare",
+    "loading": "Hämtar flödesschemat …",
+    "none": "Den här processen har inget flödesschema.",
+    "zoomIn": "Zooma in",
+    "zoomOut": "Zooma ut",
+    "fit": "Anpassa till fönstret",
+    "legend": "Teckenförklaring"
+  },
+  "integrationDirection": {
+    "label": "Riktning",
+    "question": "Vilket håll skickas informationen?",
+    "helper": "Välj det alternativ som beskriver integrationen. Pilen i graferna ritas åt det håll du väljer.",
+    "SOURCE_TO_TARGET": "Enkelriktad — från källa till mål",
+    "BIDIRECTIONAL": "Dubbelriktad — information utbyts åt båda hållen",
+    "TARGET_TO_SOURCE": "Enkelriktad — från mål till källa",
+    "sentence": {
+      "SOURCE_TO_TARGET": "{{source}} skickar information till {{target}}",
+      "BIDIRECTIONAL": "{{source}} och {{target}} skickar information till varandra",
+      "TARGET_TO_SOURCE": "{{target}} skickar information till {{source}}"
+    },
+    "placeholder": {
+      "source": "källsystemet",
+      "target": "målsystemet"
+    }
+  },
+  "sync": {
+    "arkflowTitle": "Flödesscheman från Arkitekten",
+    "arkflowHint": "Hämtar processernas flödesscheman på nytt. Går automatiskt varannan timme – kör här när du just ändrat något i Arkitekten. Bara fastslagna versioner hämtas; ett utkast syns inte förrän det fastslagits.",
+    "arkflowRun": "Hämta nu",
+    "arkflowRunning": "Hämtar …",
+    "arkflowDone": "{{count}} flödesscheman hämtade, {{updated}} uppdaterade.",
+    "arkflowResult": "Senaste körningen: {{count}} flödesscheman, {{updated}} uppdaterade.",
+    "arkflowFailed": "Synken gick inte att köra."
+  },
+  "objectContent": {
+    "tabDocuments": "Dokument",
+    "tabNotes": "Anteckningar",
+    "tabOverview": "Översikt",
+    "panelSummary": "{{docs}} dokument · {{notes}} anteckningar",
+    "panelOpen": "Öppna dokument och anteckningar",
+    "deleteWarning": "{{docs}} dokument och {{notes}} anteckningar på objektet tas också bort.",
+    "docs": {
+      "upload": "Ladda upp fil",
+      "addLink": "Lägg till länk",
+      "empty": "Inga dokument ännu.",
+      "emptyReadOnly": "Inga dokument ännu. Den som förvaltar objektet kan lägga till dokument.",
+      "title": "Titel",
+      "type": "Typ",
+      "file": "Fil",
+      "reviewDate": "Granskas senast",
+      "reviewOverdue": "Granskningsdatumet har passerat",
+      "updated": "Uppdaterad",
+      "description": "Beskrivning",
+      "classification": "Klassning",
+      "url": "Adress (https://…)",
+      "chooseFile": "Välj fil",
+      "noFile": "Ingen fil vald",
+      "maxSize": "Max {{mb}} MB. Tillåtet: Office, PDF, text, bilder, Visio och e-post.",
+      "tooLarge": "Filen är för stor (max {{mb}} MB).",
+      "download": "Ladda ner",
+      "openPdf": "Öppna",
+      "openLink": "Öppna länk",
+      "edit": "Ändra",
+      "delete": "Ta bort",
+      "versions": "Versioner",
+      "newVersion": "Ladda upp ny version",
+      "versionComment": "Vad är ändrat? (valfritt)",
+      "versionLabel": "v{{n}}",
+      "confirmDelete": "Ta bort dokumentet ”{{title}}”? Alla versioner tas bort.",
+      "dialogUpload": "Ladda upp dokument",
+      "dialogLink": "Lägg till länk",
+      "dialogEdit": "Ändra dokument",
+      "dialogVersions": "Versioner av ”{{title}}”",
+      "linkHint": "Länka i första hand till dokument som förvaltas någon annanstans, t.ex. i SharePoint, så att det inte uppstår inaktuella kopior.",
+      "restrictedHint": "Begränsad: syns bara för den som förvaltar objektet.",
+      "types": {
+        "rutin": "Rutin",
+        "instruktion": "Instruktion",
+        "avtal": "Avtal",
+        "beslut": "Beslut",
+        "utredning": "Utredning",
+        "ovrigt": "Övrigt"
+      },
+      "classifications": {
+        "intern": "Intern",
+        "begransad": "Begränsad"
+      },
+      "urlInvalid": "Adressen måste börja med https:// eller http://"
+    },
+    "notes": {
+      "placeholder": "Skriv en anteckning …",
+      "save": "Spara anteckning",
+      "shared": "Delad",
+      "private": "Privat",
+      "sharedHint": "Delad: syns för alla som får läsa objektet.",
+      "privateHint": "Privat: syns bara för dig. Den är dold i portalen men inte krypterad.",
+      "pin": "Fäst överst",
+      "unpin": "Lossa",
+      "pinned": "Fäst",
+      "edited": "redigerad",
+      "edit": "Redigera",
+      "delete": "Ta bort",
+      "confirmDelete": "Ta bort anteckningen?",
+      "empty": "Inga anteckningar ännu.",
+      "readOnly": "Du kan läsa anteckningarna men inte skriva nya."
+    }
+  },
+  "access": {
+    "title": "Behörigheter",
+    "intro": "Här bestäms vem som ser och får göra vad med arkitekturobjekten. En tilldelning ger en roll till någon – alla inloggade, en global roll, en grupp eller en användare – över alla objekt, vissa objekttyper eller ett enskilt objekt. En tilldelning på en process kan gälla alla underprocesser. Tilldelningar ger bara rättigheter, de tar aldrig bort några. Administratörer har alltid full åtkomst.",
+    "tabs": {
+      "grants": "Tilldelningar",
+      "groups": "Grupper",
+      "roles": "Roller",
+      "check": "Kontrollera åtkomst"
+    },
+    "permissions": {
+      "object.read": "Se objektet",
+      "object.edit": "Redigera objektet och dess kopplingar",
+      "documents.read": "Läsa dokument",
+      "documents.read_restricted": "Läsa Begränsade dokument",
+      "documents.write": "Ladda upp dokument",
+      "notes.read": "Läsa delade anteckningar",
+      "notes.write": "Skriva anteckningar",
+      "content.manage": "Hantera andras dokument och anteckningar"
+    },
+    "types": {
+      "Process": "Processer",
+      "Application": "Applikationer",
+      "InformationObject": "Informationsobjekt",
+      "InformationSource": "Informationskällor",
+      "TechnologyComponent": "Teknikkomponenter",
+      "Server": "Servrar och servertjänster",
+      "ArchitecturePrinciple": "Arkitekturprinciper",
+      "ServerService": "Servertjänster"
+    },
+    "globalRoles": {
+      "user": "Användare",
+      "superuser": "Superanvändare"
+    },
+    "principal": {
+      "label": "Vem",
+      "everyone": "Alla inloggade",
+      "role": "Alla med global roll",
+      "roleNamed": "Alla {{role}}",
+      "group": "Grupp",
+      "user": "Användare",
+      "choose": "Välj …"
+    },
+    "scope": {
+      "label": "Omfång",
+      "all": "Alla objekt",
+      "types": "Objekttyper",
+      "node": "Ett objekt",
+      "withChildren": "med underprocesser",
+      "includeChildren": "Gäller även alla underprocesser",
+      "chooseNode": "Sök objekt …"
+    },
+    "via": {
+      "all": "Alla objekt",
+      "type": "Objekttypen",
+      "node": "Objektet självt",
+      "inherited": "Ärvd från {{name}}"
+    },
+    "grants": {
+      "add": "Ny tilldelning",
+      "role": "Roll",
+      "note": "Anteckning (valfri)",
+      "empty": "Inga tilldelningar.",
+      "created": "Skapad",
+      "confirmDelete": "Ta bort tilldelningen? De som bara hade åtkomst genom den förlorar den direkt.",
+      "delete": "Ta bort",
+      "filter": "Filtrera …"
+    },
+    "groups": {
+      "add": "Ny grupp",
+      "name": "Namn",
+      "description": "Beskrivning",
+      "members": "Medlemmar",
+      "memberCount": "{{n}} medlemmar",
+      "editMembers": "Ändra medlemmar",
+      "empty": "Inga grupper ännu. En grupp samlar personer som ska ha samma behörighet, t.ex. Driftledning.",
+      "confirmDelete": "Ta bort gruppen ”{{name}}”? Alla tilldelningar till gruppen tas också bort.",
+      "delete": "Ta bort",
+      "edit": "Ändra"
+    },
+    "roles": {
+      "add": "Ny roll",
+      "name": "Namn",
+      "description": "Beskrivning",
+      "builtin": "Inbyggd",
+      "inUse": "Används i {{n}} tilldelningar",
+      "delete": "Ta bort roll",
+      "confirmDelete": "Ta bort rollen ”{{name}}”?",
+      "hint": "En roll är ett paket rättigheter. Ändrar du en roll ändras åtkomsten för alla som har den. Den som har någon rättighet på ett objekt ser alltid objektet."
+    },
+    "check": {
+      "intro": "Välj en användare och ett objekt för att se vad användaren får göra med objektet – och varifrån behörigheten kommer.",
+      "user": "Användare",
+      "node": "Objekt",
+      "isAdmin": "{{name}} är administratör och har full åtkomst till allt.",
+      "noAccess": "{{name}} har ingen åtkomst till objektet – det syns inte för hen.",
+      "groups": "Grupper",
+      "noGroups": "Inga grupper",
+      "may": "Får",
+      "because": "Därför"
+    },
+    "nodeDialog": {
+      "button": "Vem har åtkomst?",
+      "title": "Vem har åtkomst till {{name}}?",
+      "admins": "Administratörer har alltid full åtkomst",
+      "addHere": "Ge åtkomst till det här objektet",
+      "empty": "Ingen tilldelning når objektet – bara administratörer ser det."
+    },
+    "userManagementHint": "Vem som ser och får göra vad med objekten – till exempel Servrar – bestäms under Behörigheter.",
+    "groupsColumn": "Grupper",
+    "openAccess": "Behörigheter"
+  },
+  "serverServiceView": {
+    "select": "Servertjänster",
+    "noServices": "Inga servertjänster ännu. De synkas från listan Servertjänster i integrationsplattformen.",
+    "noSelection": "Välj en servertjänst i listan till vänster.",
+    "servers": "Servrar som tjänsten körs på",
+    "noServers": "Tjänsten är inte kopplad till någon server ännu. Kopplingen görs från servern.",
+    "edit": "Redigera servertjänsten",
+    "noAccess": "Du har inte behörighet till Servrar. Be en administratör om åtkomst."
+  }
+}

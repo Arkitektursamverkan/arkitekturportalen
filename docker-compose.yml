@@ -1,0 +1,111 @@
+# Arkitekturportalen – generic installation.
+#
+# Everything installation-specific comes from .env (see .env.example). An
+# organisation's own additions – TLS, extra published ports, a different nginx
+# config – go in an overlay file listed in COMPOSE_FILE in .env, so this file
+# stays the same for everyone.
+
+services:
+  # ── PostgreSQL ───────────────────────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ea_db
+      POSTGRES_USER: ea_user
+      # Only read when the volume is first created; changing it afterwards
+      # needs ALTER USER in the database as well.
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ea_pass}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ea_user -d ea_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  # ── Neo4j (optional — activate with: --profile neo4j) ────────────────────────
+  neo4j:
+    image: neo4j:5
+    profiles: ["neo4j"]
+    environment:
+      NEO4J_AUTH: neo4j/${NEO4J_PASSWORD:-ea_password}
+      NEO4J_PLUGINS: '["apoc"]'
+    volumes:
+      - neo4j_data:/data
+    healthcheck:
+      test: ["CMD", "wget", "-O", "/dev/null", "-q", "http://localhost:7474"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  # ── FastAPI backend ───────────────────────────────────────────────────────────
+  api:
+    build:
+      context: ./backend
+      target: runtime
+    environment:
+      EA_DB_ENGINE: ${EA_DB_ENGINE:-postgres}
+      DATABASE_URL: postgresql+asyncpg://ea_user:${POSTGRES_PASSWORD:-ea_pass}@db:5432/ea_db
+      NEO4J_URI: bolt://neo4j:7687
+      NEO4J_USER: neo4j
+      NEO4J_PASSWORD: ${NEO4J_PASSWORD:-ea_password}
+      # Anything but development/test refuses to start with placeholder
+      # secrets – see .env.example for how to generate them.
+      APP_ENV: ${APP_ENV:-production}
+      API_KEY: ${API_KEY:-}
+      LOCAL_AUTH_SECRET: ${LOCAL_AUTH_SECRET:-}
+      LOCAL_TOKEN_TTL_HOURS: ${LOCAL_TOKEN_TTL_HOURS:-12}
+      ENTRA_TENANT_ID: ${ENTRA_TENANT_ID:-}
+      ENTRA_CLIENT_ID: ${ENTRA_CLIENT_ID:-}
+      ALLOWED_EMAIL_DOMAINS: ${ALLOWED_EMAIL_DOMAINS:-}
+      BOOTSTRAP_ADMIN_EMAILS: ${BOOTSTRAP_ADMIN_EMAILS:-}
+      CHANGE_LOG_DEPARTMENTS: ${CHANGE_LOG_DEPARTMENTS:-}
+      ANONYMOUS_READ: ${ANONYMOUS_READ:-false}
+      MODULES: ${MODULES:-}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      PDF_ORG_NAME: ${PDF_ORG_NAME:-}
+      PDF_APP_BASE_URL: ${PDF_APP_BASE_URL:-}
+      PDF_RESPONSIBLE: ${PDF_RESPONSIBLE:-Enterprise Architect}
+      PDF_DEPARTMENT: ${PDF_DEPARTMENT:-IT}
+      PDF_DOCUMENT_CATEGORY: ${PDF_DOCUMENT_CATEGORY:-Rutiner}
+      # Integration Platform – where it is, the key the portal READS with and a
+      # separate admin key for RUNNING a pipeline. Empty URL = the platform
+      # features answer 503 and say what to configure.
+      INTEGRATION_PLATFORM_URL: ${INTEGRATION_PLATFORM_URL:-}
+      INTEGRATION_PLATFORM_API_KEY: ${INTEGRATION_PLATFORM_API_KEY:-}
+      INTEGRATION_PLATFORM_ADMIN_KEY: ${INTEGRATION_PLATFORM_ADMIN_KEY:-}
+      SYNC_WEBHOOK_SECRET: ${SYNC_WEBHOOK_SECRET:-}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./backend/seed:/app/seed:ro
+      - snapshots_data:/app/snapshots
+      - sync_data:/app/sync_data
+    restart: unless-stopped
+
+  # ── React frontend + nginx ────────────────────────────────────────────────────
+  # The image is the same for every installation: Entra settings are written
+  # to /config.js when the container starts, not baked in at build time.
+  web:
+    build:
+      context: ./frontend
+      target: runtime
+    environment:
+      ENTRA_TENANT_ID: ${ENTRA_TENANT_ID:-}
+      ENTRA_CLIENT_ID: ${ENTRA_CLIENT_ID:-}
+      ENTRA_API_SCOPE: ${ENTRA_API_SCOPE:-}
+    ports:
+      - "${WEB_PORT:-3000}:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  neo4j_data:
+  snapshots_data:
+  sync_data:

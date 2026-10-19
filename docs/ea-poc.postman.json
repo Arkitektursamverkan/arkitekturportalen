@@ -1,0 +1,137 @@
+{
+  "info": {
+    "name": "EA Tool API",
+    "description": "Enterprise Architecture PoC — REST API collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8000/api/v1" },
+    { "key": "apiKey", "value": "dev-secret-key" }
+  ],
+  "item": [
+    {
+      "name": "Meta",
+      "item": [
+        {
+          "name": "Health check",
+          "request": { "method": "GET", "url": "{{baseUrl}}/health" }
+        },
+        {
+          "name": "Seed database",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/seed",
+            "header": [{ "key": "X-Api-Key", "value": "{{apiKey}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Import",
+      "item": [
+        {
+          "name": "Import SharePoint (mock)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/import/sharepoint?mode=mock",
+            "header": [{ "key": "X-Api-Key", "value": "{{apiKey}}" }]
+          }
+        },
+        {
+          "name": "Import 2C8 (mock)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/import/2c8?mode=mock",
+            "header": [{ "key": "X-Api-Key", "value": "{{apiKey}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Nodes",
+      "item": [
+        {
+          "name": "List all nodes",
+          "request": { "method": "GET", "url": "{{baseUrl}}/nodes" }
+        },
+        {
+          "name": "List Process nodes",
+          "request": { "method": "GET", "url": "{{baseUrl}}/nodes?node_type=Process" }
+        },
+        {
+          "name": "List Application nodes",
+          "request": { "method": "GET", "url": "{{baseUrl}}/nodes?node_type=Application" }
+        },
+        {
+          "name": "Create InformationObject",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/nodes",
+            "header": [
+              { "key": "X-Api-Key", "value": "{{apiKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"InformationObject\",\n  \"name\": \"My Info Object\",\n  \"description\": \"Test\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Edges",
+      "item": [
+        {
+          "name": "List all edges",
+          "request": { "method": "GET", "url": "{{baseUrl}}/edges" }
+        },
+        {
+          "name": "Create edge",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/edges",
+            "header": [
+              { "key": "X-Api-Key", "value": "{{apiKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"source_id\": \"<replace-with-uuid>\",\n  \"target_id\": \"<replace-with-uuid>\",\n  \"type\": \"INTEGRATES_WITH\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Views",
+      "item": [
+        {
+          "name": "Landscape",
+          "request": { "method": "GET", "url": "{{baseUrl}}/views/landscape" }
+        },
+        {
+          "name": "Process E2E (replace id)",
+          "request": { "method": "GET", "url": "{{baseUrl}}/views/process/{{processId}}" }
+        },
+        {
+          "name": "System view (replace id)",
+          "request": { "method": "GET", "url": "{{baseUrl}}/views/system/{{appId}}" }
+        },
+        {
+          "name": "Overlap & gaps",
+          "request": { "method": "GET", "url": "{{baseUrl}}/views/overlap-gaps" }
+        }
+      ]
+    },
+    {
+      "name": "Search",
+      "item": [
+        {
+          "name": "Search nodes",
+          "request": { "method": "GET", "url": "{{baseUrl}}/search?q=SAP" }
+        }
+      ]
+    }
+  ]
+}

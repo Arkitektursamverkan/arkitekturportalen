@@ -1,0 +1,178 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  # The release workflow runs the same checks before it publishes images.
+  workflow_call:
+
+jobs:
+  # ── Backend ───────────────────────────────────────────────────────────────────
+  backend:
+    name: Backend — lint + test
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: ea_db_test
+          POSTGRES_USER: ea_user
+          POSTGRES_PASSWORD: ea_pass
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ea_user -d ea_db_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      # WeasyPrint (PDF export) needs the same system libraries as backend/Dockerfile.
+      - name: Install system libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libcairo2 libpango-1.0-0 libpangoft2-1.0-0 libharfbuzz0b libgdk-pixbuf-2.0-0 fonts-liberation
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+
+      - name: Lint (ruff)
+        run: ruff check .
+
+      - name: Type-check (mypy)
+        run: mypy app --ignore-missing-imports
+
+      - name: Run tests
+        env:
+          EA_DB_ENGINE: postgres
+          DATABASE_URL: postgresql+asyncpg://ea_user:ea_pass@localhost:5432/ea_db_test
+          API_KEY: test-key
+          CORS_ORIGINS: "http://localhost:3000"
+          APP_ENV: test
+        run: pytest tests/ -v --cov=app --cov-report=term-missing
+
+      # The tests build their schema from the models; installations get theirs
+      # from the migrations. Both must describe the same schema.
+      - name: Migrations match the models
+        env:
+          EA_DB_ENGINE: postgres
+          DATABASE_URL: postgresql+asyncpg://ea_user:ea_pass@localhost:5432/ea_migrations
+          API_KEY: test-key
+          APP_ENV: test
+          PGPASSWORD: ea_pass
+          PYTHONPATH: .
+        run: |
+          psql -h localhost -U ea_user -d ea_db_test -c "CREATE DATABASE ea_migrations"
+          alembic upgrade head
+          python scripts/kontrollera_schema.py
+
+  # ── Frontend ──────────────────────────────────────────────────────────────────
+  frontend:
+    name: Frontend — type-check + build
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Type-check
+        run: npm run type-check
+
+      - name: Build
+        run: npm run build
+
+  # ── Docker build smoke test ───────────────────────────────────────────────────
+  docker:
+    name: Docker build smoke test
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # A fresh installation as another organisation would make it: production
+      # mode, generated secrets, no overlay.
+      - name: Write .env
+        run: |
+          cp .env.example .env
+          sed -i "s/^API_KEY=.*/API_KEY=$(openssl rand -hex 32)/" .env
+          sed -i "s/^LOCAL_AUTH_SECRET=.*/LOCAL_AUTH_SECRET=$(openssl rand -hex 32)/" .env
+          sed -i "s/^POSTGRES_PASSWORD=.*/POSTGRES_PASSWORD=$(openssl rand -hex 16)/" .env
+          sed -i "s/^ENTRA_CLIENT_ID=.*/ENTRA_CLIENT_ID=00000000-0000-0000-0000-000000000001/" .env
+
+      - name: Build images
+        run: docker compose build
+
+      - name: Start services
+        run: docker compose up -d
+
+      - name: Wait for API health through nginx
+        run: |
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:3000/api/v1/health; then
+              echo "API is healthy"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "API did not become healthy in time"
+          docker compose logs api web
+          exit 1
+
+      - name: Runtime config reaches the browser, the API key does not
+        run: |
+          curl -sf http://localhost:3000/config.js | tee /dev/stderr \
+            | grep -q 'entraApiScope: "api://00000000-0000-0000-0000-000000000001/access_as_user"'
+          key=$(grep '^API_KEY=' .env | cut -d= -f2)
+          for f in $(curl -sf http://localhost:3000/ | grep -o '/assets/[^"]*\.js'); do
+            if curl -sf "http://localhost:3000$f" | grep -q "$key"; then
+              echo "API_KEY found in $f"; exit 1
+            fi
+          done
+
+      - name: Refuses to start with placeholder secrets in production
+        run: |
+          out=$(docker compose run --rm -e API_KEY=dev-secret-key api \
+            python -c "import asyncio; from app.main import create_app, lifespan; asyncio.run(lifespan(create_app()).__aenter__())" \
+            2>&1 || true)
+          echo "$out"
+          echo "$out" | grep -q "Refusing to start"
+
+      - name: Compose overlays are valid
+        run: |
+          docker network create arkitekturportalen
+          COMPOSE_FILE=docker-compose.yml:deploy/integration-platform.yml docker compose config \
+            | grep -q 'INTEGRATION_PLATFORM_URL: http://integration-platform:8000/api/v1'
+
+      - name: Tear down
+        if: always()
+        run: docker compose down -v

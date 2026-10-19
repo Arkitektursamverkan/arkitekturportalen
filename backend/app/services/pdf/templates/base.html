@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ document_title }} {{ version_label }}</title>
+    <link rel="stylesheet" href="{{ css_url }}">
+    <style>:root { --brand-color: {{ brand_color }}; }</style>
+</head>
+<body>
+
+{% if logo_url %}
+<div class="brand">
+    <img src="{{ logo_url }}" alt="{{ org_name }}">
+</div>
+{% endif %}
+
+<div class="footer-meta">
+    {#- Auto-fields anchor the first row; user metadata fills the rest,
+        alternating left/right so the two columns stay balanced. Each
+        row renders as one inline string per side so label+value sit
+        flush together without column alignment gaps. -#}
+    {%- set left_entries = [{"label": "Dokumentnamn", "value": document_title}] %}
+    {%- set right_entries = [{"label": "Uppdaterad/genomgången", "value": updated_date}] %}
+    {%- for entry in metadata_entries %}
+        {%- if loop.index0 % 2 == 0 %}
+            {%- set _ = left_entries.append(entry) %}
+        {%- else %}
+            {%- set _ = right_entries.append(entry) %}
+        {%- endif %}
+    {%- endfor %}
+    {%- set row_count = (left_entries|length) if (left_entries|length) > (right_entries|length) else (right_entries|length) %}
+    <table>
+        {%- for i in range(row_count) %}
+        <tr>
+            <td class="col">
+                {%- if i < left_entries|length %}
+                <span class="label">{{ left_entries[i].label }}:</span>&nbsp;{{ left_entries[i].value }}
+                {%- endif %}
+            </td>
+            <td class="col">
+                {%- if i < right_entries|length %}
+                <span class="label">{{ right_entries[i].label }}:</span>&nbsp;{{ right_entries[i].value }}
+                {%- endif %}
+            </td>
+        </tr>
+        {%- endfor %}
+        {%- if approved_at %}
+        <tr>
+            <td class="col"><span class="label">Fastställt:</span>&nbsp;{{ approved_at }}</td>
+            <td class="col">{%- if approved_by %}<span class="label">Fastställt av:</span>&nbsp;{{ approved_by }}{%- endif %}</td>
+        </tr>
+        {%- endif %}
+        {%- if source_url %}
+        <tr>
+            <td class="col" colspan="2"><span class="label">Källa:</span>&nbsp;{{ source_url }}</td>
+        </tr>
+        {%- endif %}
+    </table>
+</div>
+
+<h1>{{ document_title }}</h1>
+
+<div class="version-meta">
+    <span class="label">Version:</span> {{ version_label }}
+    {%- if is_major %} (huvudversion){%- endif %}
+    &nbsp;&nbsp;
+    <span class="label">Skapad:</span> {{ created_at }}
+    {%- if created_by %}
+    &nbsp;&nbsp;<span class="label">Av:</span> {{ created_by }}
+    {%- endif %}
+    {%- if change_summary %}
+    <br><span class="label">Sammanfattning:</span> {{ change_summary }}
+    {%- endif %}
+</div>
+
+{% block body %}{% endblock %}
+
+{% if audit_entries %}
+<div class="changelog">
+    <h1>Bilaga — Ändringar i version {{ version_label }}</h1>
+    <p>Loggade ändringar sedan föregående version. Totalt {{ audit_entries|length }} post(er).</p>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 28mm;">Tidpunkt</th>
+                <th style="width: 16mm;">Åtgärd</th>
+                <th style="width: 36mm;">Vad</th>
+                <th>Detaljer</th>
+                <th style="width: 30mm;">Av</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for e in audit_entries %}
+            <tr>
+                <td>{{ e.created_at_formatted }}</td>
+                <td class="action-{{ e.action }}">{{ e.action }}</td>
+                <td>{{ e.what }}</td>
+                <td>{{ e.note or "" }}</td>
+                <td>{{ e.user_name or "—" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="changelog">
+    <h1>Bilaga — Ändringar i version {{ version_label }}</h1>
+    <p class="empty-note">Inga loggade ändringar sedan föregående version.</p>
+</div>
+{% endif %}
+
+{% if prior_versions %}
+<div class="version-history">
+    <h1>Versionshistorik</h1>
+    <p>Tidigare versioner inom huvudversion {{ version_label.split('.')[0] }}.</p>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 22mm;">Version</th>
+                <th style="width: 34mm;">Skapad</th>
+                <th style="width: 50mm;">Av</th>
+                <th>Sammanfattning</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for v in prior_versions %}
+            <tr>
+                <td><strong>v{{ v.version_label }}</strong>{% if v.is_major %} <span class="action-CREATE">huvud</span>{% endif %}</td>
+                <td>{{ v.created_at_formatted }}</td>
+                <td>{{ v.created_by or "—" }}</td>
+                <td>{{ v.change_summary or "—" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+</body>
+</html>

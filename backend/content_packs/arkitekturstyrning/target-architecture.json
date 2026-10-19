@@ -1,0 +1,64 @@
+{
+  "content": {
+    "sections": [
+      {
+        "id": "background",
+        "kind": "text",
+        "title": "Bakgrund",
+        "body": "Beskriv varför målarkitekturen tas fram och vilka mål och strategier den utgår från."
+      },
+      {
+        "id": "overall-vision",
+        "kind": "vision",
+        "title": "Övergripande målbild",
+        "body": "Beskriv i några meningar hur organisationen arbetar när målarkitekturen är uppnådd."
+      },
+      {
+        "id": "domains-header",
+        "kind": "text",
+        "title": "Arkitekturdomäner",
+        "body": "Målarkitekturen beskrivs i fyra domäner. Fyll i önskat läge och faktarutor för varje domän."
+      },
+      {
+        "id": "domain-business",
+        "kind": "domain",
+        "title": "Verksamhetsarkitektur",
+        "domain_key": "business",
+        "describes": "Verksamhetens mål, förmågor, processer och organisation.",
+        "answers": "Varför gör vi detta? Vilka mål styr oss?",
+        "desired_state": [],
+        "fact_boxes": []
+      },
+      {
+        "id": "domain-data",
+        "kind": "domain",
+        "title": "Informationsarkitektur",
+        "domain_key": "data",
+        "describes": "Begrepp, informationsobjekt och var informationen finns.",
+        "answers": "Vad behöver vi veta? Vilka begrepp använder vi?",
+        "desired_state": [],
+        "fact_boxes": []
+      },
+      {
+        "id": "domain-application",
+        "kind": "domain",
+        "title": "Applikationsarkitektur",
+        "domain_key": "application",
+        "describes": "Systemen, hur de stödjer processerna och hur de hänger ihop.",
+        "answers": "Hur stödjer vi processerna? Vilka system behövs?",
+        "desired_state": [],
+        "fact_boxes": []
+      },
+      {
+        "id": "domain-technology",
+        "kind": "domain",
+        "title": "Teknisk arkitektur",
+        "domain_key": "technology",
+        "describes": "Plattformar, infrastruktur och drift som lösningarna bygger på.",
+        "answers": "Med vad bygger vi? Vilken plattform står vi på?",
+        "desired_state": [],
+        "fact_boxes": []
+      }
+    ]
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "format": "arkitekturportalen.content-pack",
+  "version": 1,
+  "name": "samarbeten",
+  "description": "Exempel på arbetsgrupper och en text om deras syfte och uppdrag. Byt namn och beskrivningar till organisationens egna.",
+  "modules": [
+    "collaboration"
+  ]
+}

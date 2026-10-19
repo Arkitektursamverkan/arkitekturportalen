@@ -1,0 +1,58 @@
+[
+  {
+    "term": "Applikation",
+    "definition": "Programvara som stödjer en eller flera verksamhetsprocesser, t.ex. ett ekonomisystem."
+  },
+  {
+    "term": "Arkitekturprincip",
+    "definition": "Ett beslutat förhållningssätt som vägleder val och beslut om verksamhet, information och IT."
+  },
+  {
+    "term": "Enterprise-arkitektur",
+    "definition": "En helhetsbeskrivning av hur verksamhet, information, applikationer och teknik hänger ihop, och hur de ska utvecklas."
+  },
+  {
+    "term": "GAP-analys",
+    "definition": "En jämförelse mellan nuläge och målarkitektur som visar vad som behöver förändras."
+  },
+  {
+    "term": "Informationskälla",
+    "definition": "Den plats, oftast ett system, där en viss information lagras och förvaltas."
+  },
+  {
+    "term": "Informationsobjekt",
+    "definition": "En avgränsad mängd information som verksamheten hanterar, t.ex. kund, avtal eller faktura."
+  },
+  {
+    "term": "Integration",
+    "definition": "En överföring av information mellan två system."
+  },
+  {
+    "term": "Livscykel",
+    "definition": "De faser en lösning går igenom, från införande till avveckling."
+  },
+  {
+    "term": "Målarkitektur",
+    "definition": "En beskrivning av hur arkitekturen ska se ut i framtiden och vilka mål den ska uppfylla."
+  },
+  {
+    "term": "Nulägesanalys",
+    "definition": "En beskrivning av hur verksamhet, information och IT ser ut i dag."
+  },
+  {
+    "term": "Process",
+    "definition": "En återkommande serie aktiviteter som skapar ett värde för någon."
+  },
+  {
+    "term": "Systemförvaltare",
+    "definition": "Den som leder det löpande arbetet med att förvalta och utveckla ett system."
+  },
+  {
+    "term": "Systemägare",
+    "definition": "Den som ansvarar för att ett system stödjer verksamheten och har mandat att besluta om det."
+  },
+  {
+    "term": "Teknisk komponent",
+    "definition": "En del av den tekniska plattformen, t.ex. en databas, server eller molntjänst."
+  }
+]

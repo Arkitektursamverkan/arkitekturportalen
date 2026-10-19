@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Verksamhetsstöd",
+    "description": "Arbetsgrupp för system och processer som stödjer verksamhetens kärnuppdrag."
+  },
+  {
+    "name": "Gemensamma funktioner",
+    "description": "Arbetsgrupp för ekonomi, HR och andra gemensamma stödfunktioner."
+  },
+  {
+    "name": "IT och infrastruktur",
+    "description": "Arbetsgrupp för drift, infrastruktur och informationssäkerhet."
+  }
+]

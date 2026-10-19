@@ -1,0 +1,9 @@
+{
+  "format": "arkitekturportalen.content-pack",
+  "version": 1,
+  "name": "arkitekturstyrning",
+  "description": "Exempel att utgå från: några allmänna arkitekturprinciper, principdokumentets inledning och stommar för målarkitektur och nulägesanalys med vägledning. Skriv om dem till organisationens egna.",
+  "modules": [
+    "governance"
+  ]
+}

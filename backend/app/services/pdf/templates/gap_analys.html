@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block body %}
+{% set content = snapshot.content or {} %}
+{#- Older snapshots have no task_progress; they then show fulfilled items only. -#}
+{% set task_progress = snapshot.get("task_progress") or {} %}
+{#- `content.items` would hit dict.items, so read every key with get(). -#}
+{% set items = content.get("items") or [] %}
+{% set rekommendationer = content.get("rekommendationer") or [] %}
+{% set handlingsplan = content.get("handlingsplan") or [] %}
+
+{% set base_domains = [
+    "Arkitekturstyrning",
+    "Verksamhetsarkitektur",
+    "Informationsarkitektur",
+    "Applikationsarkitektur",
+    "Teknisk arkitektur",
+] %}
+{#- Domains in the fixed order first, then any others found in the data. -#}
+{% set domains = base_domains | list %}
+{% for item in items %}
+    {% if item.domain and item.domain not in domains %}{% set _ = domains.append(item.domain) %}{% endif %}
+{% endfor %}
+
+{% set gap_typ_labels = {
+    "saknas_helt": "Saknas helt",
+    "otillrackligt": "Otillräckligt",
+    "ska_avvecklas": "Ska avvecklas",
+    "uppfyller_malbild": "Uppfyller målbilden",
+} %}
+{% set prioritet_labels = {
+    "HOG": "HÖG", "MELLAN": "MELLAN", "MINDRE": "MINDRE", "": "Uppfyller",
+} %}
+
+{% if not items %}
+<p class="empty-note">Inga gap har registrerats.</p>
+{% endif %}
+
+{% if items %}
+<div class="section progress-overview">
+    <h2>Framsteg mot målarkitektur per domän</h2>
+    {% for domain in domains %}
+        {% set bucket = items | selectattr("domain", "equalto", domain) | list %}
+        {% set total = bucket | length %}
+        {% set fulfilled = bucket | selectattr("gap_typ", "equalto", "uppfyller_malbild") | list | length %}
+        {#- Each item counts with its share of completed task weight; fulfilled items count as whole. -#}
+        {% set acc = namespace(sum=0) %}
+        {% for item in bucket %}
+            {% set tp = task_progress.get(item.id) or {} %}
+            {% if item.gap_typ == "uppfyller_malbild" %}{% set acc.sum = acc.sum + 1 %}
+            {% elif tp.get("active") %}{% set acc.sum = acc.sum + tp.get("done", 0) / tp.get("active") %}
+            {% endif %}
+        {% endfor %}
+        {% set pct = ((acc.sum * 100 / total) | round | int) if total else 0 %}
+        <div class="progress-row">
+            <div class="progress-head">
+                <span class="progress-label">{{ domain }}</span>
+                <span class="progress-value">
+                    {%- if total -%}{{ pct }} % · {{ fulfilled }}/{{ total }} uppfyllda{%- else -%}Inga gap registrerade{%- endif -%}
+                </span>
+            </div>
+            <div class="progress-track">
+                {% if total %}
+                <div class="progress-bar progress-{{ 'full' if pct == 100 else ('half' if pct >= 50 else 'low') }}"
+                     style="width: {{ pct }}%;"></div>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% for domain in domains %}
+    {% set bucket = items | selectattr("domain", "equalto", domain) | list %}
+    {% if bucket %}
+    <div class="gap-domain">
+        <h2>{{ domain }}</h2>
+        {% for item in bucket %}
+        <div class="gap-item">
+            <div class="gap-item-head">
+                <span class="chip chip-prio chip-prio-{{ item.prioritet | lower if item.prioritet else 'uppfyller' }}">
+                    {{ prioritet_labels.get(item.prioritet or "", item.prioritet) }}
+                </span>
+                <span class="chip chip-typ">{{ gap_typ_labels.get(item.gap_typ, item.gap_typ) }}</span>
+                <span class="gap-objekt">{{ item.objekt }}</span>
+            </div>
+            <table class="gap-fields">
+                <tr>
+                    <td class="col">
+                        <div class="field-label">Nuläge</div>
+                        <div class="field-value">{{ item.nulaege or "—" }}</div>
+                    </td>
+                    <td class="col">
+                        <div class="field-label">Önskat läge</div>
+                        <div class="field-value">{{ item.onskat_laege or "—" }}</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col">
+                        <div class="field-label">Konsekvens</div>
+                        <div class="field-value">{{ item.konsekvens or "—" }}</div>
+                    </td>
+                    <td class="col">
+                        <div class="field-label">Åtgärd</div>
+                        <div class="field-value">{{ item.atgard or "—" }}</div>
+                    </td>
+                </tr>
+            </table>
+            {% if item.ansvarig or item.deadline %}
+            <div class="gap-meta">
+                {% if item.ansvarig %}<span class="label">Ansvarig:</span>&nbsp;{{ item.ansvarig }}{% endif %}
+                {% if item.ansvarig and item.deadline %}&nbsp;&nbsp;&nbsp;{% endif %}
+                {% if item.deadline %}<span class="label">Deadline:</span>&nbsp;{{ item.deadline }}{% endif %}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+{% endfor %}
+
+{% if rekommendationer %}
+<div class="doc-part">
+    <h1 class="part-heading">Rekommendationer</h1>
+    {% for rek in rekommendationer %}
+    <div class="section">
+        <h2>{{ rek.titel }}</h2>
+        {% if rek.body %}
+            {% for para in rek.body.split('\n\n') %}
+                {% if para.strip() %}<p>{{ para | replace('\n', '<br>') | safe }}</p>{% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if handlingsplan %}
+<div class="doc-part">
+    <h1 class="part-heading">Handlingsplan</h1>
+    {% for omrade in handlingsplan %}
+    <div class="plan-area">
+        <h2>{{ omrade.nr }}. {{ omrade.titel }}</h2>
+        {% if omrade.ansvarig %}
+        <div class="gap-meta"><span class="label">Ansvarig:</span>&nbsp;{{ omrade.ansvarig }}</div>
+        {% endif %}
+        <table class="plan-table">
+            <thead>
+                <tr>
+                    <th class="horizon horizon-0-3">0–3 mån</th>
+                    <th class="horizon horizon-3-6">3–6 mån</th>
+                    <th class="horizon horizon-6-12">6–12 mån</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ omrade.aktiviteter_0_3 or "—" }}</td>
+                    <td>{{ omrade.aktiviteter_3_6 or "—" }}</td>
+                    <td>{{ omrade.aktiviteter_6_12 or "—" }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

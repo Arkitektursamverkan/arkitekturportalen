@@ -1,0 +1,8 @@
+{
+  "sections": {
+    "introduction": "Arkitekturprinciperna ger riktning åt beslut som påverkar organisationens IT-landskap. De gör det lättare att fatta snabba och enhetliga beslut och kopplar samman verksamhetens behov med tekniska val.\n\nPrinciperna används som vägledning tidigt i projekt och upphandlingar, som underlag vid avvägningar och för att lösningar ska bli långsiktiga och hållbara.",
+    "decision_forum": "Beskriv vilket forum som beslutar om principerna och hur ofta de ses över.",
+    "deviation_handling": "Beskriv hur avsteg från en princip begärs, vem som beslutar och hur avsteget dokumenteras.",
+    "target_arch_alignment": "Beskriv hur principerna hänger ihop med målarkitekturen."
+  }
+}

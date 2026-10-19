@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block body %}
+{% set sections = snapshot.content.sections or [] %}
+{% if not sections %}
+<p class="empty-note">Inga avsnitt har lagts till.</p>
+{% endif %}
+
+{% for sec in sections %}
+<div class="section section-{{ sec.kind }}">
+    {% if sec.kind == "vision" %}
+    <div class="section-lead">
+        {% if sec.title %}<h2>{{ sec.title }}</h2>{% endif %}
+        <div class="diagram">{{ domain_pyramid_svg(show_side_labels=True) | safe }}</div>
+    </div>
+    {% elif sec.kind == "domain" %}
+    <div class="section-lead">
+        {% if sec.title %}<h2>{{ sec.title }}</h2>{% endif %}
+        <div class="diagram">{{ domain_pyramid_svg(sec.domain_key) | safe }}</div>
+    </div>
+    {% elif sec.title %}
+    <h2>{{ sec.title }}</h2>
+    {% endif %}
+
+    {% if sec.kind == "text" %}
+        {% if sec.body %}
+            {% for para in sec.body.split('\n\n') %}
+                {% if para.strip() %}<p>{{ para | replace('\n', '<br>') | safe }}</p>{% endif %}
+            {% endfor %}
+        {% endif %}
+
+    {% elif sec.kind == "vision" %}
+        {% if sec.body %}
+            {% for para in sec.body.split('\n\n') %}
+                {% if para.strip() %}<p>{{ para | replace('\n', '<br>') | safe }}</p>{% endif %}
+            {% endfor %}
+        {% endif %}
+
+    {% elif sec.kind == "domain" %}
+        <div class="domain-block">
+            {% if sec.describes %}
+                <h3>Beskriver</h3>
+                <p>{{ sec.describes }}</p>
+            {% endif %}
+            {% if sec.answers %}
+                <h3>Svarar på</h3>
+                <p>{{ sec.answers }}</p>
+            {% endif %}
+            {% if sec.desired_state %}
+                <h3>Önskat läge</h3>
+                <ul class="desired-state">
+                    {% for item in sec.desired_state %}<li>{{ item }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+            {% if sec.fact_boxes %}
+                <h3>Faktarutor</h3>
+                {% for fb in sec.fact_boxes %}
+                <div class="fact-box">
+                    {% if fb.subject %}<div class="subject">{{ fb.subject }}</div>{% endif %}
+                    {% if fb.bullets %}
+                        <ul>{% for b in fb.bullets %}<li>{{ b }}</li>{% endfor %}</ul>
+                    {% endif %}
+                    {% if fb.instead_of or fb.we_say %}
+                    <div class="pair">
+                        {% if fb.instead_of %}<span class="label">I stället för:</span>{{ fb.instead_of }}{% endif %}
+                        {% if fb.we_say %}<br><span class="label">Säger vi:</span>{{ fb.we_say }}{% endif %}
+                    </div>
+                    {% endif %}
+                    {% if fb.implications %}
+                        <div class="pair"><span class="label">Implikationer:</span></div>
+                        <ul>{% for imp in fb.implications %}<li>{{ imp }}</li>{% endfor %}</ul>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endfor %}
+{% endblock %}

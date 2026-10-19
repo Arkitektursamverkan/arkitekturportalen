@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block body %}
+{% set terms = snapshot.terms or [] %}
+
+{# Group terms by first letter using Swedish locale collation done at build time. #}
+{% set ns = namespace(groups={}, order=[]) %}
+{% for t in terms %}
+    {% set first = (t.term[:1] | upper) if t.term else "" %}
+    {% if first in ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","Å","Ä","Ö"] %}
+        {% set letter = first %}
+    {% else %}
+        {% set letter = "#" %}
+    {% endif %}
+    {% if letter not in ns.groups %}
+        {% set _ = ns.order.append(letter) %}
+        {% set _ = ns.groups.update({letter: []}) %}
+    {% endif %}
+    {% set _ = ns.groups[letter].append(t) %}
+{% endfor %}
+
+{% if not terms %}
+<p class="empty-note">Inga termer i ordlistan.</p>
+{% else %}
+
+<div class="glossary-index">
+    {% for letter in ns.order %}
+        <a class="glossary-index-letter" href="#glossary-letter-{{ letter }}">{{ letter }}</a>
+    {% endfor %}
+</div>
+
+{% for letter in ns.order %}
+<div class="glossary-letter-section">
+    <h2 class="glossary-letter-heading" id="glossary-letter-{{ letter }}">{{ letter }}</h2>
+    {% for t in ns.groups[letter] %}
+    <div class="glossary-term">
+        <h3 class="glossary-term-name">{{ t.term }}</h3>
+        {% if t.definition %}
+            {% for para in t.definition.split('\n\n') %}
+                {% if para.strip() %}<p class="glossary-term-def">{{ para | replace('\n', '<br>') | safe }}</p>{% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% endfor %}
+
+{% endif %}
+{% endblock %}

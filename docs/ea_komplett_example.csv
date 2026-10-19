@@ -1,0 +1,41 @@
+# EA-applikation — Komplett import (exempelfil)
+# Alla objekttyper och kopplingar i en fil
+# Kolumner som inte gäller en viss typ lämnas tomma
+
+[NODES]
+id,type,name,description,category,vendor,owner,classification,system,frequency
+app-001,Application,SAP S/4HANA,"Centralt affärssystem för ekonomi, controlling, inköp och logistik",ERP,SAP,,,,
+app-002,Application,Workday,HR och lönesystem,HCM,Workday,,,,
+app-003,Application,ServiceNow,IT-tjänstehantering och ärendesystem,ITSM,ServiceNow,,,,
+app-004,Application,Microsoft 365,Produktivitetssvit med e-post och samarbetsverktyg,Produktivitet,Microsoft,,,,
+proc-001,Process,Fakturahantering,"Ta emot, granska och bokföra leverantörsfakturor",Leverantörsreskontra,,Ekonomi,,,dagligen
+proc-002,Process,Lönekörning,Månadsvis löneberäkning och utbetalning,Lön,,HR,,,månadsvis
+proc-003,Process,IT-tjänsteförfrågan,Hantera inkommande IT-ärenden och supportförfrågningar,ITSM,,IT,,,löpande
+io-001,InformationObject,Faktura,Leverantörsfaktura med betalningsinformation,,,,Intern,,
+io-002,InformationObject,Medarbetarpost,HR-data för anställda,,,,Konfidentiell,,
+io-003,InformationObject,IT-ärende,Supportärende med status och historik,,,,Intern,,
+is-001,InformationSource,SAP FI-modul,Finansmodul i SAP S/4HANA,,,,,SAP S/4HANA,
+is-002,InformationSource,Workday HR-kärna,Personaldata från Workday,,,,,Workday,
+tc-001,TechnologyComponent,Azure Cloud,Microsoft Azure molnplattform (produktion),Molnplattform,Microsoft,,,,
+tc-002,TechnologyComponent,SAP HANA,In-memory databas för SAP-system,Databas,SAP,,,,
+
+[CONNECTIONS]
+source,target,type
+app-001,proc-001,SUPPORTS
+app-002,proc-002,SUPPORTS
+app-003,proc-003,SUPPORTS
+proc-001,io-001,USES
+proc-002,io-002,USES
+proc-003,io-003,USES
+app-001,io-001,HANDLES
+app-002,io-002,HANDLES
+app-003,io-003,HANDLES
+is-001,io-001,REALIZES
+is-002,io-002,REALIZES
+app-001,is-001,CONTAINS
+app-002,is-002,CONTAINS
+app-001,tc-001,RUNS_ON
+app-001,tc-002,RUNS_ON
+app-002,tc-001,RUNS_ON
+app-001,app-002,INTEGRATES_WITH
+app-003,app-004,INTEGRATES_WITH

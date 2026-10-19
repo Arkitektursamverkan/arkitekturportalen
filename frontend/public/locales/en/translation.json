@@ -1,0 +1,1295 @@
+{
+  "app": {
+    "title": "EA Portal",
+    "tagline": "Enterprise Architecture – Proof of Concept"
+  },
+  "nav": {
+    "home": "Home",
+    "explorer": "IT Landscape",
+    "domain.business": "Business",
+    "domain.application": "Application",
+    "domain.information": "Information",
+    "domain.technology": "Technology",
+    "processExplorer": "Business Processes",
+    "businessCalendar": "Business calendar",
+    "systemView": "Applications",
+    "infoObjects": "Information Objects",
+    "infoSources": "Information Sources",
+    "techComponents": "Tech Components",
+    "servers": "Servers",
+    "landscape": "Application Landscape",
+    "nulaagesanalys": "Current State Analysis",
+    "gapAnalys": "GAP Analysis",
+    "architectureGovernance": "Architecture Governance",
+    "architecturePrinciples": "Architecture Principles",
+    "targetArchitecture": "Target Architecture",
+    "glossary": "Glossary",
+    "mySurveys": "My Surveys",
+    "solutionSketches": "Solution Sketch",
+    "surveys": "Surveys",
+    "connections": "Connections",
+    "platformImport": "Integration Platform",
+    "import": "Import data",
+    "dataManagement": "Data management",
+    "adminFunctions": "Data cleanup",
+    "userManagement": "User management",
+    "syncProfiles": "Sync Profiles",
+    "orgSettings": "Organisation",
+    "users": "Users",
+    "reports": "Reports",
+    "reportMaturity": "EA Maturity",
+    "reportProcessSupport": "Process–Application",
+    "reportPortfolio": "Application Portfolio",
+    "reportRedundancy": "Redundancy Analysis",
+    "reportOverlapGaps": "Overlaps & Gaps",
+    "reportOwners": "Owner Overview",
+    "reportIntegrations": "Integration Analysis",
+    "reportVendors": "Vendor Dependency",
+    "reportClassification": "Data Classification",
+    "reportHosting": "Hosting Overview",
+    "reportLifecycle": "Lifecycle Status",
+    "reportRisk": "Risk Register",
+    "reportBIA": "Business Impact",
+    "reportNIS2": "NIS2 Compliance",
+    "reportGDPR": "Processing Register",
+    "reportAuth": "Authentication",
+    "reportTechDebt": "Tech Debt",
+    "reportTechVendors": "Technology Vendors",
+    "reportTechPortfolio": "Technology Portfolio",
+    "reportCosts": "Cost Overview",
+    "reportRoadmap": "Strategic Roadmap",
+    "reportPrinciplesDocument": "Principle Document",
+    "reportGapProgress": "GAP Analysis Progress",
+    "reportManualObjects": "Manually Added Objects",
+    "reportFlaggedObjects": "Flagged Objects",
+    "create": "Create object",
+    "settings": "Settings",
+    "collaboration": "Collaboration",
+    "assignments": "Assignments",
+    "workgroups": "Working groups",
+    "accessManagement": "Access",
+    "serverServices": "Server services",
+    "architectureJourney": "Architecture journey",
+    "navigationSettings": "Menu"
+  },
+  "home": {
+    "welcome": "Welcome to the EA Portal",
+    "description": "Visualise and analyse your enterprise architecture with interactive graph views.",
+    "quickLinks": "Quick links",
+    "blocks": {
+      "about": "About the EA Portal",
+      "empty": "Nothing here yet. Click the pencil to add content.",
+      "edit": "Edit",
+      "save": "Save",
+      "cancel": "Cancel",
+      "aboutTooltip": "About the EA Portal"
+    },
+    "stats": {
+      "processes": "Processes",
+      "applications": "Applications",
+      "infoObjects": "Information Objects",
+      "infoSources": "Information Sources",
+      "techComponents": "Technology Components",
+      "servers": "Servers",
+      "serverServices": "Server Services",
+      "connections": "Connections"
+    },
+    "definitions": {
+      "process": "A business process is a structured set of activities or tasks that produces a specific service or product for a particular customer or market.",
+      "application": "An application is a software system that supports one or more business processes by providing specific functionality.",
+      "informationObject": "An information object is a logical concept representing a type of business data — e.g. an invoice, customer record, or order.",
+      "informationSource": "An information source is the physical or logical system that stores and provides access to information objects — e.g. a database or module.",
+      "technologyComponent": "A technology component is the underlying infrastructure — servers, cloud services, databases, or platforms — that applications run on.",
+      "server": "A server is a single installation – physical, virtual or in the cloud – that technology components and applications run on, e.g. an alarm server.",
+      "connection": "A connection represents a relationship between two objects — e.g. an application supporting a process or running on a technology component.",
+      "serverService": "A server service is a service delivered from the servers, e.g. external DNS or the network (LAN/WiFi). The list comes from Servertjänster in the integration platform."
+    },
+    "seed": {
+      "button": "Load demo data",
+      "description": "Populate the database with sample data (SharePoint + 2C8 + relationships)",
+      "success": "Demo data loaded!",
+      "loading": "Loading demo data..."
+    },
+    "shortcuts": {
+      "editStart": "Customise shortcuts",
+      "editDone": "Done",
+      "add": "Add",
+      "remove": "Remove shortcut",
+      "empty": "No shortcuts yet. Click Add, or drag a page from the menu here.",
+      "emptyReadOnly": "No shortcuts yet. Click the pencil to customise.",
+      "hint": "Drag menu items from the sidebar here to add. Drag cards to reorder. Edit mode turns off automatically after 60 seconds of inactivity.",
+      "pickerTitle": "Add shortcut",
+      "noCandidates": "No more pages to add."
+    }
+  },
+  "targetArchitecture": {
+    "title": "Target Architecture",
+    "subtitle": "Desired state for IT architecture",
+    "readMore": "Read more"
+  },
+  "domainOverview": {
+    "title": "Domain — the BDAT model",
+    "subtitle": "Business · Information · Application · Technology",
+    "heading": "Four layers that hang together",
+    "intro1": "The EA portal describes the organisation's architecture in four layers following the BDAT model. Each layer answers its own question: business answers why, information answers what, applications answer how and technology answers with what.",
+    "intro2": "Business sets the direction through its processes — what we actually do. Information is what the business handles: the concepts, the information objects and the sources they are stored in. Applications are the support that does the work, and technology is the platform they run on.",
+    "intro3": "Every object in the portal belongs to one of the layers, and it is the connections between the layers that make it possible to answer questions such as \"which applications support this process?\" or \"which information is affected if this server goes away?\". Pick a layer in the pyramid or a card below to explore that domain.",
+    "pyramidCaption": "Click a layer to jump to that domain",
+    "describes": "Describes",
+    "answers": "Answers",
+    "openTargetArchitecture": "Read more in the Target Architecture",
+    "domains": {
+      "business": {
+        "question": "Why",
+        "describes": "Strategy, goals and the processes the business actually carries out.",
+        "answers": "What do we do, in what order, and who is responsible for it?"
+      },
+      "data": {
+        "question": "What",
+        "describes": "Concepts, information objects and the sources the information is stored in.",
+        "answers": "Which information do we handle, what does it mean and where does it live?"
+      },
+      "application": {
+        "question": "How",
+        "describes": "Applications and services that support the processes and handle the information.",
+        "answers": "What system support do we have, how does it connect and where does it overlap?"
+      },
+      "technology": {
+        "question": "With what",
+        "describes": "Infrastructure and platform that the applications run on.",
+        "answers": "Where do our applications run and which technology do we depend on?"
+      }
+    }
+  },
+  "banners": {
+    "add": "New operational notice",
+    "edit": "Edit",
+    "delete": "Delete",
+    "deleteConfirm": "Delete this notice?",
+    "dismiss": "Dismiss",
+    "disabled": "Disabled",
+    "dismissedByYou": "Hidden by you"
+  },
+  "solutionSketch": {
+    "title": "Solution Sketch",
+    "subtitle": "Structured support for new digital initiatives — fill in a sketch to surface overlaps, relevant principles, and procurement questions.",
+    "new": "New sketch"
+  },
+  "processExplorer": {
+    "title": "Process Explorer",
+    "selectProcess": "Select a process",
+    "e2eGraph": "End-to-end graph",
+    "noSelection": "Select a process from the list on the left to view the E2E graph."
+  },
+  "systemView": {
+    "title": "Application Landscape",
+    "selectApplication": "Select an application",
+    "noSelection": "Select an application from the list on the left to view the application graph."
+  },
+  "infoObjectExplorer": {
+    "select": "Select an information object",
+    "noSelection": "Select an information object from the list on the left to view its connections."
+  },
+  "infoSourceExplorer": {
+    "select": "Select an information source",
+    "noSelection": "Select an information source from the list on the left to view its connections."
+  },
+  "techComponentExplorer": {
+    "select": "Select a tech component",
+    "noSelection": "Select a tech component from the list on the left to view its connections."
+  },
+  "serverView": {
+    "select": "Servers",
+    "newServer": "New server",
+    "noServers": "No servers yet.",
+    "noSelection": "Select a server in the list on the left, or add a new one.",
+    "name": "Name",
+    "description": "Description",
+    "create": "Create",
+    "created": "Server {{name}} created",
+    "edit": "Edit server",
+    "components": "Technology components on the server",
+    "applications": "Applications running on the server",
+    "addComponents": "Add technology components...",
+    "addApplications": "Add applications...",
+    "noComponents": "No technology components connected yet.",
+    "noApplications": "No applications connected yet.",
+    "remove": "Remove from server",
+    "added": "{{name}} connected to {{server}}",
+    "noAccess": "You do not have access to Servers. Ask an administrator for access.",
+    "serverServices": "Server services on the server",
+    "addServerServices": "Add server services...",
+    "noServerServices": "No server services connected yet."
+  },
+  "landscape": {
+    "title": "Application Landscape",
+    "description": "All applications and their integrations",
+    "filterKategori": "Category...",
+    "filterStatus": "Lifecycle...",
+    "filterDriftform": "Hosting type...",
+    "filterAvdelning": "Department...",
+    "filterSystem": "Filter by application..."
+  },
+  "overlapGaps": {
+    "title": "Overlaps & Gaps",
+    "overlaps": "Overlaps",
+    "gaps": "Gaps",
+    "overlappingProcesses": "Processes with multiple applications",
+    "overlappingInfoObjects": "Information objects handled by multiple applications",
+    "unsupportedProcesses": "Processes without application support",
+    "unrealizedInfoObjects": "Information objects without realization",
+    "orphanedApplications": "Applications supporting no process",
+    "appCount": "App count",
+    "applications": "Applications"
+  },
+  "graph": {
+    "export": "Export",
+    "exportPng": "Export PNG",
+    "exportSvg": "Export SVG",
+    "fitScreen": "Fit to screen",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "resetLayout": "Reset layout",
+    "legend": "Legend",
+    "legendNodes": "Nodes",
+    "legendEdges": "Edges",
+    "noData": "No graph data to display",
+    "domains": "Domains:",
+    "showAllDomains": "Show all",
+    "legendDirection": "Integration direction"
+  },
+  "nodeTypes": {
+    "Process": "Process",
+    "Application": "Application",
+    "InformationObject": "Information Object",
+    "InformationSource": "Information Source",
+    "TechnologyComponent": "Technology Component",
+    "Server": "Server",
+    "ServerService": "Server service"
+  },
+  "edgeTypes": {
+    "USES": "Uses",
+    "SUPPORTS": "Supports",
+    "HANDLES": "Handles",
+    "REALIZES": "Realizes",
+    "CONTAINS": "Contains",
+    "RUNS_ON": "Runs on",
+    "INTEGRATES_WITH": "Integrates with"
+  },
+  "edgeTypeDescriptions": {
+    "USES": "A process uses an application or information resource to carry out its work.",
+    "SUPPORTS": "An application provides functional support for a process.",
+    "HANDLES": "An application reads, writes, or processes an information object.",
+    "REALIZES": "An information source is the physical or logical store that holds an information object.",
+    "CONTAINS": "An application owns or hosts an information source (e.g. a database).",
+    "RUNS_ON": "An application or technology component is deployed on a technology component or server.",
+    "INTEGRATES_WITH": "Two applications exchange data or functionality directly with each other."
+  },
+  "externalSource": {
+    "NONE": "Internal",
+    "SHAREPOINT": "SharePoint",
+    "2C8": "2C8",
+    "CSV": "CSV"
+  },
+  "quickAdd": {
+    "tooltip": "Add object",
+    "title": "Add object",
+    "subtitle": "The object will be automatically connected to \"{{name}}\".",
+    "selectType": "What type of connection?",
+    "tabNew": "Create new",
+    "tabExisting": "Pick existing",
+    "searchExisting": "Search {{type}}...",
+    "create": "Create & connect",
+    "createAndClose": "Create, connect & close",
+    "link": "Connect",
+    "linkAndClose": "Connect & close",
+    "success": "{{type}} \"{{name}}\" created and connected.",
+    "linked": "\"{{name}}\" connected.",
+    "linkSelected": "Connect {{num}} selected",
+    "linkSelectedAndClose": "Connect & close",
+    "linkedMultiple": "{{num}} connections created",
+    "error": "Could not complete the action. Please try again."
+  },
+  "createNode": {
+    "title": "Create new object",
+    "subtitle": "Select a type, fill in the details, and optionally add connections to existing objects.",
+    "details": "Details",
+    "attributes": "Attributes",
+    "connectionsTitle": "Connections (optional)",
+    "addConnection": "Add connection",
+    "noConnections": "No connections added. Click above to link to existing objects.",
+    "direction": "Direction",
+    "directionTo": "→ To",
+    "directionFrom": "← From",
+    "selectNode": "Select object",
+    "submit": "Create object",
+    "success": "Object created!",
+    "error": "Could not create the object. Please try again.",
+    "connectionError": "Could not create connection to",
+    "createdMessage": "has been created.",
+    "parentProcess": "Parent process",
+    "selectParentProcess": "Select parent process..."
+  },
+  "attributes": {
+    "vendor": "Vendor",
+    "category": "Category",
+    "owner": "Owner",
+    "application_owner": "Application Owner",
+    "business_owner": "Business Owner",
+    "lifecycle_stage": "Lifecycle Stage",
+    "hosting": "Hosting",
+    "definition": "Definition",
+    "data_owner": "Data owner",
+    "classification": "Classification",
+    "domain": "Domain",
+    "system": "Application",
+    "frequency": "Frequency",
+    "ägare": "Owner",
+    "kategori": "Category",
+    "leverantör": "Vendor",
+    "avdelning": "Department",
+    "status": "Status",
+    "driftform": "Hosting Type",
+    "systemägare": "System Owner",
+    "systemförvaltare": "System Manager",
+    "systemadministratör": "System Administrator",
+    "frekvens": "Frequency",
+    "klassificering": "Classification",
+    "typ": "Type",
+    "component_type": "Component Type",
+    "platform": "OS / Platform",
+    "version": "Version",
+    "capacity": "Capacity / Size",
+    "technical_owner": "Technical Owner",
+    "support_team": "Support Team",
+    "maintenance_schedule": "Maintenance Schedule",
+    "security_classification": "Security Classification",
+    "hostnamn": "Host name",
+    "servertyp": "Server type",
+    "operativsystem": "Operating system",
+    "miljö": "Environment",
+    "placering": "Location",
+    "ansvarig": "Responsible",
+    "planerad_driftstart": "Planned go-live",
+    "planerad_avveckling": "Planned retirement",
+    "livscykelstatus": "Lifecycle status"
+  },
+  "flags": {
+    "addFlag": "Flag object",
+    "dialogTitle": "Flag object",
+    "flagType": "Flag type",
+    "description": "Description",
+    "descriptionPlaceholder": "Describe what is missing or incorrect…",
+    "submit": "Submit flag",
+    "sectionTitle": "Flags",
+    "createSuccess": "Flag created",
+    "createError": "Could not create flag",
+    "deleteSuccess": "Flag removed",
+    "deleteError": "Could not remove flag",
+    "types": {
+      "INCOMPLETE": "Incomplete information",
+      "OUTDATED": "Outdated information",
+      "INCORRECT": "Incorrect information"
+    }
+  },
+  "nodeDetail": {
+    "edit": "Edit",
+    "saveSuccess": "Changes saved",
+    "deleteTitle": "Delete object?",
+    "deleteBody": "Are you sure you want to delete {{type}} \"{{name}}\"? Any connections to this object will also be removed. This cannot be undone.",
+    "connections": "Connections",
+    "from": "From",
+    "to": "To",
+    "replace": "Replace",
+    "replaceWith": "Replace with...",
+    "replaceSuccess": "Connection has been updated.",
+    "deleteEdgeTitle": "Delete connection?",
+    "deleteEdgeBody": "Are you sure you want to delete the \"{{type}}\" connection? This cannot be undone."
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "noData": "No data",
+    "name": "Name",
+    "description": "Description",
+    "type": "Type",
+    "source": "Source",
+    "created": "Created",
+    "updated": "Updated",
+    "actions": "Actions",
+    "close": "Close",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "add": "Add",
+    "search": "Search",
+    "filter": "Filter",
+    "language": "Language"
+  },
+  "csvImport": {
+    "title": "Import via CSV",
+    "subtitle": "Select a type, download the template, fill in your data, and upload the file to import.",
+    "entities": {
+      "processes": "Processes",
+      "applications": "Applications",
+      "informationObjects": "Information objects",
+      "informationSources": "Information sources",
+      "techComponents": "Tech components"
+    },
+    "columns": {
+      "id": "ID",
+      "name": "Name",
+      "description": "Description",
+      "owner": "Owner",
+      "category": "Category",
+      "frequency": "Frequency",
+      "vendor": "Vendor",
+      "application_owner": "Application Owner",
+      "business_owner": "Business Owner",
+      "lifecycle_stage": "Lifecycle Stage",
+      "hosting": "Hosting",
+      "definition": "Definition",
+      "data_owner": "Data owner",
+      "classification": "Classification",
+      "domain": "Domain",
+      "system": "Application",
+      "type": "Type",
+      "parent_id": "Parent process",
+      "component_type": "Component Type",
+      "platform": "OS / Platform",
+      "version": "Version",
+      "capacity": "Capacity / Size",
+      "technical_owner": "Technical Owner",
+      "support_team": "Support Team",
+      "maintenance_schedule": "Maintenance Schedule",
+      "security_classification": "Security Classification"
+    },
+    "step1": {
+      "title": "Download template",
+      "description": "The template contains the correct column headers and example rows. Open it in Excel or another spreadsheet app, fill in your data, and save as CSV.",
+      "download": "Download template ({{entity}})",
+      "columns": "Columns in the template",
+      "required": "Required"
+    },
+    "step2": {
+      "title": "Select CSV file",
+      "dropzone": "Drag and drop your CSV file here",
+      "or": "or click to browse"
+    },
+    "step3": {
+      "title": "Preview ({{count}} rows)",
+      "noRows": "No valid rows found in the file.",
+      "import": "Import {{count}} {{entity}}",
+      "importing": "Importing..."
+    },
+    "parseWarnings": "Warnings while reading the file",
+    "previewError": "Could not read the file. Make sure it is a valid CSV.",
+    "importError": "Import failed.",
+    "success": "Import complete! {{created}} created, {{updated}} updated.",
+    "modes": {
+      "perType": "Per type",
+      "unified": "Complete"
+    },
+    "unified": {
+      "description": "Import all object types and connections from a single CSV file.",
+      "templateDesc": "The template includes all object types ([NODES]) and connections ([CONNECTIONS]) in one file. Fill in and save as CSV.",
+      "downloadTemplate": "Download complete template",
+      "previewTitle": "Preview ({{nodes}} objects, {{edges}} connections)",
+      "nodes": "Objects",
+      "connections": "Connections",
+      "importButton": "Import {{nodes}} objects + {{edges}} connections",
+      "success": "Import complete! {{nodes}} objects and {{edges}} connections imported.",
+      "resultSummary": "{{nodesCreated}} objects created, {{nodesUpdated}} updated, {{edgesCreated}} connections created."
+    },
+    "export": {
+      "button": "Export all as CSV"
+    },
+    "result": {
+      "title": "Import result",
+      "summary": "{{created}} {{entity}} created, {{updated}} updated.",
+      "importMore": "Import more"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "resetDefaults": "Reset to defaults",
+    "logo": {
+      "title": "Logo",
+      "upload": "Upload image",
+      "urlLabel": "Or enter image URL",
+      "remove": "Remove logo"
+    },
+    "colors": {
+      "title": "Colors",
+      "primary": "Primary",
+      "secondary": "Secondary",
+      "background": "Background"
+    },
+    "font": {
+      "title": "Typography",
+      "family": "Font family",
+      "preview": "Preview"
+    },
+    "inspire": {
+      "title": "Website inspiration",
+      "description": "Enter a website URL and we'll extract its colors and fonts as inspiration for your theme.",
+      "urlLabel": "Website URL",
+      "extract": "Extract theme",
+      "foundColors": "Found colors — click a swatch to assign it",
+      "foundFonts": "Found fonts — click to apply",
+      "noResults": "No colors or fonts found on that page.",
+      "error": "Could not reach the URL. Make sure it is publicly accessible."
+    },
+    "language": {
+      "title": "Language"
+    },
+    "role": {
+      "title": "Role",
+      "description": "Switch between admin and user roles to preview different access levels.",
+      "label": "Current role",
+      "admin": "Administrator",
+      "user": "User"
+    },
+    "tabs": {
+      "general": "General",
+      "auditLog": "Audit log",
+      "data": "Data management"
+    },
+    "data": {
+      "title": "Data management",
+      "description": "Remove process data from the database. These actions cannot be undone.",
+      "deleteDemoProcesses": "Remove demo processes",
+      "deleteDemoHint": "Removes processes imported from 2C8 demo data",
+      "deleteAllProcesses": "Remove all processes",
+      "deleteAllHint": "Removes every process regardless of source",
+      "deleteDemoTitle": "Remove demo processes?",
+      "deleteDemoBody": "This will permanently delete all processes imported from 2C8 demo data. This cannot be undone.",
+      "deleteAllTitle": "Remove all processes?",
+      "deleteAllBody": "This will permanently delete every process in the database. This cannot be undone.",
+      "deleted": "Deleted {{count}} processes.",
+      "deleteError": "Delete failed. Please try again."
+    }
+  },
+  "connections": {
+    "title": "Connections",
+    "subtitle": "Create and manage relationships between nodes in your enterprise architecture.",
+    "createSuccess": "Connection created.",
+    "deleteSuccess": "Connection deleted.",
+    "error": "Something went wrong. Please try again.",
+    "tabs": {
+      "table": "Table",
+      "visual": "Visual"
+    },
+    "graph": {
+      "hint": "Click a node to select it as source, then click another node to create a connection.",
+      "clickTarget": "is selected. Click a target node.",
+      "validTargetsHint": "highlighted nodes are valid targets",
+      "invalidTarget": "No valid connection type exists between these node types.",
+      "dialogTitle": "Choose relation type",
+      "selectedEdge": "Selected connection",
+      "deleteEdge": "Delete connection"
+    },
+    "filter": {
+      "nodeType": "Filter by node type...",
+      "edgeType": "Filter by relation type...",
+      "system": "Filter by application...",
+      "clear": "Clear filters",
+      "showing": "Showing {{edges}} of {{total}} connections"
+    },
+    "guide": {
+      "title": "Connection guide",
+      "description": "Overview of all permitted connection types between node types."
+    },
+    "replaceSource": "Replace source",
+    "replaceTarget": "Replace target",
+    "replaceWith": "Replace with...",
+    "replaceSave": "Replace",
+    "replaceSuccess": "Connection updated.",
+    "createSection": {
+      "title": "Create new connection",
+      "source": "From (source node)",
+      "edgeType": "Relation type",
+      "target": "To (target node)",
+      "create": "Create connection"
+    },
+    "listSection": {
+      "title": "Existing connections",
+      "source": "From",
+      "type": "Relation",
+      "target": "To",
+      "noData": "No connections found."
+    },
+    "directionSuccess": "Direction updated"
+  },
+  "dataManagement": {
+    "title": "Data management",
+    "subtitle": "Remove data from the database. These actions cannot be undone.",
+    "deleteSelected": "Delete selected",
+    "deleted": "{{count}} records deleted.",
+    "deleteError": "Delete failed. Please try again.",
+    "confirmTitle": "Confirm deletion",
+    "confirmDemoBody": "This will permanently delete demo data for the selected types. This cannot be undone.",
+    "confirmAllBody": "This will permanently delete ALL records of the selected types, regardless of source. This cannot be undone.",
+    "demoSection": {
+      "title": "Delete demo data",
+      "description": "Removes data imported via demo import (2C8 and SharePoint). Other data is not affected."
+    },
+    "allSection": {
+      "title": "Delete all records",
+      "warning": "This deletes all records of the selected type regardless of source, including CSV-imported and manually created data."
+    },
+    "admin": {
+      "title": "Administrative functions",
+      "description": "Back up, restore, and create versions of the database.",
+      "exportButton": "Export database (JSON)",
+      "exportHint": "Download the entire database as a JSON file.",
+      "exportSuccess": "Database exported.",
+      "exportError": "Export failed.",
+      "restoreButton": "Restore from file",
+      "restoreHint": "Upload a previously exported JSON file to restore the database.",
+      "restoreSuccess": "Restore complete: {{nodes}} nodes and {{edges}} edges.",
+      "restoreError": "Restore failed.",
+      "restoreConfirmTitle": "Confirm restore",
+      "restoreConfirmBody": "This will replace ALL existing data with the contents of the selected backup. This cannot be undone. Create a snapshot first if you want to be able to go back.",
+      "restoreConfirm": "Restore",
+      "snapshotTitle": "Snapshots / Versions",
+      "snapshotDescription": "Create a version point of the current database state, e.g. before a migration, major data model changes, or an import.",
+      "snapshotLabelPlaceholder": "E.g. \"Before migration 2026-03\"",
+      "createSnapshot": "Create snapshot",
+      "snapshotCreated": "Snapshot created.",
+      "snapshotDeleted": "Snapshot deleted.",
+      "snapshotError": "Operation failed.",
+      "noSnapshots": "No snapshots have been created yet.",
+      "snapshotLabel": "Label",
+      "snapshotDate": "Date",
+      "snapshotNodes": "Nodes",
+      "snapshotEdges": "Edges",
+      "snapshotActions": "Actions",
+      "restoreSnapshot": "Restore this snapshot"
+    },
+    "graphSnapshots": {
+      "title": "Graph Versions",
+      "description": "Point-in-time snapshots of the full application landscape — nodes and edges at a given moment. Created automatically on document export and manually on demand.",
+      "labelPlaceholder": "Label, e.g. \"Before Q2 steering committee\" (optional)",
+      "createButton": "Capture graph now",
+      "created": "Graph snapshot created.",
+      "error": "Failed to create graph snapshot.",
+      "noSnapshots": "No graph snapshots have been created yet.",
+      "columnNumber": "#",
+      "columnDate": "Date",
+      "columnBy": "By",
+      "columnNodes": "Nodes",
+      "columnEdges": "Edges",
+      "columnSource": "Source",
+      "columnLabel": "Label",
+      "triggerManual": "Manual",
+      "triggerExport": "Document export",
+      "changesTitle": "Changes since previous snapshot",
+      "noChanges": "No recorded changes since previous snapshot."
+    }
+  },
+  "auditLog": {
+    "title": "Audit log",
+    "description": "Track all changes to objects and connections.",
+    "entries": "entries",
+    "filters": {
+      "entityType": "Entity type",
+      "action": "Action",
+      "all": "All"
+    },
+    "columns": {
+      "timestamp": "Timestamp",
+      "action": "Action",
+      "entityType": "Type",
+      "entityName": "Name",
+      "actions": "Actions"
+    },
+    "actions": {
+      "CREATE": "Created",
+      "UPDATE": "Updated",
+      "DELETE": "Deleted",
+      "PROPOSE": "Change proposed",
+      "PROPOSE_DONE": "Proposal done",
+      "PROPOSE_APPROVE": "Proposal approved",
+      "PROPOSE_REJECT": "Proposal rejected",
+      "PROPOSE_WITHDRAW": "Proposal withdrawn",
+      "DOWNLOAD": "Downloaded"
+    },
+    "entityTypes": {
+      "node": "Object",
+      "change_entry": "Change",
+      "calendar_event": "Calendar event",
+      "edge": "Connection",
+      "document": "Document",
+      "access": "Access"
+    },
+    "restore": "Restore",
+    "restored": "Restored",
+    "restoreConfirm": {
+      "title": "Restore deleted object?",
+      "body": "This will re-create {{type}} \"{{name}}\" with its original data.",
+      "restoreEdges": "Also restore connections",
+      "success": "\"{{name}}\" has been restored.",
+      "error": "Restore failed. The object may have dependencies that no longer exist."
+    },
+    "clear": "Clear log",
+    "clearConfirm": {
+      "title": "Clear audit log?",
+      "body": "This will permanently delete all {{count}} log entries. Deleted objects can no longer be restored. This cannot be undone.",
+      "success": "Audit log has been cleared."
+    },
+    "noEntries": "No audit log entries found.",
+    "snapshot": {
+      "before": "State before",
+      "after": "State after"
+    }
+  },
+  "import": {
+    "title": "Import data",
+    "sharepoint": "Import from SharePoint",
+    "twoC8": "Import from 2C8",
+    "mode": "Mode",
+    "mockMode": "Mock mode (JSON data)",
+    "apiMode": "API mode (live)",
+    "run": "Run import",
+    "success": "Import complete: {{created}} created, {{updated}} updated",
+    "error": "Import failed"
+  },
+  "reports": {
+    "maturity": {
+      "title": "EA Maturity Dashboard",
+      "description": "How complete and well-connected is the enterprise architecture model?",
+      "coverage": "Coverage",
+      "health": "Health Indicators",
+      "appsSupporting": "Applications supporting a process",
+      "processesSupported": "Processes with application support",
+      "infoObjRealized": "Info objects with a realizing source",
+      "nodesWithDesc": "Nodes with description",
+      "orphans": "Orphaned nodes (no connections)",
+      "unsupportedProcesses": "Unsupported processes (gaps)",
+      "appsNoProcess": "Applications without process link",
+      "completeness": "Model completeness score"
+    },
+    "processSupport": {
+      "title": "Process–Application Support Map",
+      "description": "Which applications support which processes? Gaps (red) have no application support. Overlaps (orange) have multiple.",
+      "process": "Process",
+      "status": "Status",
+      "supportingApps": "Supporting Applications",
+      "count": "Count",
+      "gap": "Gap",
+      "overlap": "Overlap",
+      "covered": "Covered",
+      "noSupport": "No application support",
+      "all": "All",
+      "filterLabel": "Filter"
+    },
+    "portfolio": {
+      "title": "Application Portfolio Overview",
+      "description": "Complete inventory of all applications with key metadata and connection counts.",
+      "name": "Name",
+      "category": "Category",
+      "status": "Status",
+      "hosting": "Hosting",
+      "department": "Department",
+      "vendor": "Vendor",
+      "processes": "Processes",
+      "integrations": "Integrations",
+      "search": "Search..."
+    },
+    "redundancy": {
+      "title": "Application Redundancy Analysis",
+      "description": "Processes supported by multiple applications — potential for rationalization and cost reduction.",
+      "processesWithRedundancy": "processes with redundant support",
+      "noRedundancy": "No redundancy detected. Each process is supported by at most one application.",
+      "process": "Process",
+      "appCount": "App Count",
+      "supportingApps": "Supporting Applications"
+    },
+    "owners": {
+      "title": "Application Owner Overview",
+      "description": "Who is responsible for which applications? Identify unowned applications.",
+      "groupBy": "Group by",
+      "systemOwner": "System Owner (Systemägare)",
+      "systemManager": "System Manager (Systemförvaltare)",
+      "department": "Department (Avdelning)",
+      "unassigned": "Unassigned",
+      "unassignedDesc": "not set"
+    },
+    "integrations": {
+      "title": "Integration Analysis",
+      "description": "Integration hubs and point-of-failure analysis. Applications with many integrations and high business criticality are the biggest risks.",
+      "integrationLinks": "integration links",
+      "connectedApps": "connected apps",
+      "highDegreeHubs": "high-degree hubs",
+      "application": "Application",
+      "integrationCount": "Integrations",
+      "processCount": "Processes",
+      "riskScore": "Risk Score",
+      "riskLevel": "Risk Level",
+      "critical": "Critical",
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low",
+      "hubAnalysis": "Hub Analysis",
+      "allPairs": "All Pairs",
+      "source": "Source",
+      "direction": "Direction",
+      "target": "Target",
+      "view": "View"
+    },
+    "vendors": {
+      "title": "Vendor Dependency Report",
+      "description": "How many applications depend on each vendor? Identifies concentration risk.",
+      "vendorCount": "vendors",
+      "appCount": "applications",
+      "distribution": "Vendor Distribution",
+      "vendor": "Vendor",
+      "count": "App Count",
+      "share": "Share",
+      "applications": "Applications"
+    },
+    "classification": {
+      "title": "Data Classification Matrix",
+      "description": "What sensitivity level do information objects have and which applications handle them?",
+      "infoObject": "Information Object",
+      "classification": "Classification",
+      "handlingApps": "Handling Applications",
+      "noClassification": "Not classified",
+      "open": "Open",
+      "internal": "Internal",
+      "confidential": "Confidential",
+      "secret": "Secret",
+      "allLevels": "All levels"
+    },
+    "hosting": {
+      "title": "Hosting & Deployment Map",
+      "description": "Where is each application hosted? Shows distribution across hosting models.",
+      "driftform": "Hosting Model",
+      "count": "Count",
+      "share": "Share",
+      "applications": "Applications",
+      "distribution": "Distribution by hosting model",
+      "unknown": "Not specified"
+    },
+    "lifecycle": {
+      "title": "Application Lifecycle Status",
+      "description": "Lifecycle status of every application. Identify apps that are aging or planned for retirement.",
+      "status": "Status",
+      "count": "Count",
+      "application": "Application",
+      "department": "Department",
+      "distribution": "Status Distribution",
+      "active": "Active",
+      "planned": "Planned",
+      "phaseOut": "Phase-out",
+      "retired": "Retired",
+      "unknown": "Not specified"
+    },
+    "risk": {
+      "title": "Risk Register — Application Risk Scorecard",
+      "description": "Score each application's risk level based on business criticality, data sensitivity, integration exposure, and technical risk.",
+      "application": "Application",
+      "businessCriticality": "Business Criticality",
+      "dataSensitivity": "Data Sensitivity",
+      "integrationExposure": "Integration Exposure",
+      "compositeScore": "Composite Score",
+      "riskLevel": "Risk Level",
+      "critical": "Critical",
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low",
+      "scoring": "Scoring",
+      "scoringDesc": "Score is computed from: process count (business criticality), information object count (data sensitivity), and integration count (exposure)."
+    },
+    "bia": {
+      "title": "Business Impact Analysis (BIA)",
+      "description": "What happens if an application becomes unavailable? Shows affected processes, data at risk, and cascade effects via integrations.",
+      "application": "Application",
+      "affectedProcesses": "Affected Processes",
+      "affectedData": "Data at Risk",
+      "cascadeApps": "Cascade Impact (via integrations)",
+      "impactScore": "Impact Score",
+      "severity": "Severity",
+      "critical": "Critical",
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low",
+      "selectApp": "Select an application for detailed analysis",
+      "processes": "processes",
+      "infoObjects": "information objects",
+      "cascadeDepth": "cascade levels"
+    },
+    "nis2": {
+      "title": "NIS2 Compliance Coverage",
+      "description": "Map critical processes and applications to NIS2 requirements. Identify gaps in security measures.",
+      "process": "Process",
+      "category": "NIS2 Category",
+      "supportingApps": "Supporting Applications",
+      "securityMeasures": "Security Measures",
+      "essential": "Essential",
+      "important": "Important",
+      "notClassified": "Not classified",
+      "noMeasures": "No measures documented",
+      "hint": "Set the 'nis2_category' attribute (essential/important) on processes and 'security_measures' on applications."
+    },
+    "gdpr": {
+      "title": "Data Processing Register (GDPR Art. 30)",
+      "description": "Register of personal data processing activities. Links information objects to applications, purposes, and legal bases.",
+      "infoObject": "Personal Data Category",
+      "handlingApps": "Processing Applications",
+      "processes": "Purpose (processes)",
+      "legalBasis": "Legal Basis",
+      "retentionPeriod": "Retention Period",
+      "personalData": "Personal Data",
+      "yes": "Yes",
+      "no": "No",
+      "notSet": "Not set",
+      "allObjects": "All information objects",
+      "personalDataOnly": "Personal data only",
+      "hint": "Set attributes on information objects: 'contains_personal_data' (true/false), 'legal_basis', 'retention_period'."
+    },
+    "auth": {
+      "title": "Access & Authentication Landscape",
+      "description": "How do users authenticate to each application? Identify applications without SSO or MFA.",
+      "application": "Application",
+      "authMethod": "Auth Method",
+      "mfa": "MFA",
+      "enabled": "Enabled",
+      "disabled": "Not enabled",
+      "notSet": "Not set",
+      "hint": "Set attributes on applications: 'auth_method' (SSO/SAML/Local/LDAP), 'mfa_enabled' (true/false)."
+    },
+    "techDebt": {
+      "title": "Technology Debt — EOL Heatmap",
+      "description": "Outdated technology components approaching or past end-of-life.",
+      "component": "Technology Component",
+      "type": "Type",
+      "vendor": "Vendor",
+      "endOfSupport": "End of Support",
+      "endOfLife": "End of Life",
+      "dependentApps": "Dependent Apps",
+      "expired": "Expired",
+      "warning": "Soon",
+      "ok": "OK",
+      "unknown": "Unknown",
+      "hint": "Set attributes on technology components: 'end_of_support', 'end_of_life' (YYYY-MM-DD)."
+    },
+    "techVendors": {
+      "title": "Technology Vendors",
+      "description": "How many technology components come from each vendor, and how many applications run on them? Shows lock-in and concentration risk in the technology layer.",
+      "vendorCount": "vendors",
+      "componentCount": "technology components",
+      "appCount": "applications run on them",
+      "distribution": "Distribution by vendor",
+      "vendor": "Vendor",
+      "count": "Components",
+      "share": "Share",
+      "apps": "Applications",
+      "types": "Component types",
+      "components": "Technology components",
+      "unassigned": "Not specified"
+    },
+    "techPortfolio": {
+      "title": "Technology Portfolio",
+      "description": "Technology components by component type and hosting – how much runs in the cloud versus on-prem, and where there are many components of the same kind.",
+      "componentCount": "technology components",
+      "matrix": "Component type × hosting",
+      "type": "Component type",
+      "total": "Total",
+      "components": "Technology components",
+      "unknownType": "No component type",
+      "unknownHosting": "Not specified"
+    },
+    "costs": {
+      "title": "Cost Overview per Application",
+      "description": "Total cost of ownership per application. Identify rationalization candidates.",
+      "application": "Application",
+      "annualCost": "Annual Cost",
+      "licenseModel": "License Model",
+      "costPerProcess": "Cost/Process",
+      "totalCost": "Total Cost",
+      "noCostData": "No cost data available",
+      "hint": "Set attributes on applications: 'annual_cost' (number), 'license_model'."
+    },
+    "roadmap": {
+      "title": "Strategic Roadmap",
+      "description": "Planned changes to the application landscape over time.",
+      "application": "Application",
+      "status": "Status",
+      "goLive": "Go-live",
+      "retirement": "Planned Retirement",
+      "department": "Department",
+      "noDateData": "No date data available",
+      "hint": "Fill in \"Planned go-live\" and \"Planned retirement\" (YYYY-MM-DD) on the applications."
+    },
+    "manualObjects": {
+      "title": "Manually Added Objects",
+      "description": "Shows objects added directly in the EA portal that are not synced from an external source (SharePoint, 2C8, etc.). Use this to ensure no objects are missing from source systems.",
+      "addedAt": "Added",
+      "empty": "No manually added objects found.",
+      "noMatch": "No objects match the search."
+    },
+    "flaggedObjects": {
+      "title": "Flagged Objects",
+      "description": "Summary of all objects flagged with quality issues. Click a row to navigate to the object.",
+      "flaggedBy": "Flagged by",
+      "flaggedAt": "Date",
+      "total": "flags",
+      "empty": "No flagged objects found.",
+      "noMatch": "No flags match the search."
+    },
+    "overview": {
+      "manageTags": "Manage tags",
+      "editTags": "Edit tags",
+      "untagged": "Other"
+    },
+    "groupBy": {
+      "byTag": "Grouped by tag",
+      "alphabetical": "Sorted A–Z"
+    },
+    "tags": {
+      "help": "The order decides where the tag sits in the menu — lower numbers first. Deleting a tag only untags its reports; nothing else changes.",
+      "count": "{{count}} rep.",
+      "newName": "New tag…",
+      "none": "Untagged"
+    },
+    "overlapGaps": {
+      "description": "Processes with no application support, and applications supporting the same process — the gaps and overlaps in the landscape."
+    },
+    "principlesDocument": {
+      "description": "The architecture principles collected as one document, ready to read through or export."
+    },
+    "gapProgress": {
+      "description": "How far the GAP analysis tasks have come towards the target state, weighted by task size."
+    },
+    "rename": {
+      "action": "Rename report",
+      "help": "The name is shown in the menu and as the report's heading, in both Swedish and English.",
+      "original": "Original name: {{name}}",
+      "reset": "Restore"
+    }
+  },
+  "flowScene": {
+    "tabGraph": "Graph",
+    "tabFlow": "Flowchart",
+    "version": "version",
+    "owner": "Process owner",
+    "loading": "Loading the flowchart …",
+    "none": "This process has no flowchart.",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "fit": "Fit to window",
+    "legend": "Legend"
+  },
+  "integrationDirection": {
+    "label": "Direction",
+    "question": "Which way is the information sent?",
+    "helper": "Pick the option that describes the integration. Arrows in the graphs follow your choice.",
+    "SOURCE_TO_TARGET": "One-way — from source to target",
+    "BIDIRECTIONAL": "Two-way — information is exchanged both ways",
+    "TARGET_TO_SOURCE": "One-way — from target to source",
+    "sentence": {
+      "SOURCE_TO_TARGET": "{{source}} sends information to {{target}}",
+      "BIDIRECTIONAL": "{{source}} and {{target}} send information to each other",
+      "TARGET_TO_SOURCE": "{{target}} sends information to {{source}}"
+    },
+    "placeholder": {
+      "source": "the source system",
+      "target": "the target system"
+    }
+  },
+  "objectContent": {
+    "tabDocuments": "Documents",
+    "tabNotes": "Notes",
+    "tabOverview": "Overview",
+    "panelSummary": "{{docs}} documents · {{notes}} notes",
+    "panelOpen": "Open documents and notes",
+    "deleteWarning": "{{docs}} documents and {{notes}} notes on the object will also be deleted.",
+    "docs": {
+      "upload": "Upload file",
+      "addLink": "Add link",
+      "empty": "No documents yet.",
+      "emptyReadOnly": "No documents yet. Whoever manages the object can add documents.",
+      "title": "Title",
+      "type": "Type",
+      "file": "File",
+      "reviewDate": "Review by",
+      "reviewOverdue": "The review date has passed",
+      "updated": "Updated",
+      "description": "Description",
+      "classification": "Classification",
+      "url": "Address (https://…)",
+      "chooseFile": "Choose file",
+      "noFile": "No file chosen",
+      "maxSize": "Max {{mb}} MB. Allowed: Office, PDF, text, images, Visio and e-mail.",
+      "tooLarge": "The file is too large (max {{mb}} MB).",
+      "download": "Download",
+      "openPdf": "Open",
+      "openLink": "Open link",
+      "edit": "Edit",
+      "delete": "Delete",
+      "versions": "Versions",
+      "newVersion": "Upload new version",
+      "versionComment": "What changed? (optional)",
+      "versionLabel": "v{{n}}",
+      "confirmDelete": "Delete the document “{{title}}”? All versions are deleted.",
+      "dialogUpload": "Upload document",
+      "dialogLink": "Add link",
+      "dialogEdit": "Edit document",
+      "dialogVersions": "Versions of “{{title}}”",
+      "linkHint": "Prefer linking to documents managed elsewhere, e.g. in SharePoint, so no stale copies arise.",
+      "restrictedHint": "Restricted: only visible to those who manage the object.",
+      "types": {
+        "rutin": "Routine",
+        "instruktion": "Instruction",
+        "avtal": "Contract",
+        "beslut": "Decision",
+        "utredning": "Investigation",
+        "ovrigt": "Other"
+      },
+      "classifications": {
+        "intern": "Internal",
+        "begransad": "Restricted"
+      },
+      "urlInvalid": "The address must start with https:// or http://"
+    },
+    "notes": {
+      "placeholder": "Write a note …",
+      "save": "Save note",
+      "shared": "Shared",
+      "private": "Private",
+      "sharedHint": "Shared: visible to everyone who may read the object.",
+      "privateHint": "Private: visible only to you. Hidden in the portal but not encrypted.",
+      "pin": "Pin to top",
+      "unpin": "Unpin",
+      "pinned": "Pinned",
+      "edited": "edited",
+      "edit": "Edit",
+      "delete": "Delete",
+      "confirmDelete": "Delete the note?",
+      "empty": "No notes yet.",
+      "readOnly": "You can read the notes but not write new ones."
+    }
+  },
+  "access": {
+    "title": "Access",
+    "intro": "Decide who sees and may do what with the architecture objects. A grant gives someone a role – everyone signed in, a global role, a group or a user – over all objects, some object types or a single object. A grant on a process can cover all its sub-processes. Grants only give rights, they never take any away. Administrators always have full access.",
+    "tabs": {
+      "grants": "Grants",
+      "groups": "Groups",
+      "roles": "Roles",
+      "check": "Check access"
+    },
+    "permissions": {
+      "object.read": "See the object",
+      "object.edit": "Edit the object and its connections",
+      "documents.read": "Read documents",
+      "documents.read_restricted": "Read restricted documents",
+      "documents.write": "Upload documents",
+      "notes.read": "Read shared notes",
+      "notes.write": "Write notes",
+      "content.manage": "Manage others' documents and notes"
+    },
+    "types": {
+      "Process": "Processes",
+      "Application": "Applications",
+      "InformationObject": "Information objects",
+      "InformationSource": "Information sources",
+      "TechnologyComponent": "Technology components",
+      "Server": "Servers and server services",
+      "ArchitecturePrinciple": "Architecture principles",
+      "ServerService": "Server services"
+    },
+    "globalRoles": {
+      "user": "Users",
+      "superuser": "Superusers"
+    },
+    "principal": {
+      "label": "Who",
+      "everyone": "Everyone signed in",
+      "role": "Everyone with global role",
+      "roleNamed": "All {{role}}",
+      "group": "Group",
+      "user": "User",
+      "choose": "Choose …"
+    },
+    "scope": {
+      "label": "Scope",
+      "all": "All objects",
+      "types": "Object types",
+      "node": "One object",
+      "withChildren": "with sub-processes",
+      "includeChildren": "Also covers all sub-processes",
+      "chooseNode": "Search object …"
+    },
+    "via": {
+      "all": "All objects",
+      "type": "The object type",
+      "node": "The object itself",
+      "inherited": "Inherited from {{name}}"
+    },
+    "grants": {
+      "add": "New grant",
+      "role": "Role",
+      "note": "Note (optional)",
+      "empty": "No grants.",
+      "created": "Created",
+      "confirmDelete": "Delete the grant? Those who only had access through it lose it immediately.",
+      "delete": "Delete",
+      "filter": "Filter …"
+    },
+    "groups": {
+      "add": "New group",
+      "name": "Name",
+      "description": "Description",
+      "members": "Members",
+      "memberCount": "{{n}} members",
+      "editMembers": "Edit members",
+      "empty": "No groups yet. A group gathers people who should have the same access, e.g. Operations.",
+      "confirmDelete": "Delete the group “{{name}}”? All grants to the group are deleted too.",
+      "delete": "Delete",
+      "edit": "Edit"
+    },
+    "roles": {
+      "add": "New role",
+      "name": "Name",
+      "description": "Description",
+      "builtin": "Built-in",
+      "inUse": "Used in {{n}} grants",
+      "delete": "Delete role",
+      "confirmDelete": "Delete the role “{{name}}”?",
+      "hint": "A role is a bundle of permissions. Changing a role changes access for everyone who has it. Anyone with any permission on an object always sees the object."
+    },
+    "check": {
+      "intro": "Choose a user and an object to see what the user may do with the object – and where the access comes from.",
+      "user": "User",
+      "node": "Object",
+      "isAdmin": "{{name}} is an administrator and has full access to everything.",
+      "noAccess": "{{name}} has no access to the object – it is hidden from them.",
+      "groups": "Groups",
+      "noGroups": "No groups",
+      "may": "May",
+      "because": "Because"
+    },
+    "nodeDialog": {
+      "button": "Who has access?",
+      "title": "Who has access to {{name}}?",
+      "admins": "Administrators always have full access",
+      "addHere": "Give access to this object",
+      "empty": "No grant reaches the object – only administrators see it."
+    },
+    "userManagementHint": "Who sees and may do what with the objects – Servers, for example – is decided under Access.",
+    "groupsColumn": "Groups",
+    "openAccess": "Access"
+  },
+  "serverServiceView": {
+    "select": "Server services",
+    "noServices": "No server services yet. They are synced from the Servertjänster list in the integration platform.",
+    "noSelection": "Choose a server service in the list on the left.",
+    "servers": "Servers the service runs on",
+    "noServers": "The service is not connected to a server yet. Connections are made from the server.",
+    "edit": "Edit the server service",
+    "noAccess": "You have no access to Servers. Ask an administrator for access."
+  }
+}
