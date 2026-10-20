@@ -98,6 +98,7 @@ services:
       ENTRA_TENANT_ID: ${ENTRA_TENANT_ID:-}
       ENTRA_CLIENT_ID: ${ENTRA_CLIENT_ID:-}
       ENTRA_API_SCOPE: ${ENTRA_API_SCOPE:-}
+      ARKITEKTEN_URL: ${ARKITEKTEN_URL:-}
     ports:
       - "${WEB_PORT:-3000}:80"
     depends_on:

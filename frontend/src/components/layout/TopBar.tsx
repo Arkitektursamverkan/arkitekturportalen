@@ -16,6 +16,7 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import AssignmentLateIcon from "@mui/icons-material/AssignmentLate";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
+import SchemaIcon from "@mui/icons-material/Schema";
 import { useAdminNotifications, useSubmitGlossaryRequest } from "@/api/adminNotifications";
 import { useMySurveys } from "@/api/mySurveys";
 import { useModules } from "@/api/orgSettings";
@@ -27,6 +28,7 @@ import { useThemeStore } from "@/store/themeStore";
 import { useRoleStore } from "@/store/roleStore";
 import { useSearch } from "@/api/search";
 import { NODE_COLORS } from "@/config/graphConfig";
+import { ARKITEKTEN_URL } from "@/config/modules";
 import { isAuthConfigured } from "@/auth/msalConfig";
 import { clearLocalToken, hasValidLocalToken } from "@/auth/localSession";
 import AboutDialog from "./AboutDialog";
@@ -144,6 +146,23 @@ const TopBar: React.FC = () => {
 
         {/* About the EA Portal */}
         <AboutDialog />
+
+        {/* Arkitekten (processritaren) — its own service, opened in a new tab */}
+        {moduleOn("arkitekten") && ARKITEKTEN_URL && (
+          <Tooltip title={t("flowScene.openArkitekten")}>
+            <IconButton
+              color="inherit"
+              component="a"
+              href={ARKITEKTEN_URL}
+              target="_blank"
+              rel="noopener"
+              aria-label={t("flowScene.openArkitekten")}
+              sx={{ mr: 0.5 }}
+            >
+              <SchemaIcon />
+            </IconButton>
+          </Tooltip>
+        )}
 
         {/* Glossary request — all authenticated users */}
         {moduleOn("glossary") && (

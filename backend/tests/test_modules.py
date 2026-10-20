@@ -25,6 +25,7 @@ PATHS = {
     ],
     "glossary": ["/api/v1/glossary"],
     "surveys": ["/api/v1/surveys", "/api/v1/my-surveys", "/api/v1/published-reports"],
+    "arkitekten": ["/api/v1/arkflows"],
 }
 
 

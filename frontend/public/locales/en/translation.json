@@ -1072,15 +1072,16 @@
   },
   "flowScene": {
     "tabGraph": "Graph",
-    "tabFlow": "Flowchart",
+    "tabFlow": "Process diagram",
     "version": "version",
     "owner": "Process owner",
-    "loading": "Loading the flowchart …",
-    "none": "This process has no flowchart.",
+    "loading": "Loading the process diagram …",
+    "none": "This process has no process diagram.",
     "zoomIn": "Zoom in",
     "zoomOut": "Zoom out",
     "fit": "Fit to window",
-    "legend": "Legend"
+    "legend": "Legend",
+    "openArkitekten": "Open Arkitekten (process designer)"
   },
   "integrationDirection": {
     "label": "Direction",

@@ -4,6 +4,8 @@ interface EaRuntimeConfig {
   entraTenantId?: string;
   entraClientId?: string;
   entraApiScope?: string;
+  /** Arkitekten's address for the top-bar link (module "arkitekten"). */
+  arkitektenUrl?: string;
 }
 
 interface Window {

@@ -36,6 +36,8 @@ MODULES: tuple[Module, ...] = (
            "Organisationens begrepp och förfrågningar om nya begrepp."),
     Module("surveys", "Enkäter",
            "Enkäter till användarna, Mina enkäter och publicerade enkätrapporter."),
+    Module("arkitekten", "Arkitekten (processritaren)",
+           "Processbilder ur Arkitekten på processkartan, publicering ur Arkitekten och en länk till verktyget."),
 )
 
 KEYS: tuple[str, ...] = tuple(m.key for m in MODULES)

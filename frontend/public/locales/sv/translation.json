@@ -1072,15 +1072,16 @@
   },
   "flowScene": {
     "tabGraph": "Graf",
-    "tabFlow": "Flödesschema",
+    "tabFlow": "Processbild",
     "version": "version",
     "owner": "Processägare",
-    "loading": "Hämtar flödesschemat …",
-    "none": "Den här processen har inget flödesschema.",
+    "loading": "Hämtar processbilden …",
+    "none": "Den här processen har ingen processbild.",
     "zoomIn": "Zooma in",
     "zoomOut": "Zooma ut",
     "fit": "Anpassa till fönstret",
-    "legend": "Teckenförklaring"
+    "legend": "Teckenförklaring",
+    "openArkitekten": "Öppna Arkitekten (processritaren)"
   },
   "integrationDirection": {
     "label": "Riktning",
@@ -1100,12 +1101,12 @@
     }
   },
   "sync": {
-    "arkflowTitle": "Flödesscheman från Arkitekten",
-    "arkflowHint": "Hämtar processernas flödesscheman på nytt. Går automatiskt varannan timme – kör här när du just ändrat något i Arkitekten. Bara fastslagna versioner hämtas; ett utkast syns inte förrän det fastslagits.",
+    "arkflowTitle": "Processbilder från Arkitekten",
+    "arkflowHint": "Hämtar processernas processbilder på nytt. Går automatiskt varannan timme – kör här när du just ändrat något i Arkitekten. Bara fastslagna versioner hämtas; ett utkast syns inte förrän det fastslagits.",
     "arkflowRun": "Hämta nu",
     "arkflowRunning": "Hämtar …",
-    "arkflowDone": "{{count}} flödesscheman hämtade, {{updated}} uppdaterade.",
-    "arkflowResult": "Senaste körningen: {{count}} flödesscheman, {{updated}} uppdaterade.",
+    "arkflowDone": "{{count}} processbilder hämtade, {{updated}} uppdaterade.",
+    "arkflowResult": "Senaste körningen: {{count}} processbilder, {{updated}} uppdaterade.",
     "arkflowFailed": "Synken gick inte att köra."
   },
   "objectContent": {

@@ -15,6 +15,7 @@ cat > /usr/share/nginx/html/config.js <<JS
 window.__EA_CONFIG__ = {
   entraTenantId: "$(esc "${ENTRA_TENANT_ID:-}")",
   entraClientId: "$(esc "${ENTRA_CLIENT_ID:-}")",
-  entraApiScope: "$(esc "$scope")"
+  entraApiScope: "$(esc "$scope")",
+  arkitektenUrl: "$(esc "${ARKITEKTEN_URL:-}")"
 };
 JS

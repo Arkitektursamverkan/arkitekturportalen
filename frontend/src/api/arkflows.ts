@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "./client";
+import { useModules } from "./orgSettings";
 
 /**
  * Flowcharts from Arkitekten, delivered as ready-to-draw *scenes*.
@@ -129,8 +130,11 @@ export interface Arkflow extends ArkflowSummary {
 
 /** The index. Deliberately without scenes — one can be ~112 kB. */
 export function useArkflows() {
+  // Module "arkitekten" off = no process diagrams (the API answers 404 anyway).
+  const on = useModules().enabled("arkitekten");
   return useQuery({
     queryKey: ["arkflows"],
+    enabled: on,
     queryFn: async () => {
       const { data } = await apiClient.get<{ flows: ArkflowSummary[] }>("/arkflows");
       return data.flows;
@@ -142,9 +146,10 @@ export function useArkflows() {
 
 /** One flowchart with its scene. Fetched only when something will be drawn. */
 export function useArkflow(id: string | null | undefined) {
+  const on = useModules().enabled("arkitekten");
   return useQuery({
     queryKey: ["arkflow", id],
-    enabled: Boolean(id),
+    enabled: on && Boolean(id),
     queryFn: async () => {
       const { data } = await apiClient.get<Arkflow>(`/arkflows/${id}`);
       return data;
