@@ -19,6 +19,8 @@ import ObjectPane, { selectObject } from "@/components/objectContent/ObjectPane"
 import ErrorAlert from "@/components/common/ErrorAlert";
 import QuickAddNode from "@/components/graph/QuickAddNode";
 import { useGraphStore } from "@/store/graphStore";
+import { arkflowsForApplication, useArkflows } from "@/api/arkflows";
+import SystemProcessesTab from "@/components/flow/SystemProcessesTab";
 
 // Special values for the status filter, alongside the actual status strings.
 const STATUS_ALL_EXCEPT_DECOMMISSIONED = "__active__";
@@ -48,6 +50,21 @@ const SystemView: React.FC = () => {
   const { data: apps, isLoading: loadingList } = useNodes({ node_type: "Application" });
   const { data: edges = [] } = useEdges();
   const { data: graph, isLoading: loadingGraph, error } = useSystemView(selectedId);
+
+  // Systemprocesser published onto this application from Arkitekten. The tab
+  // only exists when there is at least one; standing on it and selecting an
+  // application without any, ObjectPane falls back to the graph.
+  const { data: arkflows } = useArkflows();
+  const systemprocesser = useMemo(
+    () => arkflowsForApplication(arkflows, selectedId),
+    [arkflows, selectedId],
+  );
+  const viewTabs = [
+    { value: "graf", label: t("flowScene.tabGraph") },
+    ...(systemprocesser.length > 0
+      ? [{ value: "systemprocesser", label: `${t("flowScene.tabSystemProcesses")} (${systemprocesser.length})` }]
+      : []),
+  ];
 
   // Domain (node type) filter for the canvas — all domains visible by default.
   const domainFilter = useDomainFilter(graph, selectedId);
@@ -180,9 +197,9 @@ const SystemView: React.FC = () => {
         )}
       </Box>
 
-      {/* Graph canvas, documents and notes */}
-      <ObjectPane nodeId={selectedId} viewTabs={[{ value: "graf", label: t("flowScene.tabGraph") }]}>
-        {() => (
+      {/* Graph canvas, system processes, documents and notes */}
+      <ObjectPane nodeId={selectedId} viewTabs={viewTabs}>
+        {(flik) => (
           <>
             {!selectedId && (
               <Box sx={{ height: "100%", overflowY: "auto", p: 2 }}>
@@ -194,7 +211,8 @@ const SystemView: React.FC = () => {
             )}
             {selectedId && loadingGraph && <LoadingSpinner />}
             {selectedId && error && <Box p={3}><ErrorAlert error={error as Error} /></Box>}
-            {selectedId && graph && !loadingGraph && (
+            {selectedId && flik === "systemprocesser" && <SystemProcessesTab flows={systemprocesser} />}
+            {selectedId && graph && !loadingGraph && flik === "graf" && (
               <>
                 <CytoscapeGraph data={domainFilter.filteredGraph ?? graph} layout="cose" height="100%" cyRef={cyRef} positionKey={`system-view:${selectedId}`} />
                 <GraphControls cyRef={cyRef} graphName="system-view" positionKey={`system-view:${selectedId}`} defaultLayout={LAYOUT_OPTIONS.cose} />

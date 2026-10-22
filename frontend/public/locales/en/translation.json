@@ -1080,7 +1080,10 @@
     "zoomIn": "Zoom in",
     "zoomOut": "Zoom out",
     "fit": "Fit to window",
-    "legend": "Legend"
+    "legend": "Legend",
+    "tabSystemProcesses": "System processes",
+    "systemProcessesNone": "This application has no published system processes.",
+    "ownerSystem": "Owner"
   },
   "integrationDirection": {
     "label": "Direction",

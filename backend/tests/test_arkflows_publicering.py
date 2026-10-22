@@ -57,3 +57,15 @@ async def test_running_finds_an_empty_pipeline_but_reading_skips_it(monkeypatch)
     assert await arkflows._arkitekten_flow_ids(None) == ["full"]
     assert await arkflows._arkitekten_flow_ids(None, även_tomma=True) == ["tom", "full"]
     arkflows._cache.clear()
+
+
+def test_summary_tells_a_systemprocess_from_a_process():
+    """A Systemprocess is published onto an APPLICATION. The frontend tells the
+    two targets apart on `familj` — lose it and a system flowchart would be
+    offered as a process's flowchart, or not at all."""
+    s = arkflows._summary(
+        {"external_id": "bestallning-ny", "familj": "flodesschema", "ea_nod_id": "app-1"}
+    )
+    assert s["familj"] == "flodesschema"
+    assert s["ea_nod_id"] == "app-1"
+    assert s["prefix"] is None
