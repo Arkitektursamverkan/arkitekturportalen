@@ -1080,7 +1080,10 @@
     "zoomIn": "Zooma in",
     "zoomOut": "Zooma ut",
     "fit": "Anpassa till fönstret",
-    "legend": "Teckenförklaring"
+    "legend": "Teckenförklaring",
+    "tabSystemProcesses": "Systemprocesser",
+    "systemProcessesNone": "Den här applikationen har inga publicerade systemprocesser.",
+    "ownerSystem": "Ägare"
   },
   "integrationDirection": {
     "label": "Riktning",

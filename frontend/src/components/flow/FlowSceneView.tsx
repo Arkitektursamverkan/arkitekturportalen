@@ -204,6 +204,8 @@ export default function FlowSceneView({ scen, caption, beskrivning }: Props) {
           {/* Arrowhead markers the edge paths reference. */}
           <defs dangerouslySetInnerHTML={{ __html: scen.defs }} />
           <g transform={`translate(${vy.x},${vy.y}) scale(${vy.k})`}>
+            {/* Swimlanes and pools, drawn by Arkitekten (Systemprocess only). */}
+            {scen.bakgrund && <g dangerouslySetInnerHTML={{ __html: scen.bakgrund }} />}
             {scen.kanter.map((k) => (
               <path
                 key={k.id}
@@ -222,8 +224,12 @@ export default function FlowSceneView({ scen, caption, beskrivning }: Props) {
                 })`}
               />
             ))}
+            {/* Data stores, message flows, page references – after the edges and
+                before the nodes, the order Arkitekten's export draws them in. */}
+            {scen.artefakter && <g dangerouslySetInnerHTML={{ __html: scen.artefakter }} />}
             {scen.kanter.map((k) =>
-              k.etikett && k.ankare ? (
+              // A label drawn by Arkitekten is placed after the nodes below.
+              !k.etikettSvg && k.etikett && k.ankare ? (
                 <text
                   key={`${k.id}-etikett`}
                   x={k.ankare.x}
@@ -259,6 +265,12 @@ export default function FlowSceneView({ scen, caption, beskrivning }: Props) {
                 </g>
               );
             })}
+            {/* Labels Arkitekten drew itself go on top, so no node hides a Ja/Nej. */}
+            {scen.kanter.map((k) =>
+              k.etikettSvg ? (
+                <g key={`${k.id}-etikettSvg`} pointerEvents="none" dangerouslySetInnerHTML={{ __html: k.etikettSvg }} />
+              ) : null,
+            )}
             {valdNod && (
               <rect
                 x={valdNod.x - 3}
