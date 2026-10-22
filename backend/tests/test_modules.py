@@ -30,6 +30,14 @@ PATHS = {
 
 
 @pytest.fixture(autouse=True)
+def _plattformen_finns(monkeypatch):
+    """Modulen Arkitekten kräver Integrationsplattformen (beslut B1). Testerna
+    här prövar varje modul som en installation med plattformen; det som
+    händer utan den prövas för sig (test_arkitekten_requires_the_platform)."""
+    monkeypatch.setenv("INTEGRATION_PLATFORM_URL", "http://plattform-api:8000/api/v1")
+
+
+@pytest.fixture(autouse=True)
 async def _inga_satta_moduler(repo):
     async def rensa():
         async with repo._session_factory() as s:
