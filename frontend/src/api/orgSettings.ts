@@ -20,6 +20,8 @@ export interface ModuleInfo {
   key: string;
   name: string;
   description: string;
+  /** Why the module cannot be switched on here (e.g. it needs the platform). */
+  unavailable?: string | null;
 }
 
 export interface OrgSettingsAdmin {

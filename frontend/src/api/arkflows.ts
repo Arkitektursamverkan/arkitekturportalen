@@ -75,7 +75,8 @@ export interface ScenFigurGrupp {
 export interface Scen {
   format: "ark-scen";
   formatVersion: number;
-  familj: "2c8" | "flodesschema";
+  /** "2c8" är det äldre namnet på affärsprocesser (Arkitekten före 0.2). */
+  familj: "affarsprocess" | "2c8" | "flodesschema";
   flöde: { id: string; namn: string; status?: string; beteckning?: string };
   bredd: number;
   höjd: number;
