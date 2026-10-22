@@ -1081,7 +1081,10 @@
     "zoomOut": "Zoom out",
     "fit": "Fit to window",
     "legend": "Legend",
-    "openArkitekten": "Open Arkitekten (process designer)"
+    "openArkitekten": "Open Arkitekten (process designer)",
+    "tabSystemProcesses": "System processes",
+    "systemProcessesNone": "This application has no published system processes.",
+    "ownerSystem": "Owner"
   },
   "integrationDirection": {
     "label": "Direction",

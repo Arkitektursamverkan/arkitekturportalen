@@ -1081,7 +1081,10 @@
     "zoomOut": "Zooma ut",
     "fit": "Anpassa till fönstret",
     "legend": "Teckenförklaring",
-    "openArkitekten": "Öppna Arkitekten (processritaren)"
+    "openArkitekten": "Öppna Arkitekten (processritaren)",
+    "tabSystemProcesses": "Systemprocesser",
+    "systemProcessesNone": "Den här applikationen har inga publicerade systemprocesser.",
+    "ownerSystem": "Ägare"
   },
   "integrationDirection": {
     "label": "Riktning",

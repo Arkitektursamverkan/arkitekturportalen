@@ -45,6 +45,12 @@ export interface ScenKant {
   markör?: string;
   etikett?: string;
   ankare?: { x: number; y: number };
+  /**
+   * The label drawn by Arkitekten, in scene coordinates (a Systemprocess's
+   * boxed Ja/Nej). When present, inject it as-is instead of setting `etikett`
+   * at `ankare` in a style of our own.
+   */
+  etikettSvg?: string;
 }
 
 /**
@@ -98,6 +104,18 @@ export interface Scen {
    * offers no legend then.
    */
   figurer?: ScenFigurGrupp[];
+  /**
+   * What lies BEHIND the flow, drawn by Arkitekten in scene coordinates: page
+   * frames, pool, swimlanes and recipient pools. Only Systemprocess scenes
+   * carry it. Draw it first.
+   */
+  bakgrund?: string;
+  /**
+   * Artifacts drawn by Arkitekten — data stores, data associations, message
+   * flows, page references. Draw after the edges and before the nodes, the
+   * same order as Arkitekten's export.
+   */
+  artefakter?: string;
 }
 
 export interface ArkflowSummary {
@@ -178,6 +196,24 @@ export function arkflowForProcess(
     flows.find((f) => f.ea_nod_id === nodeId) ??
     (prefix ? flows.find((f) => !f.ea_nod_id && f.prefix === prefix) : undefined)
   );
+}
+
+/**
+ * A Systemprocess is drawn in Arkitekten's flowchart tool ("flodesschema") and
+ * published onto an APPLICATION, where it shows under the Systemprocesser tab.
+ * Matched on `ea_nod_id` only — applications have no 2C8 numbering to fall
+ * back on. An application can have several.
+ */
+export const SYSTEMPROCESS_FAMILJ = "flodesschema";
+
+export function arkflowsForApplication(
+  flows: ArkflowSummary[] | undefined,
+  nodeId: string | null | undefined,
+): ArkflowSummary[] {
+  if (!flows || !nodeId) return [];
+  return flows
+    .filter((f) => f.familj === SYSTEMPROCESS_FAMILJ && f.ea_nod_id === nodeId)
+    .sort((a, b) => (a.name ?? "").localeCompare(b.name ?? "", "sv"));
 }
 
 export function useArkflowForProcess(
