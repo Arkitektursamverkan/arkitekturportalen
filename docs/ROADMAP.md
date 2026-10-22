@@ -129,6 +129,13 @@ lösningsskisser, administration samt import och synk.
 
 ### 7. Öppet för bidrag
 
-- `CODEOWNERS`, skyddad `main`-gren och krav på granskning.
-- Versionerade releaser (semver) och ändringslogg.
-- Riktlinjer för bidrag (`CONTRIBUTING.md`).
+Gemensamt för alla fyra repona (portalen, plattformen, driftrepot och
+Arkitekten), så att samma regler gäller överallt.
+
+- ✅ `CODEOWNERS`: huvudägaren granskar och mergar.
+- ✅ Riktlinjer för bidrag (`CONTRIBUTING.md`) och säkerhetsrapporter
+  (`SECURITY.md`).
+- ✅ Versionerade releaser (semver) och ändringslogg (`CHANGELOG.md`).
+- ✅ Dependabot föreslår uppdateringar av beroenden och avbilder varje vecka.
+- Skyddad `main` med krav på granskning och grön CI: kräver GitHub Team (eller
+  publika repon) – tills dess gäller regeln i `CONTRIBUTING.md`.
