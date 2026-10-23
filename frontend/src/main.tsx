@@ -1,114 +1,22 @@
-import React, { useMemo } from "react";
-import ReactDOM from "react-dom/client";
-import { ThemeProvider } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { SnackbarProvider } from "notistack";
-import { MsalProvider } from "@azure/msal-react";
-import { buildTheme } from "./theme/theme";
-import { useThemeStore } from "./store/themeStore";
-import { EventType, AuthenticationResult } from "@azure/msal-browser";
-import { msalInstance, isAuthConfigured } from "./auth/msalConfig";
-import AuthGate from "./auth/AuthGate";
-import UserSync from "./auth/UserSync";
-import "./i18n";
-import App from "./App";
+import { isAuthConfigured } from "./auth/msalConfig";
+import { hasAuthResponse, runRedirectBridge } from "./auth/redirectBridge";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: { retry: 1, staleTime: 30_000 },
-  },
-});
-
-// After a redeploy, a tab loaded before it still references lazy-route
-// chunks whose hashed filenames no longer exist on the server. Navigating
-// then fails the dynamic import and renders a blank page — reload once to
-// pick up the new build. The timestamp guard stops a reload loop if the
-// chunk is missing for some other reason.
-window.addEventListener("vite:preloadError", (event) => {
-  const lastReload = Number(sessionStorage.getItem("chunk-reload-at") ?? 0);
-  if (Date.now() - lastReload < 30_000) return;
-  sessionStorage.setItem("chunk-reload-at", String(Date.now()));
-  event.preventDefault();
-  window.location.reload();
-});
-
-const GOOGLE_FONTS = [
-  "Inter", "Roboto", "Open Sans", "Lato", "Montserrat",
-  "Poppins", "Nunito", "Raleway", "Source Sans Pro", "Playfair Display",
-];
-
-function injectGoogleFont(family: string) {
-  if (!GOOGLE_FONTS.includes(family)) return;
-  const id = `gf-${family.replace(/\s+/g, "-")}`;
-  if (document.getElementById(id)) return;
-  const link = document.createElement("link");
-  link.id = id;
-  link.rel = "stylesheet";
-  link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(family)}:wght@400;600;700&display=swap`;
-  document.head.appendChild(link);
+/*
+ * Ingången. Bär adressen ett inloggningssvar från Entra lämnas det först till
+ * MSAL:s omdirigeringsbrygga (se auth/redirectBridge.ts) – appen laddas inte i
+ * popupfönstret eller den dolda iframen. Annars startar appen, och den
+ * initierar MSAL innan något renderas.
+ */
+async function main() {
+  if (isAuthConfigured && hasAuthResponse(window.location) && (await runRedirectBridge())) return;
+  const { startApp } = await import("./startApp");
+  await startApp();
 }
 
-const ThemedApp: React.FC = () => {
-  const { primaryColor, secondaryColor, bgColor, fontFamily, logoUrl, logoBase64 } =
-    useThemeStore();
-
-  injectGoogleFont(fontFamily);
-
-  const muiTheme = useMemo(
-    () => buildTheme({ primaryColor, secondaryColor, bgColor, fontFamily, logoUrl, logoBase64 }),
-    [primaryColor, secondaryColor, bgColor, fontFamily, logoUrl, logoBase64]
-  );
-
-  return (
-    <ThemeProvider theme={muiTheme}>
-      <CssBaseline />
-      <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: "bottom", horizontal: "left" }}>
-        <AuthGate>
-          <UserSync>
-            <App />
-          </UserSync>
-        </AuthGate>
-      </SnackbarProvider>
-    </ThemeProvider>
-  );
-};
-
-async function bootstrap() {
-  if (isAuthConfigured) {
-    await msalInstance.initialize();
-
-    // Restore active account from cache (if any)
-    const accounts = msalInstance.getAllAccounts();
-    if (accounts.length > 0 && !msalInstance.getActiveAccount()) {
-      msalInstance.setActiveAccount(accounts[0]);
-    }
-
-    // Set active account on successful login
-    msalInstance.addEventCallback((event) => {
-      if (event.eventType === EventType.LOGIN_SUCCESS && event.payload) {
-        const result = event.payload as AuthenticationResult;
-        if (result.account) {
-          msalInstance.setActiveAccount(result.account);
-        }
-      }
-    });
-  }
-
-  ReactDOM.createRoot(document.getElementById("root")!).render(
-    <React.StrictMode>
-      <MsalProvider instance={msalInstance}>
-        <QueryClientProvider client={queryClient}>
-          <ThemedApp />
-          <ReactQueryDevtools initialIsOpen={false} />
-        </QueryClientProvider>
-      </MsalProvider>
-    </React.StrictMode>,
-  );
-}
-
-bootstrap().catch((e) => {
+main().catch((e) => {
   console.error("Bootstrap failed:", e);
-  document.body.innerHTML = `<div style="padding:24px;font-family:system-ui">Initialiseringsfel: ${e?.message ?? e}</div>`;
+  const box = document.createElement("div");
+  box.style.cssText = "padding:24px;font-family:system-ui";
+  box.textContent = `Initialiseringsfel: ${e?.message ?? e}`;
+  document.body.replaceChildren(box);
 });

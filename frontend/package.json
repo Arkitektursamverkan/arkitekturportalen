@@ -8,11 +8,12 @@
     "build": "tsc && eslint src && vite build",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
-    "lint": "eslint src --report-unused-disable-directives"
+    "lint": "eslint src --report-unused-disable-directives",
+    "test": "vitest run"
   },
   "dependencies": {
-    "@azure/msal-browser": "^4.30.0",
-    "@azure/msal-react": "^3.0.29",
+    "@azure/msal-browser": "^5.26.0",
+    "@azure/msal-react": "^5.7.3",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^9.5.0",
@@ -38,6 +39,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/react": "^16.3.3",
     "@types/cytoscape": "^3.21.7",
     "@types/file-saver": "^2.0.7",
     "@types/node": "^24.19.2",
@@ -48,8 +51,10 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.7",
     "globals": "^17.13.0",
+    "jsdom": "^27.4.0",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.72.0",
-    "vite": "^5.4.9"
+    "vite": "^5.4.9",
+    "vitest": "^3.2.7"
   }
 }

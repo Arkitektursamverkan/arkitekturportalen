@@ -1,8 +1,4 @@
-import {
-  Configuration,
-  LogLevel,
-  PublicClientApplication,
-} from "@azure/msal-browser";
+import { Configuration, LogLevel } from "@azure/msal-browser";
 
 // Installation settings come from /config.js, written when the container starts
 // (frontend/docker/40-ea-config.sh). The VITE_* variables remain for `npm run dev`.
@@ -14,31 +10,37 @@ export const ENTRA_API_SCOPE = runtime.entraApiScope || import.meta.env.VITE_ENT
 
 export const isAuthConfigured = Boolean(ENTRA_TENANT_ID && ENTRA_CLIENT_ID && ENTRA_API_SCOPE);
 
-const msalConfig: Configuration = {
-  auth: {
-    clientId: ENTRA_CLIENT_ID,
-    authority: `https://login.microsoftonline.com/${ENTRA_TENANT_ID}`,
-    redirectUri: window.location.origin,
-    postLogoutRedirectUri: window.location.origin,
-    navigateToLoginRequestUrl: true,
-  },
-  cache: {
-    cacheLocation: "sessionStorage",
-    storeAuthStateInCookie: false,
-  },
-  system: {
-    loggerOptions: {
-      loggerCallback: (level, message) => {
-        if (level === LogLevel.Error) {
-          console.error("[MSAL]", message);
-        }
-      },
-      logLevel: LogLevel.Warning,
+/**
+ * MSAL-konfigurationen. Instansen skapas och initieras i ./msal.ts – ingen
+ * modul får skapa en egen eller anropa den innan initMsal() är klar.
+ *
+ * redirectUri är webbplatsens rot, som den alltid har varit (det är den adress
+ * som står i appregistreringen). Rotsidan fungerar också som MSAL 5:s
+ * omdirigeringsbrygga för fönster- och iframe-flödena, se ./redirectBridge.ts.
+ */
+export function buildMsalConfig(): Configuration {
+  return {
+    auth: {
+      clientId: ENTRA_CLIENT_ID,
+      authority: `https://login.microsoftonline.com/${ENTRA_TENANT_ID}`,
+      redirectUri: window.location.origin,
+      postLogoutRedirectUri: window.location.origin,
     },
-  },
-};
-
-export const msalInstance = new PublicClientApplication(msalConfig);
+    cache: {
+      cacheLocation: "sessionStorage",
+    },
+    system: {
+      loggerOptions: {
+        loggerCallback: (level, message) => {
+          if (level === LogLevel.Error) {
+            console.error("[MSAL]", message);
+          }
+        },
+        logLevel: LogLevel.Warning,
+      },
+    },
+  };
+}
 
 export const loginRequest = {
   scopes: [ENTRA_API_SCOPE],

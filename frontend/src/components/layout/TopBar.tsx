@@ -22,15 +22,13 @@ import { useMySurveys } from "@/api/mySurveys";
 import { useModules } from "@/api/orgSettings";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { useMsal } from "@azure/msal-react";
 import { useUiStore } from "@/store/uiStore";
 import { useThemeStore } from "@/store/themeStore";
 import { useRoleStore } from "@/store/roleStore";
 import { useSearch } from "@/api/search";
 import { NODE_COLORS } from "@/config/graphConfig";
 import { ARKITEKTEN_URL } from "@/config/modules";
-import { isAuthConfigured } from "@/auth/msalConfig";
-import { clearLocalToken, hasValidLocalToken } from "@/auth/localSession";
+import { signOut } from "@/auth/signOut";
 import AboutDialog from "./AboutDialog";
 
 const TopBar: React.FC = () => {
@@ -49,7 +47,6 @@ const TopBar: React.FC = () => {
     (moduleOn("calendar") ? notifications?.calendar_proposals?.length ?? 0 : 0);
   const { data: mySurveys } = useMySurveys(moduleOn("surveys"));
   const pendingSurveyCount = (mySurveys ?? []).filter((r) => r.status === "pending" && r.survey_status === "open").length;
-  const { instance } = useMsal();
   const navigate = useNavigate();
   const [searchQ, setSearchQ] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
@@ -244,14 +241,7 @@ const TopBar: React.FC = () => {
           <MenuItem
             onClick={() => {
               setUserMenuAnchor(null);
-              if (hasValidLocalToken()) {
-                clearLocalToken();
-                window.location.reload();
-              } else if (isAuthConfigured) {
-                instance.logoutRedirect({ postLogoutRedirectUri: window.location.origin });
-              } else {
-                window.location.reload();
-              }
+              signOut().catch((e) => console.error("Utloggningen misslyckades:", e));
             }}
           >
             <LogoutIcon fontSize="small" sx={{ mr: 1 }} />
