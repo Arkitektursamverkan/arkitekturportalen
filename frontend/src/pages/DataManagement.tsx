@@ -116,14 +116,16 @@ const DataManagement: React.FC = () => {
   const toggleDemo = (node_type: string) =>
     setDemoSelected((prev) => {
       const next = new Set(prev);
-      next.has(node_type) ? next.delete(node_type) : next.add(node_type);
+      if (next.has(node_type)) next.delete(node_type);
+      else next.add(node_type);
       return next;
     });
 
   const toggleAll = (node_type: string) =>
     setAllSelected((prev) => {
       const next = new Set(prev);
-      next.has(node_type) ? next.delete(node_type) : next.add(node_type);
+      if (next.has(node_type)) next.delete(node_type);
+      else next.add(node_type);
       return next;
     });
 
