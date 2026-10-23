@@ -165,6 +165,9 @@ async def save(
             s.add(row)
         for field, value in cleaned.items():
             if field == "modules" and value is not None:
+                for key in value:  # type: ignore[union-attr]
+                    if reason := module_catalog.unavailable_reason(key):
+                        raise OrgSettingsError(reason)
                 value = ",".join(value)  # type: ignore[arg-type]
             setattr(row, field, value)
         row.updated_by = updated_by

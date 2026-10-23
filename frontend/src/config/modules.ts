@@ -5,7 +5,14 @@
  * and the router; its API answers 404 anyway. Everything not listed here is
  * the core and always shown.
  */
-export type ModuleKey = "calendar" | "collaboration" | "governance" | "glossary" | "surveys";
+export type ModuleKey = "calendar" | "collaboration" | "governance" | "glossary" | "surveys" | "arkitekten";
+
+/**
+ * Arkitekten (module "arkitekten") has no pages here: it is its own service,
+ * and the portal shows its process diagrams in the process explorer and links
+ * to it from the top bar (ARKITEKTEN_URL, via /config.js).
+ */
+export const ARKITEKTEN_URL = (window.__EA_CONFIG__?.arkitektenUrl || import.meta.env.VITE_ARKITEKTEN_URL || "").replace(/\/+$/, "");
 
 // Path prefixes, longest first is not needed: no prefix here contains another.
 const MODULE_PATHS: [string, ModuleKey][] = [

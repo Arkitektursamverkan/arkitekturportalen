@@ -55,4 +55,6 @@ api_router.include_router(architecture_journey.router)
 api_router.include_router(graph_snapshots.router)
 api_router.include_router(statistics.router)
 api_router.include_router(workspaces.router, dependencies=[Depends(modules.requires("collaboration"))])
-api_router.include_router(arkflows.router)
+# Arkitekten is a neighbouring product (its own service, like the Integration
+# Platform); the module decides whether this installation shows its scenes.
+api_router.include_router(arkflows.router, dependencies=[Depends(modules.requires("arkitekten"))])

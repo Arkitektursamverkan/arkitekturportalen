@@ -50,6 +50,9 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     from app import modules
     if modules.unknown(settings.MODULES):
         log.warning("app.unknown_modules", modules=modules.unknown(settings.MODULES), known=list(modules.KEYS))
+    for key in modules.parse(settings.MODULES):
+        if reason := modules.unavailable_reason(key):
+            log.warning("app.module_unavailable", module=key, reason=reason)
 
     from app.dal.graph_repository import GraphRepository
     repo: GraphRepository

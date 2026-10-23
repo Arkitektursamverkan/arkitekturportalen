@@ -25,7 +25,16 @@ PATHS = {
     ],
     "glossary": ["/api/v1/glossary"],
     "surveys": ["/api/v1/surveys", "/api/v1/my-surveys", "/api/v1/published-reports"],
+    "arkitekten": ["/api/v1/arkflows"],
 }
+
+
+@pytest.fixture(autouse=True)
+def _plattformen_finns(monkeypatch):
+    """Modulen Arkitekten kräver Integrationsplattformen (beslut B1). Testerna
+    här prövar varje modul som en installation med plattformen; det som
+    händer utan den prövas för sig (test_arkitekten_requires_the_platform)."""
+    monkeypatch.setenv("INTEGRATION_PLATFORM_URL", "http://plattform-api:8000/api/v1")
 
 
 @pytest.fixture(autouse=True)
@@ -198,3 +207,15 @@ async def test_sok_hittar_principer_bara_med_arkitekturstyrning(client, admin, r
     assert await typer() == {"ArchitecturePrinciple", "Application"}
     monkeypatch.setattr(settings, "MODULES", "")
     assert await typer() == {"Application"}
+
+
+def test_arkitekten_requires_the_platform(monkeypatch):
+    """B1: Arkitekten's diagrams reach the portal only through the Integration
+    Platform, so the module cannot be on in an installation without it."""
+    from app import modules
+
+    monkeypatch.delenv("INTEGRATION_PLATFORM_URL", raising=False)
+    assert "Integrationsplattformen" in (modules.unavailable_reason("arkitekten") or "")
+    assert modules.unavailable_reason("glossary") is None
+    monkeypatch.setenv("INTEGRATION_PLATFORM_URL", "http://plattform-api:8000/api/v1")
+    assert modules.unavailable_reason("arkitekten") is None

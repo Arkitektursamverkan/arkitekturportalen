@@ -261,10 +261,10 @@ const ModulesCard: React.FC<{ data: OrgSettingsAdmin }> = ({ data }) => {
           {data.module_catalog.map((m) => (
             <FormControlLabel
               key={m.key}
-              disabled={!own}
+              disabled={!own || Boolean(m.unavailable)}
               control={
                 <Checkbox
-                  checked={own ? chosen.includes(m.key) : defaults.has(m.key)}
+                  checked={!m.unavailable && (own ? chosen.includes(m.key) : defaults.has(m.key))}
                   onChange={(e) => toggle(m.key, e.target.checked)}
                 />
               }
@@ -272,6 +272,9 @@ const ModulesCard: React.FC<{ data: OrgSettingsAdmin }> = ({ data }) => {
                 <Box>
                   <Typography variant="body2" fontWeight={600}>{m.name}</Typography>
                   <Typography variant="caption" color="text.secondary">{m.description}</Typography>
+                  {m.unavailable && (
+                    <Typography variant="caption" color="warning.main" display="block">{m.unavailable}</Typography>
+                  )}
                 </Box>
               }
             />

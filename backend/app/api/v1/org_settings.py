@@ -35,6 +35,8 @@ class ModuleRead(BaseModel):
     key: str
     name: str
     description: str
+    # Set when the module cannot be switched on here (e.g. needs the platform).
+    unavailable: str | None = None
 
 
 class OrgSettingsAdminRead(BaseModel):
@@ -77,7 +79,7 @@ def _public() -> OrgSettingsPublic:
         org_short_name=cur.org_short_name,
         brand_color=cur.brand_color,
         logo_version=str(int(cur.updated_at.timestamp())) if cur.has_logo and cur.updated_at else None,
-        modules=[k for k in module_catalog.KEYS if k in cur.modules],
+        modules=[k for k in module_catalog.KEYS if module_catalog.enabled(k)],
         navigation=Navigation.model_validate(nav) if (nav := org_settings.navigation()) else None,
     )
 
@@ -90,7 +92,11 @@ async def _admin_read(repo: PostgresRepository) -> OrgSettingsAdminRead:
         defaults=OrgSettingsValues.model_validate(org_settings.defaults()),
         has_logo=org_settings.current().has_logo,
         updated_by=row.updated_by if row else None,
-        module_catalog=[ModuleRead(key=m.key, name=m.name, description=m.description) for m in module_catalog.MODULES],
+        module_catalog=[
+            ModuleRead(key=m.key, name=m.name, description=m.description,
+                       unavailable=module_catalog.unavailable_reason(m.key))
+            for m in module_catalog.MODULES
+        ],
     )
 
 

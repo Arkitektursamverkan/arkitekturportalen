@@ -19,6 +19,7 @@ import {
 } from "@/api/sync";
 import { useSourceFields, useNodeTypes } from "@/api/platformImport";
 import { useSyncArkflows } from "@/api/arkflows";
+import { useModules } from "@/api/orgSettings";
 import MappingTable, { type EaField, type FieldMap } from "@/components/sync/MappingTable";
 import { NODE_COLORS } from "@/config/graphConfig";
 import type { NodeType } from "@/types/graph";
@@ -33,6 +34,7 @@ const SyncProfiles: React.FC = () => {
   const saveMutation = useSaveSyncProfile();
   const [editingProfile, setEditingProfile] = useState<SyncProfile | null>(null);
   const arkflowSync = useSyncArkflows();
+  const { enabled: moduleOn } = useModules();
 
   const webhookUrl = `${window.location.protocol}//${window.location.hostname}:8000/api/v1/sync/webhook`;
 
@@ -73,17 +75,18 @@ const SyncProfiles: React.FC = () => {
           två olika saker. Plattformens pipeline går varannan timme; den här
           knappen är för den som just ändrat något i Arkitekten och inte vill
           vänta. */}
+      {moduleOn("arkitekten") && (
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2} flexWrap="wrap">
             <Box>
               <Typography variant="subtitle1" fontWeight={600}>
-                {t("sync.arkflowTitle", { defaultValue: "Flowcharts from Arkitekten" })}
+                {t("sync.arkflowTitle", { defaultValue: "Process diagrams from Arkitekten" })}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 {t("sync.arkflowHint", {
                   defaultValue:
-                    "Fetches the process flowcharts again. Runs automatically every two hours — use this when you have just changed something in Arkitekten. Only approved versions are fetched; a draft stays invisible until it is approved.",
+                    "Fetches the process diagrams again. Runs automatically every two hours — use this when you have just changed something in Arkitekten. Only approved versions are fetched; a draft stays invisible until it is approved.",
                 })}
               </Typography>
             </Box>
@@ -96,7 +99,7 @@ const SyncProfiles: React.FC = () => {
                   const res = await arkflowSync.mutateAsync();
                   enqueueSnackbar(
                     t("sync.arkflowDone", {
-                      defaultValue: "{{count}} flowcharts fetched, {{updated}} updated.",
+                      defaultValue: "{{count}} process diagrams fetched, {{updated}} updated.",
                       count: res.records_processed,
                       updated: res.records_updated,
                     }),
@@ -122,7 +125,7 @@ const SyncProfiles: React.FC = () => {
           {arkflowSync.data && (
             <Alert severity={arkflowSync.data.failed.length ? "warning" : "success"} sx={{ mt: 2 }}>
               {t("sync.arkflowResult", {
-                defaultValue: "Last run: {{count}} flowcharts, {{updated}} updated.",
+                defaultValue: "Last run: {{count}} process diagrams, {{updated}} updated.",
                 count: arkflowSync.data.records_processed,
                 updated: arkflowSync.data.records_updated,
               })}
@@ -130,6 +133,7 @@ const SyncProfiles: React.FC = () => {
           )}
         </CardContent>
       </Card>
+      )}
 
       {/* Create new profile link */}
       <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
