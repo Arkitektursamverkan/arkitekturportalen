@@ -289,7 +289,7 @@ const QuickAddNode: React.FC<Props> = ({ anchorNodeId, anchorNodeType, anchorNod
                     alignItems="center"
                     spacing={1}
                     sx={{ cursor: "pointer", borderRadius: 1, px: 0.5, "&:hover": { bgcolor: "action.hover" } }}
-                    onClick={() => setSelectedRecents((prev) => { const next = new Set(prev); next.has(i) ? next.delete(i) : next.add(i); return next; })}
+                    onClick={() => setSelectedRecents((prev) => { const next = new Set(prev); if (next.has(i)) next.delete(i); else next.add(i); return next; })}
                   >
                     <Checkbox
                       size="small"
