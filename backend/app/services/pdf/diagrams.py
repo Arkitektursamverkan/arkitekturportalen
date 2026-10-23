@@ -100,7 +100,7 @@ def domain_pyramid_svg(
         )
         parts.append(
             f'<text x="200" y="{text_y + 12}" text-anchor="middle" font-size="9" '
-            f'fill="{tcolor}" opacity="0.85">{escape(sub)}</text>'
+            f'fill="{tcolor}" fill-opacity="0.85">{escape(sub)}</text>'
         )
 
     if show_side_labels:
