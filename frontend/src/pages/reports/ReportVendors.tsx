@@ -28,23 +28,23 @@ const ReportVendors: React.FC = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom><ReportTitle fallback={t("reports.vendors.title")} /></Typography>
-      <Typography variant="body2" color="text.secondary" mb={2}>{t("reports.vendors.description")}</Typography>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>{t("reports.vendors.description")}</Typography>
 
-      <Stack direction="row" spacing={2} mb={3}>
+      <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
         <Chip label={`${vendors.length} ${t("reports.vendors.vendorCount")}`} variant="outlined" />
         <Chip label={`${totalApps} ${t("reports.vendors.appCount")}`} variant="outlined" />
       </Stack>
 
       <Card sx={{ mb: 3 }}>
         <CardContent>
-          <Typography variant="h6" fontSize={16} fontWeight={600} mb={2}>{t("reports.vendors.distribution")}</Typography>
+          <Typography variant="h6" sx={{ fontSize: 16, fontWeight: 600, mb: 2 }}>{t("reports.vendors.distribution")}</Typography>
           <Stack spacing={1.5}>
             {vendors.slice(0, 15).map((v) => {
               const pct = totalApps > 0 ? Math.round((v.apps.length / totalApps) * 100) : 0;
               return (
                 <Box key={v.vendor}>
-                  <Stack direction="row" justifyContent="space-between" mb={0.3}>
-                    <Typography variant="body2" fontWeight={500}>{v.vendor}</Typography>
+                  <Stack direction="row" sx={{ justifyContent: "space-between", mb: 0.3 }}>
+                    <Typography variant="body2" sx={{ fontWeight: 500 }}>{v.vendor}</Typography>
                     <Typography variant="caption">{v.apps.length} ({pct}%)</Typography>
                   </Stack>
                   <LinearProgress variant="determinate" value={pct}
@@ -70,11 +70,11 @@ const ReportVendors: React.FC = () => {
           <TableBody>
             {vendors.map((v) => (
               <TableRow key={v.vendor} hover>
-                <TableCell><Typography variant="body2" fontWeight={500}>{v.vendor}</Typography></TableCell>
+                <TableCell><Typography variant="body2" sx={{ fontWeight: 500 }}>{v.vendor}</Typography></TableCell>
                 <TableCell align="center"><Chip label={v.apps.length} size="small" /></TableCell>
                 <TableCell align="center"><Typography variant="caption">{totalApps > 0 ? Math.round((v.apps.length / totalApps) * 100) : 0}%</Typography></TableCell>
                 <TableCell>
-                  <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
+                  <Stack direction="row" spacing={0.5} useFlexGap sx={{ flexWrap: "wrap" }}>
                     {v.apps.slice(0, 8).map((app) => (
                       <Chip key={app.id} label={app.name} size="small" variant="outlined"
                         onClick={() => navigate(`/systems?id=${app.id}`)} sx={{ cursor: "pointer" }} />

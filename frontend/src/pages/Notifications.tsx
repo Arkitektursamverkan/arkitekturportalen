@@ -10,7 +10,7 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
 import BlockIcon from "@mui/icons-material/Block";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import EditNoteIcon from "@mui/icons-material/EditNote";
@@ -74,7 +74,9 @@ const Notifications: React.FC = () => {
   const refresh = () => qc.invalidateQueries({ queryKey: adminNotificationsKey });
 
   if (isLoading) return <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}><CircularProgress /></Box>;
-  if (error || !data) return <Box p={3}><Alert severity="error">{(error as Error)?.message ?? "Kunde inte ladda notifieringar"}</Alert></Box>;
+  if (error || !data) return (
+    <Box sx={{ p: 3 }}><Alert severity="error">{(error as Error)?.message ?? "Kunde inte ladda notifieringar"}</Alert></Box>
+  );
 
   const changeProposals = data.change_proposals ?? [];
   const calendarProposals = data.calendar_proposals ?? [];
@@ -88,10 +90,10 @@ const Notifications: React.FC = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Stack direction="row" alignItems="center" mb={3}>
+      <Stack direction="row" sx={{ alignItems: "center", mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>Meddelanden & notifieringar</Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="h4" sx={{ fontWeight: 700 }}>Meddelanden & notifieringar</Typography>
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>
             {total === 0
               ? "Inga öppna ärenden — du är ikapp."
               : `${total} öppna ärende${total > 1 ? "n" : ""} att hantera.`}
@@ -99,12 +101,12 @@ const Notifications: React.FC = () => {
         </Box>
       </Stack>
 
-      <Stack direction="row" alignItems="center" spacing={1} mb={1}>
+      <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 1 }}>
         <EditNoteIcon color="primary" />
         <Typography variant="h6">Ändringsförslag på objekt ({changeProposals.length})</Typography>
       </Stack>
       {changeProposals.length === 0 ? (
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
+        <Typography variant="body2" sx={{ color: "text.secondary", mb: 4 }}>
           Inga öppna ändringsförslag.
         </Typography>
       ) : (
@@ -119,12 +121,12 @@ const Notifications: React.FC = () => {
       <>
       <Divider sx={{ my: 3 }} />
 
-      <Stack direction="row" alignItems="center" spacing={1} mb={1}>
+      <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 1 }}>
         <CalendarMonthIcon color="primary" />
         <Typography variant="h6">Förslag till verksamhetskalendern ({calendarProposals.length})</Typography>
       </Stack>
       {calendarProposals.length === 0 ? (
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
+        <Typography variant="body2" sx={{ color: "text.secondary", mb: 4 }}>
           Inga öppna kalenderförslag.
         </Typography>
       ) : (
@@ -139,12 +141,12 @@ const Notifications: React.FC = () => {
 
       <Divider sx={{ my: 3 }} />
 
-      <Stack direction="row" alignItems="center" spacing={1} mb={1}>
+      <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 1 }}>
         <CommentIcon color="primary" />
         <Typography variant="h6">Kommentarer att granska ({data.pending_comments.length})</Typography>
       </Stack>
       {data.pending_comments.length === 0 ? (
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
+        <Typography variant="body2" sx={{ color: "text.secondary", mb: 4 }}>
           Inga väntande kommentarer.
         </Typography>
       ) : (
@@ -152,15 +154,15 @@ const Notifications: React.FC = () => {
           {data.pending_comments.map((c) => (
             <Card key={c.id} variant="outlined">
               <CardContent>
-                <Stack direction="row" alignItems="center" spacing={1} mb={0.5}>
+                <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 0.5 }}>
                   <Chip size="small" label={subjectLabel(c)} variant="outlined" />
-                  <Box flex={1} />
-                  <Typography variant="caption" color="text.secondary">
+                  <Box sx={{ flex: 1 }} />
+                  <Typography variant="caption" sx={{ color: "text.secondary" }}>
                     {c.created_by} · {new Date(c.created_at).toLocaleString("sv-SE")}
                   </Typography>
                 </Stack>
                 <Typography variant="body1" sx={{ whiteSpace: "pre-line", my: 1 }}>{c.body}</Typography>
-                <Stack direction="row" spacing={1} justifyContent="flex-end">
+                <Stack direction="row" spacing={1} sx={{ justifyContent: "flex-end" }}>
                   <Tooltip title="Ta bort">
                     <IconButton
                       size="small"
@@ -184,12 +186,12 @@ const Notifications: React.FC = () => {
 
       <Divider sx={{ my: 3 }} />
 
-      <Stack direction="row" alignItems="center" spacing={1} mb={1}>
+      <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 1 }}>
         <FlagIcon sx={{ color: "#ED6C02" }} />
         <Typography variant="h6">Hjälp begärd i lösningsskisser ({data.help_requests.length})</Typography>
       </Stack>
       {data.help_requests.length === 0 ? (
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" sx={{ color: "text.secondary" }}>
           Inga skisser med hjälpflaggor.
         </Typography>
       ) : (
@@ -204,12 +206,12 @@ const Notifications: React.FC = () => {
       <>
       <Divider sx={{ my: 3 }} />
 
-      <Stack direction="row" alignItems="center" spacing={1} mb={1}>
+      <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 1 }}>
         <MenuBookIcon color="primary" />
         <Typography variant="h6">Ordlisteförfrågningar ({data.glossary_requests.length})</Typography>
       </Stack>
       {data.glossary_requests.length === 0 ? (
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" sx={{ color: "text.secondary" }}>
           Inga väntande ordlisteförfrågningar.
         </Typography>
       ) : (
@@ -217,19 +219,19 @@ const Notifications: React.FC = () => {
           {data.glossary_requests.map((r) => (
             <Card key={r.id} variant="outlined" sx={{ borderLeft: "4px solid #1976d2" }}>
               <CardContent>
-                <Stack direction="row" alignItems="center" spacing={1} mb={0.5}>
-                  <Typography variant="subtitle1" fontWeight={700}>{r.term}</Typography>
-                  <Box flex={1} />
-                  <Typography variant="caption" color="text.secondary">
+                <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 0.5 }}>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>{r.term}</Typography>
+                  <Box sx={{ flex: 1 }} />
+                  <Typography variant="caption" sx={{ color: "text.secondary" }}>
                     {r.requested_by ?? "Okänd"} · {new Date(r.created_at).toLocaleString("sv-SE")}
                   </Typography>
                 </Stack>
                 {r.context && (
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                  <Typography variant="body2" sx={{ color: "text.secondary", mb: 1 }}>
                     {r.context}
                   </Typography>
                 )}
-                <Stack direction="row" justifyContent="flex-end" spacing={1}>
+                <Stack direction="row" spacing={1} sx={{ justifyContent: "flex-end" }}>
                   <Button
                     size="small"
                     color="error"
@@ -261,12 +263,12 @@ const Notifications: React.FC = () => {
 
       <Divider sx={{ my: 3 }} />
 
-      <Stack direction="row" alignItems="center" spacing={1} mb={1}>
+      <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 1 }}>
         <DeleteForeverIcon color="error" />
         <Typography variant="h6">Borttagna objekt ({data.node_deletions.length})</Typography>
       </Stack>
       {data.node_deletions.length === 0 ? (
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" sx={{ color: "text.secondary" }}>
           Inga borttagna objekt.
         </Typography>
       ) : (
@@ -330,20 +332,20 @@ const HelpRequestCard: React.FC<{ entry: HelpRequestEntry; onChanged: () => void
   return (
     <Card variant="outlined" sx={{ borderLeft: "4px solid #ED6C02" }}>
       <CardContent>
-        <Stack direction="row" alignItems="center" spacing={1} mb={0.5}>
-          <Typography variant="subtitle1" fontWeight={700}>{entry.sketch_title}</Typography>
+        <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 0.5 }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>{entry.sketch_title}</Typography>
           <Chip size="small" label={entry.sketch_status} variant="outlined" />
-          <Box flex={1} />
-          <Typography variant="caption" color="text.secondary">
+          <Box sx={{ flex: 1 }} />
+          <Typography variant="caption" sx={{ color: "text.secondary" }}>
             {entry.created_by} · {new Date(entry.updated_at).toLocaleString("sv-SE")}
           </Typography>
         </Stack>
-        <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 1 }}>
+        <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mb: 1 }}>
           {entry.fields.length} {entry.fields.length === 1 ? "flaggad fråga" : "flaggade frågor"}
         </Typography>
         <Stack spacing={0.5} sx={{ mb: 1 }}>
           {entry.fields.map((f) => (
-            <Stack key={f} direction="row" alignItems="center" spacing={1}>
+            <Stack key={f} direction="row" spacing={1} sx={{ alignItems: "center" }}>
               <Box sx={{ flex: 1, fontSize: 14 }}>{fieldLabel(f)}</Box>
               <Button size="small" variant="text" onClick={() => clearOne(f)} disabled={update.isPending}>
                 Markera hanterad
@@ -351,7 +353,7 @@ const HelpRequestCard: React.FC<{ entry: HelpRequestEntry; onChanged: () => void
             </Stack>
           ))}
         </Stack>
-        <Stack direction="row" justifyContent="flex-end" spacing={1}>
+        <Stack direction="row" spacing={1} sx={{ justifyContent: "flex-end" }}>
           <Button size="small" startIcon={<DoneAllIcon />} onClick={clearAll} disabled={update.isPending}>
             Markera alla som hanterade
           </Button>
@@ -379,9 +381,11 @@ const ReviewDialog: React.FC<{
         <Alert severity="info" sx={{ mb: 2 }}>
           Att godkänna eller avvisa stämplar att du läst kommentaren.
         </Alert>
-        <Typography variant="caption" color="text.secondary">{subjectLabel}</Typography>
+        <Typography variant="caption" sx={{ color: "text.secondary" }}>{subjectLabel}</Typography>
         <Box sx={{ p: 1.5, bgcolor: "action.hover", borderRadius: 1, my: 1 }}>
-          <Typography variant="caption" fontWeight={600}>{comment.created_by} · {new Date(comment.created_at).toLocaleString("sv-SE")}</Typography>
+          <Typography variant="caption" sx={{
+            fontWeight: 600
+          }}>{comment.created_by} · {new Date(comment.created_at).toLocaleString("sv-SE")}</Typography>
           <Typography variant="body2" sx={{ whiteSpace: "pre-line", mt: 0.5 }}>{comment.body}</Typography>
         </Box>
         <TextField
@@ -472,12 +476,12 @@ const NodeDeletionCard: React.FC<{ entry: NodeDeletionEntry }> = ({ entry }) => 
   return (
     <Card variant="outlined" sx={{ borderLeft: "4px solid #d32f2f" }}>
       <CardContent>
-        <Stack direction="row" alignItems="center" spacing={1} mb={0.5}>
+        <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 0.5 }}>
           <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: color, flexShrink: 0 }} />
-          <Typography variant="subtitle1" fontWeight={700}>{entry.node_name}</Typography>
+          <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>{entry.node_name}</Typography>
           <Chip size="small" label={entry.node_type} variant="outlined" sx={{ fontSize: 11, borderColor: color, color }} />
-          <Box flex={1} />
-          <Typography variant="caption" color="text.secondary">
+          <Box sx={{ flex: 1 }} />
+          <Typography variant="caption" sx={{ color: "text.secondary" }}>
             {entry.deleted_by} · {new Date(entry.deleted_at).toLocaleString("sv-SE")}
           </Typography>
           <Tooltip title="Ta bort meddelandet. Borttagningen finns kvar i revisionsloggen.">
@@ -493,7 +497,7 @@ const NodeDeletionCard: React.FC<{ entry: NodeDeletionEntry }> = ({ entry }) => 
             </span>
           </Tooltip>
         </Stack>
-        <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: "pre-wrap" }}>
+        <Typography variant="body2" sx={{ color: "text.secondary", whiteSpace: "pre-wrap" }}>
           {entry.reason}
         </Typography>
         {dismiss.isError && (
@@ -536,9 +540,9 @@ const ChangeProposalCard: React.FC<{ proposal: ChangeProposal }> = ({ proposal: 
   return (
     <Card variant="outlined" sx={{ borderLeft: "4px solid #1976d2" }}>
       <CardContent>
-        <Stack direction="row" alignItems="center" spacing={1} mb={0.5} flexWrap="wrap">
+        <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 0.5, flexWrap: "wrap" }}>
           <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: color, flexShrink: 0 }} />
-          <Typography variant="subtitle1" fontWeight={700}>{p.node_name}</Typography>
+          <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>{p.node_name}</Typography>
           <Chip size="small" label={t(`nodeTypes.${p.node_type}`)} variant="outlined" sx={{ fontSize: 11, borderColor: color, color }} />
           <Chip size="small" label={`Källa: ${t(`externalSource.${p.node_source}`, { defaultValue: p.node_source })}`} sx={{ fontSize: 11 }} />
           {route && (
@@ -548,12 +552,12 @@ const ChangeProposalCard: React.FC<{ proposal: ChangeProposal }> = ({ proposal: 
               </IconButton>
             </Tooltip>
           )}
-          <Box flex={1} />
-          <Typography variant="caption" color="text.secondary">
+          <Box sx={{ flex: 1 }} />
+          <Typography variant="caption" sx={{ color: "text.secondary" }}>
             {p.proposed_by ?? "okänd"} · {new Date(p.created_at).toLocaleString("sv-SE")}
           </Typography>
         </Stack>
-        <Typography variant="body2" color="text.secondary" mt={1}>
+        <Typography variant="body2" sx={{ color: "text.secondary", mt: 1 }}>
           {proposalFieldLabel(p.field, p.node_type, t)}
         </Typography>
         <Box sx={{ my: 0.5 }}>
@@ -565,7 +569,7 @@ const ChangeProposalCard: React.FC<{ proposal: ChangeProposal }> = ({ proposal: 
           </Typography>
         </Box>
         {p.old_value !== p.current_value && !alreadyInList && (
-          <Typography variant="caption" color="text.secondary" display="block">
+          <Typography variant="caption" sx={{ color: "text.secondary", display: "block" }}>
             När förslaget lämnades stod det: {p.old_value || "—"}
           </Typography>
         )}
@@ -577,7 +581,7 @@ const ChangeProposalCard: React.FC<{ proposal: ChangeProposal }> = ({ proposal: 
             Listan visar redan det föreslagna värdet – förslaget kan släckas.
           </Alert>
         )}
-        <Stack direction={{ xs: "column", sm: "row" }} spacing={1} alignItems={{ sm: "center" }} mt={1}>
+        <Stack direction={{ xs: "column", sm: "row" }} spacing={1} sx={{ alignItems: { sm: "center" }, mt: 1 }}>
           <TextField
             size="small" fullWidth
             placeholder="Anteckning till loggen (valfritt)"
@@ -624,16 +628,16 @@ const CalendarProposalCard: React.FC<{ event: CalendarEvent }> = ({ event: e }) 
   return (
     <Card variant="outlined" sx={{ borderLeft: "4px solid #2E7D32" }}>
       <CardContent>
-        <Stack direction="row" alignItems="center" spacing={1} mb={0.5} flexWrap="wrap">
-          <Typography variant="subtitle1" fontWeight={700}>{e.title}</Typography>
+        <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 0.5, flexWrap: "wrap" }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>{e.title}</Typography>
           {e.change_freeze && <Chip size="small" color="error" icon={<LockIcon />} label="Verksamhetskritiskt" sx={{ fontSize: 11 }} />}
           <Tooltip title="Öppna kalendern">
             <IconButton size="small" onClick={() => navigate("/business-calendar")}>
               <OpenInNewIcon fontSize="small" />
             </IconButton>
           </Tooltip>
-          <Box flex={1} />
-          <Typography variant="caption" color="text.secondary">
+          <Box sx={{ flex: 1 }} />
+          <Typography variant="caption" sx={{ color: "text.secondary" }}>
             {e.proposed_by ?? "okänd"} · {new Date(e.created_at).toLocaleString("sv-SE")}
           </Typography>
         </Stack>
@@ -644,12 +648,12 @@ const CalendarProposalCard: React.FC<{ event: CalendarEvent }> = ({ event: e }) 
           <Typography variant="body2" sx={{ whiteSpace: "pre-wrap", my: 1 }}>{e.description}</Typography>
         )}
         {dependencies && (
-          <Typography variant="body2" color="text.secondary">Måste fungera: {dependencies}</Typography>
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>Måste fungera: {dependencies}</Typography>
         )}
         {e.departments.length > 0 && (
-          <Typography variant="body2" color="text.secondary">Berörd avdelning: {e.departments.join(", ")}</Typography>
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>Berörd avdelning: {e.departments.join(", ")}</Typography>
         )}
-        <Stack direction={{ xs: "column", sm: "row" }} spacing={1} alignItems={{ sm: "center" }} mt={1}>
+        <Stack direction={{ xs: "column", sm: "row" }} spacing={1} sx={{ alignItems: { sm: "center" }, mt: 1 }}>
           <TextField
             size="small" fullWidth
             placeholder="Anteckning till loggen (valfritt)"

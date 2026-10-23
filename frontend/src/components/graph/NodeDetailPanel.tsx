@@ -111,8 +111,8 @@ const NodeDetailPanel: React.FC = () => {
         }}
       >
         <Box sx={{ p: 2, height: "100%", overflow: "auto" }}>
-          <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
-            <Typography variant="h6" fontSize={15}>
+          <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center", mb: 1 }}>
+            <Typography variant="h6" sx={{ fontSize: 15 }}>
               {selectedNode ? t("common.type") : "Edge"}
             </Typography>
             <IconButton size="small" onClick={clearSelection}><CloseIcon fontSize="small" /></IconButton>
@@ -334,10 +334,10 @@ const NodeDetail: React.FC<NodeDetailProps> = ({ node, navigate, t, isAdmin, isE
 
   return (
     <Box>
-      <Stack direction="row" spacing={1} alignItems="center" mb={1}>
+      <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 1 }}>
         <Box sx={{ width: 14, height: 14, borderRadius: "50%", bgcolor: NODE_COLORS[node.type] }} />
         <Chip label={t(`nodeTypes.${node.type}`)} size="small" />
-        <Box flex={1} />
+        <Box sx={{ flex: 1 }} />
         {!editable && (
           <Tooltip title="Föreslå ändring">
             <IconButton size="small" color="primary" onClick={() => setProposing(true)} aria-label="Föreslå ändring">
@@ -375,7 +375,7 @@ const NodeDetail: React.FC<NodeDetailProps> = ({ node, navigate, t, isAdmin, isE
       </Stack>
 
       {proposing && (
-        <Typography variant="caption" color="primary" display="block" mb={1}>
+        <Typography variant="caption" color="primary" sx={{ display: "block", mb: 1 }}>
           Ändra de fält som ska vara annorlunda. Förslaget går till administratören,
           som gör ändringen i den bakomliggande listan.
         </Typography>
@@ -387,7 +387,7 @@ const NodeDetail: React.FC<NodeDetailProps> = ({ node, navigate, t, isAdmin, isE
           label={t("common.name")} sx={{ mb: 1 }}
         />
       ) : (
-        <Box mb={0.5}>
+        <Box sx={{ mb: 0.5 }}>
           <ProposedValue proposals={pendingByField.get("name")} current={node.name} fontSize={16} fontWeight={700} />
         </Box>
       )}
@@ -399,12 +399,12 @@ const NodeDetail: React.FC<NodeDetailProps> = ({ node, navigate, t, isAdmin, isE
           label={t("common.description")} sx={{ mb: 1 }}
         />
       ) : pendingByField.has("description") ? (
-        <Box mb={1}>
+        <Box sx={{ mb: 1 }}>
           <ProposedValue proposals={pendingByField.get("description")} current={node.description} fontSize={14} />
         </Box>
       ) : (
         node.description && (
-          <Typography variant="body2" color="text.secondary" mb={1}>{node.description}</Typography>
+          <Typography variant="body2" sx={{ color: "text.secondary", mb: 1 }}>{node.description}</Typography>
         )
       )}
 
@@ -421,7 +421,7 @@ const NodeDetail: React.FC<NodeDetailProps> = ({ node, navigate, t, isAdmin, isE
           </TableRow>
           <TableRow>
             <TableCell sx={{ border: 0, pl: 0, py: 0.5, color: "text.secondary", fontSize: 12 }}>
-              <Stack direction="row" spacing={0.5} alignItems="center">
+              <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
                 <LinkIcon sx={{ fontSize: 14 }} />
                 <span>{t("nodeDetail.connections")}</span>
               </Stack>
@@ -456,7 +456,7 @@ const NodeDetail: React.FC<NodeDetailProps> = ({ node, navigate, t, isAdmin, isE
                     <TextField
                       fullWidth variant="standard" size="small" value={attrs[k] ?? ""}
                       onChange={(e) => setAttrs((prev) => ({ ...prev, [k]: e.target.value }))}
-                      inputProps={{ style: { fontSize: 12, padding: 0 } }}
+                      slotProps={{ htmlInput: { style: { fontSize: 12, padding: 0 } } }}
                     />
                   ) : pendingByField.has(attrField(k)) ? (
                     <ProposedValue proposals={pendingByField.get(attrField(k))} current={attrs[k]} fontSize={12} />
@@ -470,7 +470,7 @@ const NodeDetail: React.FC<NodeDetailProps> = ({ node, navigate, t, isAdmin, isE
         </TableBody>
       </Table>
       {proposing && (
-        <Box mt={1.5}>
+        <Box sx={{ mt: 1.5 }}>
           <TextField
             fullWidth size="small" multiline minRows={2}
             label="Motivering (valfritt)"
@@ -478,7 +478,7 @@ const NodeDetail: React.FC<NodeDetailProps> = ({ node, navigate, t, isAdmin, isE
             value={proposalComment}
             onChange={(e) => setProposalComment(e.target.value)}
           />
-          <Stack direction="row" spacing={1} mt={1} justifyContent="flex-end">
+          <Stack direction="row" spacing={1} sx={{ mt: 1, justifyContent: "flex-end" }}>
             <Button size="small" onClick={handleCancel}>{t("common.cancel")}</Button>
             <Button
               size="small" variant="contained"
@@ -492,8 +492,8 @@ const NodeDetail: React.FC<NodeDetailProps> = ({ node, navigate, t, isAdmin, isE
         </Box>
       )}
       {node.type === "Process" && editing && (
-        <Box mt={1.5}>
-          <Typography variant="caption" color="text.secondary" mb={0.5} display="block">
+        <Box sx={{ mt: 1.5 }}>
+          <Typography variant="caption" sx={{ color: "text.secondary", mb: 0.5, display: "block" }}>
             {t("createNode.parentProcess")}
           </Typography>
           <Autocomplete
@@ -513,9 +513,9 @@ const NodeDetail: React.FC<NodeDetailProps> = ({ node, navigate, t, isAdmin, isE
         (() => {
           const parent = allProcesses.find((p) => p.id === parentId);
           return parent ? (
-            <Box mt={1}>
-              <Typography variant="caption" color="text.secondary">{t("createNode.parentProcess")}</Typography>
-              <Typography variant="body2" fontWeight={500}>{parent.name}</Typography>
+            <Box sx={{ mt: 1 }}>
+              <Typography variant="caption" sx={{ color: "text.secondary" }}>{t("createNode.parentProcess")}</Typography>
+              <Typography variant="body2" sx={{ fontWeight: 500 }}>{parent.name}</Typography>
             </Box>
           ) : null;
         })()
@@ -525,10 +525,10 @@ const NodeDetail: React.FC<NodeDetailProps> = ({ node, navigate, t, isAdmin, isE
       )}
 
       {EXPLORER_PATHS[node.type] && !editable && (
-        <Box mt={2}>
+        <Box sx={{ mt: 2 }}>
           <IconButton size="small" onClick={() => navigate(node)} title="Open detail view">
             <OpenInNewIcon fontSize="small" />
-            <Typography variant="caption" ml={0.5}>
+            <Typography variant="caption" sx={{ ml: 0.5 }}>
               {node.type === "Process" ? t("processExplorer.e2eGraph")
                 : node.type === "Application" ? t("systemView.title")
                 : t(`nodeTypes.${node.type}`)}
@@ -600,13 +600,13 @@ const EdgeNotesSection: React.FC<{
   if (edgesWithNotes.length === 0 && !expanded) return null;
 
   return (
-    <Box mt={2}>
+    <Box sx={{ mt: 2 }}>
       <Divider sx={{ mb: 1 }} />
-      <Stack direction="row" alignItems="center" spacing={0.5} mb={1}>
-        <Typography variant="caption" color="text.secondary" fontWeight={600}>
+      <Stack direction="row" spacing={0.5} sx={{ alignItems: "center", mb: 1 }}>
+        <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 600 }}>
           Anteckningar per koppling
         </Typography>
-        <Box flex={1} />
+        <Box sx={{ flex: 1 }} />
         <Button
           size="small"
           sx={{ fontSize: 10, py: 0, minWidth: 0 }}
@@ -659,7 +659,7 @@ const EdgeNoteRow: React.FC<{
 
   return (
     <Box sx={{ border: 1, borderColor: "divider", borderRadius: 1, p: 1, bgcolor: "background.default" }}>
-      <Stack direction="row" alignItems="center" spacing={0.5} mb={0.5}>
+      <Stack direction="row" spacing={0.5} sx={{ alignItems: "center", mb: 0.5 }}>
         <Chip
           size="small"
           label={t(`edgeTypes.${edge.type}`)}
@@ -672,7 +672,7 @@ const EdgeNoteRow: React.FC<{
             sx={{ fontSize: 10, height: 18, bgcolor: (NODE_COLORS as Record<string, string>)[otherNode.type], color: "#fff", maxWidth: 140 }}
           />
         )}
-        <Box flex={1} />
+        <Box sx={{ flex: 1 }} />
         {!editing && (
           <IconButton size="small" onClick={() => setEditing(true)} sx={{ p: 0.25 }}>
             <EditIcon sx={{ fontSize: 13 }} />
@@ -689,7 +689,7 @@ const EdgeNoteRow: React.FC<{
             autoFocus
             sx={{ fontSize: 12 }}
           />
-          <Stack direction="row" spacing={0.5} mt={0.5} justifyContent="flex-end">
+          <Stack direction="row" spacing={0.5} sx={{ mt: 0.5, justifyContent: "flex-end" }}>
             <Button size="small" onClick={() => { setEditing(false); setValue(existingNote); }}>
               {t("common.cancel")}
             </Button>
@@ -710,10 +710,8 @@ const EdgeNoteRow: React.FC<{
       ) : (
         <Typography
           variant="caption"
-          color={existingNote ? "text.primary" : "text.disabled"}
-          sx={{ cursor: "pointer", display: "block", whiteSpace: "pre-wrap" }}
-          onClick={() => setEditing(true)}
-        >
+          sx={{ color: existingNote ? "text.primary" : "text.disabled", cursor: "pointer", display: "block", whiteSpace: "pre-wrap" }}
+          onClick={() => setEditing(true)}>
           {existingNote || "Klicka för att lägga till anteckning…"}
         </Typography>
       )}
@@ -790,15 +788,15 @@ const ChangeProposalsSection: React.FC<{
     );
 
   return (
-    <Box mt={2}>
+    <Box sx={{ mt: 2 }}>
       <Divider sx={{ mb: 1 }} />
-      <Typography variant="caption" color="text.secondary" fontWeight={600} display="block" mb={1}>
+      <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 600, display: "block", mb: 1 }}>
         Ändringsförslag ({proposals.length})
       </Typography>
       <Stack spacing={1}>
         {proposals.map((p) => (
           <Box key={p.id} sx={{ border: 1, borderColor: "divider", borderRadius: 1, p: 1, bgcolor: "background.default" }}>
-            <Typography variant="caption" fontWeight={600} display="block">
+            <Typography variant="caption" sx={{ fontWeight: 600, display: "block" }}>
               {proposalFieldLabel(p.field, nodeType, t)}
             </Typography>
             <Typography variant="caption" sx={{ display: "block", fontSize: 11 }}>
@@ -809,15 +807,15 @@ const ChangeProposalsSection: React.FC<{
               <Box component="span" sx={{ color: "primary.main", fontWeight: 600 }}>{p.new_value || "(tomt)"}</Box>
             </Typography>
             {p.comment && (
-              <Typography variant="caption" color="text.secondary" sx={{ display: "block", fontSize: 11, whiteSpace: "pre-wrap" }}>
+              <Typography variant="caption" sx={{ color: "text.secondary", display: "block", fontSize: 11, whiteSpace: "pre-wrap" }}>
                 {p.comment}
               </Typography>
             )}
-            <Typography variant="caption" color="text.disabled" sx={{ display: "block", fontSize: 10, mt: 0.25 }}>
+            <Typography variant="caption" sx={{ color: "text.disabled", display: "block", fontSize: 10, mt: 0.25 }}>
               {p.proposed_by ?? "okänd"} · {new Date(p.created_at).toLocaleString("sv-SE")}
             </Typography>
             {(isEditor || (myId && p.proposed_by_id === myId)) && (
-              <Stack direction="row" spacing={0.5} mt={0.5} justifyContent="flex-end">
+              <Stack direction="row" spacing={0.5} sx={{ mt: 0.5, justifyContent: "flex-end" }}>
                 {myId && p.proposed_by_id === myId && (
                   <Button
                     size="small" sx={{ fontSize: 10, py: 0 }} disabled={busy}
@@ -887,22 +885,22 @@ const NodeFlagsSection: React.FC<{ nodeId: string; flags: import("@/types/graph"
   };
 
   return (
-    <Box mt={2}>
+    <Box sx={{ mt: 2 }}>
       <Divider sx={{ mb: 1 }} />
-      <Typography variant="caption" color="text.secondary" fontWeight={600} display="block" mb={1}>
+      <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 600, display: "block", mb: 1 }}>
         {t("flags.sectionTitle")}
       </Typography>
       <Stack spacing={1}>
         {flags.map((flag) => (
           <Box key={flag.id} sx={{ border: 1, borderColor: "divider", borderRadius: 1, p: 1, bgcolor: "background.default" }}>
-            <Stack direction="row" alignItems="center" spacing={0.5} mb={flag.description ? 0.5 : 0}>
+            <Stack direction="row" spacing={0.5} sx={{ alignItems: "center", mb: flag.description ? 0.5 : 0 }}>
               <Chip
                 size="small"
                 label={t(`flags.types.${flag.flag_type}`)}
                 color={FLAG_COLORS[flag.flag_type] as "warning" | "default" | "error"}
                 sx={{ fontSize: 10, height: 18 }}
               />
-              <Box flex={1} />
+              <Box sx={{ flex: 1 }} />
               {isAdmin && respondingId !== flag.id && (
                 <IconButton size="small" sx={{ p: 0.25 }} title="Svara" onClick={() => startResponding(flag)}>
                   <ReplyIcon sx={{ fontSize: 13 }} />
@@ -926,19 +924,19 @@ const NodeFlagsSection: React.FC<{ nodeId: string; flags: import("@/types/graph"
               )}
             </Stack>
             {flag.description && (
-              <Typography variant="caption" color="text.secondary" sx={{ display: "block", fontSize: 11 }}>
+              <Typography variant="caption" sx={{ color: "text.secondary", display: "block", fontSize: 11 }}>
                 {flag.description}
               </Typography>
             )}
             {flag.created_by && (
-              <Typography variant="caption" color="text.disabled" sx={{ display: "block", fontSize: 10, mt: 0.25 }}>
+              <Typography variant="caption" sx={{ color: "text.disabled", display: "block", fontSize: 10, mt: 0.25 }}>
                 {flag.created_by}
               </Typography>
             )}
 
             {/* Response area */}
             {respondingId === flag.id ? (
-              <Box mt={0.75}>
+              <Box sx={{ mt: 0.75 }}>
                 <TextField
                   fullWidth multiline minRows={2} size="small" autoFocus
                   placeholder="Skriv ett svar på flaggan…"
@@ -946,7 +944,7 @@ const NodeFlagsSection: React.FC<{ nodeId: string; flags: import("@/types/graph"
                   onChange={(e) => setResponseText(e.target.value)}
                   sx={{ fontSize: 11 }}
                 />
-                <Stack direction="row" spacing={0.5} mt={0.5} justifyContent="flex-end">
+                <Stack direction="row" spacing={0.5} sx={{ mt: 0.5, justifyContent: "flex-end" }}>
                   <Button size="small" onClick={cancelResponding}>{t("common.cancel")}</Button>
                   <Button
                     size="small" variant="contained"
@@ -958,8 +956,8 @@ const NodeFlagsSection: React.FC<{ nodeId: string; flags: import("@/types/graph"
                 </Stack>
               </Box>
             ) : flag.response ? (
-              <Box mt={0.75} sx={{ bgcolor: "action.selected", borderRadius: 0.5, p: 0.75 }}>
-                <Typography variant="caption" color="text.secondary" fontWeight={600} display="block" sx={{ fontSize: 10 }}>
+              <Box sx={{ mt: 0.75, bgcolor: "action.selected", borderRadius: 0.5, p: 0.75 }}>
+                <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 600, display: "block", fontSize: 10 }}>
                   Svar {flag.responded_by ? `· ${flag.responded_by}` : ""}
                 </Typography>
                 <Typography variant="caption" sx={{ display: "block", fontSize: 11, whiteSpace: "pre-wrap" }}>
@@ -1115,9 +1113,9 @@ const EdgeDetail: React.FC<EdgeDetailProps> = ({ edge, t, isAdmin, isEditor, onR
 
   return (
     <Box>
-      <Stack direction="row" alignItems="center" spacing={1} mb={1}>
+      <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 1 }}>
         <Chip label={t(`edgeTypes.${edge.type}`)} size="small" />
-        <Box flex={1} />
+        <Box sx={{ flex: 1 }} />
         {isEditor && (
           <IconButton size="small" onClick={onRequestDelete} color="error" title={t("common.delete")}>
             <DeleteIcon fontSize="small" />
@@ -1126,8 +1124,8 @@ const EdgeDetail: React.FC<EdgeDetailProps> = ({ edge, t, isAdmin, isEditor, onR
       </Stack>
 
       {/* Source */}
-      <Stack direction="row" alignItems="center" spacing={1} mb={0.5}>
-        <Typography variant="caption" color="text.secondary" sx={{ width: 32 }}>{t("nodeDetail.from")}</Typography>
+      <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 0.5 }}>
+        <Typography variant="caption" sx={{ color: "text.secondary", width: 32 }}>{t("nodeDetail.from")}</Typography>
         {sourceNode && (
           <Chip
             size="small"
@@ -1148,8 +1146,8 @@ const EdgeDetail: React.FC<EdgeDetailProps> = ({ edge, t, isAdmin, isEditor, onR
       </Stack>
 
       {/* Target */}
-      <Stack direction="row" alignItems="center" spacing={1} mb={1}>
-        <Typography variant="caption" color="text.secondary" sx={{ width: 32 }}>{t("nodeDetail.to")}</Typography>
+      <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 1 }}>
+        <Typography variant="caption" sx={{ color: "text.secondary", width: 32 }}>{t("nodeDetail.to")}</Typography>
         {targetNode && (
           <Chip
             size="small"
@@ -1171,8 +1169,8 @@ const EdgeDetail: React.FC<EdgeDetailProps> = ({ edge, t, isAdmin, isEditor, onR
 
       {/* Direction — only an integration has one */}
       {direction && (
-        <Stack direction="row" alignItems="center" spacing={1} mb={1}>
-          <Typography variant="caption" color="text.secondary" sx={{ width: 32 }}>
+        <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 1 }}>
+          <Typography variant="caption" sx={{ color: "text.secondary", width: 32 }}>
             {t("integrationDirection.label")}
           </Typography>
           {isEditor ? (
@@ -1198,7 +1196,7 @@ const EdgeDetail: React.FC<EdgeDetailProps> = ({ edge, t, isAdmin, isEditor, onR
 
       {/* Replace picker */}
       {replacing && (
-        <Box mt={1}>
+        <Box sx={{ mt: 1 }}>
           <Autocomplete
             size="small"
             options={replaceOptions}
@@ -1209,7 +1207,7 @@ const EdgeDetail: React.FC<EdgeDetailProps> = ({ edge, t, isAdmin, isEditor, onR
             isOptionEqualToValue={(a, b) => a.id === b.id}
             renderOption={(props, option) => (
               <Box component="li" {...props} key={option.id}>
-                <Stack direction="row" spacing={1} alignItems="center">
+                <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                   <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: NODE_COLORS[option.type], flexShrink: 0 }} />
                   <Typography variant="body2">{option.name}</Typography>
                 </Stack>
@@ -1224,7 +1222,7 @@ const EdgeDetail: React.FC<EdgeDetailProps> = ({ edge, t, isAdmin, isEditor, onR
               />
             )}
           />
-          <Stack direction="row" spacing={1} mt={1}>
+          <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
             <Button
               size="small" variant="contained"
               disabled={!replaceNode || isPending}
@@ -1241,12 +1239,12 @@ const EdgeDetail: React.FC<EdgeDetailProps> = ({ edge, t, isAdmin, isEditor, onR
       )}
 
       {/* Note */}
-      <Box mt={2}>
-        <Stack direction="row" alignItems="center" spacing={0.5} mb={0.5}>
-          <Typography variant="caption" color="text.secondary" fontWeight={600}>
+      <Box sx={{ mt: 2 }}>
+        <Stack direction="row" spacing={0.5} sx={{ alignItems: "center", mb: 0.5 }}>
+          <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 600 }}>
             Anteckning
           </Typography>
-          <Box flex={1} />
+          <Box sx={{ flex: 1 }} />
           {!editingNote && (
             <IconButton size="small" onClick={() => setEditingNote(true)} title="Redigera anteckning">
               <EditIcon sx={{ fontSize: 14 }} />
@@ -1266,7 +1264,7 @@ const EdgeDetail: React.FC<EdgeDetailProps> = ({ edge, t, isAdmin, isEditor, onR
               placeholder="Skriv en anteckning om denna koppling…"
               autoFocus
             />
-            <Stack direction="row" spacing={1} mt={0.5} justifyContent="flex-end">
+            <Stack direction="row" spacing={1} sx={{ mt: 0.5, justifyContent: "flex-end" }}>
               <Button
                 size="small"
                 onClick={() => { setEditingNote(false); setNoteValue((edge.attributes?.note as string | undefined) ?? ""); }}
@@ -1295,10 +1293,8 @@ const EdgeDetail: React.FC<EdgeDetailProps> = ({ edge, t, isAdmin, isEditor, onR
         ) : (
           <Typography
             variant="body2"
-            color={noteValue ? "text.primary" : "text.disabled"}
-            sx={{ whiteSpace: "pre-wrap", cursor: "pointer", minHeight: 24 }}
-            onClick={() => setEditingNote(true)}
-          >
+            sx={{ color: noteValue ? "text.primary" : "text.disabled", whiteSpace: "pre-wrap", cursor: "pointer", minHeight: 24 }}
+            onClick={() => setEditingNote(true)}>
             {noteValue || "Ingen anteckning ännu. Klicka för att lägga till."}
           </Typography>
         )}
@@ -1333,7 +1329,7 @@ const ObjectContentLink: React.FC<{ nodeId: string; onOpen: (tab: string) => voi
   const docCount = docs.documents.length;
   const noteCount = notes.notes.length;
   return (
-    <Box mt={2}>
+    <Box sx={{ mt: 2 }}>
       <Tooltip title={t("objectContent.panelOpen")}>
         <Button
           size="small"

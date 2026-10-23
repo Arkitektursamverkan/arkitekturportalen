@@ -38,7 +38,7 @@ const STATUS_COLOR: Record<SketchStatus, "default" | "warning" | "success" | "se
 const Section: React.FC<{ title: string; accent: string; defaultExpanded?: boolean; children: React.ReactNode }> = ({ title, accent, defaultExpanded, children }) => (
   <Accordion defaultExpanded={defaultExpanded} sx={{ borderLeft: `4px solid ${accent}`, mb: 1 }}>
     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-      <Typography variant="subtitle1" fontWeight={700}>{title}</Typography>
+      <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>{title}</Typography>
     </AccordionSummary>
     <AccordionDetails>{children}</AccordionDetails>
   </Accordion>
@@ -134,7 +134,9 @@ const SolutionSketchDetail: React.FC = () => {
   );
 
   if (isLoading) return <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}><CircularProgress /></Box>;
-  if (error || !sketch) return <Box p={3}><Alert severity="error">{(error as Error)?.message ?? "Kunde inte ladda skiss"}</Alert></Box>;
+  if (error || !sketch) return (
+    <Box sx={{ p: 3 }}><Alert severity="error">{(error as Error)?.message ?? "Kunde inte ladda skiss"}</Alert></Box>
+  );
 
   const setBusiness = (patch: Partial<NonNullable<SketchAnswers["business"]>>) =>
     setAnswers((a) => ({ ...a, business: { ...a.business, ...patch } }));
@@ -158,23 +160,23 @@ const SolutionSketchDetail: React.FC = () => {
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
       <Breadcrumbs sx={{ mb: 1 }}>
-        <MuiLink component={RouterLink} to="/solution-sketches" underline="hover" color="text.secondary">
-          <Stack direction="row" alignItems="center" spacing={0.5}>
+        <MuiLink component={RouterLink} to="/solution-sketches" underline="hover" sx={{ color: "text.secondary" }}>
+          <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
             <ArrowBackIcon fontSize="small" /> <span>Lösningsskisser</span>
           </Stack>
         </MuiLink>
-        <Typography color="text.primary">{title || "(utan titel)"}</Typography>
+        <Typography sx={{ color: "text.primary" }}>{title || "(utan titel)"}</Typography>
       </Breadcrumbs>
 
-      <Stack direction="row" alignItems="center" spacing={2} mb={2}>
+      <Stack direction="row" spacing={2} sx={{ alignItems: "center", mb: 2 }}>
         <TextField
           variant="standard"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           disabled={!canEditMeta}
           placeholder="Titel"
-          inputProps={{ style: { fontSize: 28, fontWeight: 700 } }}
           sx={{ flex: 1, maxWidth: 800 }}
+          slotProps={{ htmlInput: { style: { fontSize: 28, fontWeight: 700 } } }}
         />
         <Chip size="small" label={STATUS_LABEL[sketch.status]} color={STATUS_COLOR[sketch.status]} />
         <FormControl size="small" sx={{ minWidth: 170 }}>
@@ -193,7 +195,7 @@ const SolutionSketchDetail: React.FC = () => {
       </Stack>
 
       <Grid container spacing={3}>
-        <Grid item xs={12} lg={8}>
+        <Grid size={{ xs: 12, lg: 8 }}>
           <TextField
             fullWidth size="small" label="Kort beskrivning"
             value={description} onChange={(e) => setDescription(e.target.value)}
@@ -423,7 +425,7 @@ const SolutionSketchDetail: React.FC = () => {
           </Section>
 
           <Box sx={{ mt: 4, pt: 3, borderTop: 1, borderColor: "divider" }}>
-            <Stack direction="row" alignItems="center" spacing={2} flexWrap="wrap" useFlexGap>
+            <Stack direction="row" spacing={2} useFlexGap sx={{ alignItems: "center", flexWrap: "wrap" }}>
               {sketch.status === "draft" && (
                 <Button
                   variant="contained"
@@ -452,7 +454,7 @@ const SolutionSketchDetail: React.FC = () => {
               >
                 Sammanställ
               </Button>
-              <Typography variant="body2" color="text.secondary" sx={{ flex: 1, minWidth: 200 }}>
+              <Typography variant="body2" sx={{ color: "text.secondary", flex: 1, minWidth: 200 }}>
                 {sketch.status === "draft" && "Skissen sparas löpande. När du är klar, skicka den för granskning av arkitekt."}
                 {sketch.status === "in_review" && "Skissen är inskickad för granskning. Återta för att fortsätta redigera."}
                 {(sketch.status === "approved" || sketch.status === "archived") && `Skissen är ${STATUS_LABEL[sketch.status].toLowerCase()} och kan inte längre ändras.`}
@@ -461,17 +463,17 @@ const SolutionSketchDetail: React.FC = () => {
           </Box>
         </Grid>
 
-        <Grid item xs={12} lg={4}>
+        <Grid size={{ xs: 12, lg: 4 }}>
           <Box sx={{ position: wide ? "sticky" : "static", top: 80 }}>
-            <Stack direction="row" alignItems="center" spacing={1} mb={1}>
-              <Typography variant="overline" color="text.secondary">Analys</Typography>
+            <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 1 }}>
+              <Typography variant="overline" sx={{ color: "text.secondary" }}>Analys</Typography>
               {update.isPending ? (
-                <Typography variant="caption" color="text.secondary">Sparar…</Typography>
+                <Typography variant="caption" sx={{ color: "text.secondary" }}>Sparar…</Typography>
               ) : savedAt ? (
                 <Tooltip title={`Senast sparat ${new Date(savedAt).toLocaleString("sv-SE")}`}>
-                  <Stack direction="row" alignItems="center" spacing={0.5}>
+                  <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
                     <CloudDoneIcon fontSize="small" color="success" />
-                    <Typography variant="caption" color="text.secondary">Sparat</Typography>
+                    <Typography variant="caption" sx={{ color: "text.secondary" }}>Sparat</Typography>
                   </Stack>
                 </Tooltip>
               ) : null}

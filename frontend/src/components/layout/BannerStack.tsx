@@ -119,7 +119,7 @@ const BannerRow: React.FC<{
         "& .MuiAlert-message": { flex: 1 },
       }}
       action={
-        <Stack direction="row" alignItems="center" spacing={0.5}>
+        <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
           {isAdmin && (
             <>
               <Tooltip title={t("banners.edit", { defaultValue: "Redigera" })}>
@@ -152,7 +152,7 @@ const BannerRow: React.FC<{
         </Stack>
       }
     >
-      <Stack direction={{ xs: "column", sm: "row" }} alignItems={{ xs: "flex-start", sm: "center" }} spacing={1}>
+      <Stack direction={{ xs: "column", sm: "row" }} spacing={1} sx={{ alignItems: { xs: "flex-start", sm: "center" } }}>
         <Typography variant="body2" sx={{ whiteSpace: "pre-line", flex: 1 }}>
           {banner.body || (isAdmin ? <i>(tomt meddelande)</i> : null)}
         </Typography>
@@ -259,7 +259,7 @@ const BannerFormDialog: React.FC<{
             }
             label="Visa för användare"
           />
-          <Typography variant="caption" color="text.secondary">
+          <Typography variant="caption" sx={{ color: "text.secondary" }}>
             När du sparar nytt innehåll visas meddelandet igen för användare som tidigare dolt det.
           </Typography>
         </Stack>

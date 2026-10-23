@@ -102,14 +102,14 @@ const ReportFlaggedObjects: React.FC = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h5" fontWeight={700} gutterBottom>
+      <Typography variant="h5" gutterBottom sx={{ fontWeight: 700 }}>
         <ReportTitle fallback={t("reports.flaggedObjects.title")} />
       </Typography>
-      <Typography variant="body2" color="text.secondary" mb={3}>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 3 }}>
         {t("reports.flaggedObjects.description")}
       </Typography>
 
-      <Stack direction="row" spacing={1} mb={2} alignItems="center" flexWrap="wrap" useFlexGap>
+      <Stack direction="row" spacing={1} useFlexGap sx={{ mb: 2, alignItems: "center", flexWrap: "wrap" }}>
         <TextField
           size="small"
           placeholder={t("common.search")}
@@ -145,9 +145,9 @@ const ReportFlaggedObjects: React.FC = () => {
       </Stack>
 
       {isLoading ? (
-        <Typography color="text.secondary">{t("common.loading")}</Typography>
+        <Typography sx={{ color: "text.secondary" }}>{t("common.loading")}</Typography>
       ) : rows.length === 0 ? (
-        <Typography color="text.secondary" sx={{ py: 4, textAlign: "center" }}>
+        <Typography sx={{ color: "text.secondary", py: 4, textAlign: "center" }}>
           {allFlags.length === 0
             ? t("reports.flaggedObjects.empty")
             : t("reports.flaggedObjects.noMatch")}
@@ -176,9 +176,9 @@ const ReportFlaggedObjects: React.FC = () => {
                     onClick={() => route && navigate(`${route}?id=${node.id}`)}
                   >
                     <TableCell>
-                      <Stack direction="row" alignItems="center" spacing={1}>
+                      <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                         <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: (NODE_COLORS as Record<string, string>)[node.type], flexShrink: 0 }} />
-                        <Typography variant="body2" fontWeight={500}>{node.name}</Typography>
+                        <Typography variant="body2" sx={{ fontWeight: 500 }}>{node.name}</Typography>
                       </Stack>
                     </TableCell>
                     <TableCell>
@@ -192,17 +192,17 @@ const ReportFlaggedObjects: React.FC = () => {
                       />
                     </TableCell>
                     <TableCell>
-                      <Typography variant="caption" color="text.secondary">
+                      <Typography variant="caption" sx={{ color: "text.secondary" }}>
                         {flag.description ?? "—"}
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography variant="caption" color="text.secondary">
+                      <Typography variant="caption" sx={{ color: "text.secondary" }}>
                         {flag.created_by ?? "—"}
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography variant="caption" color="text.secondary">
+                      <Typography variant="caption" sx={{ color: "text.secondary" }}>
                         {new Date(flag.created_at).toLocaleDateString("sv-SE")}
                       </Typography>
                     </TableCell>

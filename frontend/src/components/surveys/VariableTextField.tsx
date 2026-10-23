@@ -90,7 +90,7 @@ const VariableTextField: React.FC<Props> = ({ value, onChange, helperText, targe
           <MenuItem key={v.token} onClick={() => insertVariable(v.token)}>
             <Stack>
               <Typography variant="body2">{v.label}</Typography>
-              <Typography variant="caption" color="text.secondary">{variablePlaceholder(v.token)}</Typography>
+              <Typography variant="caption" sx={{ color: "text.secondary" }}>{variablePlaceholder(v.token)}</Typography>
             </Stack>
           </MenuItem>
         ))}

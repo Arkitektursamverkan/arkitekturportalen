@@ -73,7 +73,7 @@ export const NodePicker: React.FC<{
       onChange={(_, n) => onChange(n?.id ?? null, n)}
       renderOption={(props, n) => (
         <li {...props} key={n.id}>
-          <Stack direction="row" spacing={1} alignItems="center">
+          <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
             <Dot type={n.type} />
             <Typography variant="body2">{n.name}</Typography>
           </Stack>

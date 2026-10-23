@@ -69,10 +69,10 @@ const WorkspacePages: React.FC<Props> = ({ workspaceId, canEdit }) => {
   return (
     <Box>
       {error && <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>{error}</Alert>}
-      <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems="flex-start">
+      <Stack direction={{ xs: "column", md: "row" }} spacing={2} sx={{ alignItems: "flex-start" }}>
         <Paper variant="outlined" sx={{ width: { xs: "100%", md: 260 }, flexShrink: 0 }}>
-          <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ px: 2, py: 1 }}>
-            <Typography variant="subtitle2" fontWeight={700}>Sidor</Typography>
+          <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between", px: 2, py: 1 }}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>Sidor</Typography>
             {canEdit && (
               <Tooltip title="Ny sida">
                 <IconButton size="small" onClick={addPage}><AddIcon fontSize="small" /></IconButton>
@@ -90,14 +90,12 @@ const WorkspacePages: React.FC<Props> = ({ workspaceId, canEdit }) => {
                 <ListItemText
                   primary={p.title}
                   secondary={`Uppdaterad ${new Date(p.updated_at).toLocaleDateString("sv-SE")}`}
-                  primaryTypographyProps={{ fontSize: 13 }}
-                  secondaryTypographyProps={{ fontSize: 11 }}
-                />
+                  slotProps={{ primary: { sx: { fontSize: 13 } }, secondary: { sx: { fontSize: 11 } } }} />
               </ListItemButton>
             ))}
             {!isLoading && pages.length === 0 && (
               <Box sx={{ px: 2, py: 3 }}>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" sx={{ color: "text.secondary" }}>
                   Inga sidor ännu.
                 </Typography>
               </Box>
@@ -107,7 +105,7 @@ const WorkspacePages: React.FC<Props> = ({ workspaceId, canEdit }) => {
 
         <Paper variant="outlined" sx={{ flex: 1, p: 3, minHeight: 320, width: "100%" }}>
           {!page ? (
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: "text.secondary" }}>
               {canEdit
                 ? "Skapa en sida för instruktioner, mötesanteckningar eller metodbeskrivningar."
                 : "Det finns inga dokumentsidor i uppdraget ännu."}
@@ -158,10 +156,10 @@ const WorkspacePages: React.FC<Props> = ({ workspaceId, canEdit }) => {
             </Stack>
           ) : (
             <Box>
-              <Stack direction="row" alignItems="flex-start" justifyContent="space-between" sx={{ mb: 1 }}>
+              <Stack direction="row" sx={{ alignItems: "flex-start", justifyContent: "space-between", mb: 1 }}>
                 <Box>
-                  <Typography variant="h6" fontWeight={700}>{page.title}</Typography>
-                  <Typography variant="caption" color="text.secondary">
+                  <Typography variant="h6" sx={{ fontWeight: 700 }}>{page.title}</Typography>
+                  <Typography variant="caption" sx={{ color: "text.secondary" }}>
                     Senast uppdaterad {new Date(page.updated_at).toLocaleString("sv-SE")}
                     {page.updated_by ? ` av ${page.updated_by}` : ""}
                   </Typography>

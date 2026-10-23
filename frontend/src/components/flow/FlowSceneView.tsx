@@ -34,24 +34,21 @@ import type { Scen, ScenFigur } from "@/api/arkflows";
  */
 function Figur({ figur }: { figur: ScenFigur }) {
   return (
-    <Stack direction="row" spacing={1.25} alignItems="flex-start" sx={{ py: 0.5 }}>
+    <Stack direction="row" spacing={1.25} sx={{ alignItems: "flex-start", py: 0.5 }}>
       <Box
         component="svg"
-        width={30}
-        height={22}
         viewBox={`0 0 ${figur.w} ${figur.h}`}
         preserveAspectRatio="xMidYMid meet"
-        sx={{ flexShrink: 0, mt: 0.25, overflow: "visible" }}
         dangerouslySetInnerHTML={{ __html: figur.svg }}
-      />
+        sx={{ width: 30, height: 22, flexShrink: 0, mt: 0.25, overflow: "visible" }} />
       <Box sx={{ minWidth: 0 }}>
         <Typography variant="body2" sx={{ fontWeight: 600, lineHeight: 1.3 }}>
           {figur.namn}{" "}
-          <Typography component="span" variant="caption" color="text.secondary">
+          <Typography component="span" variant="caption" sx={{ color: "text.secondary" }}>
             ({figur.antal})
           </Typography>
         </Typography>
-        <Typography variant="caption" color="text.secondary" sx={{ display: "block", lineHeight: 1.35 }}>
+        <Typography variant="caption" sx={{ color: "text.secondary", display: "block", lineHeight: 1.35 }}>
           {figur.betydelse}
         </Typography>
       </Box>
@@ -328,7 +325,7 @@ export default function FlowSceneView({ scen, caption, beskrivning }: Props) {
             p: 1.5, width: 330, maxHeight: "calc(100% - 64px)", overflowY: "auto",
           }}
         >
-          <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 0.5 }}>
+          <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 0.5 }}>
             <Typography variant="subtitle2" sx={{ flexGrow: 1 }}>
               {t("flowScene.legend")}
             </Typography>
@@ -338,18 +335,14 @@ export default function FlowSceneView({ scen, caption, beskrivning }: Props) {
           </Stack>
           {figurer.map((grupp) => (
             <Box key={grupp.titel} sx={{ mt: 1 }}>
-              <Typography
-                variant="overline"
-                color="text.secondary"
-                sx={{ display: "block", lineHeight: 1.6 }}
-              >
+              <Typography variant="overline" sx={{ color: "text.secondary", display: "block", lineHeight: 1.6 }}>
                 {grupp.titel}
               </Typography>
               {grupp.figurer.map((f) => (
                 <Figur key={f.nyckel} figur={f} />
               ))}
               {grupp.hint && (
-                <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 0.5 }}>
+                <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mt: 0.5 }}>
                   {grupp.hint}
                 </Typography>
               )}
@@ -363,10 +356,10 @@ export default function FlowSceneView({ scen, caption, beskrivning }: Props) {
           elevation={3}
           sx={{ position: "absolute", left: 12, bottom: 12, zIndex: 2, p: 1.5, maxWidth: 380 }}
         >
-          <Stack direction="row" alignItems="flex-start" spacing={1}>
+          <Stack direction="row" spacing={1} sx={{ alignItems: "flex-start" }}>
             <Box sx={{ flexGrow: 1 }}>
               <Typography variant="subtitle2">{valdNod.etikett}</Typography>
-              <Typography variant="caption" color="text.secondary">
+              <Typography variant="caption" sx={{ color: "text.secondary" }}>
                 {valdNod.typ}
               </Typography>
               {(valtSteg?.not ?? valdNod.beskrivning) && (

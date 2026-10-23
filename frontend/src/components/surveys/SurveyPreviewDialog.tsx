@@ -39,11 +39,11 @@ const SurveyPreviewDialog: React.FC<{
           testsvar och ingenting sparas.
         </Alert>
 
-        <Typography variant="h5" fontWeight={700} gutterBottom>{title || "Namnlös enkät"}</Typography>
+        <Typography variant="h5" gutterBottom sx={{ fontWeight: 700 }}>{title || "Namnlös enkät"}</Typography>
         {description && (
-          <Typography variant="body2" color="text.secondary" mb={1}>{description}</Typography>
+          <Typography variant="body2" sx={{ color: "text.secondary", mb: 1 }}>{description}</Typography>
         )}
-        <Typography variant="subtitle1" fontWeight={600} mb={2}>Applikation: {systemName}</Typography>
+        <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2 }}>Applikation: {systemName}</Typography>
 
         <Stack spacing={2}>
           {visibleQuestions.map((q) => (
@@ -59,7 +59,7 @@ const SurveyPreviewDialog: React.FC<{
             </Paper>
           ))}
           {visibleQuestions.length === 0 && (
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: "text.secondary" }}>
               Inga frågor ännu — lägg till frågor i redigeraren för att se dem här.
             </Typography>
           )}

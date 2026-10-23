@@ -38,10 +38,10 @@ const WorkspaceList: React.FC<Props> = ({ kind = "uppdrag" }) => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={3}>
+      <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between", mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>{copy.listTitle}</Typography>
-          <Typography variant="body2" color="text.secondary">{copy.listIntro}</Typography>
+          <Typography variant="h4" sx={{ fontWeight: 700 }}>{copy.listTitle}</Typography>
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>{copy.listIntro}</Typography>
         </Box>
         {isEditor && (
           <Button startIcon={<AddIcon />} variant="contained" onClick={() => setOpen(true)}>
@@ -75,12 +75,12 @@ const WorkspaceList: React.FC<Props> = ({ kind = "uppdrag" }) => {
                   onClick={() => navigate(`${copy.listPath}/${w.id}`)}
                 >
                   <TableCell>
-                    <Stack direction="row" spacing={1} alignItems="center">
+                    <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                       <GroupWorkIcon fontSize="small" color="primary" />
                       <Box>
-                        <Typography variant="body2" fontWeight={600}>{w.name}</Typography>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>{w.name}</Typography>
                         {w.description && (
-                          <Typography variant="caption" color="text.secondary">
+                          <Typography variant="caption" sx={{ color: "text.secondary" }}>
                             {w.description}
                           </Typography>
                         )}
@@ -105,7 +105,7 @@ const WorkspaceList: React.FC<Props> = ({ kind = "uppdrag" }) => {
                   </TableCell>
                   <TableCell>{w.member_count}</TableCell>
                   <TableCell>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" sx={{ color: "text.secondary" }}>
                       {new Date(w.updated_at).toLocaleString("sv-SE")}
                     </Typography>
                   </TableCell>
@@ -162,14 +162,14 @@ const WorkgroupCharter: React.FC = () => {
   return (
     <Accordion defaultExpanded disableGutters sx={{ mb: 3 }}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography variant="subtitle1" fontWeight={700}>Syfte och uppdrag</Typography>
+        <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>Syfte och uppdrag</Typography>
       </AccordionSummary>
       <AccordionDetails>
         {draft !== null ? (
           <>
             <MarkdownEditor value={draft} onChange={setDraft} minRows={12} autoFocus />
             {update.isError && <Alert severity="error" sx={{ mt: 1 }}>Det gick inte att spara.</Alert>}
-            <Stack direction="row" spacing={1} justifyContent="flex-end" mt={1}>
+            <Stack direction="row" spacing={1} sx={{ justifyContent: "flex-end", mt: 1 }}>
               <Button onClick={() => setDraft(null)}>Avbryt</Button>
               <Button variant="contained" onClick={save} disabled={update.isPending}>Spara</Button>
             </Stack>
@@ -181,8 +181,8 @@ const WorkgroupCharter: React.FC = () => {
               emptyText="Arbetsgruppernas syfte och uppdrag är inte beskrivet än."
             />
             {isEditor && (
-              <Stack direction="row" alignItems="center" justifyContent="space-between" mt={1}>
-                <Typography variant="caption" color="text.secondary">
+              <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between", mt: 1 }}>
+                <Typography variant="caption" sx={{ color: "text.secondary" }}>
                   {block?.updated_by ? `Senast ändrad av ${block.updated_by}` : ""}
                 </Typography>
                 <Button size="small" startIcon={<EditIcon />} onClick={() => setDraft(body)}>
@@ -277,7 +277,7 @@ const NewWorkspaceDialog: React.FC<{
               <TextField {...params} label={copy.membersLabel} placeholder="Sök namn eller e-post" />
             )}
           />
-          <Typography variant="caption" color="text.secondary">
+          <Typography variant="caption" sx={{ color: "text.secondary" }}>
             Du blir automatiskt ägare. Roller kan ändras efteråt under {copy.membersLabel}.
           </Typography>
         </Stack>

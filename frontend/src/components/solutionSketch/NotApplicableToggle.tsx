@@ -1,7 +1,7 @@
 import React from "react";
 import { Chip, Tooltip } from "@mui/material";
 import BlockIcon from "@mui/icons-material/Block";
-import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
+import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutlineOutlined";
 
 interface Props {
   field: string;

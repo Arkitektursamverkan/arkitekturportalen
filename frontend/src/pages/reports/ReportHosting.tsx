@@ -34,9 +34,9 @@ const ReportHosting: React.FC = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom><ReportTitle fallback={t("reports.hosting.title")} /></Typography>
-      <Typography variant="body2" color="text.secondary" mb={2}>{t("reports.hosting.description")}</Typography>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>{t("reports.hosting.description")}</Typography>
 
-      <Stack direction="row" spacing={2} mb={3}>
+      <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
         {groups.map((g) => (
           <Chip key={g.driftform} label={`${g.driftform}: ${g.apps.length}`}
             sx={{ bgcolor: HOSTING_COLORS[g.driftform] || "#757575", color: "#fff", fontWeight: 600 }} />
@@ -45,14 +45,14 @@ const ReportHosting: React.FC = () => {
 
       <Card sx={{ mb: 3 }}>
         <CardContent>
-          <Typography variant="h6" fontSize={16} fontWeight={600} mb={2}>{t("reports.hosting.distribution")}</Typography>
+          <Typography variant="h6" sx={{ fontSize: 16, fontWeight: 600, mb: 2 }}>{t("reports.hosting.distribution")}</Typography>
           <Stack spacing={1.5}>
             {groups.map((g) => {
               const pct = totalApps > 0 ? Math.round((g.apps.length / totalApps) * 100) : 0;
               return (
                 <Box key={g.driftform}>
-                  <Stack direction="row" justifyContent="space-between" mb={0.3}>
-                    <Typography variant="body2" fontWeight={500}>{g.driftform}</Typography>
+                  <Stack direction="row" sx={{ justifyContent: "space-between", mb: 0.3 }}>
+                    <Typography variant="body2" sx={{ fontWeight: 500 }}>{g.driftform}</Typography>
                     <Typography variant="caption">{g.apps.length} ({pct}%)</Typography>
                   </Stack>
                   <LinearProgress variant="determinate" value={pct}
@@ -84,7 +84,7 @@ const ReportHosting: React.FC = () => {
                 <TableCell align="center"><Chip label={g.apps.length} size="small" /></TableCell>
                 <TableCell align="center">{totalApps > 0 ? Math.round((g.apps.length / totalApps) * 100) : 0}%</TableCell>
                 <TableCell>
-                  <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
+                  <Stack direction="row" spacing={0.5} useFlexGap sx={{ flexWrap: "wrap" }}>
                     {g.apps.slice(0, 10).map((app) => (
                       <Chip key={app.id} label={app.name} size="small" variant="outlined"
                         onClick={() => navigate(`/systems?id=${app.id}`)} sx={{ cursor: "pointer" }} />

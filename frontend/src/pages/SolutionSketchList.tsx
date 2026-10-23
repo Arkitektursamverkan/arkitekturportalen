@@ -40,12 +40,12 @@ const SolutionSketchList: React.FC = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={3}>
+      <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between", mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography variant="h4" sx={{ fontWeight: 700 }}>
             {t("solutionSketch.title", { defaultValue: "Lösningsskiss" })}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>
             {t("solutionSketch.subtitle", {
               defaultValue: "Strukturerat stöd för nya digitala initiativ — fyll i en skiss för att hitta överlapp, relevanta principer och frågor inför upphandling.",
             })}
@@ -77,9 +77,9 @@ const SolutionSketchList: React.FC = () => {
                   <TableCell>
                     <Chip size="small" label={STATUS_LABEL[s.status]} color={STATUS_COLOR[s.status]} />
                   </TableCell>
-                  <TableCell><Typography variant="body2" color="text.secondary">{s.created_by ?? "—"}</Typography></TableCell>
+                  <TableCell><Typography variant="body2" sx={{ color: "text.secondary" }}>{s.created_by ?? "—"}</Typography></TableCell>
                   <TableCell>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" sx={{ color: "text.secondary" }}>
                       {new Date(s.updated_at).toLocaleString("sv-SE")}
                     </Typography>
                   </TableCell>

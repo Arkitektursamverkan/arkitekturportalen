@@ -23,7 +23,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
 import LightbulbOutlinedIcon from "@mui/icons-material/LightbulbOutlined";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import {
@@ -152,8 +152,8 @@ const ArchitecturePrinciples: React.FC = () => {
 
   return (
     <Box sx={{ p: 3, maxWidth: 1200, mx: "auto" }}>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
-        <Typography variant="h4" component="h1" fontWeight={600}>
+      <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between", mb: 2 }}>
+        <Typography variant="h4" component="h1" sx={{ fontWeight: 600 }}>
           Arkitekturprinciper
         </Typography>
         {isAdmin && (
@@ -163,7 +163,7 @@ const ArchitecturePrinciples: React.FC = () => {
         )}
       </Stack>
 
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
         Principer som styr arkitekturarbetet. Klicka på en princip för att se detaljer.
       </Typography>
 
@@ -231,7 +231,7 @@ const ArchitecturePrinciples: React.FC = () => {
                 <Typography variant="h6" sx={{ color: style.text, fontWeight: 700 }}>
                   {domain}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" sx={{ color: "text.secondary" }}>
                   ({list.length})
                 </Typography>
               </Box>
@@ -275,97 +275,97 @@ const PrincipleAccordion: React.FC<AccordionProps> = ({ principle, style, isAdmi
   const lineColor = style.outline ?? style.accent;
   const chipTextColor = style.outline ? style.outline : "white";
   return (
-  <Accordion sx={{ "&:before": { display: "none" }, mb: 1, borderLeft: `4px solid ${lineColor}` }}>
-    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-      <Stack direction="row" alignItems="center" spacing={1.5} sx={{ width: "100%", pr: 1 }}>
-        <Chip
-          label={principle.identifier}
-          size="small"
-          sx={{
-            bgcolor: style.accent,
-            color: chipTextColor,
-            fontWeight: 700,
-            minWidth: 50,
-            border: style.outline ? `1px solid ${style.outline}` : "none",
-          }}
-        />
-        <Typography sx={{ flexGrow: 1, fontWeight: 500 }}>{principle.name}</Typography>
-        <Chip
-          label={principle.status}
-          size="small"
-          color={STATUS_COLORS[principle.status]}
-          variant={principle.status === "Förslag" ? "outlined" : "filled"}
-        />
-        {isAdmin && (
-          <>
-            <Tooltip title="Redigera">
-              <IconButton
-                size="small"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onEdit();
-                }}
-              >
-                <EditIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Ta bort">
-              <IconButton
-                size="small"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDelete();
-                }}
-              >
-                <DeleteIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-          </>
-        )}
-      </Stack>
-    </AccordionSummary>
-    <AccordionDetails sx={{ pt: 0 }}>
-      <Stack spacing={2}>
-        {principle.purpose && (
-          <DetailSection
-            icon={<LightbulbOutlinedIcon fontSize="small" />}
-            label="Syfte"
-            color="#1976d2"
-            text={principle.purpose}
+    <Accordion sx={{ "&:before": { display: "none" }, mb: 1, borderLeft: `4px solid ${lineColor}` }}>
+      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+        <Stack direction="row" spacing={1.5} sx={{ alignItems: "center", width: "100%", pr: 1 }}>
+          <Chip
+            label={principle.identifier}
+            size="small"
+            sx={{
+              bgcolor: style.accent,
+              color: chipTextColor,
+              fontWeight: 700,
+              minWidth: 50,
+              border: style.outline ? `1px solid ${style.outline}` : "none",
+            }}
           />
-        )}
-        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2 }}>
-          {principle.not && (
+          <Typography sx={{ flexGrow: 1, fontWeight: 500 }}>{principle.name}</Typography>
+          <Chip
+            label={principle.status}
+            size="small"
+            color={STATUS_COLORS[principle.status]}
+            variant={principle.status === "Förslag" ? "outlined" : "filled"}
+          />
+          {isAdmin && (
+            <>
+              <Tooltip title="Redigera">
+                <IconButton
+                  size="small"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit();
+                  }}
+                >
+                  <EditIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Ta bort">
+                <IconButton
+                  size="small"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete();
+                  }}
+                >
+                  <DeleteIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </>
+          )}
+        </Stack>
+      </AccordionSummary>
+      <AccordionDetails sx={{ pt: 0 }}>
+        <Stack spacing={2}>
+          {principle.purpose && (
             <DetailSection
-              icon={<CancelOutlinedIcon fontSize="small" />}
-              label="Inte"
-              color="#d32f2f"
-              text={principle.not}
+              icon={<LightbulbOutlinedIcon fontSize="small" />}
+              label="Syfte"
+              color="#1976d2"
+              text={principle.purpose}
             />
           )}
-          {principle.but && (
+          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2 }}>
+            {principle.not && (
+              <DetailSection
+                icon={<CancelOutlinedIcon fontSize="small" />}
+                label="Inte"
+                color="#d32f2f"
+                text={principle.not}
+              />
+            )}
+            {principle.but && (
+              <DetailSection
+                icon={<CheckCircleOutlineIcon fontSize="small" />}
+                label="Utan"
+                color="#2e7d32"
+                text={principle.but}
+              />
+            )}
+          </Box>
+          {principle.means && (
             <DetailSection
-              icon={<CheckCircleOutlineIcon fontSize="small" />}
-              label="Utan"
-              color="#2e7d32"
-              text={principle.but}
+              icon={<FormatListBulletedIcon fontSize="small" />}
+              label="Innebär att"
+              color="#7b1fa2"
+              text={principle.means}
             />
           )}
-        </Box>
-        {principle.means && (
-          <DetailSection
-            icon={<FormatListBulletedIcon fontSize="small" />}
-            label="Innebär att"
-            color="#7b1fa2"
-            text={principle.means}
-          />
-        )}
-        <Box sx={{ mt: 1 }}>
-          <CommentsThread subjectType="principle" subjectId={principle.id} contextLabel={principle.name} />
-        </Box>
-      </Stack>
-    </AccordionDetails>
-  </Accordion>
+          <Box sx={{ mt: 1 }}>
+            <CommentsThread subjectType="principle" subjectId={principle.id} contextLabel={principle.name} />
+          </Box>
+        </Stack>
+      </AccordionDetails>
+    </Accordion>
   );
 };
 
@@ -378,7 +378,7 @@ interface SectionProps {
 
 const DetailSection: React.FC<SectionProps> = ({ icon, label, color, text }) => (
   <Box>
-    <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color, mb: 0.5 }}>
+    <Stack direction="row" spacing={0.5} sx={{ alignItems: "center", color, mb: 0.5 }}>
       {icon}
       <Typography variant="overline" sx={{ fontWeight: 700, letterSpacing: 0.5 }}>
         {label}

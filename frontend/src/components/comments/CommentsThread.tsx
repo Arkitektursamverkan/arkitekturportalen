@@ -67,14 +67,14 @@ export const CommentsThread: React.FC<Props> = ({ subjectType, subjectId, contex
       <Collapse in={open}>
         <Box sx={{ mt: 1, p: 2, bgcolor: "action.hover", borderRadius: 1 }}>
           {contextLabel && (
-            <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 1 }}>
+            <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mb: 1 }}>
               {contextLabel}
             </Typography>
           )}
           {isLoading ? (
-            <Typography variant="caption" color="text.secondary">Hämtar kommentarer…</Typography>
+            <Typography variant="caption" sx={{ color: "text.secondary" }}>Hämtar kommentarer…</Typography>
           ) : comments.length === 0 ? (
-            <Typography variant="body2" color="text.secondary">Inga kommentarer ännu.</Typography>
+            <Typography variant="body2" sx={{ color: "text.secondary" }}>Inga kommentarer ännu.</Typography>
           ) : (
             <Stack spacing={1.5}>
               {comments.map((c) => (
@@ -100,8 +100,8 @@ export const CommentsThread: React.FC<Props> = ({ subjectType, subjectId, contex
               value={body}
               onChange={(e) => setBody(e.target.value)}
             />
-            <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mt: 1 }}>
-              <Typography variant="caption" color="text.secondary">
+            <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center", mt: 1 }}>
+              <Typography variant="caption" sx={{ color: "text.secondary" }}>
                 Kommentaren publiceras efter att en admin godkänt den.
               </Typography>
               <Button
@@ -141,12 +141,12 @@ const CommentItem: React.FC<{
   const status = STATUS_CHIP[c.status];
   return (
     <Box sx={{ p: 1.5, bgcolor: "background.paper", borderRadius: 1, border: "1px solid", borderColor: "divider" }}>
-      <Stack direction="row" alignItems="center" spacing={1} mb={0.5}>
-        <Typography variant="caption" fontWeight={600}>{c.created_by ?? "Anonym"}</Typography>
-        <Typography variant="caption" color="text.secondary">
+      <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 0.5 }}>
+        <Typography variant="caption" sx={{ fontWeight: 600 }}>{c.created_by ?? "Anonym"}</Typography>
+        <Typography variant="caption" sx={{ color: "text.secondary" }}>
           {new Date(c.created_at).toLocaleString("sv-SE")}
         </Typography>
-        <Box flex={1} />
+        <Box sx={{ flex: 1 }} />
         <Chip size="small" label={status.label} color={status.color} variant={c.status === "approved" ? "outlined" : "filled"} sx={{ height: 18, fontSize: 10 }} />
         {isAdmin && c.status === "pending" && (
           <Tooltip title="Granska & godkänn">
@@ -162,14 +162,14 @@ const CommentItem: React.FC<{
       <Typography variant="body2" sx={{ whiteSpace: "pre-line" }}>{c.body}</Typography>
       {c.reply && (
         <Box sx={{ mt: 1, ml: 2, p: 1, borderLeft: "3px solid", borderColor: "primary.main", bgcolor: "action.hover", borderRadius: "2px" }}>
-          <Typography variant="caption" fontWeight={600} color="primary.main">
+          <Typography variant="caption" sx={{ fontWeight: 600, color: "primary.main" }}>
             Svar från {c.reviewed_by ?? "admin"} · {c.reviewed_at && new Date(c.reviewed_at).toLocaleString("sv-SE")}
           </Typography>
           <Typography variant="body2" sx={{ whiteSpace: "pre-line", mt: 0.25 }}>{c.reply}</Typography>
         </Box>
       )}
       {isAdmin && c.reviewed_at && !c.reply && (
-        <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 0.5 }}>
+        <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mt: 0.5 }}>
           Läst av {c.reviewed_by} · {new Date(c.reviewed_at).toLocaleString("sv-SE")}
         </Typography>
       )}
@@ -192,7 +192,9 @@ const ReviewDialog: React.FC<{
           Att godkänna eller avvisa stämplar att du läst kommentaren.
         </Alert>
         <Box sx={{ p: 1.5, bgcolor: "action.hover", borderRadius: 1, mb: 2 }}>
-          <Typography variant="caption" fontWeight={600}>{comment.created_by} · {new Date(comment.created_at).toLocaleString("sv-SE")}</Typography>
+          <Typography variant="caption" sx={{
+            fontWeight: 600
+          }}>{comment.created_by} · {new Date(comment.created_at).toLocaleString("sv-SE")}</Typography>
           <Typography variant="body2" sx={{ whiteSpace: "pre-line", mt: 0.5 }}>{comment.body}</Typography>
         </Box>
         <TextField

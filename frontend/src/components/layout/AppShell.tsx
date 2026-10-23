@@ -18,7 +18,7 @@ import HistoryIcon from "@mui/icons-material/History";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import DeviceHubIcon from "@mui/icons-material/DeviceHub";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 import BusinessIcon from "@mui/icons-material/Business";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import AppsIcon from "@mui/icons-material/Apps";
@@ -341,9 +341,7 @@ const AppShell: React.FC<Props> = ({ children }) => {
       <ListItemText
         primary={entry.label}
         secondary={entry.secondary}
-        primaryTypographyProps={{ fontSize: 12 }}
-        secondaryTypographyProps={{ fontSize: 10 }}
-      />
+        slotProps={{ primary: { sx: { fontSize: 12 } }, secondary: { sx: { fontSize: 10 } } }} />
     </ListItemButton>
   );
 
@@ -360,7 +358,7 @@ const AppShell: React.FC<Props> = ({ children }) => {
       sx={{ borderRadius: 1, mx: 0.5, my: 0.25, pl: indent || undefined }}
     >
       <ListItemIcon sx={{ minWidth: 36, color: "primary.main" }}>{item.icon}</ListItemIcon>
-      <ListItemText primary={t(item.key)} primaryTypographyProps={{ fontSize: 13 }} />
+      <ListItemText primary={t(item.key)} slotProps={{ primary: { sx: { fontSize: 13 } } }} />
     </ListItemButton>
   );
 
@@ -377,7 +375,7 @@ const AppShell: React.FC<Props> = ({ children }) => {
               sx={{ borderRadius: 1, mx: 0.5, my: 0.25 }}
             >
               <ListItemIcon sx={{ minWidth: 36, color: "primary.main" }}><HomeIcon /></ListItemIcon>
-              <ListItemText primary={t("nav.home")} primaryTypographyProps={{ fontSize: 13 }} />
+              <ListItemText primary={t("nav.home")} slotProps={{ primary: { sx: { fontSize: 13 } } }} />
             </ListItemButton>
           </React.Fragment>
         );
@@ -397,7 +395,7 @@ const AppShell: React.FC<Props> = ({ children }) => {
               sx={{ borderRadius: 1, mx: 0.5, my: 0.25 }}
             >
               <ListItemIcon sx={{ minWidth: 36, color: "primary.main" }}><CalendarMonthIcon /></ListItemIcon>
-              <ListItemText primary={t("nav.businessCalendar")} primaryTypographyProps={{ fontSize: 13 }} />
+              <ListItemText primary={t("nav.businessCalendar")} slotProps={{ primary: { sx: { fontSize: 13 } } }} />
             </ListItemButton>
             )}
           </React.Fragment>
@@ -419,7 +417,7 @@ const AppShell: React.FC<Props> = ({ children }) => {
               </ListItemIcon>
               <ListItemText
                 primary={t("nav.explorer")}
-                primaryTypographyProps={{ fontSize: 13, fontWeight: isDomainActive ? 600 : 400 }}
+                slotProps={{ primary: { sx: { fontSize: 13, fontWeight: isDomainActive ? 600 : 400 } } }}
               />
               <Box
                 component="span"
@@ -448,12 +446,14 @@ const AppShell: React.FC<Props> = ({ children }) => {
                         <ListItemIcon sx={{ minWidth: 28, color: group.color }}>{group.icon}</ListItemIcon>
                         <ListItemText
                           primary={t(group.key)}
-                          primaryTypographyProps={{
-                            fontSize: 11,
-                            fontWeight: 700,
-                            color: groupActive ? "primary.main" : "text.secondary",
-                            textTransform: "uppercase",
-                            letterSpacing: 0.5,
+                          slotProps={{
+                            primary: { sx: {
+                              fontSize: 11,
+                              fontWeight: 700,
+                              color: groupActive ? "primary.main" : "text.secondary",
+                              textTransform: "uppercase",
+                              letterSpacing: 0.5,
+                            } }
                           }}
                         />
                       </ListItemButton>
@@ -466,7 +466,7 @@ const AppShell: React.FC<Props> = ({ children }) => {
                           sx={{ borderRadius: 1, mx: 0.5, my: 0.15, pl: 5 }}
                         >
                           <ListItemIcon sx={{ minWidth: 30, color: group.color }}>{item.icon}</ListItemIcon>
-                          <ListItemText primary={t(item.key)} primaryTypographyProps={{ fontSize: 12 }} />
+                          <ListItemText primary={t(item.key)} slotProps={{ primary: { sx: { fontSize: 12 } } }} />
                         </ListItemButton>
                       ))}
                     </React.Fragment>
@@ -492,7 +492,7 @@ const AppShell: React.FC<Props> = ({ children }) => {
                   </ListItemIcon>
                   <ListItemText
                     primary={t("nav.collaboration", { defaultValue: "Samarbete" })}
-                    primaryTypographyProps={{ fontSize: 13, fontWeight: isWorkspaceActive ? 600 : 400 }}
+                    slotProps={{ primary: { sx: { fontSize: 13, fontWeight: isWorkspaceActive ? 600 : 400 } } }}
                   />
                   {workspacesOpen ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
                 </ListItemButton>
@@ -513,7 +513,7 @@ const AppShell: React.FC<Props> = ({ children }) => {
                       </ListItemIcon>
                       <ListItemText
                         primary={t("nav.workgroups", { defaultValue: "Arbetsgrupper" })}
-                        primaryTypographyProps={{ fontSize: 12 }}
+                        slotProps={{ primary: { sx: { fontSize: 12 } } }}
                       />
                     </ListItemButton>
                     {workgroups.map((w) => {
@@ -530,7 +530,7 @@ const AppShell: React.FC<Props> = ({ children }) => {
                           }}
                           sx={{ borderRadius: 1, mx: 0.5, my: 0.15, pl: 6 }}
                         >
-                          <ListItemText primary={w.name} primaryTypographyProps={{ fontSize: 12 }} />
+                          <ListItemText primary={w.name} slotProps={{ primary: { sx: { fontSize: 12 } } }} />
                         </ListItemButton>
                       );
                     })}
@@ -550,7 +550,7 @@ const AppShell: React.FC<Props> = ({ children }) => {
                       </ListItemIcon>
                       <ListItemText
                         primary={t("nav.assignments", { defaultValue: "Uppdrag" })}
-                        primaryTypographyProps={{ fontSize: 12 }}
+                        slotProps={{ primary: { sx: { fontSize: 12 } } }}
                       />
                     </ListItemButton>
                     {myWorkspaces.map((w) => {
@@ -567,7 +567,7 @@ const AppShell: React.FC<Props> = ({ children }) => {
                           }}
                           sx={{ borderRadius: 1, mx: 0.5, my: 0.15, pl: 6 }}
                         >
-                          <ListItemText primary={w.name} primaryTypographyProps={{ fontSize: 12 }} />
+                          <ListItemText primary={w.name} slotProps={{ primary: { sx: { fontSize: 12 } } }} />
                         </ListItemButton>
                       );
                     })}
@@ -590,7 +590,7 @@ const AppShell: React.FC<Props> = ({ children }) => {
               </ListItemIcon>
               <ListItemText
                 primary={t("nav.reports", { defaultValue: "Rapporter" })}
-                primaryTypographyProps={{ fontSize: 13, fontWeight: isReportActive ? 600 : 400 }}
+                slotProps={{ primary: { sx: { fontSize: 13, fontWeight: isReportActive ? 600 : 400 } } }}
               />
               {reportsOpen ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
             </ListItemButton>
@@ -611,10 +611,12 @@ const AppShell: React.FC<Props> = ({ children }) => {
                         ? t("reports.groupBy.byTag", { defaultValue: "Grupperat på tagg" })
                         : t("reports.groupBy.alphabetical", { defaultValue: "Sorterat A–Ö" })
                     }
-                    primaryTypographyProps={{
-                      fontSize: 10,
-                      color: "text.secondary",
-                      letterSpacing: 0.4,
+                    slotProps={{
+                      primary: { sx: {
+                        fontSize: 10,
+                        color: "text.secondary",
+                        letterSpacing: 0.4,
+                      } }
                     }}
                   />
                 </ListItemButton>
@@ -627,14 +629,16 @@ const AppShell: React.FC<Props> = ({ children }) => {
                             group.tag?.name ??
                             t("reports.overview.untagged", { defaultValue: "Övrigt" })
                           }
-                          primaryTypographyProps={{
-                            fontSize: 10,
-                            fontWeight: 700,
-                            color: group.tag?.color ?? "text.secondary",
-                            textTransform: "uppercase",
-                            letterSpacing: 0.6,
-                          }}
                           sx={{ pl: 3, pr: 1, mt: 1, mb: 0.25 }}
+                          slotProps={{
+                            primary: { sx: {
+                              fontSize: 10,
+                              fontWeight: 700,
+                              color: group.tag?.color ?? "text.secondary",
+                              textTransform: "uppercase",
+                              letterSpacing: 0.6,
+                            } }
+                          }}
                         />
                         {group.items.map((entry) => renderReportEntry(entry))}
                       </React.Fragment>
@@ -659,7 +663,7 @@ const AppShell: React.FC<Props> = ({ children }) => {
                   </ListItemIcon>
                   <ListItemText
                     primary={t("nav.dataManagementGroup", { defaultValue: "Administration" })}
-                    primaryTypographyProps={{ fontSize: 13, fontWeight: isDataMgmtActive ? 600 : 400 }}
+                    slotProps={{ primary: { sx: { fontSize: 13, fontWeight: isDataMgmtActive ? 600 : 400 } } }}
                   />
                   {dataMgmtOpen ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
                 </ListItemButton>
@@ -673,7 +677,7 @@ const AppShell: React.FC<Props> = ({ children }) => {
                         sx={{ borderRadius: 1, mx: 0.5, my: 0.15, pl: 4 }}
                       >
                         <ListItemIcon sx={{ minWidth: 30, color: "primary.main" }}>{item.icon}</ListItemIcon>
-                        <ListItemText primary={t(item.key)} primaryTypographyProps={{ fontSize: 12 }} />
+                        <ListItemText primary={t(item.key)} slotProps={{ primary: { sx: { fontSize: 12 } } }} />
                       </ListItemButton>
                     ))}
                   </List>
@@ -698,7 +702,7 @@ const AppShell: React.FC<Props> = ({ children }) => {
           sx={{ borderRadius: 1, mx: 0.5, my: 0.25 }}
         >
           <ListItemIcon sx={{ minWidth: 36, color: "primary.main" }}>{GROUP_ICONS[group.icon] ?? GROUP_ICONS.folder}</ListItemIcon>
-          <ListItemText primary={group.label} primaryTypographyProps={{ fontSize: 13, fontWeight: active ? 600 : 400 }} />
+          <ListItemText primary={group.label} slotProps={{ primary: { sx: { fontSize: 13, fontWeight: active ? 600 : 400 } } }} />
           {open ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
         </ListItemButton>
         <Collapse in={open} timeout="auto" unmountOnExit>
@@ -731,7 +735,7 @@ const AppShell: React.FC<Props> = ({ children }) => {
         <Toolbar />
         <Box sx={{ overflow: "auto" }}>
           <Box sx={{ px: 2, py: 1.5 }}>
-            <Typography variant="caption" color="text.secondary" fontWeight={600}>
+            <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 600 }}>
               NAVIGATION
             </Typography>
           </Box>

@@ -27,7 +27,7 @@ export default function SystemProcessesTab({ flows }: { flows: ArkflowSummary[] 
   if (flows.length === 0) {
     return (
       <Box sx={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <Typography color="text.secondary">{t("flowScene.systemProcessesNone")}</Typography>
+        <Typography sx={{ color: "text.secondary" }}>{t("flowScene.systemProcessesNone")}</Typography>
       </Box>
     );
   }
@@ -57,7 +57,7 @@ export default function SystemProcessesTab({ flows }: { flows: ArkflowSummary[] 
           />
         ) : (
           <Box sx={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Typography color="text.secondary">
+            <Typography sx={{ color: "text.secondary" }}>
               {flöde.isLoading ? t("flowScene.loading") : t("flowScene.none")}
             </Typography>
           </Box>

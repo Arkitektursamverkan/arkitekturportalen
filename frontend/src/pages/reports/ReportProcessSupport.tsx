@@ -48,14 +48,14 @@ const ReportProcessSupport: React.FC = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom><ReportTitle fallback={t("reports.processSupport.title")} /></Typography>
-      <Typography variant="body2" color="text.secondary" mb={2}>{t("reports.processSupport.description")}</Typography>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>{t("reports.processSupport.description")}</Typography>
 
-      <Stack direction="row" spacing={2} mb={3} alignItems="center">
+      <Stack direction="row" spacing={2} sx={{ mb: 3, alignItems: "center" }}>
         <Chip label={`${processes.length} ${t("reports.processSupport.process").toLowerCase()}`} variant="outlined" />
         <Chip label={`${coveredCount} ${t("reports.processSupport.covered").toLowerCase()}`} color="success" size="small" />
         <Chip label={`${overlapCount} ${t("reports.processSupport.overlap").toLowerCase()}`} color="warning" size="small" />
         <Chip label={`${gapCount} ${t("reports.processSupport.gap").toLowerCase()}`} color="error" size="small" />
-        <Box flexGrow={1} />
+        <Box sx={{ flexGrow: 1 }} />
         <FormControl size="small" sx={{ minWidth: 150 }}>
           <InputLabel>{t("reports.processSupport.filterLabel")}</InputLabel>
           <Select value={filterStatus} label={t("reports.processSupport.filterLabel")} onChange={(e) => setFilterStatus(e.target.value)}>
@@ -85,10 +85,10 @@ const ReportProcessSupport: React.FC = () => {
               const statusLabel = count === 0 ? t("reports.processSupport.gap") : count > 1 ? t("reports.processSupport.overlap") : "OK";
               return (
                 <TableRow key={proc.id} hover sx={{ cursor: "pointer" }} onClick={() => navigate(`/processes?id=${proc.id}`)}>
-                  <TableCell><Typography variant="body2" fontWeight={500}>{proc.name}</Typography></TableCell>
+                  <TableCell><Typography variant="body2" sx={{ fontWeight: 500 }}>{proc.name}</Typography></TableCell>
                   <TableCell><Chip label={statusLabel} size="small" color={statusColor} /></TableCell>
                   <TableCell>
-                    <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
+                    <Stack direction="row" spacing={0.5} useFlexGap sx={{ flexWrap: "wrap" }}>
                       {supportingApps.map((name) => <Chip key={name} label={name} size="small" variant="outlined" />)}
                       {count === 0 && <Typography variant="caption" color="error">{t("reports.processSupport.noSupport")}</Typography>}
                     </Stack>

@@ -107,7 +107,7 @@ const TechComponentExplorer: React.FC = () => {
     <Box sx={{ display: "flex", height: "calc(100vh - 64px)" }}>
       <Box sx={{ width: 280, borderRight: 1, borderColor: "divider", overflow: "auto", bgcolor: "background.paper" }}>
         <Box sx={{ p: 2, borderBottom: 1, borderColor: "divider" }}>
-          <Typography variant="subtitle2" fontWeight={700}>{t("techComponentExplorer.select")}</Typography>
+          <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>{t("techComponentExplorer.select")}</Typography>
         </Box>
         <ListSearchBox value={searchText} onChange={setSearchText} />
         <Box sx={{ px: 1.5, pb: 1 }}>
@@ -134,7 +134,9 @@ const TechComponentExplorer: React.FC = () => {
               <ListItemButton key={n.id} selected={n.id === selectedId} onClick={() => { setParams(selectObject(params, n.id)); clearSelection(); }}>
                 <ListItemText
                   primary={
-                    <Stack direction="row" alignItems="center" justifyContent="space-between">
+                    <Stack
+                      direction="row"
+                      sx={{ alignItems: "center", justifyContent: "space-between" }}>
                       <Typography variant="body2" noWrap sx={{ flexGrow: 1 }}>{n.name}</Typography>
                       {(edgeCounts[n.id] ?? 0) > 0 && (
                         <Chip label={edgeCounts[n.id]} size="small" sx={{ height: 18, fontSize: 10, minWidth: 24, ml: 0.5 }} />
@@ -155,8 +157,8 @@ const TechComponentExplorer: React.FC = () => {
             {!selectedId && (
               <Box sx={{ height: "100%", overflowY: "auto", p: 2 }}>
                 <DomainArchitectureTeaser domainKey="technology" />
-                <Box display="flex" alignItems="center" justifyContent="center" sx={{ py: 4 }}>
-                  <Typography color="text.secondary">{t("techComponentExplorer.noSelection")}</Typography>
+                <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", py: 4 }}>
+                  <Typography sx={{ color: "text.secondary" }}>{t("techComponentExplorer.noSelection")}</Typography>
                 </Box>
               </Box>
             )}

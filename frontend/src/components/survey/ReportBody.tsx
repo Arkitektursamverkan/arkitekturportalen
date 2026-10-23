@@ -13,11 +13,11 @@ const ReportBody: React.FC<{ report: SurveyReport }> = ({ report }) => (
     <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
       <Typography variant="subtitle2" gutterBottom>Urval</Typography>
       {report.conditions.length === 0 ? (
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" sx={{ color: "text.secondary" }}>
           Inget villkor — samtliga inkomna svar tas med.
         </Typography>
       ) : (
-        <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+        <Stack direction="row" spacing={1} useFlexGap sx={{ flexWrap: "wrap" }}>
           {report.conditions.map((condition) => (
             <Chip key={condition} label={condition} size="small" />
           ))}
@@ -32,17 +32,17 @@ const ReportBody: React.FC<{ report: SurveyReport }> = ({ report }) => (
     </Paper>
 
     {report.rows.length === 0 ? (
-      <Typography variant="body2" color="text.secondary">
+      <Typography variant="body2" sx={{ color: "text.secondary" }}>
         Inga svar uppfyller rapportens urval.
       </Typography>
     ) : (
       <Stack spacing={2}>
         {report.rows.map((row) => (
           <Paper key={row.response_id} variant="outlined" sx={{ p: 2 }}>
-            <Typography variant="subtitle1" fontWeight={600}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
               {row.object_name || row.recipient || "Utan objekt"}
             </Typography>
-            <Typography variant="body2" color="text.secondary" gutterBottom>
+            <Typography variant="body2" gutterBottom sx={{ color: "text.secondary" }}>
               {/* Anonymised reports arrive with the name fields already
                   emptied by the backend — only the date is left to show. */}
               {report.anonymous
@@ -51,7 +51,7 @@ const ReportBody: React.FC<{ report: SurveyReport }> = ({ report }) => (
             </Typography>
             {report.questions.map((question) => (
               <Box key={question.id} sx={{ mt: 1 }}>
-                <Typography variant="caption" color="text.secondary">{question.label}</Typography>
+                <Typography variant="caption" sx={{ color: "text.secondary" }}>{question.label}</Typography>
                 <Typography variant="body2" sx={{ whiteSpace: "pre-wrap" }}>
                   {row.answers[question.id] || "—"}
                 </Typography>

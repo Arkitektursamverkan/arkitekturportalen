@@ -129,8 +129,8 @@ const Glossary: React.FC = () => {
 
   return (
     <Box sx={{ p: 3, maxWidth: 1100, mx: "auto" }}>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1 }}>
-        <Typography variant="h4" component="h1" fontWeight={600}>
+      <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between", mb: 1 }}>
+        <Typography variant="h4" component="h1" sx={{ fontWeight: 600 }}>
           Ordlista
         </Typography>
         {isAdmin && (
@@ -139,7 +139,7 @@ const Glossary: React.FC = () => {
           </Button>
         )}
       </Stack>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
         Begrepp som används i arkitekturarbetet. Klicka på en bokstav för att hoppa till sektionen.
       </Typography>
 
@@ -160,19 +160,21 @@ const Glossary: React.FC = () => {
           placeholder="Sök term eller definition…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon fontSize="small" />
-              </InputAdornment>
-            ),
-            endAdornment: search ? (
-              <InputAdornment position="end">
-                <IconButton size="small" onClick={() => setSearch("")} aria-label="Rensa sökning">
-                  <ClearIcon fontSize="small" />
-                </IconButton>
-              </InputAdornment>
-            ) : null,
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon fontSize="small" />
+                </InputAdornment>
+              ),
+              endAdornment: search ? (
+                <InputAdornment position="end">
+                  <IconButton size="small" onClick={() => setSearch("")} aria-label="Rensa sökning">
+                    <ClearIcon fontSize="small" />
+                  </IconButton>
+                </InputAdornment>
+              ) : null,
+            }
           }}
         />
       </Box>
@@ -249,7 +251,7 @@ const Glossary: React.FC = () => {
                 <Typography variant="h5" sx={{ fontWeight: 800, color: "primary.main" }}>
                   {letter === FALLBACK_LETTER ? "Övrigt" : letter}
                 </Typography>
-                <Typography variant="caption" color="text.secondary">
+                <Typography variant="caption" sx={{ color: "text.secondary" }}>
                   {items.length} {items.length === 1 ? "term" : "termer"}
                 </Typography>
               </Box>
@@ -298,7 +300,7 @@ const TermCard: React.FC<TermCardProps> = ({ term, isAdmin, onEdit, onDelete }) 
       "&:hover": { boxShadow: 1 },
     }}
   >
-    <Stack direction="row" alignItems="flex-start" spacing={1}>
+    <Stack direction="row" spacing={1} sx={{ alignItems: "flex-start" }}>
       <Box sx={{ flexGrow: 1, minWidth: 0 }}>
         <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5 }}>
           {term.term}

@@ -150,12 +150,14 @@ const DomainOverviewDialog: React.FC<Props> = ({ open, onClose }) => {
   };
 
   return (
-    <Dialog fullScreen open={open} onClose={onClose} TransitionComponent={Transition}>
+    <Dialog fullScreen open={open} onClose={onClose} slots={{
+      transition: Transition
+    }}>
       <AppBar position="sticky" color="default" elevation={1}>
         <Toolbar>
           <Box sx={{ flex: 1 }}>
-            <Typography variant="h6" fontWeight={700}>{t("domainOverview.title")}</Typography>
-            <Typography variant="caption" color="text.secondary">
+            <Typography variant="h6" sx={{ fontWeight: 700 }}>{t("domainOverview.title")}</Typography>
+            <Typography variant="caption" sx={{ color: "text.secondary" }}>
               {t("domainOverview.subtitle")}
             </Typography>
           </Box>
@@ -167,8 +169,8 @@ const DomainOverviewDialog: React.FC<Props> = ({ open, onClose }) => {
 
       <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 1400, mx: "auto", width: "100%" }}>
         {/* Summary: the model on the left, what it means on the right */}
-        <Grid container spacing={4} alignItems="center">
-          <Grid item xs={12} md={5}>
+        <Grid container spacing={4} sx={{ alignItems: "center" }}>
+          <Grid size={{ xs: 12, md: 5 }}>
             <DomainPyramid
               highlight={highlight}
               showSideLabels
@@ -177,11 +179,11 @@ const DomainOverviewDialog: React.FC<Props> = ({ open, onClose }) => {
               caption={t("domainOverview.pyramidCaption")}
             />
           </Grid>
-          <Grid item xs={12} md={7}>
+          <Grid size={{ xs: 12, md: 7 }}>
             <Stack spacing={2}>
-              <Typography variant="h5" fontWeight={700}>{t("domainOverview.heading")}</Typography>
+              <Typography variant="h5" sx={{ fontWeight: 700 }}>{t("domainOverview.heading")}</Typography>
               {["intro1", "intro2", "intro3"].map((k) => (
-                <Typography key={k} variant="body1" color="text.secondary">
+                <Typography key={k} variant="body1" sx={{ color: "text.secondary" }}>
                   {t(`domainOverview.${k}`)}
                 </Typography>
               ))}
@@ -203,14 +205,14 @@ const DomainOverviewDialog: React.FC<Props> = ({ open, onClose }) => {
         <Divider sx={{ my: 4 }} />
 
         {/* One card per domain */}
-        <Grid container spacing={3} alignItems="stretch">
+        <Grid container spacing={3} sx={{ alignItems: "stretch" }}>
           {DOMAINS.map((domain) => {
             const section = sectionFor(domain.key);
             const describes = section?.describes || t(`domainOverview.domains.${domain.key}.describes`);
             const answers = section?.answers || t(`domainOverview.domains.${domain.key}.answers`);
             const isHighlighted = highlight === domain.key;
             return (
-              <Grid item xs={12} sm={6} lg={3} key={domain.key}>
+              <Grid key={domain.key} size={{ xs: 12, sm: 6, lg: 3 }}>
                 <Card
                   id={cardId(domain.key)}
                   variant="outlined"
@@ -225,13 +227,13 @@ const DomainOverviewDialog: React.FC<Props> = ({ open, onClose }) => {
                 >
                   <CardContent>
                     <Stack spacing={1.5}>
-                      <Stack direction="row" alignItems="center" spacing={1}>
+                      <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                         <Box sx={{ color: domain.accent, display: "flex" }}>{domain.icon}</Box>
                         <Box sx={{ flex: 1 }}>
-                          <Typography variant="subtitle1" fontWeight={700}>
+                          <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
                             {t(domain.navKey)}
                           </Typography>
-                          <Typography variant="caption" color="text.secondary">
+                          <Typography variant="caption" sx={{ color: "text.secondary" }}>
                             {domain.english}
                           </Typography>
                         </Box>
@@ -249,25 +251,21 @@ const DomainOverviewDialog: React.FC<Props> = ({ open, onClose }) => {
                       <DomainPyramid highlight={domain.key} height={150} />
 
                       <Box>
-                        <Typography variant="caption" fontWeight={700} sx={{ color: domain.accent }}>
+                        <Typography variant="caption" sx={{ fontWeight: 700, color: domain.accent }}>
                           {t("domainOverview.describes")}
                         </Typography>
                         <Typography variant="body2">{describes}</Typography>
                       </Box>
                       <Box>
-                        <Typography variant="caption" fontWeight={700} sx={{ color: domain.accent }}>
+                        <Typography variant="caption" sx={{ fontWeight: 700, color: domain.accent }}>
                           {t("domainOverview.answers")}
                         </Typography>
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          sx={{ whiteSpace: "pre-line" }}
-                        >
+                        <Typography variant="body2" sx={{ color: "text.secondary", whiteSpace: "pre-line" }}>
                           {answers}
                         </Typography>
                       </Box>
 
-                      <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                      <Stack direction="row" spacing={1} useFlexGap sx={{ flexWrap: "wrap" }}>
                         {domain.counts.filter((c) => (c.type !== "Server" && c.type !== "ServerService") || canSeeServers).map(({ type, labelKey }) => {
                           const count = countOf(type);
                           return (
@@ -281,7 +279,7 @@ const DomainOverviewDialog: React.FC<Props> = ({ open, onClose }) => {
                         })}
                       </Stack>
 
-                      <Stack spacing={0.5} alignItems="flex-start">
+                      <Stack spacing={0.5} sx={{ alignItems: "flex-start" }}>
                         {domain.links.filter((l) => (l.path !== "/servers" && l.path !== "/server-services") || canSeeServers).map((link) => (
                           <Button
                             key={link.path}

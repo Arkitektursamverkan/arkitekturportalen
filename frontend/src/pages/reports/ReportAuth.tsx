@@ -36,11 +36,11 @@ const ReportAuth: React.FC = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom><ReportTitle fallback={t("reports.auth.title")} /></Typography>
-      <Typography variant="body2" color="text.secondary" mb={2}>{t("reports.auth.description")}</Typography>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>{t("reports.auth.description")}</Typography>
 
       {!hasData && <Alert severity="info" sx={{ mb: 3 }}>{t("reports.auth.hint")}</Alert>}
 
-      <Stack direction="row" spacing={1} mb={3} flexWrap="wrap" useFlexGap>
+      <Stack direction="row" spacing={1} useFlexGap sx={{ mb: 3, flexWrap: "wrap" }}>
         {Object.entries(methodCounts).map(([method, count]) => (
           <Chip key={method} label={`${method}: ${count}`} size="small"
             sx={{ bgcolor: AUTH_COLORS[method] || "#757575", color: "#fff", fontWeight: 600 }} />
@@ -62,11 +62,11 @@ const ReportAuth: React.FC = () => {
               const mfaOn = row.mfaEnabled === "true" || row.mfaEnabled === "yes" || row.mfaEnabled === "ja";
               return (
                 <TableRow key={row.id} hover sx={{ cursor: "pointer" }} onClick={() => navigate(`/systems?id=${row.id}`)}>
-                  <TableCell><Typography variant="body2" fontWeight={500}>{row.name}</Typography></TableCell>
+                  <TableCell><Typography variant="body2" sx={{ fontWeight: 500 }}>{row.name}</Typography></TableCell>
                   <TableCell>
                     {row.authMethod
                       ? <Chip label={row.authMethod} size="small" sx={{ bgcolor: AUTH_COLORS[row.authMethod] || "#757575", color: "#fff" }} />
-                      : <Typography variant="caption" color="text.secondary">{t("reports.auth.notSet")}</Typography>}
+                      : <Typography variant="caption" sx={{ color: "text.secondary" }}>{t("reports.auth.notSet")}</Typography>}
                   </TableCell>
                   <TableCell>
                     {row.mfaEnabled && row.mfaEnabled !== "false" && row.mfaEnabled !== "no" && row.mfaEnabled !== "nej" && row.mfaEnabled !== ""

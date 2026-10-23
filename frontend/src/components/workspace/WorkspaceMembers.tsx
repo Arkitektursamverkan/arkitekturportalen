@@ -59,7 +59,7 @@ const WorkspaceMembers: React.FC<Props> = ({ workspace }) => {
       {error && <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>{error}</Alert>}
 
       {isOwner && (
-        <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5} sx={{ mb: 3 }} alignItems="flex-start">
+        <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5} sx={{ alignItems: "flex-start", mb: 3 }}>
           <Autocomplete
             sx={{ minWidth: 320 }}
             size="small"
@@ -115,7 +115,7 @@ const WorkspaceMembers: React.FC<Props> = ({ workspace }) => {
             <TableRow key={m.user_id} hover>
               <TableCell>{m.name}</TableCell>
               <TableCell>
-                <Typography variant="body2" color="text.secondary">{m.email}</Typography>
+                <Typography variant="body2" sx={{ color: "text.secondary" }}>{m.email}</Typography>
               </TableCell>
               <TableCell>
                 {isOwner ? (
@@ -143,7 +143,7 @@ const WorkspaceMembers: React.FC<Props> = ({ workspace }) => {
                 )}
               </TableCell>
               <TableCell>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" sx={{ color: "text.secondary" }}>
                   {new Date(m.added_at).toLocaleDateString("sv-SE")}
                 </Typography>
               </TableCell>
@@ -168,7 +168,7 @@ const WorkspaceMembers: React.FC<Props> = ({ workspace }) => {
         </TableBody>
       </Table>
 
-      <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 2 }}>
+      <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mt: 2 }}>
         Ägare hanterar {copy.membersNoun} och innehåll · Medlem skriver och läser · Läsare läser
         endast. Rollen gäller bara i {copy.definite}.
       </Typography>

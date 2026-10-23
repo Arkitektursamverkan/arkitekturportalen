@@ -15,14 +15,16 @@ export default function ListSearchBox({ value, onChange, placeholder = "Sök..."
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      InputProps={{
-        startAdornment: (
-          <InputAdornment position="start">
-            <SearchIcon fontSize="small" sx={{ color: "text.secondary" }} />
-          </InputAdornment>
-        ),
-      }}
       sx={{ px: 1.5, py: 1 }}
+      slotProps={{
+        input: {
+          startAdornment: (
+            <InputAdornment position="start">
+              <SearchIcon fontSize="small" sx={{ color: "text.secondary" }} />
+            </InputAdornment>
+          ),
+        }
+      }}
     />
   );
 }

@@ -154,7 +154,7 @@ const ImportCSV: React.FC = () => {
 
   return (
     <Box sx={{ p: 3, maxWidth: 960, mx: "auto" }}>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={0.5}>
+      <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between", mb: 0.5 }}>
         <Typography variant="h5">{t("csvImport.title")}</Typography>
         <Button
           variant="outlined"
@@ -166,7 +166,7 @@ const ImportCSV: React.FC = () => {
           {t("csvImport.export.button")}
         </Button>
       </Stack>
-      <Typography variant="body2" color="text.secondary" mb={2}>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
         {t("csvImport.subtitle")}
       </Typography>
 
@@ -198,7 +198,7 @@ const ImportCSV: React.FC = () => {
 
       {/* ── Step 1: Template ── */}
       <StepCard step="1" title={t("csvImport.step1.title")}>
-        <Typography variant="body2" color="text.secondary" mb={2}>
+        <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
           {t("csvImport.step1.description")}
         </Typography>
         <Button
@@ -209,11 +209,11 @@ const ImportCSV: React.FC = () => {
         >
           {t("csvImport.step1.download", { entity: entityLabel })}
         </Button>
-        <Box mt={2}>
-          <Typography variant="caption" color="text.secondary" fontWeight={600} display="block" mb={0.5}>
+        <Box sx={{ mt: 2 }}>
+          <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 600, display: "block", mb: 0.5 }}>
             {t("csvImport.step1.columns")}
           </Typography>
-          <Stack direction="row" flexWrap="wrap" gap={0.75}>
+          <Stack direction="row" sx={{ flexWrap: "wrap", gap: 0.75 }}>
             {entityConfig.columns.map((col) => (
               <Chip
                 key={col}
@@ -224,7 +224,7 @@ const ImportCSV: React.FC = () => {
               />
             ))}
           </Stack>
-          <Typography variant="caption" color="text.secondary" mt={0.5} display="block">
+          <Typography variant="caption" sx={{ color: "text.secondary", mt: 0.5, display: "block" }}>
             * {t("csvImport.step1.required")}
           </Typography>
         </Box>
@@ -250,10 +250,10 @@ const ImportCSV: React.FC = () => {
           }}
         >
           <UploadFileIcon sx={{ fontSize: 40, color: "text.secondary", mb: 1 }} />
-          <Typography variant="body1" fontWeight={500}>
+          <Typography variant="body1" sx={{ fontWeight: 500 }}>
             {t("csvImport.step2.dropzone")}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>
             {t("csvImport.step2.or")}
           </Typography>
           {preview.isPending && (
@@ -268,7 +268,7 @@ const ImportCSV: React.FC = () => {
           onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
         />
         {selectedFile && (
-          <Stack direction="row" alignItems="center" spacing={1} mt={1.5}>
+          <Stack direction="row" spacing={1} sx={{ alignItems: "center", mt: 1.5 }}>
             <Chip
               label={selectedFile.name}
               onDelete={resetFileState}
@@ -283,7 +283,7 @@ const ImportCSV: React.FC = () => {
       {/* ── Parse errors ── */}
       {parseErrors.length > 0 && (
         <Alert severity="warning" sx={{ mb: 2 }}>
-          <Typography variant="body2" fontWeight={600} mb={0.5}>{t("csvImport.parseWarnings")}</Typography>
+          <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5 }}>{t("csvImport.parseWarnings")}</Typography>
           {parseErrors.map((e, i) => <Typography key={i} variant="body2">• {e}</Typography>)}
         </Alert>
       )}
@@ -292,7 +292,7 @@ const ImportCSV: React.FC = () => {
       {previewRows !== null && (
         <StepCard step="3" title={t("csvImport.step3.title", { count: previewRows.length })}>
           {previewRows.length === 0 ? (
-            <Typography color="text.secondary">{t("csvImport.step3.noRows")}</Typography>
+            <Typography sx={{ color: "text.secondary" }}>{t("csvImport.step3.noRows")}</Typography>
           ) : (
             <>
               <TableContainer component={Paper} variant="outlined" sx={{ mb: 2, maxHeight: 360 }}>
@@ -351,7 +351,7 @@ const ImportCSV: React.FC = () => {
           icon={importResult.errors.length > 0 ? <ErrorIcon /> : <CheckCircleIcon />}
           sx={{ mt: 2 }}
         >
-          <Typography variant="body2" fontWeight={600} mb={0.5}>
+          <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5 }}>
             {t("csvImport.result.title")}
           </Typography>
           <Typography variant="body2">
@@ -362,7 +362,7 @@ const ImportCSV: React.FC = () => {
             })}
           </Typography>
           {importResult.errors.map((e, i) => (
-            <Typography key={i} variant="body2" color="warning.dark">• {e}</Typography>
+            <Typography key={i} variant="body2" sx={{ color: "warning.dark" }}>• {e}</Typography>
           ))}
           <Button size="small" sx={{ mt: 1 }} onClick={resetFileState}>
             {t("csvImport.result.importMore")}
@@ -387,7 +387,7 @@ function StepCard({
 }) {
   return (
     <Paper variant="outlined" sx={{ mb: 2, p: 2.5, borderRadius: 2 }}>
-      <Stack direction="row" spacing={1.5} alignItems="center" mb={1.5}>
+      <Stack direction="row" spacing={1.5} sx={{ alignItems: "center", mb: 1.5 }}>
         <Box
           sx={{
             width: 28, height: 28, borderRadius: "50%",
@@ -398,7 +398,7 @@ function StepCard({
         >
           {step}
         </Box>
-        <Typography variant="h6" fontSize={15} fontWeight={600}>{title}</Typography>
+        <Typography variant="h6" sx={{ fontSize: 15, fontWeight: 600 }}>{title}</Typography>
       </Stack>
       <Divider sx={{ mb: 2 }} />
       {children}
@@ -457,13 +457,13 @@ const UnifiedImportPanel: React.FC = () => {
 
   return (
     <>
-      <Typography variant="body2" color="text.secondary" mb={2}>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
         {t("csvImport.unified.description")}
       </Typography>
 
       {/* Template download */}
       <StepCard step="1" title={t("csvImport.step1.title")}>
-        <Typography variant="body2" color="text.secondary" mb={2}>
+        <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
           {t("csvImport.unified.templateDesc")}
         </Typography>
         <Button
@@ -493,13 +493,13 @@ const UnifiedImportPanel: React.FC = () => {
           }}
         >
           <UploadFileIcon sx={{ fontSize: 40, color: "text.secondary", mb: 1 }} />
-          <Typography variant="body1" fontWeight={500}>{t("csvImport.step2.dropzone")}</Typography>
-          <Typography variant="body2" color="text.secondary">{t("csvImport.step2.or")}</Typography>
+          <Typography variant="body1" sx={{ fontWeight: 500 }}>{t("csvImport.step2.dropzone")}</Typography>
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>{t("csvImport.step2.or")}</Typography>
           {previewMut.isPending && <CircularProgress size={24} sx={{ mt: 1 }} />}
         </Box>
         <input ref={fileRef} type="file" accept=".csv,text/csv" hidden onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
         {file && (
-          <Stack direction="row" alignItems="center" spacing={1} mt={1.5}>
+          <Stack direction="row" spacing={1} sx={{ alignItems: "center", mt: 1.5 }}>
             <Chip label={file.name} onDelete={reset} color="primary" variant="outlined" size="small" />
           </Stack>
         )}
@@ -508,7 +508,7 @@ const UnifiedImportPanel: React.FC = () => {
       {/* Parse errors */}
       {preview && preview.errors.length > 0 && (
         <Alert severity="warning" sx={{ mb: 2 }}>
-          <Typography variant="body2" fontWeight={600} mb={0.5}>{t("csvImport.parseWarnings")}</Typography>
+          <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5 }}>{t("csvImport.parseWarnings")}</Typography>
           {preview.errors.map((e, i) => <Typography key={i} variant="body2">• {e}</Typography>)}
         </Alert>
       )}
@@ -519,7 +519,7 @@ const UnifiedImportPanel: React.FC = () => {
           {/* Node preview */}
           {preview.nodes.length > 0 && (
             <>
-              <Typography variant="subtitle2" mb={1}>{t("csvImport.unified.nodes")} ({preview.total_nodes})</Typography>
+              <Typography variant="subtitle2" sx={{ mb: 1 }}>{t("csvImport.unified.nodes")} ({preview.total_nodes})</Typography>
               <TableContainer component={Paper} variant="outlined" sx={{ mb: 2, maxHeight: 260 }}>
                 <Table size="small" stickyHeader>
                   <TableHead>
@@ -552,7 +552,7 @@ const UnifiedImportPanel: React.FC = () => {
           {/* Edge preview */}
           {preview.edges.length > 0 && (
             <>
-              <Typography variant="subtitle2" mb={1}>{t("csvImport.unified.connections")} ({preview.total_edges})</Typography>
+              <Typography variant="subtitle2" sx={{ mb: 1 }}>{t("csvImport.unified.connections")} ({preview.total_edges})</Typography>
               <TableContainer component={Paper} variant="outlined" sx={{ mb: 2, maxHeight: 200 }}>
                 <Table size="small" stickyHeader>
                   <TableHead>
@@ -597,7 +597,7 @@ const UnifiedImportPanel: React.FC = () => {
           icon={result.errors.length > 0 ? <ErrorIcon /> : <CheckCircleIcon />}
           sx={{ mt: 2 }}
         >
-          <Typography variant="body2" fontWeight={600} mb={0.5}>{t("csvImport.result.title")}</Typography>
+          <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5 }}>{t("csvImport.result.title")}</Typography>
           <Typography variant="body2">
             {t("csvImport.unified.resultSummary", {
               nodesCreated: result.nodes_created,
@@ -606,7 +606,7 @@ const UnifiedImportPanel: React.FC = () => {
             })}
           </Typography>
           {result.errors.map((e, i) => (
-            <Typography key={i} variant="body2" color="warning.dark">• {e}</Typography>
+            <Typography key={i} variant="body2" sx={{ color: "warning.dark" }}>• {e}</Typography>
           ))}
           <Button size="small" sx={{ mt: 1 }} onClick={reset}>{t("csvImport.result.importMore")}</Button>
         </Alert>

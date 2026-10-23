@@ -70,9 +70,9 @@ const ReportPortfolio: React.FC = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom><ReportTitle fallback={t("reports.portfolio.title")} /></Typography>
-      <Typography variant="body2" color="text.secondary" mb={2}>{t("reports.portfolio.description")}</Typography>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>{t("reports.portfolio.description")}</Typography>
 
-      <Stack direction="row" spacing={1} mb={2} flexWrap="wrap" useFlexGap>
+      <Stack direction="row" spacing={1} useFlexGap sx={{ mb: 2, flexWrap: "wrap" }}>
         <TextField size="small" placeholder={t("reports.portfolio.search")} value={search} onChange={(e) => setSearch(e.target.value)} sx={{ minWidth: 200 }} />
         <Autocomplete multiple size="small" options={options.kategori} value={filterKategori} onChange={(_, v) => setFilterKategori(v)}
           renderInput={(p) => <TextField {...p} placeholder={t("reports.portfolio.category")} />} sx={{ minWidth: 180 }} />
@@ -100,7 +100,7 @@ const ReportPortfolio: React.FC = () => {
           <TableBody>
             {filtered.map((app) => (
               <TableRow key={app.id} hover sx={{ cursor: "pointer" }} onClick={() => navigate(`/systems?id=${app.id}`)}>
-                <TableCell><Typography variant="body2" fontWeight={500}>{app.name}</Typography></TableCell>
+                <TableCell><Typography variant="body2" sx={{ fontWeight: 500 }}>{app.name}</Typography></TableCell>
                 <TableCell><Typography variant="caption">{app.kategori}</Typography></TableCell>
                 <TableCell>{app.status && <Chip label={app.status} size="small" />}</TableCell>
                 <TableCell><Typography variant="caption">{app.driftform}</Typography></TableCell>

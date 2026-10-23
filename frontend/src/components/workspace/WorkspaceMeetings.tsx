@@ -66,10 +66,10 @@ const WorkspaceMeetings: React.FC<Props> = ({ workspaceId, canEdit }) => {
   return (
     <Box>
       {error && <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>{error}</Alert>}
-      <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems="flex-start">
+      <Stack direction={{ xs: "column", md: "row" }} spacing={2} sx={{ alignItems: "flex-start" }}>
         <Paper variant="outlined" sx={{ width: { xs: "100%", md: 280 }, flexShrink: 0 }}>
-          <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ px: 2, py: 1 }}>
-            <Typography variant="subtitle2" fontWeight={700}>Möten</Typography>
+          <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between", px: 2, py: 1 }}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>Möten</Typography>
             {canEdit && (
               <Tooltip title="Nytt möte">
                 <IconButton size="small" onClick={() => setNewOpen(true)}>
@@ -95,14 +95,12 @@ const WorkspaceMeetings: React.FC<Props> = ({ workspaceId, canEdit }) => {
                       {meetingTemplateLabel(m.template)}
                     </>
                   }
-                  primaryTypographyProps={{ fontSize: 13 }}
-                  secondaryTypographyProps={{ fontSize: 11 }}
-                />
+                  slotProps={{ primary: { sx: { fontSize: 13 } }, secondary: { sx: { fontSize: 11 } } }} />
               </ListItemButton>
             ))}
             {!isLoading && meetings.length === 0 && (
               <Box sx={{ px: 2, py: 3 }}>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" sx={{ color: "text.secondary" }}>
                   Inga mötesanteckningar ännu.
                 </Typography>
               </Box>
@@ -112,7 +110,7 @@ const WorkspaceMeetings: React.FC<Props> = ({ workspaceId, canEdit }) => {
 
         <Paper variant="outlined" sx={{ flex: 1, p: 3, minHeight: 320, width: "100%" }}>
           {!meeting ? (
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: "text.secondary" }}>
               {canEdit
                 ? "Skapa ett möte och välj en mall — anteckningarna får då färdiga rubriker att fylla i."
                 : "Det finns inga mötesanteckningar i uppdraget ännu."}
@@ -133,7 +131,7 @@ const WorkspaceMeetings: React.FC<Props> = ({ workspaceId, canEdit }) => {
                   size="small"
                   value={draftDate}
                   onChange={(e) => setDraftDate(e.target.value)}
-                  InputLabelProps={{ shrink: true }}
+                  slotProps={{ inputLabel: { shrink: true } }}
                 />
               </Stack>
               <MarkdownEditor value={draftBody} onChange={setDraftBody} minRows={16} />
@@ -170,13 +168,13 @@ const WorkspaceMeetings: React.FC<Props> = ({ workspaceId, canEdit }) => {
             </Stack>
           ) : (
             <Box>
-              <Stack direction="row" alignItems="flex-start" justifyContent="space-between" sx={{ mb: 1 }}>
+              <Stack direction="row" sx={{ alignItems: "flex-start", justifyContent: "space-between", mb: 1 }}>
                 <Box>
-                  <Stack direction="row" spacing={1} alignItems="center">
-                    <Typography variant="h6" fontWeight={700}>{meeting.title}</Typography>
+                  <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+                    <Typography variant="h6" sx={{ fontWeight: 700 }}>{meeting.title}</Typography>
                     <Chip size="small" variant="outlined" label={meetingTemplateLabel(meeting.template)} />
                   </Stack>
-                  <Typography variant="caption" color="text.secondary">
+                  <Typography variant="caption" sx={{ color: "text.secondary" }}>
                     {meeting.meeting_date ? `Möte ${meeting.meeting_date} · ` : ""}
                     senast uppdaterad {new Date(meeting.updated_at).toLocaleString("sv-SE")}
                     {meeting.updated_by ? ` av ${meeting.updated_by}` : ""}
@@ -279,11 +277,11 @@ const NewMeetingDialog: React.FC<{
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              InputLabelProps={{ shrink: true }}
+              slotProps={{ inputLabel: { shrink: true } }}
             />
           </Stack>
           <Box>
-            <Typography variant="caption" color="text.secondary">
+            <Typography variant="caption" sx={{ color: "text.secondary" }}>
               Mallen fyller anteckningarna med färdiga rubriker. Allt går att ändra efteråt.
             </Typography>
             <Paper variant="outlined" sx={{ p: 2, mt: 1, maxHeight: 220, overflow: "auto" }}>

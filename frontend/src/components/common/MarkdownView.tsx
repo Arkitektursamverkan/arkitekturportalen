@@ -113,9 +113,7 @@ const MarkdownView: React.FC<Props> = ({ text, emptyText }) => {
         <Typography
           key={`h-${blocks.length}`}
           variant={(["h5", "h6", "subtitle1", "subtitle2"] as const)[level - 1]}
-          fontWeight={700}
-          sx={{ mt: blocks.length ? 2 : 0, mb: 0.5 }}
-        >
+          sx={{ fontWeight: 700, mt: blocks.length ? 2 : 0, mb: 0.5 }}>
           {renderInline(heading[2], `h-${blocks.length}`)}
         </Typography>,
       );
@@ -155,7 +153,7 @@ const MarkdownView: React.FC<Props> = ({ text, emptyText }) => {
 
   if (blocks.length === 0) {
     return (
-      <Typography variant="body2" color="text.secondary">
+      <Typography variant="body2" sx={{ color: "text.secondary" }}>
         {emptyText ?? "Inget innehåll ännu."}
       </Typography>
     );

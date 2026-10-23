@@ -10,10 +10,10 @@ interface Props {
 const LoadingSpinner: React.FC<Props> = ({ message, height = "100%" }) => {
   const { t } = useTranslation();
   return (
-    <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" height={height} gap={2}>
+    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: height, gap: 2 }}>
       <CircularProgress />
-      {message && <Typography variant="body2" color="text.secondary">{message}</Typography>}
-      {!message && <Typography variant="body2" color="text.secondary">{t("common.loading")}</Typography>}
+      {message && <Typography variant="body2" sx={{ color: "text.secondary" }}>{message}</Typography>}
+      {!message && <Typography variant="body2" sx={{ color: "text.secondary" }}>{t("common.loading")}</Typography>}
     </Box>
   );
 };

@@ -95,10 +95,10 @@ export const NodeMultiSelect: React.FC<Props> = ({ type, label, ids, proposals, 
           )}
         </li>
       )}
-      renderTags={(picked, getTagProps) =>
+      renderValue={(picked, getItemProps) =>
         picked.map((n, i) => (
           <Chip
-            {...getTagProps({ index: i })}
+            {...getItemProps({ index: i })}
             key={n.id}
             label={n.name}
             size="small"

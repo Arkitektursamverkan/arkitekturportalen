@@ -71,7 +71,7 @@ export const MappingTable: React.FC<Props> = ({
       sx={{ bgcolor: !value[eaField.target] && eaField.required ? "error.50" : undefined }}
     >
       <TableCell>
-        <Typography variant="body2" fontWeight={eaField.required ? 600 : 400}>
+        <Typography variant="body2" sx={{ fontWeight: eaField.required ? 600 : 400 }}>
           {eaField.label}
           {eaField.required && (
             <Chip
@@ -102,9 +102,7 @@ export const MappingTable: React.FC<Props> = ({
       <TableCell>
         <Typography
           variant="caption"
-          color="text.secondary"
-          sx={{ maxWidth: 200, display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
-        >
+          sx={{ color: "text.secondary", maxWidth: 200, display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
           {value[eaField.target] ? getSample(value[eaField.target]) : ""}
         </Typography>
       </TableCell>
@@ -117,7 +115,7 @@ export const MappingTable: React.FC<Props> = ({
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" sx={{ color: "text.secondary" }}>
           För varje EA-fält, välj vilket plattformsfält som ska ge värdet.
         </Typography>
         <Box sx={{ display: "flex", gap: 1 }}>
@@ -138,14 +136,14 @@ export const MappingTable: React.FC<Props> = ({
         <TableBody>
           <TableRow>
             <TableCell colSpan={4} sx={{ bgcolor: "grey.50", py: 0.5 }}>
-              <Typography variant="caption" fontWeight={600} color="text.secondary">KÄRNFÄLT</Typography>
+              <Typography variant="caption" sx={{ fontWeight: 600, color: "text.secondary" }}>KÄRNFÄLT</Typography>
             </TableCell>
           </TableRow>
           {eaFields.filter((f) => f.group === "Core").map(renderRow)}
 
           <TableRow>
             <TableCell colSpan={4} sx={{ bgcolor: "grey.50", py: 0.5 }}>
-              <Typography variant="caption" fontWeight={600} color="text.secondary">ATTRIBUT</Typography>
+              <Typography variant="caption" sx={{ fontWeight: 600, color: "text.secondary" }}>ATTRIBUT</Typography>
             </TableCell>
           </TableRow>
           {eaFields.filter((f) => f.group === "Attribute").map(renderRow)}
@@ -158,10 +156,10 @@ export const MappingTable: React.FC<Props> = ({
 
       {unmapped.length > 0 && (
         <Alert severity="info">
-          <Typography variant="body2" fontWeight={600} gutterBottom>
+          <Typography variant="body2" gutterBottom sx={{ fontWeight: 600 }}>
             {unmapped.length} plattformsfält ej mappade:
           </Typography>
-          <Typography variant="caption" color="text.secondary">
+          <Typography variant="caption" sx={{ color: "text.secondary" }}>
             {unmapped.map((sf) => sf.name).join(", ")}
           </Typography>
         </Alert>

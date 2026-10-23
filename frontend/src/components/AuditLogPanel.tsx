@@ -97,12 +97,12 @@ const AuditLogPanel: React.FC = () => {
 
   return (
     <Box>
-      <Typography variant="body2" color="text.secondary" mb={2}>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
         {t("auditLog.description")}
       </Typography>
 
       {/* Filters */}
-      <Stack direction="row" spacing={2} mb={2}>
+      <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
         <FormControl size="small" sx={{ minWidth: 150 }}>
           <InputLabel>{t("auditLog.filters.entityType")}</InputLabel>
           <Select
@@ -134,8 +134,8 @@ const AuditLogPanel: React.FC = () => {
             <MenuItem value="PROPOSE_WITHDRAW">{t("auditLog.actions.PROPOSE_WITHDRAW")}</MenuItem>
           </Select>
         </FormControl>
-        <Box flex={1} />
-        <Typography variant="body2" color="text.secondary" alignSelf="center">
+        <Box sx={{ flex: 1 }} />
+        <Typography variant="body2" sx={{ color: "text.secondary", alignSelf: "center" }}>
           {total} {t("auditLog.entries")}
         </Typography>
         {total > 0 && (
@@ -154,11 +154,11 @@ const AuditLogPanel: React.FC = () => {
 
       {/* Table */}
       {isLoading ? (
-        <Box display="flex" justifyContent="center" p={4}>
+        <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
           <CircularProgress size={28} />
         </Box>
       ) : items.length === 0 ? (
-        <Typography color="text.secondary" align="center" py={4}>
+        <Typography align="center" sx={{ color: "text.secondary", py: 4 }}>
           {t("auditLog.noEntries")}
         </Typography>
       ) : (
@@ -198,8 +198,8 @@ const AuditLogPanel: React.FC = () => {
                           />
                         </TableCell>
                         <TableCell>
-                          <Stack direction="row" spacing={0.5} alignItems="center">
-                            <Typography variant="body2" fontSize={12}>
+                          <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
+                            <Typography variant="body2" sx={{ fontSize: 12 }}>
                               {t(`auditLog.entityTypes.${entry.entity_type}`)}
                             </Typography>
                             {entry.entity_subtype && (
@@ -208,7 +208,7 @@ const AuditLogPanel: React.FC = () => {
                           </Stack>
                         </TableCell>
                         <TableCell sx={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                          <Typography variant="body2" fontSize={12} fontWeight={500} noWrap title={entry.entity_name ?? entry.entity_id}>
+                          <Typography variant="body2" noWrap title={entry.entity_name ?? entry.entity_id} sx={{ fontSize: 12, fontWeight: 500 }}>
                             {entry.entity_name ?? entry.entity_id}
                           </Typography>
                         </TableCell>
@@ -236,15 +236,15 @@ const AuditLogPanel: React.FC = () => {
                           <Collapse in={isExpanded}>
                             <Box sx={{ py: 1.5, px: 1 }}>
                               {(entry.user_name || entry.change_note) && (
-                                <Typography variant="body2" fontSize={12} mb={1} sx={{ whiteSpace: "pre-wrap" }}>
+                                <Typography variant="body2" sx={{ fontSize: 12, mb: 1, whiteSpace: "pre-wrap" }}>
                                   {entry.user_name && <><strong>{entry.user_name}</strong>{entry.change_note ? " – " : ""}</>}
                                   {entry.change_note}
                                 </Typography>
                               )}
                               <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
                                 {entry.snapshot_before && (
-                                  <Box flex={1}>
-                                    <Typography variant="caption" fontWeight={600} color="text.secondary">
+                                  <Box sx={{ flex: 1 }}>
+                                    <Typography variant="caption" sx={{ fontWeight: 600, color: "text.secondary" }}>
                                       {t("auditLog.snapshot.before")}
                                     </Typography>
                                     <Paper variant="outlined" sx={{ p: 1, mt: 0.5, maxHeight: 200, overflow: "auto" }}>
@@ -255,8 +255,8 @@ const AuditLogPanel: React.FC = () => {
                                   </Box>
                                 )}
                                 {entry.snapshot_after && (
-                                  <Box flex={1}>
-                                    <Typography variant="caption" fontWeight={600} color="text.secondary">
+                                  <Box sx={{ flex: 1 }}>
+                                    <Typography variant="caption" sx={{ fontWeight: 600, color: "text.secondary" }}>
                                       {t("auditLog.snapshot.after")}
                                     </Typography>
                                     <Paper variant="outlined" sx={{ p: 1, mt: 0.5, maxHeight: 200, overflow: "auto" }}>
@@ -280,11 +280,11 @@ const AuditLogPanel: React.FC = () => {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <Stack direction="row" justifyContent="center" spacing={1} mt={2}>
+            <Stack direction="row" spacing={1} sx={{ justifyContent: "center", mt: 2 }}>
               <Button size="small" disabled={page === 0} onClick={() => setPage(page - 1)}>
                 &laquo;
               </Button>
-              <Typography variant="body2" alignSelf="center">
+              <Typography variant="body2" sx={{ alignSelf: "center" }}>
                 {page + 1} / {totalPages}
               </Typography>
               <Button size="small" disabled={page >= totalPages - 1} onClick={() => setPage(page + 1)}>

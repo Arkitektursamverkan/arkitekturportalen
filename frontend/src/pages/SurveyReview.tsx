@@ -144,9 +144,9 @@ const SurveyReview: React.FC = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Stack direction="row" alignItems="center" spacing={1} mb={2}>
+      <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 2 }}>
         <Button startIcon={<ArrowBackIcon />} onClick={() => navigate(`/surveys/${id}`)}>Tillbaka</Button>
-        <Typography variant="h4" fontWeight={700}>Granska svar — {survey.title}</Typography>
+        <Typography variant="h4" sx={{ fontWeight: 700 }}>Granska svar — {survey.title}</Typography>
         <Tooltip title="Laddar ner alla inskickade och granskade svar som en CSV-fil (öppnas i Excel)">
           <span style={{ marginLeft: "auto" }}>
             <Button
@@ -174,7 +174,7 @@ const SurveyReview: React.FC = () => {
       {exportError && <Alert severity="error" sx={{ mb: 2 }}>{exportError}</Alert>}
 
       {reviewable.length === 0 && (
-        <Typography variant="body2" color="text.secondary">Inga inskickade svar att granska ännu.</Typography>
+        <Typography variant="body2" sx={{ color: "text.secondary" }}>Inga inskickade svar att granska ännu.</Typography>
       )}
 
       {matrixQuestions.length > 0 && reviewable.length > 0 && (
@@ -189,12 +189,12 @@ const SurveyReview: React.FC = () => {
       <Stack spacing={2}>
         {reviewable.map((response) => (
           <Paper key={response.id} variant="outlined" sx={{ p: 2 }}>
-            <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
+            <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "flex-start" }}>
               <Box>
-                <Typography variant="subtitle1" fontWeight={600}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
                   {response.node_name ?? response.assigned_user_name ?? "Manuell mottagare"}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" sx={{ color: "text.secondary" }}>
                   Svarat av {response.submitted_by ?? "okänd"} {response.submitted_at && new Date(response.submitted_at).toLocaleString("sv-SE")}
                 </Typography>
               </Box>
@@ -213,21 +213,21 @@ const SurveyReview: React.FC = () => {
                   const nodeId = response.node_id as string;
                   return (
                     <Box key={q.id} sx={{ mb: 1 }}>
-                      <Typography variant="caption" color="text.secondary">
+                      <Typography variant="caption" sx={{ color: "text.secondary" }}>
                         {renderSurveyText(q.label, { system_name: response.node_name ?? "" })}
                       </Typography>
-                      <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mt: 0.5 }}>
+                      <Stack direction="row" spacing={1} useFlexGap sx={{ flexWrap: "wrap", mt: 0.5 }}>
                         {picked.map((pickedId) => {
                           const exists = edgeExists(nodeId, pickedId);
                           return (
-                            <Stack key={pickedId} direction="row" spacing={0.5} alignItems="center">
+                            <Stack key={pickedId} direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
                               <Chip
                                 label={`${response.node_name} ↔ ${nodeName(pickedId)}`}
                                 variant={exists ? "filled" : "outlined"}
                                 color={exists ? "default" : "primary"}
                               />
                               {exists ? (
-                                <Typography variant="caption" color="text.secondary">Finns redan</Typography>
+                                <Typography variant="caption" sx={{ color: "text.secondary" }}>Finns redan</Typography>
                               ) : (
                                 <Button
                                   size="small"
@@ -267,7 +267,7 @@ const SurveyReview: React.FC = () => {
                     : null;
                   return (
                     <Box key={qid} sx={{ mt: 1 }}>
-                      <Typography variant="caption" color="text.secondary">{label}</Typography>
+                      <Typography variant="caption" sx={{ color: "text.secondary" }}>{label}</Typography>
                       <Typography variant="body2">
                         {rated.map((row) => `${row}: ${filled[row]}`).join(" · ") || "—"}
                         {avg !== null && rated.length > 1 ? ` — snitt ${fmtAvg(avg)}` : ""}
@@ -277,7 +277,7 @@ const SurveyReview: React.FC = () => {
                 }
                 return (
                   <Box key={qid} sx={{ mt: 1 }}>
-                    <Typography variant="caption" color="text.secondary">{label}</Typography>
+                    <Typography variant="caption" sx={{ color: "text.secondary" }}>{label}</Typography>
                     <Typography variant="body2">{Array.isArray(value) ? value.join(", ") : String(value)}</Typography>
                   </Box>
                 );

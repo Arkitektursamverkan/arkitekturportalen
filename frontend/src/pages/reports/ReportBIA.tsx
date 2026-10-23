@@ -74,9 +74,9 @@ const ReportBIA: React.FC = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom><ReportTitle fallback={t("reports.bia.title")} /></Typography>
-      <Typography variant="body2" color="text.secondary" mb={2}>{t("reports.bia.description")}</Typography>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>{t("reports.bia.description")}</Typography>
 
-      <Stack direction="row" spacing={2} mb={3}>
+      <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
         <Chip label={`${rows.filter((r) => r.impactScore >= 10).length} ${t("reports.bia.critical").toLowerCase()}`} color="error" size="small" />
         <Chip label={`${rows.filter((r) => r.impactScore >= 5 && r.impactScore < 10).length} ${t("reports.bia.high").toLowerCase()}`} color="warning" size="small" />
       </Stack>
@@ -88,41 +88,43 @@ const ReportBIA: React.FC = () => {
             <Typography variant="h6" gutterBottom>{selected.name}</Typography>
             <Chip label={severityLevel(selected.impactScore, t).label} color={severityLevel(selected.impactScore, t).color} sx={{ mb: 2 }} />
 
-            <Typography variant="subtitle2" fontWeight={600} mt={1}>{t("reports.bia.affectedProcesses")} ({selected.processes.length})</Typography>
-            <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap mb={1.5}>
+            <Typography
+              variant="subtitle2"
+              sx={{ fontWeight: 600, mt: 1 }}>{t("reports.bia.affectedProcesses")} ({selected.processes.length})</Typography>
+            <Stack direction="row" spacing={0.5} useFlexGap sx={{ flexWrap: "wrap", mb: 1.5 }}>
               {selected.processes.map((p) => (
                 <Chip key={p.id} label={p.name} size="small" variant="outlined"
                   sx={{ borderColor: NODE_COLORS.Process, cursor: "pointer" }}
                   onClick={() => navigate(`/processes?id=${p.id}`)} />
               ))}
-              {selected.processes.length === 0 && <Typography variant="caption" color="text.secondary">—</Typography>}
+              {selected.processes.length === 0 && <Typography variant="caption" sx={{ color: "text.secondary" }}>—</Typography>}
             </Stack>
 
-            <Typography variant="subtitle2" fontWeight={600}>{t("reports.bia.affectedData")} ({selected.infoObjects.length})</Typography>
-            <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap mb={1.5}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>{t("reports.bia.affectedData")} ({selected.infoObjects.length})</Typography>
+            <Stack direction="row" spacing={0.5} useFlexGap sx={{ flexWrap: "wrap", mb: 1.5 }}>
               {selected.infoObjects.map((o) => (
                 <Chip key={o.id} label={o.name} size="small" variant="outlined"
                   sx={{ borderColor: NODE_COLORS.InformationObject, cursor: "pointer" }}
                   onClick={() => navigate(`/info-objects?id=${o.id}`)} />
               ))}
-              {selected.infoObjects.length === 0 && <Typography variant="caption" color="text.secondary">—</Typography>}
+              {selected.infoObjects.length === 0 && <Typography variant="caption" sx={{ color: "text.secondary" }}>—</Typography>}
             </Stack>
 
-            <Typography variant="subtitle2" fontWeight={600}>{t("reports.bia.cascadeApps")} ({selected.cascadeApps.length})</Typography>
-            <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
+            <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>{t("reports.bia.cascadeApps")} ({selected.cascadeApps.length})</Typography>
+            <Stack direction="row" spacing={0.5} useFlexGap sx={{ flexWrap: "wrap" }}>
               {selected.cascadeApps.map((a) => (
                 <Chip key={a.id} label={a.name} size="small" variant="outlined"
                   sx={{ borderColor: NODE_COLORS.Application, cursor: "pointer" }}
                   onClick={() => { setSelectedApp(a.id); }} />
               ))}
-              {selected.cascadeApps.length === 0 && <Typography variant="caption" color="text.secondary">—</Typography>}
+              {selected.cascadeApps.length === 0 && <Typography variant="caption" sx={{ color: "text.secondary" }}>—</Typography>}
             </Stack>
           </CardContent>
         </Card>
       )}
 
       {/* Overview table */}
-      <Typography variant="body2" color="text.secondary" mb={1}>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 1 }}>
         {t("reports.bia.selectApp")}
       </Typography>
       <TableContainer component={Card}>
@@ -147,11 +149,11 @@ const ReportBIA: React.FC = () => {
               return (
                 <TableRow key={row.id} hover selected={selectedApp === row.id}
                   sx={{ cursor: "pointer" }} onClick={() => setSelectedApp(row.id === selectedApp ? null : row.id)}>
-                  <TableCell><Typography variant="body2" fontWeight={500}>{row.name}</Typography></TableCell>
+                  <TableCell><Typography variant="body2" sx={{ fontWeight: 500 }}>{row.name}</Typography></TableCell>
                   <TableCell align="center"><Chip label={row.processes.length} size="small" /></TableCell>
                   <TableCell align="center"><Chip label={row.infoObjects.length} size="small" variant="outlined" /></TableCell>
                   <TableCell align="center"><Chip label={row.cascadeApps.length} size="small" variant="outlined" /></TableCell>
-                  <TableCell align="center"><Typography variant="body2" fontWeight={700}>{row.impactScore}</Typography></TableCell>
+                  <TableCell align="center"><Typography variant="body2" sx={{ fontWeight: 700 }}>{row.impactScore}</Typography></TableCell>
                   <TableCell><Chip label={level.label} size="small" color={level.color} /></TableCell>
                 </TableRow>
               );

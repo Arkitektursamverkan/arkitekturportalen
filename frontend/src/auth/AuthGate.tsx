@@ -190,7 +190,7 @@ const CenterBox: React.FC<{ children: React.ReactNode }> = ({ children }) => (
       p: 3,
     }}
   >
-    <Stack spacing={1} alignItems="center">
+    <Stack spacing={1} sx={{ alignItems: "center" }}>
       {children}
     </Stack>
   </Box>

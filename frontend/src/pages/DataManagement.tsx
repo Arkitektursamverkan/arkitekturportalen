@@ -257,19 +257,19 @@ const DataManagement: React.FC = () => {
 
   return (
     <Box sx={{ p: 3, maxWidth: 720, mx: "auto" }}>
-      <Typography variant="h5" mb={0.5}>{t("dataManagement.title")}</Typography>
-      <Typography variant="body2" color="text.secondary" mb={3}>
+      <Typography variant="h5" sx={{ mb: 0.5 }}>{t("dataManagement.title")}</Typography>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 3 }}>
         {t("dataManagement.subtitle")}
       </Typography>
 
       {/* ── Administrative Functions ── */}
       <Section icon={<AdminPanelSettingsIcon />} title={t("dataManagement.admin.title")} headerColor="info.main">
-        <Typography variant="body2" color="text.secondary" mb={2}>
+        <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
           {t("dataManagement.admin.description")}
         </Typography>
 
         {/* Export */}
-        <Stack direction="row" spacing={1.5} alignItems="center" mb={2}>
+        <Stack direction="row" spacing={1.5} sx={{ alignItems: "center", mb: 2 }}>
           <Button
             variant="outlined"
             size="small"
@@ -279,7 +279,7 @@ const DataManagement: React.FC = () => {
           >
             {t("dataManagement.admin.exportButton")}
           </Button>
-          <Typography variant="caption" color="text.secondary">
+          <Typography variant="caption" sx={{ color: "text.secondary" }}>
             {t("dataManagement.admin.exportHint")}
           </Typography>
         </Stack>
@@ -287,7 +287,7 @@ const DataManagement: React.FC = () => {
         <Divider sx={{ my: 2 }} />
 
         {/* Restore */}
-        <Stack direction="row" spacing={1.5} alignItems="center" mb={2}>
+        <Stack direction="row" spacing={1.5} sx={{ alignItems: "center", mb: 2 }}>
           <input
             ref={fileInputRef}
             type="file"
@@ -305,7 +305,7 @@ const DataManagement: React.FC = () => {
           >
             {t("dataManagement.admin.restoreButton")}
           </Button>
-          <Typography variant="caption" color="text.secondary">
+          <Typography variant="caption" sx={{ color: "text.secondary" }}>
             {t("dataManagement.admin.restoreHint")}
           </Typography>
         </Stack>
@@ -313,14 +313,14 @@ const DataManagement: React.FC = () => {
         <Divider sx={{ my: 2 }} />
 
         {/* Create Snapshot */}
-        <Typography variant="subtitle2" fontWeight={600} mb={1}>
+        <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>
           <PhotoCameraIcon fontSize="small" sx={{ verticalAlign: "middle", mr: 0.5 }} />
           {t("dataManagement.admin.snapshotTitle")}
         </Typography>
-        <Typography variant="caption" color="text.secondary" display="block" mb={1.5}>
+        <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mb: 1.5 }}>
           {t("dataManagement.admin.snapshotDescription")}
         </Typography>
-        <Stack direction="row" spacing={1} alignItems="center" mb={2}>
+        <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 2 }}>
           <TextField
             size="small"
             placeholder={t("dataManagement.admin.snapshotLabelPlaceholder")}
@@ -341,7 +341,7 @@ const DataManagement: React.FC = () => {
 
         {/* Snapshot List */}
         {loadingSnapshots ? (
-          <Box display="flex" justifyContent="center" py={2}><CircularProgress size={24} /></Box>
+          <Box sx={{ display: "flex", justifyContent: "center", py: 2 }}><CircularProgress size={24} /></Box>
         ) : snapshots.length > 0 ? (
           <TableContainer>
             <Table size="small">
@@ -358,7 +358,7 @@ const DataManagement: React.FC = () => {
                 {snapshots.map((s) => (
                   <TableRow key={s.filename} hover>
                     <TableCell>
-                      <Typography variant="body2" fontWeight={500}>{s.label}</Typography>
+                      <Typography variant="body2" sx={{ fontWeight: 500 }}>{s.label}</Typography>
                     </TableCell>
                     <TableCell>
                       <Typography variant="caption">
@@ -399,7 +399,7 @@ const DataManagement: React.FC = () => {
             </Table>
           </TableContainer>
         ) : (
-          <Typography variant="caption" color="text.secondary">
+          <Typography variant="caption" sx={{ color: "text.secondary" }}>
             {t("dataManagement.admin.noSnapshots")}
           </Typography>
         )}
@@ -407,10 +407,10 @@ const DataManagement: React.FC = () => {
 
       {/* ── Graph Versions ── */}
       <Section icon={<AccountTreeIcon />} title={t("dataManagement.graphSnapshots.title")} headerColor="success.main">
-        <Typography variant="body2" color="text.secondary" mb={2}>
+        <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
           {t("dataManagement.graphSnapshots.description")}
         </Typography>
-        <Stack direction="row" spacing={1} alignItems="center" mb={2}>
+        <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 2 }}>
           <TextField
             size="small"
             placeholder={t("dataManagement.graphSnapshots.labelPlaceholder")}
@@ -431,9 +431,9 @@ const DataManagement: React.FC = () => {
         </Stack>
 
         {loadingGraphSnapshots ? (
-          <Box display="flex" justifyContent="center" py={2}><CircularProgress size={24} /></Box>
+          <Box sx={{ display: "flex", justifyContent: "center", py: 2 }}><CircularProgress size={24} /></Box>
         ) : graphSnapshots.length === 0 ? (
-          <Typography variant="caption" color="text.secondary">
+          <Typography variant="caption" sx={{ color: "text.secondary" }}>
             {t("dataManagement.graphSnapshots.noSnapshots")}
           </Typography>
         ) : (
@@ -468,7 +468,7 @@ const DataManagement: React.FC = () => {
                           />
                         </TableCell>
                         <TableCell>
-                          <Typography variant="body2" fontWeight={600} color="text.secondary">
+                          <Typography variant="body2" sx={{ fontWeight: 600, color: "text.secondary" }}>
                             #{gs.snapshot_number}
                           </Typography>
                         </TableCell>
@@ -478,7 +478,7 @@ const DataManagement: React.FC = () => {
                           </Typography>
                         </TableCell>
                         <TableCell>
-                          <Typography variant="caption" color="text.secondary">
+                          <Typography variant="caption" sx={{ color: "text.secondary" }}>
                             {gs.created_by ?? "—"}
                           </Typography>
                         </TableCell>
@@ -492,7 +492,7 @@ const DataManagement: React.FC = () => {
                           <Chip label={gs.edge_count} size="small" variant="outlined" />
                         </TableCell>
                         <TableCell>
-                          <Typography variant="caption" color="text.secondary">
+                          <Typography variant="caption" sx={{ color: "text.secondary" }}>
                             {gs.triggered_by === "manual"
                               ? t("dataManagement.graphSnapshots.triggerManual")
                               : t("dataManagement.graphSnapshots.triggerExport")}
@@ -503,17 +503,17 @@ const DataManagement: React.FC = () => {
                         <TableCell colSpan={8} sx={{ py: 0, border: isExpanded ? undefined : "none" }}>
                           <Collapse in={isExpanded} timeout="auto" unmountOnExit>
                             <Box sx={{ py: 1.5, px: 2, bgcolor: "action.hover", borderRadius: 1, my: 0.5 }}>
-                              <Typography variant="caption" fontWeight={600} display="block" mb={1}>
+                              <Typography variant="caption" sx={{ fontWeight: 600, display: "block", mb: 1 }}>
                                 {t("dataManagement.graphSnapshots.changesTitle")}
                               </Typography>
                               {gs.audit_entries.length === 0 ? (
-                                <Typography variant="caption" color="text.secondary">
+                                <Typography variant="caption" sx={{ color: "text.secondary" }}>
                                   {t("dataManagement.graphSnapshots.noChanges")}
                                 </Typography>
                               ) : (
                                 <Stack spacing={0.25}>
                                   {gs.audit_entries.map((entry) => (
-                                    <Typography key={entry.id} variant="caption" color="text.secondary" component="div">
+                                    <Typography key={entry.id} variant="caption" component="div" sx={{ color: "text.secondary" }}>
                                       <Box component="span" sx={{ fontWeight: 600, color: entry.action === "CREATE" ? "success.main" : entry.action === "DELETE" ? "error.main" : "warning.main", mr: 0.5 }}>
                                         {entry.action}
                                       </Box>
@@ -539,7 +539,7 @@ const DataManagement: React.FC = () => {
 
       {/* ── Delete demo data ── */}
       <Section icon={<DeleteSweepIcon />} title={t("dataManagement.demoSection.title")}>
-        <Typography variant="body2" color="text.secondary" mb={2}>
+        <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
           {t("dataManagement.demoSection.description")}
         </Typography>
         <FormGroup>
@@ -554,9 +554,9 @@ const DataManagement: React.FC = () => {
                 />
               }
               label={
-                <Stack direction="row" spacing={1} alignItems="center">
+                <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                   <Typography variant="body2">{t(e.labelKey)}</Typography>
-                  <Typography variant="caption" color="text.secondary">
+                  <Typography variant="caption" sx={{ color: "text.secondary" }}>
                     ({e.external_source})
                   </Typography>
                 </Stack>
@@ -664,9 +664,9 @@ function Section({
   return (
     <Card sx={{ mb: 2 }}>
       <CardContent>
-        <Stack direction="row" alignItems="center" spacing={1} mb={1.5}>
+        <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 1.5 }}>
           <Box sx={{ color: headerColor, display: "flex" }}>{icon}</Box>
-          <Typography variant="h6" fontSize={16} fontWeight={600}>{title}</Typography>
+          <Typography variant="h6" sx={{ fontSize: 16, fontWeight: 600 }}>{title}</Typography>
         </Stack>
         <Divider sx={{ mb: 2 }} />
         {children}

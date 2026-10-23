@@ -57,17 +57,17 @@ const Home: React.FC = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="flex-start" mb={3}>
+      <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "flex-start", mb: 3 }}>
         <Box>
           <Typography variant="h4" gutterBottom>{t("home.welcome")}</Typography>
-          <Typography variant="body1" color="text.secondary">{t("home.description")}</Typography>
+          <Typography variant="body1" sx={{ color: "text.secondary" }}>{t("home.description")}</Typography>
         </Box>
       </Stack>
 
       {moduleOn("calendar") && <FreezeNotice />}
 
       {/* Stats */}
-      <Grid container spacing={2} mb={3}>
+      <Grid container spacing={2} sx={{ mb: 3 }}>
         {STAT_TYPES.filter((s) => !SERVER_TYPES.includes(s.type) || serverAccess !== "none").map(({ type, labelKey, defKey, path }) => {
           const count = statsLoading
             ? null
@@ -77,33 +77,33 @@ const Home: React.FC = () => {
                   : n.type === type && !n.admin_hidden && !isStructural(n, structuralIds),
               ).length;
           return (
-          <Grid item xs={6} sm={3} md={3} key={type}>
-            <Tooltip title={t(defKey)} arrow placement="bottom" enterDelay={300}>
-              <Card>
-                <CardActionArea onClick={() => navigate(path)} sx={{ py: 2 }}>
-                  <CardContent sx={{ textAlign: "center", py: 0 }}>
-                    <Box sx={{ width: 16, height: 16, borderRadius: "50%", bgcolor: NODE_COLORS[type], mx: "auto", mb: 1 }} />
-                    <Typography variant="h4" fontWeight={700}>
-                      {count === null ? "…" : count}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">{t(labelKey)}</Typography>
-                  </CardContent>
-                </CardActionArea>
-              </Card>
-            </Tooltip>
-          </Grid>
+            <Grid key={type} size={{ xs: 6, sm: 3, md: 3 }}>
+              <Tooltip title={t(defKey)} arrow placement="bottom" enterDelay={300}>
+                <Card>
+                  <CardActionArea onClick={() => navigate(path)} sx={{ py: 2 }}>
+                    <CardContent sx={{ textAlign: "center", py: 0 }}>
+                      <Box sx={{ width: 16, height: 16, borderRadius: "50%", bgcolor: NODE_COLORS[type], mx: "auto", mb: 1 }} />
+                      <Typography variant="h4" sx={{ fontWeight: 700 }}>
+                        {count === null ? "…" : count}
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: "text.secondary" }}>{t(labelKey)}</Typography>
+                    </CardContent>
+                  </CardActionArea>
+                </Card>
+              </Tooltip>
+            </Grid>
           );
         })}
-        <Grid item xs={6} sm={3} md={3}>
+        <Grid size={{ xs: 6, sm: 3, md: 3 }}>
           <Tooltip title={t("home.definitions.connection")} arrow placement="bottom" enterDelay={300}>
             <Card>
               <CardActionArea onClick={() => navigate("/connections")} sx={{ py: 2 }}>
                 <CardContent sx={{ textAlign: "center", py: 0 }}>
                   <DeviceHubIcon sx={{ fontSize: 16, color: "#607D8B", mx: "auto", mb: 1, display: "block" }} />
-                  <Typography variant="h4" fontWeight={700}>
+                  <Typography variant="h4" sx={{ fontWeight: 700 }}>
                     {edgesLoading ? "…" : (allEdges ?? []).length}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">{t("home.stats.connections")}</Typography>
+                  <Typography variant="body2" sx={{ color: "text.secondary" }}>{t("home.stats.connections")}</Typography>
                 </CardContent>
               </CardActionArea>
             </Card>
@@ -139,10 +139,10 @@ const JourneyTeaser: React.FC = () => {
         <CardContent sx={{ display: "flex", alignItems: "center", gap: 2, py: 2, "&:last-child": { pb: 2 } }}>
           <RouteIcon sx={{ fontSize: 36, color: "primary.main", flexShrink: 0 }} />
           <Box>
-            <Typography variant="subtitle1" fontWeight={700}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
               {journey.title}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: "text.secondary" }}>
               {journey.steps.map((s) => s.title).join(" · ") || "Inga steg ännu"}
             </Typography>
           </Box>
@@ -242,7 +242,7 @@ const ShortcutsSection: React.FC = () => {
 
   return (
     <>
-      <Stack direction="row" alignItems="center" mb={2} spacing={1}>
+      <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 2 }}>
         <Typography variant="h6">{t("home.quickLinks")}</Typography>
         <Tooltip title={t(editing ? "home.shortcuts.editDone" : "home.shortcuts.editStart", {
           defaultValue: editing ? "Klar" : "Anpassa genvägar",
@@ -255,7 +255,7 @@ const ShortcutsSection: React.FC = () => {
             {editing ? <CheckIcon fontSize="small" /> : <EditIcon fontSize="small" />}
           </IconButton>
         </Tooltip>
-        <Box flex={1} />
+        <Box sx={{ flex: 1 }} />
         {editing && (
           <Button
             startIcon={<AddIcon />}
@@ -297,7 +297,7 @@ const ShortcutsSection: React.FC = () => {
         ) : (
           <Grid container spacing={2}>
             {items.map((item, idx) => (
-              <Grid item xs={12} sm={6} md={3} key={item.path}>
+              <Grid key={item.path} size={{ xs: 12, sm: 6, md: 3 }}>
                 <Card
                   draggable={editing}
                   onDragStart={onCardDragStart(idx)}
@@ -329,9 +329,9 @@ const ShortcutsSection: React.FC = () => {
                     </Tooltip>
                   )}
                   <CardActionArea onClick={() => navigate(item.path)} sx={{ p: 2 }}>
-                    <Stack spacing={1} alignItems="center" py={2}>
+                    <Stack spacing={1} sx={{ alignItems: "center", py: 2 }}>
                       <Box sx={{ color: "primary.main", "& svg": { fontSize: 48 } }}>{item.icon}</Box>
-                      <Typography variant="subtitle1" fontWeight={600} textAlign="center">
+                      <Typography variant="subtitle1" sx={{ fontWeight: 600, textAlign: "center" }}>
                         {t(item.labelKey)}
                       </Typography>
                     </Stack>
@@ -344,7 +344,7 @@ const ShortcutsSection: React.FC = () => {
       </Box>
 
       {editing && (
-        <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: "block" }}>
+        <Typography variant="caption" sx={{ color: "text.secondary", mt: 1, display: "block" }}>
           {t("home.shortcuts.hint", {
             defaultValue:
               "Dra menyalternativ från sidomenyn hit för att lägga till. Dra korten för att sortera. Anpassningsläget stängs av efter 60 sekunder utan aktivitet.",
@@ -398,7 +398,7 @@ const PickerDialog: React.FC<PickerProps> = ({ open, onClose, existing, onPick }
         />
         <List dense sx={{ maxHeight: 400, overflowY: "auto" }}>
           {candidates.length === 0 ? (
-            <Typography variant="body2" color="text.secondary" sx={{ p: 2, textAlign: "center" }}>
+            <Typography variant="body2" sx={{ color: "text.secondary", p: 2, textAlign: "center" }}>
               {t("home.shortcuts.noCandidates", { defaultValue: "Inga fler sidor att lägga till." })}
             </Typography>
           ) : (

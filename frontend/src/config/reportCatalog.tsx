@@ -1,5 +1,5 @@
 import React from "react";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 import AnalyticsIcon from "@mui/icons-material/Analytics";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import DashboardIcon from "@mui/icons-material/Dashboard";

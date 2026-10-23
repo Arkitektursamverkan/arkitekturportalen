@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert, Button, CircularProgress, Container, Paper, Stack, Typography,
 } from "@mui/material";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   useMySurveyResponse, useMySurveys, useSubmitAnswers, type AnswerValue, type SurveyAnswers,
@@ -84,12 +84,12 @@ const SurveyRespond: React.FC = () => {
     return (
       <Container maxWidth="sm" sx={{ py: 10, textAlign: "center" }}>
         <CheckCircleOutlineIcon color="success" sx={{ fontSize: 56, mb: 1 }} />
-        <Typography variant="h5" fontWeight={700} gutterBottom>
+        <Typography variant="h5" gutterBottom sx={{ fontWeight: 700 }}>
           Tack för ditt svar!
         </Typography>
         {nextPending ? (
           <>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: "text.secondary" }}>
               Du har {otherPending.length === 1 ? "1 enkät" : `${otherPending.length} enkäter`} kvar
               att besvara.{" "}
               {nextPending.node_name
@@ -101,7 +101,7 @@ const SurveyRespond: React.FC = () => {
             </Button>
           </>
         ) : (
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>
             Du skickas nu tillbaka till Mina enkäter…
           </Typography>
         )}
@@ -146,15 +146,15 @@ const SurveyRespond: React.FC = () => {
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
-      <Typography variant="h4" fontWeight={700} gutterBottom>{response.survey_title}</Typography>
-      <Typography variant="body2" color="text.secondary" mb={1}>{response.survey_description}</Typography>
+      <Typography variant="h4" gutterBottom sx={{ fontWeight: 700 }}>{response.survey_title}</Typography>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 1 }}>{response.survey_description}</Typography>
       {response.survey_due_date && !surveyClosed && (
-        <Typography variant="body2" color="text.secondary" mb={1}>
+        <Typography variant="body2" sx={{ color: "text.secondary", mb: 1 }}>
           Besvaras senast <strong>{new Date(response.survey_due_date).toLocaleDateString("sv-SE")}</strong>.
         </Typography>
       )}
       {response.node_name && (
-        <Typography variant="subtitle1" fontWeight={600} mb={3}>Applikation: {response.node_name}</Typography>
+        <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 3 }}>Applikation: {response.node_name}</Typography>
       )}
 
       {surveyClosed && (

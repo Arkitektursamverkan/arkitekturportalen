@@ -62,7 +62,7 @@ const ReportNIS2: React.FC = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom><ReportTitle fallback={t("reports.nis2.title")} /></Typography>
-      <Typography variant="body2" color="text.secondary" mb={2}>{t("reports.nis2.description")}</Typography>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>{t("reports.nis2.description")}</Typography>
 
       {!hasData && (
         <Alert severity="info" sx={{ mb: 3 }}>{t("reports.nis2.hint")}</Alert>
@@ -70,7 +70,7 @@ const ReportNIS2: React.FC = () => {
 
       {hasData && (
         <>
-          <Stack direction="row" spacing={2} mb={3}>
+          <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
             <Chip label={`${essentialCount} ${t("reports.nis2.essential")}`} sx={{ bgcolor: CAT_COLORS.essential, color: "#fff" }} />
             <Chip label={`${importantCount} ${t("reports.nis2.important")}`} sx={{ bgcolor: CAT_COLORS.important, color: "#fff" }} />
             {gapsCount > 0 && <Chip label={`${gapsCount} ${t("reports.nis2.noMeasures").toLowerCase()}`} color="error" size="small" />}
@@ -90,13 +90,13 @@ const ReportNIS2: React.FC = () => {
                 {rows.map((row) => (
                   <TableRow key={row.id} hover sx={{ cursor: "pointer", bgcolor: !row.hasMeasures ? "error.50" : undefined }}
                     onClick={() => navigate(`/processes?id=${row.id}`)}>
-                    <TableCell><Typography variant="body2" fontWeight={500}>{row.name}</Typography></TableCell>
+                    <TableCell><Typography variant="body2" sx={{ fontWeight: 500 }}>{row.name}</Typography></TableCell>
                     <TableCell>
                       <Chip label={row.category === "essential" ? t("reports.nis2.essential") : t("reports.nis2.important")}
                         size="small" sx={{ bgcolor: CAT_COLORS[row.category], color: "#fff" }} />
                     </TableCell>
                     <TableCell>
-                      <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
+                      <Stack direction="row" spacing={0.5} useFlexGap sx={{ flexWrap: "wrap" }}>
                         {row.apps.map((a) => <Chip key={a.id} label={a.name} size="small" variant="outlined" />)}
                         {row.apps.length === 0 && <Typography variant="caption" color="error">—</Typography>}
                       </Stack>

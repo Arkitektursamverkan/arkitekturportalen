@@ -74,10 +74,10 @@ const ReportRoadmap: React.FC = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom><ReportTitle fallback={t("reports.roadmap.title")} /></Typography>
-      <Typography variant="body2" color="text.secondary" mb={2}>{t("reports.roadmap.description")}</Typography>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>{t("reports.roadmap.description")}</Typography>
 
       {/* Current status overview */}
-      <Stack direction="row" spacing={1} mb={3} flexWrap="wrap" useFlexGap>
+      <Stack direction="row" spacing={1} useFlexGap sx={{ mb: 3, flexWrap: "wrap" }}>
         {statusGroups.map(([status, count]) => (
           <Chip key={status} label={`${status}: ${count}`}
             sx={{ bgcolor: STATUS_COLORS[status] || "#757575", color: "#fff", fontWeight: 600 }} />
@@ -94,21 +94,24 @@ const ReportRoadmap: React.FC = () => {
         return (
           <Card key={year} sx={{ mb: 2 }}>
             <CardContent>
-              <Typography variant="h6" fontWeight={700} mb={1.5}>{year}</Typography>
+              <Typography variant="h6" sx={{ fontWeight: 700, mb: 1.5 }}>{year}</Typography>
 
               {goLiveItems.length > 0 && (
                 <>
-                  <Typography variant="subtitle2" color="success.main" fontWeight={600} mb={1}>
+                  <Typography variant="subtitle2" sx={{ color: "success.main", fontWeight: 600, mb: 1 }}>
                     {t("reports.roadmap.goLive")}
                   </Typography>
-                  <Stack spacing={1} mb={2}>
+                  <Stack spacing={1} sx={{ mb: 2 }}>
                     {goLiveItems.map((item) => (
-                      <Stack key={`${item.id}-go`} direction="row" spacing={2} alignItems="center"
-                        sx={{ cursor: "pointer", "&:hover": { bgcolor: "action.hover" }, py: 0.5, px: 1, borderRadius: 1 }}
-                        onClick={() => navigate(`/systems?id=${item.id}`)}>
+                      <Stack
+                        key={`${item.id}-go`}
+                        direction="row"
+                        spacing={2}
+                        onClick={() => navigate(`/systems?id=${item.id}`)}
+                        sx={{ alignItems: "center", cursor: "pointer", "&:hover": { bgcolor: "action.hover" }, py: 0.5, px: 1, borderRadius: 1 }}>
                         <Chip label={item.goLive} size="small" color="success" />
-                        <Typography variant="body2" fontWeight={500}>{item.name}</Typography>
-                        {item.department && <Typography variant="caption" color="text.secondary">{item.department}</Typography>}
+                        <Typography variant="body2" sx={{ fontWeight: 500 }}>{item.name}</Typography>
+                        {item.department && <Typography variant="caption" sx={{ color: "text.secondary" }}>{item.department}</Typography>}
                       </Stack>
                     ))}
                   </Stack>
@@ -118,17 +121,20 @@ const ReportRoadmap: React.FC = () => {
               {retirementItems.length > 0 && (
                 <>
                   {goLiveItems.length > 0 && <Divider sx={{ my: 1 }} />}
-                  <Typography variant="subtitle2" color="error.main" fontWeight={600} mb={1}>
+                  <Typography variant="subtitle2" sx={{ color: "error.main", fontWeight: 600, mb: 1 }}>
                     {t("reports.roadmap.retirement")}
                   </Typography>
                   <Stack spacing={1}>
                     {retirementItems.map((item) => (
-                      <Stack key={`${item.id}-ret`} direction="row" spacing={2} alignItems="center"
-                        sx={{ cursor: "pointer", "&:hover": { bgcolor: "action.hover" }, py: 0.5, px: 1, borderRadius: 1 }}
-                        onClick={() => navigate(`/systems?id=${item.id}`)}>
+                      <Stack
+                        key={`${item.id}-ret`}
+                        direction="row"
+                        spacing={2}
+                        onClick={() => navigate(`/systems?id=${item.id}`)}
+                        sx={{ alignItems: "center", cursor: "pointer", "&:hover": { bgcolor: "action.hover" }, py: 0.5, px: 1, borderRadius: 1 }}>
                         <Chip label={item.retirement} size="small" color="error" />
-                        <Typography variant="body2" fontWeight={500}>{item.name}</Typography>
-                        {item.department && <Typography variant="caption" color="text.secondary">{item.department}</Typography>}
+                        <Typography variant="body2" sx={{ fontWeight: 500 }}>{item.name}</Typography>
+                        {item.department && <Typography variant="caption" sx={{ color: "text.secondary" }}>{item.department}</Typography>}
                       </Stack>
                     ))}
                   </Stack>

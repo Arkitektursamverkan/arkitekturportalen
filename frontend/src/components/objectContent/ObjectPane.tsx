@@ -69,9 +69,7 @@ const ObjectPane: React.FC<Props> = ({ nodeId, viewTabs, children }) => {
       {nodeId && (
         <Stack
           direction="row"
-          alignItems="center"
-          sx={{ flexShrink: 0, borderBottom: 1, borderColor: "divider", bgcolor: "background.paper", pr: 1 }}
-        >
+          sx={{ alignItems: "center", flexShrink: 0, borderBottom: 1, borderColor: "divider", bgcolor: "background.paper", pr: 1 }}>
           <Tabs
             value={tab}
             onChange={(_, v) => setTab(v)}

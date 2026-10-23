@@ -55,7 +55,7 @@ const WorkspaceTasks: React.FC<Props> = ({ workspaceId, members, canEdit }) => {
 
       {canEdit && (
         <Paper variant="outlined" sx={{ p: 2, mb: 2 }}>
-          <Stack direction={{ xs: "column", md: "row" }} spacing={1.5} alignItems="center">
+          <Stack direction={{ xs: "column", md: "row" }} spacing={1.5} sx={{ alignItems: "center" }}>
             <TextField
               size="small"
               label="Ny uppgift"
@@ -82,7 +82,7 @@ const WorkspaceTasks: React.FC<Props> = ({ workspaceId, members, canEdit }) => {
               label="Klart senast"
               value={due}
               onChange={(e) => setDue(e.target.value)}
-              InputLabelProps={{ shrink: true }}
+              slotProps={{ inputLabel: { shrink: true } }}
             />
             <Button
               variant="contained"
@@ -107,7 +107,7 @@ const WorkspaceTasks: React.FC<Props> = ({ workspaceId, members, canEdit }) => {
         </Paper>
       )}
 
-      <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 1 }}>
+      <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mb: 1 }}>
         {openCount} av {tasks.length} uppgifter kvarstår
       </Typography>
 
@@ -156,13 +156,13 @@ const WorkspaceTasks: React.FC<Props> = ({ workspaceId, members, canEdit }) => {
                       ))}
                     </TextField>
                   ) : (
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" sx={{ color: "text.secondary" }}>
                       {task.assignee_name ?? "—"}
                     </Typography>
                   )}
                 </TableCell>
                 <TableCell>
-                  <Typography variant="body2" color={overdue ? "error.main" : "text.secondary"}>
+                  <Typography variant="body2" sx={{ color: overdue ? "error.main" : "text.secondary" }}>
                     {task.due_date ?? "—"}
                   </Typography>
                 </TableCell>

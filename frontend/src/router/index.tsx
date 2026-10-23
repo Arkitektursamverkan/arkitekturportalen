@@ -98,7 +98,7 @@ const ModuleGate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   if (pathEnabled(pathname)) return <>{children}</>;
   if (!ready) return <LoadingSpinner height="80vh" />;
   return (
-    <Box p={3}>
+    <Box sx={{ p: 3 }}>
       <Alert severity="info">
         Modulen är inte aktiverad i den här installationen. En administratör kan slå på den under
         Administration → Organisation.
