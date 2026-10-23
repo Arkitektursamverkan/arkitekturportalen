@@ -157,7 +157,7 @@ const CytoscapeGraph: React.FC<Props> = ({
 
   if (!data.nodes.length) {
     return (
-      <Box display="flex" alignItems="center" justifyContent="center" height={height} sx={{ color: "text.secondary" }}>
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: height, color: "text.secondary" }}>
         <Typography variant="body1">{t("graph.noData")}</Typography>
       </Box>
     );

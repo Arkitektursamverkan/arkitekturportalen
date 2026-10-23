@@ -166,7 +166,7 @@ export const DocumentExportPanel: React.FC<Props> = ({
     return (
       <Box sx={{ display: "flex", alignItems: "center", gap: 1, py: 1 }}>
         <CircularProgress size={16} />
-        <Typography variant="caption" color="text.secondary">
+        <Typography variant="caption" sx={{ color: "text.secondary" }}>
           Hämtar versioner…
         </Typography>
       </Box>
@@ -190,12 +190,10 @@ export const DocumentExportPanel: React.FC<Props> = ({
     >
       <Stack
         direction={{ xs: "column", sm: "row" }}
-        alignItems={{ xs: "flex-start", sm: "center" }}
-        justifyContent="space-between"
         spacing={1.5}
-      >
-        <Stack direction="row" alignItems="center" spacing={1} flexWrap="wrap">
-          <Typography variant="body2" fontWeight={600}>
+        sx={{ alignItems: { xs: "flex-start", sm: "center" }, justifyContent: "space-between" }}>
+        <Stack direction="row" spacing={1} sx={{ alignItems: "center", flexWrap: "wrap" }}>
+          <Typography variant="body2" sx={{ fontWeight: 600 }}>
             {title} — PDF-export
           </Typography>
           {latest ? (
@@ -209,7 +207,7 @@ export const DocumentExportPanel: React.FC<Props> = ({
             <Chip size="small" label="Ingen version än" variant="outlined" />
           )}
           {latest && (
-            <Typography variant="caption" color="text.secondary">
+            <Typography variant="caption" sx={{ color: "text.secondary" }}>
               {formatDate(latest.created_at)}
               {latest.created_by ? ` · ${latest.created_by}` : ""}
             </Typography>
@@ -225,7 +223,7 @@ export const DocumentExportPanel: React.FC<Props> = ({
           )}
         </Stack>
 
-        <Stack direction="row" spacing={1} flexWrap="wrap">
+        <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
           <Tooltip title="Välj dokumenttyp (delversion eller fastställd) och ladda ner senaste version som PDF.">
             <span>
               <Button
@@ -331,7 +329,7 @@ export const DocumentExportPanel: React.FC<Props> = ({
                 label={
                   <Box>
                     <Typography variant="body2">Delversion</Typography>
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography variant="caption" sx={{ color: "text.secondary" }}>
                       Fastställt och Fastställt av lämnas tomma
                     </Typography>
                   </Box>
@@ -343,7 +341,7 @@ export const DocumentExportPanel: React.FC<Props> = ({
                 label={
                   <Box>
                     <Typography variant="body2">Fastställd version</Typography>
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography variant="caption" sx={{ color: "text.secondary" }}>
                       Inkluderar fastställningsdatum och fastställt av från arkitekturresan
                     </Typography>
                   </Box>
@@ -483,7 +481,7 @@ export const DocumentExportPanel: React.FC<Props> = ({
         <DialogTitle>Versionshistorik — {title}</DialogTitle>
         <DialogContent>
           {allVersions.length === 0 ? (
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: "text.secondary" }}>
               Inga versioner ännu.
             </Typography>
           ) : (
@@ -502,8 +500,8 @@ export const DocumentExportPanel: React.FC<Props> = ({
                   {allVersions.map((v) => (
                     <TableRow key={v.id} hover>
                       <TableCell>
-                        <Stack direction="row" spacing={1} alignItems="center">
-                          <Typography variant="body2" fontWeight={600}>
+                        <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
                             v{v.version_major}.{v.version_minor}
                           </Typography>
                           {v.is_major && (

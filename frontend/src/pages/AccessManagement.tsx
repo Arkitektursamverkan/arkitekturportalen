@@ -43,7 +43,7 @@ const AccessManagement: React.FC = () => {
   return (
     <Box sx={{ p: 3, maxWidth: 1200, mx: "auto" }}>
       <Typography variant="h4" component="h1" sx={{ fontWeight: 600, mb: 1 }}>{t("access.title")}</Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 2, maxWidth: 900 }}>{t("access.intro")}</Typography>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 2, maxWidth: 900 }}>{t("access.intro")}</Typography>
       <Tabs
         value={tab}
         onChange={(_, v) => setParams(v === "tilldelningar" ? {} : { flik: v })}
@@ -109,10 +109,10 @@ const GrantsTab: React.FC = () => {
                 </TableCell>
                 <TableCell>
                   <Typography variant="body2">{scopeLabel(g, t)}</Typography>
-                  {g.note && <Typography variant="caption" color="text.secondary">{g.note}</Typography>}
+                  {g.note && <Typography variant="caption" sx={{ color: "text.secondary" }}>{g.note}</Typography>}
                 </TableCell>
                 <TableCell>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" sx={{ color: "text.secondary" }}>
                     {new Date(g.created_at).toLocaleDateString("sv-SE")}{g.created_by ? ` · ${g.created_by}` : ""}
                   </Typography>
                 </TableCell>
@@ -164,15 +164,15 @@ const GroupsTab: React.FC = () => {
         {t("access.groups.add")}
       </Button>
       {groups.length === 0 ? (
-        <Typography color="text.secondary">{t("access.groups.empty")}</Typography>
+        <Typography sx={{ color: "text.secondary" }}>{t("access.groups.empty")}</Typography>
       ) : (
         <Stack spacing={1.5}>
           {groups.map((g) => (
             <Paper key={g.id} variant="outlined" sx={{ p: 2 }}>
-              <Stack direction="row" alignItems="center" spacing={1}>
-                <Typography variant="subtitle1" fontWeight={600}>{g.name}</Typography>
+              <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>{g.name}</Typography>
                 <Chip size="small" label={t("access.groups.memberCount", { n: g.members.length })} />
-                <Box flexGrow={1} />
+                <Box sx={{ flexGrow: 1 }} />
                 <Tooltip title={t("access.groups.edit")}>
                   <IconButton size="small" onClick={() => setEditing(g)}><EditIcon fontSize="small" /></IconButton>
                 </Tooltip>
@@ -180,8 +180,8 @@ const GroupsTab: React.FC = () => {
                   <IconButton size="small" onClick={() => setDeleting(g)}><DeleteIcon fontSize="small" /></IconButton>
                 </Tooltip>
               </Stack>
-              {g.description && <Typography variant="body2" color="text.secondary">{g.description}</Typography>}
-              <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap sx={{ mt: 1 }}>
+              {g.description && <Typography variant="body2" sx={{ color: "text.secondary" }}>{g.description}</Typography>}
+              <Stack direction="row" spacing={0.5} useFlexGap sx={{ flexWrap: "wrap", mt: 1 }}>
                 {g.members.map((m) => <Chip key={m.id} size="small" variant="outlined" label={m.name} title={m.email} />)}
               </Stack>
             </Paper>
@@ -258,8 +258,8 @@ const GroupDialog: React.FC<{ group: Group | null; onClose: () => void }> = ({ g
             getOptionLabel={(u: AppUser) => `${u.name} (${u.email})`}
             isOptionEqualToValue={(a, b) => a.id === b.id}
             onChange={(_, v) => setMembersState(v.map((u) => u.id))}
-            renderTags={(value, getTagProps) =>
-              value.map((u, i) => <Chip {...getTagProps({ index: i })} key={u.id} size="small" label={u.name} />)
+            renderValue={(value, getItemProps) =>
+              value.map((u, i) => <Chip {...getItemProps({ index: i })} key={u.id} size="small" label={u.name} />)
             }
             renderInput={(params) => <TextField {...params} label={t("access.groups.members")} />}
           />
@@ -310,9 +310,9 @@ const RolesTab: React.FC = () => {
               <TableCell />
               {roles.map((r) => (
                 <TableCell key={r.id} align="center" sx={{ verticalAlign: "bottom", minWidth: 130 }}>
-                  <Stack alignItems="center" spacing={0.5}>
-                    <Stack direction="row" alignItems="center">
-                      <Typography variant="body2" fontWeight={700}>{r.name}</Typography>
+                  <Stack spacing={0.5} sx={{ alignItems: "center" }}>
+                    <Stack direction="row" sx={{ alignItems: "center" }}>
+                      <Typography variant="body2" sx={{ fontWeight: 700 }}>{r.name}</Typography>
                       <IconButton size="small" onClick={() => setEditing(r)}><EditIcon sx={{ fontSize: 14 }} /></IconButton>
                     </Stack>
                     {r.builtin
@@ -333,7 +333,7 @@ const RolesTab: React.FC = () => {
                           </span>
                         </Tooltip>
                       )}
-                    <Typography variant="caption" color="text.secondary">{t("access.roles.inUse", { n: r.grant_count })}</Typography>
+                    <Typography variant="caption" sx={{ color: "text.secondary" }}>{t("access.roles.inUse", { n: r.grant_count })}</Typography>
                   </Stack>
                 </TableCell>
               ))}
@@ -408,7 +408,7 @@ const CheckTab: React.FC = () => {
 
   return (
     <Box>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>{t("access.check.intro")}</Typography>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>{t("access.check.intro")}</Typography>
       <Stack direction={{ xs: "column", md: "row" }} spacing={2} sx={{ mb: 3 }}>
         <Autocomplete
           size="small"
@@ -428,10 +428,10 @@ const CheckTab: React.FC = () => {
       {error && <ErrorAlert error={error as Error} />}
       {data && (
         <Stack spacing={2}>
-          <Stack direction="row" spacing={1} alignItems="center">
-            <Typography variant="body2" color="text.secondary">{t("access.check.groups")}:</Typography>
+          <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+            <Typography variant="body2" sx={{ color: "text.secondary" }}>{t("access.check.groups")}:</Typography>
             {data.groups.length === 0
-              ? <Typography variant="body2" color="text.secondary">{t("access.check.noGroups")}</Typography>
+              ? <Typography variant="body2" sx={{ color: "text.secondary" }}>{t("access.check.noGroups")}</Typography>
               : data.groups.map((g) => <Chip key={g} size="small" label={g} />)}
           </Stack>
           {data.is_admin ? (
@@ -443,7 +443,7 @@ const CheckTab: React.FC = () => {
               <Typography variant="subtitle2" sx={{ mb: 1 }}>{t("access.check.may")}</Typography>
               <Stack spacing={0.5}>
                 {(meta?.permissions ?? []).map((p) => (
-                  <Stack key={p} direction="row" spacing={1} alignItems="center" sx={{ opacity: data.permissions.includes(p) ? 1 : 0.4 }}>
+                  <Stack key={p} direction="row" spacing={1} sx={{ alignItems: "center", opacity: data.permissions.includes(p) ? 1 : 0.4 }}>
                     {data.permissions.includes(p) ? <CheckIcon fontSize="small" color="success" /> : <Box sx={{ width: 20 }} />}
                     <Typography variant="body2">{t(`access.permissions.${p}`)}</Typography>
                   </Stack>

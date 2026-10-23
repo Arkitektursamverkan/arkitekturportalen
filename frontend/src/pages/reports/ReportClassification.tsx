@@ -61,14 +61,14 @@ const ReportClassification: React.FC = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom><ReportTitle fallback={t("reports.classification.title")} /></Typography>
-      <Typography variant="body2" color="text.secondary" mb={2}>{t("reports.classification.description")}</Typography>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>{t("reports.classification.description")}</Typography>
 
-      <Stack direction="row" spacing={1} mb={3} alignItems="center" flexWrap="wrap" useFlexGap>
+      <Stack direction="row" spacing={1} useFlexGap sx={{ mb: 3, alignItems: "center", flexWrap: "wrap" }}>
         {Object.entries(levelCounts).map(([level, count]) => (
           <Chip key={level} label={`${level}: ${count}`} size="small"
             sx={{ bgcolor: LEVEL_COLORS[level] || "#999", color: "#fff", fontWeight: 600 }} />
         ))}
-        <Box flexGrow={1} />
+        <Box sx={{ flexGrow: 1 }} />
         <FormControl size="small" sx={{ minWidth: 160 }}>
           <InputLabel>{t("reports.classification.classification")}</InputLabel>
           <Select value={filterLevel} label={t("reports.classification.classification")} onChange={(e) => setFilterLevel(e.target.value)}>
@@ -92,9 +92,9 @@ const ReportClassification: React.FC = () => {
             {filtered.map((row) => (
               <TableRow key={row.id} hover sx={{ cursor: "pointer" }} onClick={() => navigate(`/info-objects?id=${row.id}`)}>
                 <TableCell>
-                  <Stack direction="row" spacing={1} alignItems="center">
+                  <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                     <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: NODE_COLORS.InformationObject, flexShrink: 0 }} />
-                    <Typography variant="body2" fontWeight={500}>{row.name}</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 500 }}>{row.name}</Typography>
                   </Stack>
                 </TableCell>
                 <TableCell>
@@ -102,9 +102,9 @@ const ReportClassification: React.FC = () => {
                     sx={{ bgcolor: LEVEL_COLORS[row.classification] || "#bdbdbd", color: "#fff", fontWeight: 600 }} />
                 </TableCell>
                 <TableCell>
-                  <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
+                  <Stack direction="row" spacing={0.5} useFlexGap sx={{ flexWrap: "wrap" }}>
                     {row.apps.map((name) => <Chip key={name} label={name} size="small" variant="outlined" />)}
-                    {row.apps.length === 0 && <Typography variant="caption" color="text.secondary">—</Typography>}
+                    {row.apps.length === 0 && <Typography variant="caption" sx={{ color: "text.secondary" }}>—</Typography>}
                   </Stack>
                 </TableCell>
               </TableRow>

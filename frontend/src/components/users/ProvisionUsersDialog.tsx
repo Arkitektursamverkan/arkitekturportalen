@@ -124,14 +124,14 @@ const ProvisionUsersDialog: React.FC<Props> = ({ open, onClose }) => {
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth="lg">
       <DialogTitle>Förbered användare från systemroller</DialogTitle>
       <DialogContent>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+        <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
           Listan bygger på personer som står som systemroll på objekten. E-postadressen föreslås
           som fornamn.efternamn — kontrollera och justera vid behov. Användarna skapas i förväg
           så att enkäter kan tilldelas dem innan de loggat in första gången; vid första
           Microsoft-inloggningen kopplas kontot ihop via e-postadressen.
         </Typography>
 
-        <Stack direction="row" spacing={1} sx={{ mb: 2 }} alignItems="center">
+        <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 2 }}>
           <Typography variant="body2" sx={{ mr: 1 }}>
             Roller:
           </Typography>
@@ -219,7 +219,7 @@ const ProvisionUsersDialog: React.FC<Props> = ({ open, onClose }) => {
                       </TableCell>
                       <TableCell>
                         {exists ? (
-                          <Typography variant="body2" color="text.secondary">
+                          <Typography variant="body2" sx={{ color: "text.secondary" }}>
                             {c.suggested_email || "–"}
                           </Typography>
                         ) : (
@@ -241,7 +241,7 @@ const ProvisionUsersDialog: React.FC<Props> = ({ open, onClose }) => {
                         )}
                       </TableCell>
                       <TableCell>
-                        <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
+                        <Stack direction="row" spacing={0.5} useFlexGap sx={{ flexWrap: "wrap" }}>
                           {c.roles.map((r) => (
                             <Chip key={r} label={r} size="small" variant="outlined" />
                           ))}
@@ -249,7 +249,7 @@ const ProvisionUsersDialog: React.FC<Props> = ({ open, onClose }) => {
                       </TableCell>
                       <TableCell>
                         <Tooltip title={systems.join(", ")}>
-                          <Typography variant="body2" color="text.secondary" noWrap sx={{ maxWidth: 220 }}>
+                          <Typography variant="body2" noWrap sx={{ color: "text.secondary", maxWidth: 220 }}>
                             {systems.length === 1 ? systems[0] : `${systems.length} applikationer`}
                           </Typography>
                         </Tooltip>

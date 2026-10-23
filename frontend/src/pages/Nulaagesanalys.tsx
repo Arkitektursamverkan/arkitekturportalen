@@ -47,7 +47,9 @@ const Nulaagesanalys: React.FC = () => {
     return <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}><CircularProgress /></Box>;
   }
   if (error || !data) {
-    return <Box p={3}><Alert severity="error">{(error as Error)?.message ?? "Kunde inte ladda nulägesanalys"}</Alert></Box>;
+    return (
+      <Box sx={{ p: 3 }}><Alert severity="error">{(error as Error)?.message ?? "Kunde inte ladda nulägesanalys"}</Alert></Box>
+    );
   }
 
   const c = data.content;
@@ -72,10 +74,10 @@ const Nulaagesanalys: React.FC = () => {
 
   const content = (
     <Box sx={{ maxWidth: 900, mx: "auto", width: "100%" }}>
-      <Stack direction="row" alignItems="center" mb={1}>
+      <Stack direction="row" sx={{ alignItems: "center", mb: 1 }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>Nulägesanalys IT-arkitektur</Typography>
-          <Typography variant="caption" color="text.secondary">
+          <Typography variant="h4" sx={{ fontWeight: 700 }}>Nulägesanalys IT-arkitektur</Typography>
+          <Typography variant="caption" sx={{ color: "text.secondary" }}>
             Kartläggning av befintligt IT-landskap
             {data.updated_by && ` · Uppdaterad ${new Date(data.updated_at).toLocaleString("sv-SE")} av ${data.updated_by}`}
           </Typography>
@@ -97,8 +99,8 @@ const Nulaagesanalys: React.FC = () => {
 
       {sections.map((sec, i) => (
         <Box key={sec.id} id={anchorId(sec.id)} sx={{ scrollMarginTop: 80, mb: 4 }}>
-          <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
-            <Typography variant="h5" fontWeight={600}>{i + 1}. {sec.title}</Typography>
+          <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 1 }}>
+            <Typography variant="h5" sx={{ fontWeight: 600 }}>{i + 1}. {sec.title}</Typography>
             {isAdmin && (
               <Stack direction="row" spacing={0.5}>
                 <Tooltip title="Flytta upp">
@@ -186,7 +188,7 @@ const TocSidebar: React.FC<{ items: { id: string; label: string }[]; currentHash
       aria-label="Innehållsförteckning"
       sx={{ width: 240, flexShrink: 0, position: "sticky", top: 80, alignSelf: "flex-start", maxHeight: "calc(100vh - 100px)", overflowY: "auto" }}
     >
-      <Typography variant="overline" color="text.secondary" sx={{ pl: 2 }}>Innehåll</Typography>
+      <Typography variant="overline" sx={{ color: "text.secondary", pl: 2 }}>Innehåll</Typography>
       <List dense>
         {items.map((item) => (
           <ListItemButton
@@ -197,7 +199,7 @@ const TocSidebar: React.FC<{ items: { id: string; label: string }[]; currentHash
             selected={active === item.id}
             sx={{ pl: 2, borderLeft: "2px solid", borderColor: active === item.id ? "primary.main" : "transparent", borderRadius: 0 }}
           >
-            <ListItemText primary={item.label} primaryTypographyProps={{ fontSize: 13, fontWeight: active === item.id ? 600 : 400 }} />
+            <ListItemText primary={item.label} slotProps={{ primary: { sx: { fontSize: 13, fontWeight: active === item.id ? 600 : 400 } } }} />
           </ListItemButton>
         ))}
       </List>

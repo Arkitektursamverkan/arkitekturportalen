@@ -79,7 +79,7 @@ const NewServerDialog: React.FC<{ open: boolean; onClose: () => void; onCreated:
     <Dialog open={open} onClose={() => { reset(); onClose(); }} maxWidth="sm" fullWidth>
       <DialogTitle>{t("serverView.newServer")}</DialogTitle>
       <DialogContent>
-        <Stack spacing={2} mt={1}>
+        <Stack spacing={2} sx={{ mt: 1 }}>
           <TextField label={t("serverView.name")} value={name} onChange={(e) => setName(e.target.value)}
             required autoFocus size="small" placeholder="t.ex. Larmserver" />
           <TextField label={t("serverView.description")} value={description} onChange={(e) => setDescription(e.target.value)}
@@ -134,12 +134,12 @@ const HostedSection: React.FC<{
   return (
     <Card variant="outlined">
       <CardContent>
-        <Typography variant="subtitle1" fontWeight={600} mb={1}>
+        <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
           {t(spec.titleKey)} <Chip label={hosted.length} size="small" sx={{ ml: 0.5 }} />
         </Typography>
 
         {hosted.length === 0 ? (
-          <Typography variant="body2" color="text.secondary" mb={isEditor ? 2 : 0}>{t(spec.emptyKey)}</Typography>
+          <Typography variant="body2" sx={{ color: "text.secondary", mb: isEditor ? 2 : 0 }}>{t(spec.emptyKey)}</Typography>
         ) : (
           <Table size="small" sx={{ mb: isEditor ? 2 : 0 }}>
             <TableHead>
@@ -159,7 +159,7 @@ const HostedSection: React.FC<{
                     </Typography>
                   </TableCell>
                   {spec.columns.map((c) => (
-                    <TableCell key={c}><Typography variant="body2" color="text.secondary">{attr(node, c) || "—"}</Typography></TableCell>
+                    <TableCell key={c}><Typography variant="body2" sx={{ color: "text.secondary" }}>{attr(node, c) || "—"}</Typography></TableCell>
                   ))}
                   {isEditor && (
                     <TableCell align="right" sx={{ width: 48 }}>
@@ -186,7 +186,10 @@ const HostedSection: React.FC<{
             disabled={createEdge.isPending}
             renderInput={(params) => (
               <TextField {...params} placeholder={t(spec.addKey)}
-                InputProps={{ ...params.InputProps, startAdornment: <AddIcon fontSize="small" sx={{ color: "text.secondary", mr: 0.5 }} /> }} />
+                slotProps={{
+                  ...params.slotProps,
+                  input: { ...params.slotProps.input, startAdornment: <AddIcon fontSize="small" sx={{ color: "text.secondary", mr: 0.5 }} /> }
+                }} />
             )}
           />
         )}
@@ -235,8 +238,8 @@ const ServerView: React.FC = () => {
 
   if (serverAccess === "none") {
     return (
-      <Box display="flex" alignItems="center" justifyContent="center" height="calc(100vh - 64px)" p={3}>
-        <Typography color="text.secondary">{t("serverView.noAccess")}</Typography>
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: "calc(100vh - 64px)", p: 3 }}>
+        <Typography sx={{ color: "text.secondary" }}>{t("serverView.noAccess")}</Typography>
       </Box>
     );
   }
@@ -244,8 +247,8 @@ const ServerView: React.FC = () => {
   return (
     <Box sx={{ display: "flex", height: "calc(100vh - 64px)" }}>
       <Box sx={{ width: 280, borderRight: 1, borderColor: "divider", overflow: "auto", bgcolor: "background.paper" }}>
-        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ p: 2, borderBottom: 1, borderColor: "divider" }}>
-          <Typography variant="subtitle2" fontWeight={700}>{t("serverView.select")}</Typography>
+        <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between", p: 2, borderBottom: 1, borderColor: "divider" }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>{t("serverView.select")}</Typography>
           {isEditor && (
             <Button size="small" startIcon={<AddIcon />} onClick={() => setDialogOpen(true)}>{t("serverView.newServer")}</Button>
           )}
@@ -254,7 +257,7 @@ const ServerView: React.FC = () => {
         {isLoading ? (
           <LoadingSpinner height={200} />
         ) : servers.length === 0 ? (
-          <Typography variant="body2" color="text.secondary" sx={{ p: 2 }}>{t("serverView.noServers")}</Typography>
+          <Typography variant="body2" sx={{ color: "text.secondary", p: 2 }}>{t("serverView.noServers")}</Typography>
         ) : (
           <List dense>
             {visibleServers.map((s) => {
@@ -263,7 +266,9 @@ const ServerView: React.FC = () => {
                 <ListItemButton key={s.id} selected={s.id === selectedId} onClick={() => setParams(selectObject(params, s.id))}>
                   <ListItemText
                     primary={
-                      <Stack direction="row" alignItems="center" justifyContent="space-between">
+                      <Stack
+                        direction="row"
+                        sx={{ alignItems: "center", justifyContent: "space-between" }}>
                         <Typography variant="body2" noWrap sx={{ flexGrow: 1 }}>{s.name}</Typography>
                         {count > 0 && <Chip label={count} size="small" sx={{ height: 18, fontSize: 10, minWidth: 24, ml: 0.5 }} />}
                       </Stack>
@@ -281,13 +286,13 @@ const ServerView: React.FC = () => {
         {() => (
           <Box sx={{ height: "100%", overflow: "auto", p: 3 }}>
             {!selected ? (
-              <Box display="flex" alignItems="center" justifyContent="center" height="100%">
-                <Typography color="text.secondary">{t("serverView.noSelection")}</Typography>
+              <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
+                <Typography sx={{ color: "text.secondary" }}>{t("serverView.noSelection")}</Typography>
               </Box>
             ) : (
-              <Stack spacing={2} maxWidth={960}>
+              <Stack spacing={2} sx={{ maxWidth: 960 }}>
                 <Box>
-                  <Stack direction="row" alignItems="center" spacing={1}>
+                  <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                     <Typography variant="h5">{selected.name}</Typography>
                     {isEditor && <Tooltip title={t("serverView.edit")}>
                       <IconButton size="small" onClick={() => selectNode({
@@ -299,9 +304,9 @@ const ServerView: React.FC = () => {
                     </Tooltip>}
                   </Stack>
                   {selected.description && (
-                    <Typography variant="body2" color="text.secondary" mt={0.5}>{selected.description}</Typography>
+                    <Typography variant="body2" sx={{ color: "text.secondary", mt: 0.5 }}>{selected.description}</Typography>
                   )}
-                  <Stack direction="row" spacing={1} mt={1} flexWrap="wrap" useFlexGap>
+                  <Stack direction="row" spacing={1} useFlexGap sx={{ mt: 1, flexWrap: "wrap" }}>
                     {ATTR_FIELDS.Server.filter((f) => attr(selected, f.key)).map((f) => (
                       <Chip key={f.key} size="small" variant="outlined" label={`${t(f.labelKey)}: ${attr(selected, f.key)}`} />
                     ))}

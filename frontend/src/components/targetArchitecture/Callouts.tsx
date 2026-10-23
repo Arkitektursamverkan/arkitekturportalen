@@ -19,7 +19,7 @@ export const DescribesBox: React.FC<Props> = ({ text, accent = "#5C6BC0" }) => (
       bgcolor: `${accent}10`,
     }}
   >
-    <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 0.5, color: accent }}>
+    <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 0.5, color: accent }}>
       Beskriver
     </Typography>
     <Typography variant="body2">{text}</Typography>
@@ -31,7 +31,7 @@ export const DescribesBox: React.FC<Props> = ({ text, accent = "#5C6BC0" }) => (
  */
 export const AnswersBox: React.FC<Props> = ({ text, accent }) => (
   <Box>
-    <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 0.5, color: accent }}>
+    <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 0.5, color: accent }}>
       Svarar på
     </Typography>
     <Typography

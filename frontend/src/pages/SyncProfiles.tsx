@@ -41,17 +41,17 @@ const SyncProfiles: React.FC = () => {
   return (
     <Box sx={{ p: 3, maxWidth: 900, mx: "auto" }}>
       <Typography variant="h5" gutterBottom>{t("sync.title", { defaultValue: "Sync Profiles" })}</Typography>
-      <Typography variant="body2" color="text.secondary" mb={3}>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 3 }}>
         {t("sync.description", { defaultValue: "Configure automatic sync between the Integration Platform and EA Application. When a flow runs in the Integration Platform, it notifies the EA App via webhook and data is synced automatically." })}
       </Typography>
 
       {/* Webhook URL info */}
       <Alert severity="info" sx={{ mb: 3 }}>
-        <Typography variant="body2" fontWeight={600} gutterBottom>
+        <Typography variant="body2" gutterBottom sx={{ fontWeight: 600 }}>
           {t("sync.webhookInfo", { defaultValue: "Webhook URL for Integration Platform" })}
         </Typography>
-        <Stack direction="row" spacing={1} alignItems="center">
-          <Typography variant="body2" fontFamily="monospace" sx={{ wordBreak: "break-all" }}>
+        <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+          <Typography variant="body2" sx={{ fontFamily: "monospace", wordBreak: "break-all" }}>
             {webhookUrl}
           </Typography>
           <Tooltip title="Copy">
@@ -63,7 +63,7 @@ const SyncProfiles: React.FC = () => {
             </IconButton>
           </Tooltip>
         </Stack>
-        <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: "block" }}>
+        <Typography variant="caption" sx={{ color: "text.secondary", mt: 1, display: "block" }}>
           {t("sync.webhookHint", { defaultValue: "Set this as the Post-Execution Webhook URL on each flow in the Integration Platform. The platform's POST_EXEC_WEBHOOK_SECRET must equal SYNC_WEBHOOK_SECRET here; without it the webhook is switched off." })}
         </Typography>
       </Alert>
@@ -78,12 +78,12 @@ const SyncProfiles: React.FC = () => {
       {moduleOn("arkitekten") && (
       <Card sx={{ mb: 3 }}>
         <CardContent>
-          <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2} flexWrap="wrap">
+          <Stack direction="row" spacing={2} sx={{ alignItems: "center", justifyContent: "space-between", flexWrap: "wrap" }}>
             <Box>
-              <Typography variant="subtitle1" fontWeight={600}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
                 {t("sync.arkflowTitle", { defaultValue: "Process diagrams from Arkitekten" })}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" sx={{ color: "text.secondary" }}>
                 {t("sync.arkflowHint", {
                   defaultValue:
                     "Fetches the process diagrams again. Runs automatically every two hours — use this when you have just changed something in Arkitekten. Only approved versions are fetched; a draft stays invisible until it is approved.",
@@ -152,7 +152,7 @@ const SyncProfiles: React.FC = () => {
       ) : !profiles?.length ? (
         <Card>
           <CardContent>
-            <Typography color="text.secondary" textAlign="center" py={3}>
+            <Typography sx={{ color: "text.secondary", textAlign: "center", py: 3 }}>
               {t("sync.noProfiles", { defaultValue: "No sync profiles configured yet. Use the Import wizard to create one, and save it as a sync profile." })}
             </Typography>
           </CardContent>
@@ -188,15 +188,15 @@ const SyncProfiles: React.FC = () => {
                     />
                   </TableCell>
                   <TableCell>
-                    <Typography variant="body2" fontWeight={600}>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
                       {p.flow_name || p.flow_id.slice(0, 8)}
                     </Typography>
-                    <Typography variant="caption" fontFamily="monospace" color="text.secondary">
+                    <Typography variant="caption" sx={{ fontFamily: "monospace", color: "text.secondary" }}>
                       {p.flow_id.slice(0, 8)}...
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Stack direction="row" spacing={1} alignItems="center">
+                    <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                       <Box sx={{
                         width: 10, height: 10, borderRadius: "50%",
                         bgcolor: NODE_COLORS[p.node_type as NodeType] ?? "#999",
@@ -355,10 +355,10 @@ const EditMappingsDialog: React.FC<{
           <Stack spacing={2} sx={{ mt: 1 }}>
             {newPlatformFields.length > 0 && (
               <Alert severity="success">
-                <Typography variant="body2" fontWeight={600} gutterBottom>
+                <Typography variant="body2" gutterBottom sx={{ fontWeight: 600 }}>
                   {newPlatformFields.length} nya kolumn{newPlatformFields.length !== 1 ? "er" : ""} tillgänglig{newPlatformFields.length !== 1 ? "a" : ""} sedan profilen skapades:
                 </Typography>
-                <Typography variant="caption" color="text.secondary">
+                <Typography variant="caption" sx={{ color: "text.secondary" }}>
                   {newPlatformFields.join(", ")}
                 </Typography>
               </Alert>

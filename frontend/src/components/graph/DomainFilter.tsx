@@ -107,8 +107,8 @@ const DomainFilterBar: React.FC<Props> = ({ filter }) => {
         px: 1.25, py: 0.75, maxWidth: "calc(100% - 120px)",
       }}
     >
-      <Stack direction="row" spacing={0.75} alignItems="center" flexWrap="wrap" useFlexGap>
-        <Typography variant="caption" color="text.secondary" fontWeight={700} sx={{ mr: 0.25 }}>
+      <Stack direction="row" spacing={0.75} useFlexGap sx={{ alignItems: "center", flexWrap: "wrap" }}>
+        <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 700, mr: 0.25 }}>
           {t("graph.domains")}
         </Typography>
         {present.map((type) => {

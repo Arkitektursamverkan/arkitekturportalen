@@ -59,8 +59,8 @@ const AboutDialog: React.FC = () => {
 
       <Dialog open={open} onClose={close} fullWidth maxWidth="sm">
         <DialogTitle>
-          <Stack direction="row" alignItems="center" spacing={1}>
-            <Box flex={1}>{title}</Box>
+          <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+            <Box sx={{ flex: 1 }}>{title}</Box>
             {isAdmin && !editing && (
               <Tooltip title={t("home.blocks.edit")}>
                 <IconButton size="small" onClick={startEdit}>
@@ -80,12 +80,12 @@ const AboutDialog: React.FC = () => {
           ) : body ? (
             <Typography variant="body2" sx={{ whiteSpace: "pre-line" }}>{body}</Typography>
           ) : (
-            <Typography variant="body2" color="text.secondary" fontStyle="italic">
+            <Typography variant="body2" sx={{ color: "text.secondary", fontStyle: "italic" }}>
               {t("home.blocks.empty")}
             </Typography>
           )}
           {!editing && block?.updated_by && block?.updated_at && (
-            <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 2 }}>
+            <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mt: 2 }}>
               {new Date(block.updated_at).toLocaleString("sv-SE")} · {block.updated_by}
             </Typography>
           )}

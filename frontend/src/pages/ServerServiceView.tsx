@@ -67,8 +67,8 @@ const ServerServiceView: React.FC = () => {
 
   if (serverAccess === "none") {
     return (
-      <Box display="flex" alignItems="center" justifyContent="center" height="calc(100vh - 64px)" p={3}>
-        <Typography color="text.secondary">{t("serverServiceView.noAccess")}</Typography>
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: "calc(100vh - 64px)", p: 3 }}>
+        <Typography sx={{ color: "text.secondary" }}>{t("serverServiceView.noAccess")}</Typography>
       </Box>
     );
   }
@@ -77,13 +77,13 @@ const ServerServiceView: React.FC = () => {
     <Box sx={{ display: "flex", height: "calc(100vh - 64px)" }}>
       <Box sx={{ width: 280, borderRight: 1, borderColor: "divider", overflow: "auto", bgcolor: "background.paper" }}>
         <Box sx={{ p: 2, borderBottom: 1, borderColor: "divider" }}>
-          <Typography variant="subtitle2" fontWeight={700}>{t("serverServiceView.select")}</Typography>
+          <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>{t("serverServiceView.select")}</Typography>
         </Box>
         <ListSearchBox value={searchText} onChange={setSearchText} />
         {isLoading ? (
           <LoadingSpinner height={200} />
         ) : services.length === 0 ? (
-          <Typography variant="body2" color="text.secondary" sx={{ p: 2 }}>{t("serverServiceView.noServices")}</Typography>
+          <Typography variant="body2" sx={{ color: "text.secondary", p: 2 }}>{t("serverServiceView.noServices")}</Typography>
         ) : (
           <List dense>
             {visible.map((s) => {
@@ -92,7 +92,9 @@ const ServerServiceView: React.FC = () => {
                 <ListItemButton key={s.id} selected={s.id === selectedId} onClick={() => setParams(selectObject(params, s.id))}>
                   <ListItemText
                     primary={
-                      <Stack direction="row" alignItems="center" justifyContent="space-between">
+                      <Stack
+                        direction="row"
+                        sx={{ alignItems: "center", justifyContent: "space-between" }}>
                         <Typography variant="body2" noWrap sx={{ flexGrow: 1 }}>{s.name}</Typography>
                         {count > 0 && <Chip label={count} size="small" sx={{ height: 18, fontSize: 10, minWidth: 24, ml: 0.5 }} />}
                       </Stack>
@@ -110,13 +112,13 @@ const ServerServiceView: React.FC = () => {
         {() => (
           <Box sx={{ height: "100%", overflow: "auto", p: 3 }}>
             {!selected ? (
-              <Box display="flex" alignItems="center" justifyContent="center" height="100%">
-                <Typography color="text.secondary">{t("serverServiceView.noSelection")}</Typography>
+              <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
+                <Typography sx={{ color: "text.secondary" }}>{t("serverServiceView.noSelection")}</Typography>
               </Box>
             ) : (
-              <Stack spacing={2} maxWidth={960}>
+              <Stack spacing={2} sx={{ maxWidth: 960 }}>
                 <Box>
-                  <Stack direction="row" alignItems="center" spacing={1}>
+                  <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                     <Typography variant="h5">{selected.name}</Typography>
                     {canEdit && (
                       <Tooltip title={t("serverServiceView.edit")}>
@@ -130,9 +132,9 @@ const ServerServiceView: React.FC = () => {
                     )}
                   </Stack>
                   {selected.description && (
-                    <Typography variant="body2" color="text.secondary" mt={0.5}>{selected.description}</Typography>
+                    <Typography variant="body2" sx={{ color: "text.secondary", mt: 0.5 }}>{selected.description}</Typography>
                   )}
-                  <Stack direction="row" spacing={1} mt={1} flexWrap="wrap" useFlexGap>
+                  <Stack direction="row" spacing={1} useFlexGap sx={{ mt: 1, flexWrap: "wrap" }}>
                     {ATTR_FIELDS.ServerService.filter((f) => attr(selected, f.key)).map((f) => (
                       <Chip key={f.key} size="small" variant="outlined" label={`${t(f.labelKey)}: ${attr(selected, f.key)}`} />
                     ))}
@@ -141,12 +143,12 @@ const ServerServiceView: React.FC = () => {
 
                 <Card variant="outlined">
                   <CardContent>
-                    <Typography variant="subtitle1" fontWeight={600} mb={1}>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
                       {t("serverServiceView.servers")}{" "}
                       <Chip label={serversByService.get(selected.id)?.length ?? 0} size="small" sx={{ ml: 0.5 }} />
                     </Typography>
                     {(serversByService.get(selected.id) ?? []).length === 0 ? (
-                      <Typography variant="body2" color="text.secondary">{t("serverServiceView.noServers")}</Typography>
+                      <Typography variant="body2" sx={{ color: "text.secondary" }}>{t("serverServiceView.noServers")}</Typography>
                     ) : (
                       <Table size="small">
                         <TableBody>
@@ -162,7 +164,7 @@ const ServerServiceView: React.FC = () => {
                                 </Typography>
                               </TableCell>
                               <TableCell>
-                                <Typography variant="body2" color="text.secondary">
+                                <Typography variant="body2" sx={{ color: "text.secondary" }}>
                                   {[attr(srv, "miljö"), attr(srv, "servertyp")].filter(Boolean).join(" · ") || "—"}
                                 </Typography>
                               </TableCell>

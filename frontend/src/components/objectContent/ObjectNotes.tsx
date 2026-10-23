@@ -66,30 +66,30 @@ const ObjectNotes: React.FC<{ nodeId: string }> = ({ nodeId }) => {
   };
 
   return (
-    <Box maxWidth={860}>
+    <Box sx={{ maxWidth: 860 }}>
       {failure && <Alert severity="error" sx={{ mb: 2 }} onClose={() => setFailure(null)}>{failure}</Alert>}
 
       {data.permissions.write_notes ? (
         <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
           <MarkdownEditor value={body} onChange={setBody} placeholder={t("objectContent.notes.placeholder")} minRows={4} />
-          <Stack direction="row" spacing={2} alignItems="center" sx={{ mt: 1.5 }}>
+          <Stack direction="row" spacing={2} sx={{ alignItems: "center", mt: 1.5 }}>
             <VisibilityToggle value={visibility} onChange={setVisibility} />
             <FormControlLabel
               control={<Switch size="small" checked={pinned} onChange={(e) => setPinned(e.target.checked)} />}
               label={<Typography variant="body2">{t("objectContent.notes.pin")}</Typography>}
             />
-            <Box flexGrow={1} />
+            <Box sx={{ flexGrow: 1 }} />
             <Button variant="contained" disabled={!body.trim() || create.isPending} onClick={save}>
               {t("objectContent.notes.save")}
             </Button>
           </Stack>
         </Paper>
       ) : (
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>{t("objectContent.notes.readOnly")}</Typography>
+        <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>{t("objectContent.notes.readOnly")}</Typography>
       )}
 
       {data.notes.length === 0 ? (
-        <Typography color="text.secondary" sx={{ py: 2 }}>{t("objectContent.notes.empty")}</Typography>
+        <Typography sx={{ color: "text.secondary", py: 2 }}>{t("objectContent.notes.empty")}</Typography>
       ) : (
         <Stack spacing={1.5}>
           {data.notes.map((n) => <NoteCard key={n.id} nodeId={nodeId} note={n} onError={setFailure} />)}
@@ -122,9 +122,9 @@ const NoteCard: React.FC<{ nodeId: string; note: NodeNote; onError: (msg: string
         borderLeftColor: note.pinned ? "primary.main" : note.visibility === "private" ? "warning.main" : "divider",
       }}
     >
-      <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 0.5 }}>
-        <Typography variant="body2" fontWeight={600}>{note.author_name ?? "—"}</Typography>
-        <Typography variant="caption" color="text.secondary">
+      <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 0.5 }}>
+        <Typography variant="body2" sx={{ fontWeight: 600 }}>{note.author_name ?? "—"}</Typography>
+        <Typography variant="caption" sx={{ color: "text.secondary" }}>
           {formatDateTime(note.created_at)}
           {note.edited_at ? ` · ${t("objectContent.notes.edited")} ${formatDateTime(note.edited_at)}` : ""}
         </Typography>
@@ -134,7 +134,7 @@ const NoteCard: React.FC<{ nodeId: string; note: NodeNote; onError: (msg: string
             <Chip icon={<LockIcon sx={{ fontSize: 12 }} />} label={t("objectContent.notes.private")} size="small" color="warning" variant="outlined" sx={{ height: 18, fontSize: 10 }} />
           </Tooltip>
         )}
-        <Box flexGrow={1} />
+        <Box sx={{ flexGrow: 1 }} />
         {note.can_edit && !editing && (
           <>
             <Tooltip title={note.pinned ? t("objectContent.notes.unpin") : t("objectContent.notes.pin")}>
@@ -159,10 +159,10 @@ const NoteCard: React.FC<{ nodeId: string; note: NodeNote; onError: (msg: string
       {editing ? (
         <Box>
           <MarkdownEditor value={draft} onChange={setDraft} minRows={4} autoFocus />
-          <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 1 }}>
+          <Stack direction="row" spacing={1} sx={{ alignItems: "center", mt: 1 }}>
             {/* Only the author decides who sees what they wrote. */}
             {note.is_mine && <VisibilityToggle value={note.visibility} onChange={(v) => patch({ visibility: v })} />}
-            <Box flexGrow={1} />
+            <Box sx={{ flexGrow: 1 }} />
             <Button onClick={() => setEditing(false)}>{t("common.cancel")}</Button>
             <Button
               variant="contained"

@@ -7,7 +7,7 @@ import {
   Menu, MenuItem, Divider,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutlineOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -103,10 +103,8 @@ const TopBar: React.FC = () => {
         ) : (
           <Typography
             variant="h6"
-            fontWeight={700}
-            sx={{ mr: 3, cursor: "pointer" }}
             onClick={() => navigate("/")}
-          >
+            sx={{ fontWeight: 700, mr: 3, cursor: "pointer" }}>
             {t("app.title")}
           </Typography>
         )}
@@ -205,7 +203,7 @@ const TopBar: React.FC = () => {
               : "rgba(255,255,255,0.1)",
           borderRadius: 1, px: 1.5, py: 0.5, mr: 1,
         }}>
-          <Typography variant="caption" fontWeight={600} sx={{ textTransform: "uppercase", letterSpacing: 0.5 }}>
+          <Typography variant="caption" sx={{ fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.5 }}>
             {role === "admin"
               ? "Administratör"
               : role === "superuser"
@@ -229,8 +227,8 @@ const TopBar: React.FC = () => {
         >
           {(name || email) && [
             <Box key="info" sx={{ px: 2, py: 1 }}>
-              {name && <Typography variant="body2" fontWeight={600}>{name}</Typography>}
-              {email && <Typography variant="caption" color="text.secondary">{email}</Typography>}
+              {name && <Typography variant="body2" sx={{ fontWeight: 600 }}>{name}</Typography>}
+              {email && <Typography variant="caption" sx={{ color: "text.secondary" }}>{email}</Typography>}
             </Box>,
             <Divider key="div" />,
           ]}

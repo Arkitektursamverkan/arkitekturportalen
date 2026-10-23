@@ -163,7 +163,7 @@ const MarkdownEditor: React.FC<Props> = ({
         variant="outlined"
         sx={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 0.25, px: 0.5, py: 0.25, mb: -0.5, borderBottom: 0, borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }}
       >
-        <Stack direction="row" spacing={0.25} alignItems="center" flexWrap="wrap">
+        <Stack direction="row" spacing={0.25} sx={{ alignItems: "center", flexWrap: "wrap" }}>
           {buttons.map((b) => (
             <Tooltip key={b.title} title={b.title}>
               <span>

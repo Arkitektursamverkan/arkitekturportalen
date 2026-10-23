@@ -49,7 +49,7 @@ interface QAProps {
 }
 const QA: React.FC<QAProps> = ({ q, a, empty, notApplicable }) => (
   <Box sx={{ mb: 1.5, breakInside: "avoid" }}>
-    <Typography variant="caption" color="text.secondary" sx={{ display: "block", textTransform: "uppercase", letterSpacing: 0.5, fontWeight: 600 }}>
+    <Typography variant="caption" sx={{ color: "text.secondary", display: "block", textTransform: "uppercase", letterSpacing: 0.5, fontWeight: 600 }}>
       {q}
     </Typography>
     {notApplicable ? (
@@ -205,7 +205,9 @@ const SolutionSketchPrint: React.FC = () => {
   }, [answers]);
 
   if (isLoading) return <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}><CircularProgress /></Box>;
-  if (error || !sketch) return <Box p={3}><Alert severity="error">{(error as Error)?.message ?? "Kunde inte ladda skiss"}</Alert></Box>;
+  if (error || !sketch) return (
+    <Box sx={{ p: 3 }}><Alert severity="error">{(error as Error)?.message ?? "Kunde inte ladda skiss"}</Alert></Box>
+  );
 
   const renderNodeList = (ids: string[] | undefined, proposals: string[] | undefined): React.ReactNode => {
     const items = [
@@ -214,7 +216,7 @@ const SolutionSketchPrint: React.FC = () => {
     ];
     if (items.length === 0) return null;
     return (
-      <Stack direction="row" flexWrap="wrap" gap={0.5}>
+      <Stack direction="row" sx={{ flexWrap: "wrap", gap: 0.5 }}>
         {items.map((name, i) => <Chip key={i} label={name} size="small" variant="outlined" />)}
       </Stack>
     );
@@ -241,7 +243,7 @@ const SolutionSketchPrint: React.FC = () => {
         }
       `}</style>
       <Container maxWidth="md" className="ea-print-page" sx={{ py: 3 }}>
-        <Stack className="ea-print-toolbar" direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+        <Stack className="ea-print-toolbar" direction="row" sx={{ justifyContent: "space-between", alignItems: "center", mb: 3 }}>
           <Button startIcon={<ArrowBackIcon />} onClick={() => navigate(`/solution-sketches/${sketch.id}`)} variant="text">
             Tillbaka till skissen
           </Button>
@@ -250,38 +252,40 @@ const SolutionSketchPrint: React.FC = () => {
           </Button>
         </Stack>
 
-        <Typography variant="overline" color="text.secondary">Lösningsskiss · sammanställning</Typography>
-        <Typography variant="h4" fontWeight={700} sx={{ mb: 1 }}>{sketch.title || "(utan titel)"}</Typography>
-        <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
+        <Typography variant="overline" sx={{ color: "text.secondary" }}>Lösningsskiss · sammanställning</Typography>
+        <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>{sketch.title || "(utan titel)"}</Typography>
+        <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 2 }}>
           <Chip size="small" label={STATUS_LABEL[sketch.status]} />
-          <Typography variant="caption" color="text.secondary">
+          <Typography variant="caption" sx={{ color: "text.secondary" }}>
             Senast uppdaterad {new Date(sketch.updated_at).toLocaleString("sv-SE")}
           </Typography>
         </Stack>
         {sketch.description && <Typography variant="body1" sx={{ mb: 3 }}>{sketch.description}</Typography>}
 
         <Box sx={{ p: 2, bgcolor: "action.hover", borderRadius: 1, mb: 3, breakInside: "avoid" }}>
-          <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 1 }}>Sammanfattning</Typography>
-          <Stack direction="row" spacing={4} flexWrap="wrap">
+          <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1 }}>Sammanfattning</Typography>
+          <Stack direction="row" spacing={4} sx={{ flexWrap: "wrap" }}>
             <Box>
-              <Typography variant="caption" color="text.secondary">Kompletteringsgrad</Typography>
-              <Typography variant="h6">{completion}% <Typography component="span" variant="caption" color="text.secondary">({totalFilled}/{totalFields} fält)</Typography></Typography>
+              <Typography variant="caption" sx={{ color: "text.secondary" }}>Kompletteringsgrad</Typography>
+              <Typography variant="h6">{completion}% <Typography component="span" variant="caption" sx={{
+                color: "text.secondary"
+              }}>({totalFilled}/{totalFields} fält)</Typography></Typography>
               <LinearProgress variant="determinate" value={completion} sx={{ width: 200, height: 6, borderRadius: 1, mt: 0.5 }} />
             </Box>
             <Box>
-              <Typography variant="caption" color="text.secondary">Riskpoäng</Typography>
+              <Typography variant="caption" sx={{ color: "text.secondary" }}>Riskpoäng</Typography>
               <Typography variant="h6">
                 {risk.score}{" "}
                 <Chip size="small" label={risk.level} sx={{ bgcolor: risk.color, color: "#fff" }} />
               </Typography>
               {risk.reasons.length > 0 && (
-                <Typography variant="caption" color="text.secondary">{risk.reasons.join(" · ")}</Typography>
+                <Typography variant="caption" sx={{ color: "text.secondary" }}>{risk.reasons.join(" · ")}</Typography>
               )}
             </Box>
           </Stack>
-          <Stack direction="row" spacing={2} flexWrap="wrap" sx={{ mt: 1.5 }}>
+          <Stack direction="row" spacing={2} sx={{ flexWrap: "wrap", mt: 1.5 }}>
             {coverage.map((c) => (
-              <Typography key={c.key} variant="caption" color="text.secondary">
+              <Typography key={c.key} variant="caption" sx={{ color: "text.secondary" }}>
                 {c.label}: {c.filled}/{c.total}
               </Typography>
             ))}
@@ -290,7 +294,7 @@ const SolutionSketchPrint: React.FC = () => {
 
         <Divider sx={{ mb: 2 }} />
 
-        <Typography variant="h6" fontWeight={700} sx={{ mb: 1.5, color: "#4CAF50" }}>1. Behov & verksamhet</Typography>
+        <Typography variant="h6" sx={{ fontWeight: 700, mb: 1.5, color: "#4CAF50" }}>1. Behov & verksamhet</Typography>
         <QA q="Vad är behovet? Vilket problem ska lösas?" a={b.need_summary} empty={!isFilled(b.need_summary)} notApplicable={isNA("business.need_summary")} />
         <QA q="Vilka processer ska stödjas?" a={renderNodeList(b.process_ids, b.process_proposals)} empty={!isFilled(b.process_ids) && !isFilled(b.process_proposals)} notApplicable={isNA("business.processes")} />
         <QA q="Komplement, ersättare eller helt nytt?" a={b.complement_or_replace ? COMPLEMENT_LABEL[b.complement_or_replace] : ""} empty={!isFilled(b.complement_or_replace)} notApplicable={isNA("business.complement_or_replace")} />
@@ -299,7 +303,7 @@ const SolutionSketchPrint: React.FC = () => {
 
         <Divider sx={{ my: 2 }} />
 
-        <Typography variant="h6" fontWeight={700} sx={{ mb: 1.5, color: "#FF9800" }}>2. Information & data</Typography>
+        <Typography variant="h6" sx={{ fontWeight: 700, mb: 1.5, color: "#FF9800" }}>2. Information & data</Typography>
         <QA q="Vilken information producerar applikationen?" a={inf.data_outputs} empty={!isFilled(inf.data_outputs)} notApplicable={isNA("information.data_outputs")} />
         <QA q="Vilken information konsumeras / läses in?" a={inf.data_inputs} empty={!isFilled(inf.data_inputs)} notApplicable={isNA("information.data_inputs")} />
         <QA q="Informationsägare (verksamhetsroll)" a={inf.owner} empty={!isFilled(inf.owner)} notApplicable={isNA("information.owner")} />
@@ -310,7 +314,7 @@ const SolutionSketchPrint: React.FC = () => {
 
         <Divider sx={{ my: 2 }} />
 
-        <Typography variant="h6" fontWeight={700} sx={{ mb: 1.5, color: "#2196F3" }}>3. Applikation & integrationer</Typography>
+        <Typography variant="h6" sx={{ fontWeight: 700, mb: 1.5, color: "#2196F3" }}>3. Applikation & integrationer</Typography>
         <QA q="Vilka applikationer ska det integreras med?" a={renderNodeList(ap.integrates_with_ids, ap.integrates_with_proposals)} empty={!isFilled(ap.integrates_with_ids) && !isFilled(ap.integrates_with_proposals)} notApplicable={isNA("application.integrates_with")} />
         <QA q="Krav på användarupplevelse" a={ap.ux_notes} empty={!isFilled(ap.ux_notes)} notApplicable={isNA("application.ux_notes")} />
         <QA q="Förväntad livscykel (år, ersättningsstrategi)" a={ap.lifecycle_expected} empty={!isFilled(ap.lifecycle_expected)} notApplicable={isNA("application.lifecycle_expected")} />
@@ -318,7 +322,7 @@ const SolutionSketchPrint: React.FC = () => {
 
         <Divider sx={{ my: 2 }} />
 
-        <Typography variant="h6" fontWeight={700} sx={{ mb: 1.5, color: "#9C27B0" }}>4. Teknik & infrastruktur</Typography>
+        <Typography variant="h6" sx={{ fontWeight: 700, mb: 1.5, color: "#9C27B0" }}>4. Teknik & infrastruktur</Typography>
         <QA q="Driftform" a={t.hosting ? HOSTING_LABEL[t.hosting] : ""} empty={!isFilled(t.hosting)} notApplicable={isNA("technology.hosting")} />
         <QA q="Autentiseringsmetod" a={t.auth_method ? AUTH_LABEL[t.auth_method] : ""} empty={!isFilled(t.auth_method)} notApplicable={isNA("technology.auth_method")} />
         <QA q="MFA krävs" a={t.mfa_required ? "Ja" : "Nej"} notApplicable={isNA("technology.mfa_required")} />
@@ -329,13 +333,13 @@ const SolutionSketchPrint: React.FC = () => {
           <>
             <Divider sx={{ my: 2 }} />
             <Box sx={{ breakInside: "avoid" }}>
-              <Typography variant="h6" fontWeight={700} sx={{ mb: 1 }}>Nya förslag ({proposals.length})</Typography>
-              <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 1 }}>
+              <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>Nya förslag ({proposals.length})</Typography>
+              <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mb: 1 }}>
                 Objekt som inte finns i EA-modellen ännu. Skapas som riktiga noder vid godkännande.
               </Typography>
               <Stack spacing={0.5}>
                 {proposals.map((p, i) => (
-                  <Stack key={i} direction="row" spacing={1} alignItems="baseline">
+                  <Stack key={i} direction="row" spacing={1} sx={{ alignItems: "baseline" }}>
                     <Chip label={p.type} size="small" variant="outlined" sx={{ height: 18, fontSize: 10 }} />
                     <Typography variant="body2"><strong>{p.section}:</strong> {p.name}</Typography>
                   </Stack>
@@ -349,18 +353,18 @@ const SolutionSketchPrint: React.FC = () => {
           <>
             <Divider sx={{ my: 2 }} />
             <Box sx={{ breakInside: "avoid" }}>
-              <Typography variant="h6" fontWeight={700} sx={{ mb: 1 }}>Relevanta arkitekturprinciper</Typography>
+              <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>Relevanta arkitekturprinciper</Typography>
               <Stack spacing={1}>
                 {matchedPrinciples.map((p) => (
                   <Box key={p.id} sx={{ p: 1, borderLeft: "3px solid", borderColor: p.status === "Förslag" ? "warning.main" : "primary.main", bgcolor: "action.hover", borderRadius: "2px" }}>
-                    <Stack direction="row" spacing={0.5} alignItems="center">
-                      <Typography variant="caption" fontWeight={700}>{p.identifier} · {p.domain}</Typography>
+                    <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
+                      <Typography variant="caption" sx={{ fontWeight: 700 }}>{p.identifier} · {p.domain}</Typography>
                       {p.status === "Förslag" && (
                         <Chip label="Förslag" size="small" variant="outlined" color="warning" sx={{ height: 16, fontSize: 10 }} />
                       )}
                     </Stack>
                     <Typography variant="body2">{p.name}</Typography>
-                    {p.purpose && <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 0.25 }}>{p.purpose}</Typography>}
+                    {p.purpose && <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mt: 0.25 }}>{p.purpose}</Typography>}
                   </Box>
                 ))}
               </Stack>
@@ -370,7 +374,7 @@ const SolutionSketchPrint: React.FC = () => {
 
         <Divider sx={{ my: 2 }} />
         <Box sx={{ breakInside: "avoid" }}>
-          <Typography variant="h6" fontWeight={700} sx={{ mb: 1 }}>Frågor inför upphandling</Typography>
+          <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>Frågor inför upphandling</Typography>
           <Box component="ol" sx={{ pl: 3, my: 0 }}>
             {checklist.map((q, i) => (
               <Box component="li" key={i} sx={{ mb: 0.5 }}>

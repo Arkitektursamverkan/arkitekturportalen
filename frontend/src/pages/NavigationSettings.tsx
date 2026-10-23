@@ -91,11 +91,11 @@ const NavigationSettings: React.FC = () => {
 
   return (
     <Container maxWidth="md" sx={{ py: 3 }}>
-      <Stack direction="row" spacing={1} alignItems="center" mb={1}>
+      <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 1 }}>
         <MenuOpenIcon color="primary" />
         <Typography variant="h5">Meny</Typography>
       </Stack>
-      <Typography variant="body2" color="text.secondary" mb={3}>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 3 }}>
         Ordningen i vänstermenyn för alla användare. Blocken byggs av innehållet (t.ex. IT-landskapet och
         Rapporter) och kan flyttas men inte delas upp. Grupper och sidor ordnar du fritt. Sidor i en avstängd modul
         och sidor som användaren inte har behörighet till visas inte.
@@ -106,14 +106,16 @@ const NavigationSettings: React.FC = () => {
           <Card key={e.type === "block" ? `b-${e.key}` : e.type === "group" ? `g-${e.id}` : `i-${e.path}`} variant="outlined">
             <CardContent sx={{ py: 1.5, "&:last-child": { pb: 1.5 } }}>
               {e.type === "block" && (
-                <Stack direction="row" alignItems="center" justifyContent="space-between">
-                  <Typography variant="body2"><strong>{blockLabel(e.key)}</strong> <Typography component="span" variant="caption" color="text.secondary">block</Typography></Typography>
+                <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between" }}>
+                  <Typography variant="body2"><strong>{blockLabel(e.key)}</strong> <Typography component="span" variant="caption" sx={{
+                    color: "text.secondary"
+                  }}>block</Typography></Typography>
                   {controls(i, false)}
                 </Stack>
               )}
               {e.type === "item" && (
-                <Stack direction="row" alignItems="center" justifyContent="space-between">
-                  <Stack direction="row" alignItems="center" spacing={1}>
+                <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between" }}>
+                  <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                     {PAGE_CATALOG[e.path]?.icon}
                     <Typography variant="body2">{pageLabel(e.path)}</Typography>
                     {moduleChip(e.path)}
@@ -123,12 +125,12 @@ const NavigationSettings: React.FC = () => {
               )}
               {e.type === "group" && (
                 <Stack spacing={1.5}>
-                  <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1}>
+                  <Stack direction="row" spacing={1} sx={{ alignItems: "center", justifyContent: "space-between" }}>
                     <Stack direction="row" spacing={1} sx={{ flex: 1 }}>
                       <TextField
                         label="Grupp" size="small" value={e.label} sx={{ flex: 1 }}
-                        error={!e.label.trim()} inputProps={{ maxLength: 60 }}
-                        onChange={(ev) => replace(i, { ...e, label: ev.target.value })}
+                        error={!e.label.trim()} onChange={(ev) => replace(i, { ...e, label: ev.target.value })}
+                        slotProps={{ htmlInput: { maxLength: 60 } }}
                       />
                       <TextField
                         select label="Ikon" size="small" value={e.icon} sx={{ width: 110 }}
@@ -143,11 +145,11 @@ const NavigationSettings: React.FC = () => {
                   </Stack>
                   <Stack spacing={0.5} sx={{ pl: 2 }}>
                     {e.items.length === 0 && (
-                      <Typography variant="caption" color="text.secondary">Inga sidor – gruppen visas inte.</Typography>
+                      <Typography variant="caption" sx={{ color: "text.secondary" }}>Inga sidor – gruppen visas inte.</Typography>
                     )}
                     {e.items.map((p, k) => (
-                      <Stack key={p} direction="row" alignItems="center" justifyContent="space-between">
-                        <Stack direction="row" alignItems="center" spacing={1}>
+                      <Stack key={p} direction="row" sx={{ alignItems: "center", justifyContent: "space-between" }}>
+                        <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                           {PAGE_CATALOG[p]?.icon}
                           <Typography variant="body2">{pageLabel(p)}</Typography>
                           {moduleChip(p)}
@@ -195,14 +197,14 @@ const NavigationSettings: React.FC = () => {
         )}
       </Stack>
       {free.length > 0 && (
-        <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 1 }}>
+        <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mt: 1 }}>
           Inte i menyn: {free.map(pageLabel).join(", ")}.
         </Typography>
       )}
 
       {save.isError && <Alert severity="error" sx={{ mt: 2 }}>Det gick inte att spara menyn.</Alert>}
       {saved && <Alert severity="success" sx={{ mt: 2 }}>Sparat. Menyn gäller för alla användare.</Alert>}
-      <Stack direction="row" justifyContent="space-between" sx={{ mt: 3 }}>
+      <Stack direction="row" sx={{ justifyContent: "space-between", mt: 3 }}>
         <Button color="warning" onClick={handleReset} disabled={save.isPending || !data?.navigation}>
           Återställ standard
         </Button>

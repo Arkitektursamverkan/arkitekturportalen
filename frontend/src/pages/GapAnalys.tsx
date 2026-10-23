@@ -119,10 +119,10 @@ const DomainProgressOverview: React.FC<{ items: GapItem[]; summary?: GapTaskSumm
 
   return (
     <Box sx={{ mb: 3, p: 2, border: "1px solid", borderColor: "divider", borderRadius: 2, bgcolor: "background.paper" }}>
-      <Typography variant="subtitle2" fontWeight={700}>
+      <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
         Framsteg mot målarkitektur per domän
       </Typography>
-      <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 1.5 }}>
+      <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mb: 1.5 }}>
         Varje gap bidrar med sin andel klara uppgifter, viktade efter omfattning. Gap som uppfyller målbilden räknas som helt klara.
         Det ljusare fältet visar pågående arbete.
       </Typography>
@@ -137,9 +137,9 @@ const DomainProgressOverview: React.FC<{ items: GapItem[]; summary?: GapTaskSumm
 
           return (
             <Box key={domain}>
-              <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 0.25 }}>
-                <Typography variant="caption" fontWeight={600} color="text.secondary">{domain}</Typography>
-                <Typography variant="caption" color="text.secondary">
+              <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center", mb: 0.25 }}>
+                <Typography variant="caption" sx={{ fontWeight: 600, color: "text.secondary" }}>{domain}</Typography>
+                <Typography variant="caption" sx={{ color: "text.secondary" }}>
                   {total > 0 ? `${Math.round(done * 100)}% · ${fulfilled}/${total} uppfyllda` : "Inga gap registrerade"}
                 </Typography>
               </Stack>
@@ -165,7 +165,9 @@ const GapAnalys: React.FC = () => {
     return <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}><CircularProgress /></Box>;
   }
   if (error || !data) {
-    return <Box p={3}><Alert severity="error">{(error as Error)?.message ?? "Kunde inte ladda GAP-analys"}</Alert></Box>;
+    return (
+      <Box sx={{ p: 3 }}><Alert severity="error">{(error as Error)?.message ?? "Kunde inte ladda GAP-analys"}</Alert></Box>
+    );
   }
 
   const c = data.content;
@@ -173,8 +175,8 @@ const GapAnalys: React.FC = () => {
 
   return (
     <Box sx={{ py: 4, px: { xs: 2, md: 3 }, maxWidth: 1100, mx: "auto" }}>
-      <Typography variant="h4" fontWeight={700}>GAP-analys IT-arkitektur</Typography>
-      <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 2 }}>
+      <Typography variant="h4" sx={{ fontWeight: 700 }}>GAP-analys IT-arkitektur</Typography>
+      <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mb: 2 }}>
         Jämförelse mellan nuläge och målarkitektur per domän
         {data.updated_by && ` · Uppdaterad ${new Date(data.updated_at).toLocaleString("sv-SE")} av ${data.updated_by}`}
       </Typography>
@@ -232,7 +234,7 @@ const GapTableTab: React.FC<{
   return (
     <Box sx={{ pt: 3 }}>
       {/* Priority filter */}
-      <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mb: 1.5 }}>
+      <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", mb: 1.5 }}>
         <Chip
           label={`Alla (${priorityCounts.all})`}
           onClick={() => setPriorityFilter("all")}
@@ -259,7 +261,7 @@ const GapTableTab: React.FC<{
       </Stack>
 
       {/* Domain filter */}
-      <Stack direction="row" spacing={0.75} flexWrap="wrap" sx={{ mb: 1.5 }}>
+      <Stack direction="row" spacing={0.75} sx={{ flexWrap: "wrap", mb: 1.5 }}>
         <Chip
           label="Alla domäner"
           onClick={() => setDomainFilter("all")}
@@ -280,7 +282,7 @@ const GapTableTab: React.FC<{
       </Stack>
 
       {/* Horizon filter */}
-      <Stack direction="row" spacing={0.75} flexWrap="wrap" sx={{ mb: 2.5 }}>
+      <Stack direction="row" spacing={0.75} sx={{ flexWrap: "wrap", mb: 2.5 }}>
         <Chip
           label="Alla horisonter"
           onClick={() => setHorizonFilter("all")}
@@ -307,14 +309,14 @@ const GapTableTab: React.FC<{
       </Stack>
 
       {filtered.length === 0 && (
-        <Typography color="text.secondary" sx={{ py: 4, textAlign: "center" }}>
+        <Typography sx={{ color: "text.secondary", py: 4, textAlign: "center" }}>
           Inga gap matchar det valda filtret.
         </Typography>
       )}
 
       {grouped.map(({ domain, items: groupItems }) => (
         <Box key={domain} sx={{ mb: 3 }}>
-          <Typography variant="overline" color="text.secondary" sx={{ fontWeight: 700, letterSpacing: 1 }}>
+          <Typography variant="overline" sx={{ color: "text.secondary", fontWeight: 700, letterSpacing: 1 }}>
             {domain}
           </Typography>
           {groupItems.map((item) => (
@@ -401,16 +403,16 @@ const GapItemRow: React.FC<{
       sx={{ border: "1px solid", borderColor: "divider", mb: 0.75, "&:before": { display: "none" }, borderRadius: "6px !important" }}
     >
       <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ minHeight: 48, "&.Mui-expanded": { minHeight: 48 } }}>
-        <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" sx={{ gap: 1, pr: 1 }}>
+        <Stack direction="row" spacing={1} sx={{ alignItems: "center", flexWrap: "wrap", gap: 1, pr: 1 }}>
           <PrioritetChip p={item.prioritet} />
           <GapTypChip gt={item.gap_typ} />
-          <Typography fontWeight={600} sx={{ fontSize: "0.9rem" }}>{item.objekt}</Typography>
+          <Typography sx={{ fontWeight: 600, fontSize: "0.9rem" }}>{item.objekt}</Typography>
         </Stack>
         {(hasTasks || item.gap_typ === "uppfyller_malbild") && (
           <Tooltip title={item.gap_typ === "uppfyller_malbild" ? "Uppfyller målbilden" : "Andel klara uppgifter, viktade efter omfattning"}>
-            <Stack direction="row" alignItems="center" spacing={1} sx={{ ml: "auto", pr: 1, flexShrink: 0 }}>
+            <Stack direction="row" spacing={1} sx={{ alignItems: "center", ml: "auto", pr: 1, flexShrink: 0 }}>
               <Box sx={{ width: 90 }}><GoalBar done={progress.done} inProgress={progress.inProgress} height={6} /></Box>
-              <Typography variant="caption" color="text.secondary" sx={{ minWidth: 32, textAlign: "right" }}>
+              <Typography variant="caption" sx={{ color: "text.secondary", minWidth: 32, textAlign: "right" }}>
                 {Math.round(progress.done * 100)}%
               </Typography>
             </Stack>
@@ -419,34 +421,42 @@ const GapItemRow: React.FC<{
       </AccordionSummary>
       <AccordionDetails sx={{ pt: 0, pb: 2, px: 2.5 }}>
         <Stack direction={{ xs: "column", md: "row" }} spacing={2} sx={{ mb: 2 }}>
-          <Box flex={1}>
-            <Typography variant="caption" color="text.secondary" fontWeight={700} sx={{ textTransform: "uppercase", letterSpacing: 0.5 }}>Nuläge</Typography>
+          <Box sx={{ flex: 1 }}>
+            <Typography
+              variant="caption"
+              sx={{ color: "text.secondary", fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.5 }}>Nuläge</Typography>
             <Typography variant="body2" sx={{ whiteSpace: "pre-line", mt: 0.25 }}>{item.nulaege}</Typography>
           </Box>
           <Divider orientation="vertical" flexItem sx={{ display: { xs: "none", md: "block" } }} />
-          <Box flex={1}>
-            <Typography variant="caption" color="text.secondary" fontWeight={700} sx={{ textTransform: "uppercase", letterSpacing: 0.5 }}>Önskat läge</Typography>
+          <Box sx={{ flex: 1 }}>
+            <Typography
+              variant="caption"
+              sx={{ color: "text.secondary", fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.5 }}>Önskat läge</Typography>
             <Typography variant="body2" sx={{ whiteSpace: "pre-line", mt: 0.25 }}>{item.onskat_laege}</Typography>
           </Box>
         </Stack>
         <Stack direction={{ xs: "column", md: "row" }} spacing={2} sx={{ mb: 2 }}>
-          <Box flex={1}>
-            <Typography variant="caption" color="text.secondary" fontWeight={700} sx={{ textTransform: "uppercase", letterSpacing: 0.5 }}>Konsekvens</Typography>
+          <Box sx={{ flex: 1 }}>
+            <Typography
+              variant="caption"
+              sx={{ color: "text.secondary", fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.5 }}>Konsekvens</Typography>
             <Typography variant="body2" sx={{ whiteSpace: "pre-line", mt: 0.25 }}>{item.konsekvens}</Typography>
           </Box>
           <Divider orientation="vertical" flexItem sx={{ display: { xs: "none", md: "block" } }} />
-          <Box flex={1}>
-            <Typography variant="caption" color="text.secondary" fontWeight={700} sx={{ textTransform: "uppercase", letterSpacing: 0.5 }}>Åtgärd</Typography>
+          <Box sx={{ flex: 1 }}>
+            <Typography
+              variant="caption"
+              sx={{ color: "text.secondary", fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.5 }}>Åtgärd</Typography>
             <Typography variant="body2" sx={{ whiteSpace: "pre-line", mt: 0.25 }}>{item.atgard || "—"}</Typography>
           </Box>
         </Stack>
         {(item.ansvarig || item.deadline) && (
           <Stack direction="row" spacing={2} sx={{ mb: 1.5 }}>
             {item.ansvarig && (
-              <Typography variant="caption" color="text.secondary">Ansvarig: {item.ansvarig}</Typography>
+              <Typography variant="caption" sx={{ color: "text.secondary" }}>Ansvarig: {item.ansvarig}</Typography>
             )}
             {item.deadline && (
-              <Typography variant="caption" color="text.secondary">Deadline: {item.deadline}</Typography>
+              <Typography variant="caption" sx={{ color: "text.secondary" }}>Deadline: {item.deadline}</Typography>
             )}
           </Stack>
         )}
@@ -588,13 +598,15 @@ const TaskList: React.FC<{ gapItemId: string; isAdmin: boolean; horizonFilter: s
 
   return (
     <Box>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: allTasks.length > 0 ? 1 : 0 }}>
-        <Stack direction="row" alignItems="center" spacing={1}>
-          <Typography variant="caption" fontWeight={700} color="text.secondary" sx={{ textTransform: "uppercase", letterSpacing: 0.5 }}>
+      <Stack
+        direction="row"
+        sx={{ alignItems: "center", justifyContent: "space-between", mb: allTasks.length > 0 ? 1 : 0 }}>
+        <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+          <Typography variant="caption" sx={{ fontWeight: 700, color: "text.secondary", textTransform: "uppercase", letterSpacing: 0.5 }}>
             Uppgifter
           </Typography>
           {allTasks.length > 0 && (
-            <Typography variant="caption" color="text.secondary">
+            <Typography variant="caption" sx={{ color: "text.secondary" }}>
               ({allTasks.filter((t) => t.status === "done").length}/{activeTasks.length} klara · {Math.round(doneShare * 100)}% av omfattningen)
             </Typography>
           )}
@@ -615,7 +627,7 @@ const TaskList: React.FC<{ gapItemId: string; isAdmin: boolean; horizonFilter: s
           {tasks.map((task) => {
             const cfg = TASK_STATUS_CONFIG[task.status as GapTaskStatus] ?? TASK_STATUS_CONFIG.todo;
             return (
-              <Stack key={task.id} direction="row" alignItems="center" spacing={1} sx={{ py: 0.25 }}>
+              <Stack key={task.id} direction="row" spacing={1} sx={{ alignItems: "center", py: 0.25 }}>
                 <Box
                   sx={{ cursor: isAdmin ? "pointer" : "default", color: cfg.color, display: "flex", alignItems: "center" }}
                   onClick={isAdmin ? () => updateTask.mutate({ id: task.id, status: NEXT_STATUS[task.status as GapTaskStatus] }) : undefined}
@@ -635,15 +647,20 @@ const TaskList: React.FC<{ gapItemId: string; isAdmin: boolean; horizonFilter: s
                 )}
                 <HorizonChip h={task.horizon} />
                 {task.assigned_to && (
-                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: "0.72rem" }}>{task.assigned_to}</Typography>
+                  <Typography variant="caption" sx={{ color: "text.secondary", fontSize: "0.72rem" }}>{task.assigned_to}</Typography>
                 )}
                 {task.due_date && (
-                  <Typography variant="caption" color={new Date(task.due_date) < new Date() && task.status !== "done" ? "error" : "text.secondary"} sx={{ fontSize: "0.72rem" }}>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: new Date(task.due_date) < new Date() && task.status !== "done" ? "error.main" : "text.secondary",
+                      fontSize: "0.72rem"
+                    }}>
                     {task.due_date}
                   </Typography>
                 )}
                 {task.completed_at && (
-                  <Typography variant="caption" color="success.main" sx={{ fontSize: "0.72rem" }}>
+                  <Typography variant="caption" sx={{ color: "success.main", fontSize: "0.72rem" }}>
                     {new Date(task.completed_at).toLocaleDateString("sv-SE")}
                   </Typography>
                 )}
@@ -660,11 +677,11 @@ const TaskList: React.FC<{ gapItemId: string; isAdmin: boolean; horizonFilter: s
       )}
 
       {tasks.length === 0 && horizonFilter !== "all" && allTasks.length > 0 && (
-        <Typography variant="caption" color="text.disabled">Inga uppgifter för vald horisont.</Typography>
+        <Typography variant="caption" sx={{ color: "text.disabled" }}>Inga uppgifter för vald horisont.</Typography>
       )}
 
       {allTasks.length === 0 && !isAdmin && (
-        <Typography variant="caption" color="text.disabled">Inga uppgifter knutna.</Typography>
+        <Typography variant="caption" sx={{ color: "text.disabled" }}>Inga uppgifter knutna.</Typography>
       )}
 
       {adding && (
@@ -700,30 +717,30 @@ const StatusHistory: React.FC<{ gapItemId: string }> = ({ gapItemId }) => {
 
   return (
     <Box>
-      <Typography variant="caption" fontWeight={700} color="text.secondary" sx={{ textTransform: "uppercase", letterSpacing: 0.5 }}>
+      <Typography variant="caption" sx={{ fontWeight: 700, color: "text.secondary", textTransform: "uppercase", letterSpacing: 0.5 }}>
         Statushistorik
       </Typography>
       {entries.length === 0 ? (
-        <Typography variant="caption" color="text.disabled" sx={{ display: "block", mt: 0.5 }}>
+        <Typography variant="caption" sx={{ color: "text.disabled", display: "block", mt: 0.5 }}>
           Inga statusändringar ännu.
         </Typography>
       ) : (
         <Stack spacing={1} sx={{ mt: 0.75 }}>
           {shown.map((e) => (
             <Box key={e.id} sx={{ pl: 1.5, borderLeft: "3px solid", borderColor: e.task_id ? "divider" : "primary.main" }}>
-              <Stack direction="row" alignItems="center" spacing={0.75} flexWrap="wrap" sx={{ rowGap: 0.25 }}>
-                <Typography variant="caption" color="text.secondary">
+              <Stack direction="row" spacing={0.75} sx={{ alignItems: "center", flexWrap: "wrap", rowGap: 0.25 }}>
+                <Typography variant="caption" sx={{ color: "text.secondary" }}>
                   {new Date(e.created_at).toLocaleDateString("sv-SE")}
                   {e.created_by ? ` · ${e.created_by}` : ""}
                 </Typography>
                 {e.task_id ? (
-                  <Typography variant="caption" fontWeight={600}>Uppgift: {e.task_title}</Typography>
+                  <Typography variant="caption" sx={{ fontWeight: 600 }}>Uppgift: {e.task_title}</Typography>
                 ) : (
-                  <Typography variant="caption" fontWeight={600}>GAP-typ</Typography>
+                  <Typography variant="caption" sx={{ fontWeight: 600 }}>GAP-typ</Typography>
                 )}
                 <Typography variant="caption">{label(e, e.from_status)}</Typography>
                 <ArrowForwardIcon sx={{ fontSize: 12, color: "text.secondary" }} />
-                <Typography variant="caption" fontWeight={600}>{label(e, e.to_status)}</Typography>
+                <Typography variant="caption" sx={{ fontWeight: 600 }}>{label(e, e.to_status)}</Typography>
               </Stack>
               {e.comment && (
                 <Typography variant="body2" sx={{ whiteSpace: "pre-line", mt: 0.25 }}>{e.comment}</Typography>

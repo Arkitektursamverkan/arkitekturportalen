@@ -89,7 +89,7 @@ const Settings: React.FC = () => {
 
   return (
     <Box sx={{ p: 3, maxWidth: 760, mx: "auto" }}>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={3}>
+      <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between", mb: 3 }}>
         <Typography variant="h5">{t("settings.title")}</Typography>
         <Button variant="outlined" startIcon={<RestoreIcon />} onClick={() => store.resetTheme()} size="small">
           {t("settings.resetDefaults")}
@@ -100,12 +100,12 @@ const Settings: React.FC = () => {
         <>
           {/* Logo — editor */}
           {isEditor && <Section icon={<ImageIcon />} title={t("settings.logo.title")}>
-            <Stack direction={{ xs: "column", sm: "row" }} spacing={2} alignItems="flex-start">
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ alignItems: "flex-start" }}>
               {logoSrc && (
                 <Box component="img" src={logoSrc} alt="Logo"
                   sx={{ height: 64, maxWidth: 200, objectFit: "contain", border: "1px solid", borderColor: "divider", borderRadius: 1, p: 0.5 }} />
               )}
-              <Stack spacing={1.5} flexGrow={1}>
+              <Stack spacing={1.5} sx={{ flexGrow: 1 }}>
                 <Button variant="outlined" size="small" onClick={() => fileInputRef.current?.click()} startIcon={<ImageIcon />}>
                   {t("settings.logo.upload")}
                 </Button>
@@ -144,7 +144,7 @@ const Settings: React.FC = () => {
                 ))}
               </Select>
             </FormControl>
-            <Typography variant="body2" color="text.secondary" mt={1} sx={{ fontFamily: `"${store.fontFamily}", sans-serif` }}>
+            <Typography variant="body2" sx={{ color: "text.secondary", mt: 1, fontFamily: `"${store.fontFamily}", sans-serif` }}>
               {t("settings.font.preview")}: Aa Bb Cc 123
             </Typography>
           </Section>}
@@ -152,8 +152,8 @@ const Settings: React.FC = () => {
           {/* Website Inspiration — editor */}
           {isEditor &&
           <Section icon={<LinkIcon />} title={t("settings.inspire.title")}>
-            <Typography variant="body2" color="text.secondary" mb={1.5}>{t("settings.inspire.description")}</Typography>
-            <Stack direction="row" spacing={1} mb={2}>
+            <Typography variant="body2" sx={{ color: "text.secondary", mb: 1.5 }}>{t("settings.inspire.description")}</Typography>
+            <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
               <TextField size="small" label={t("settings.inspire.urlLabel")} value={inspireUrl}
                 onChange={(e) => setInspireUrl(e.target.value)} placeholder="https://example.com"
                 sx={{ flexGrow: 1 }} onKeyDown={(e) => e.key === "Enter" && handleExtract()} />
@@ -163,11 +163,11 @@ const Settings: React.FC = () => {
             </Stack>
             {extractError && <Alert severity="warning" sx={{ mb: 1.5 }}>{extractError}</Alert>}
             {extractedColors.length > 0 && (
-              <Box mb={2}>
-                <Typography variant="caption" color="text.secondary" fontWeight={600} display="block" mb={0.5}>
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 600, display: "block", mb: 0.5 }}>
                   {t("settings.inspire.foundColors")}
                 </Typography>
-                <Stack direction="row" flexWrap="wrap" gap={1}>
+                <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1 }}>
                   {extractedColors.map((color) => (
                     <Tooltip key={color} placement="top" arrow title={
                       <Stack spacing={0.5}>
@@ -187,10 +187,10 @@ const Settings: React.FC = () => {
             )}
             {extractedFonts.length > 0 && (
               <Box>
-                <Typography variant="caption" color="text.secondary" fontWeight={600} display="block" mb={0.5}>
+                <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 600, display: "block", mb: 0.5 }}>
                   {t("settings.inspire.foundFonts")}
                 </Typography>
-                <Stack direction="row" flexWrap="wrap" gap={1}>
+                <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1 }}>
                   {extractedFonts.map((font) => (
                     <Button key={font} variant="outlined" size="small"
                       onClick={() => store.setTheme({ fontFamily: font })}
@@ -218,7 +218,7 @@ const Settings: React.FC = () => {
 
           {/* Users — admin only */}
           {isAdmin && <Section icon={<GroupIcon />} title={t("nav.users", { defaultValue: "Användare" })}>
-            <Typography variant="body2" color="text.secondary" mb={2}>
+            <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
               Hantera användarkonton, roller och lösenord.
             </Typography>
             <Button
@@ -264,9 +264,9 @@ function Section({
   return (
     <Card sx={{ mb: 2 }}>
       <CardContent>
-        <Stack direction="row" alignItems="center" spacing={1} mb={1.5}>
+        <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 1.5 }}>
           <Box sx={{ color: headerColor, display: "flex" }}>{icon}</Box>
-          <Typography variant="h6" fontSize={16} fontWeight={600}>{title}</Typography>
+          <Typography variant="h6" sx={{ fontSize: 16, fontWeight: 600 }}>{title}</Typography>
         </Stack>
         <Divider sx={{ mb: 2 }} />
         {children}
@@ -280,20 +280,20 @@ function ColorRow({ label, value, onChange }: { label: string; value: string; on
   React.useEffect(() => { setText(value); }, [value]);
   const commit = (raw: string) => { if (/^#[0-9a-fA-F]{6}$/.test(raw)) onChange(raw); };
   return (
-    <Stack direction="row" alignItems="center" spacing={2}>
+    <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
       <Box component="input" type="color"
         value={/^#[0-9a-fA-F]{6}$/.test(value) ? value : "#000000"}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setText(e.target.value); onChange(e.target.value); }}
         sx={{ width: 44, height: 44, border: "1px solid", borderColor: "divider", borderRadius: 1, cursor: "pointer", p: 0.25, bgcolor: "transparent", flexShrink: 0 }}
       />
-      <Box flexGrow={1}>
-        <Typography variant="body2" fontWeight={500}>{label}</Typography>
-        <Typography variant="caption" color="text.secondary">{value.toUpperCase()}</Typography>
+      <Box sx={{ flexGrow: 1 }}>
+        <Typography variant="body2" sx={{ fontWeight: 500 }}>{label}</Typography>
+        <Typography variant="caption" sx={{ color: "text.secondary" }}>{value.toUpperCase()}</Typography>
       </Box>
       <TextField size="small" value={text}
         onChange={(e) => { const v = e.target.value; if (/^#?[0-9a-fA-F]{0,6}$/.test(v)) setText(v); }}
         onBlur={() => commit(text)} onKeyDown={(e) => { if (e.key === "Enter") commit(text); }}
-        sx={{ width: 110 }} inputProps={{ maxLength: 7, style: { fontFamily: "monospace", fontSize: 13 } }}
+        sx={{ width: 110 }} slotProps={{ htmlInput: { maxLength: 7, style: { fontFamily: "monospace", fontSize: 13 } } }}
       />
     </Stack>
   );

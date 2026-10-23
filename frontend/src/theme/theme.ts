@@ -27,6 +27,16 @@ export function buildTheme(s: ThemeSettings): Theme {
       MuiCard: {
         styleOverrides: { root: { boxShadow: "0 2px 8px rgba(0,0,0,0.08)" } },
       },
+      // MUI 9 gives chips their own line-height (1.5); before, they inherited
+      // it from where they sit (tables, lists). Keep the inherited one so text
+      // inside chips stays where it was.
+      MuiChip: {
+        styleOverrides: { root: { lineHeight: "inherit" } },
+      },
+      // MUI 9 takes the icon's minimum width from theme.spacing (36 px); keep 56 px.
+      MuiListItemIcon: {
+        styleOverrides: { root: { minWidth: 56 } },
+      },
     },
   });
 }

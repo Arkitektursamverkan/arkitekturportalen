@@ -68,11 +68,11 @@ const ReportTechDebt: React.FC = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom><ReportTitle fallback={t("reports.techDebt.title")} /></Typography>
-      <Typography variant="body2" color="text.secondary" mb={2}>{t("reports.techDebt.description")}</Typography>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>{t("reports.techDebt.description")}</Typography>
 
       {!hasData && <Alert severity="info" sx={{ mb: 3 }}>{t("reports.techDebt.hint")}</Alert>}
 
-      <Stack direction="row" spacing={2} mb={3}>
+      <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
         <Chip label={`${rows.length} ${t("reports.techDebt.component").toLowerCase()}`} variant="outlined" />
         {expiredCount > 0 && <Chip label={`${expiredCount} ${t("reports.techDebt.expired").toLowerCase()}`} color="error" size="small" />}
       </Stack>
@@ -96,9 +96,9 @@ const ReportTechDebt: React.FC = () => {
                 <TableRow key={row.id} hover sx={{ cursor: "pointer", bgcolor: status.color === "#e53935" ? "error.50" : status.color === "#ff9800" ? "warning.50" : undefined }}
                   onClick={() => navigate(`/tech-components?id=${row.id}`)}>
                   <TableCell>
-                    <Stack direction="row" spacing={1} alignItems="center">
+                    <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                       <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: NODE_COLORS.TechnologyComponent }} />
-                      <Typography variant="body2" fontWeight={500}>{row.name}</Typography>
+                      <Typography variant="body2" sx={{ fontWeight: 500 }}>{row.name}</Typography>
                     </Stack>
                   </TableCell>
                   <TableCell><Typography variant="caption">{row.type}</Typography></TableCell>
@@ -106,12 +106,12 @@ const ReportTechDebt: React.FC = () => {
                   <TableCell>
                     {row.endOfSupport
                       ? <Chip label={row.endOfSupport} size="small" sx={{ bgcolor: eolStatus(row.endOfSupport, t).color, color: "#fff" }} />
-                      : <Typography variant="caption" color="text.secondary">—</Typography>}
+                      : <Typography variant="caption" sx={{ color: "text.secondary" }}>—</Typography>}
                   </TableCell>
                   <TableCell>
                     {row.endOfLife
                       ? <Chip label={row.endOfLife} size="small" sx={{ bgcolor: eolStatus(row.endOfLife, t).color, color: "#fff" }} />
-                      : <Typography variant="caption" color="text.secondary">—</Typography>}
+                      : <Typography variant="caption" sx={{ color: "text.secondary" }}>—</Typography>}
                   </TableCell>
                   <TableCell align="center"><Chip label={row.dependentApps.length} size="small" variant="outlined" /></TableCell>
                 </TableRow>

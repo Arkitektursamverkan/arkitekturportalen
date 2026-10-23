@@ -39,15 +39,15 @@ const ReportLifecycle: React.FC = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom><ReportTitle fallback={t("reports.lifecycle.title")} /></Typography>
-      <Typography variant="body2" color="text.secondary" mb={2}>{t("reports.lifecycle.description")}</Typography>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>{t("reports.lifecycle.description")}</Typography>
 
-      <Stack direction="row" spacing={1} mb={3} alignItems="center" flexWrap="wrap" useFlexGap>
+      <Stack direction="row" spacing={1} useFlexGap sx={{ mb: 3, alignItems: "center", flexWrap: "wrap" }}>
         {groups.map((g) => (
           <Chip key={g.status} label={`${g.status}: ${g.apps.length}`}
             sx={{ bgcolor: STATUS_COLORS[g.status] || "#757575", color: "#fff", fontWeight: 600, cursor: "pointer" }}
             onClick={() => setFilterStatus(g.status === filterStatus ? "all" : g.status)} />
         ))}
-        <Box flexGrow={1} />
+        <Box sx={{ flexGrow: 1 }} />
         <FormControl size="small" sx={{ minWidth: 160 }}>
           <InputLabel>{t("reports.lifecycle.status")}</InputLabel>
           <Select value={filterStatus} label={t("reports.lifecycle.status")} onChange={(e) => setFilterStatus(e.target.value)}>
@@ -60,14 +60,14 @@ const ReportLifecycle: React.FC = () => {
       {/* Distribution bars */}
       <Card sx={{ mb: 3 }}>
         <CardContent>
-          <Typography variant="h6" fontSize={16} fontWeight={600} mb={2}>{t("reports.lifecycle.distribution")}</Typography>
+          <Typography variant="h6" sx={{ fontSize: 16, fontWeight: 600, mb: 2 }}>{t("reports.lifecycle.distribution")}</Typography>
           <Stack spacing={1.5}>
             {groups.map((g) => {
               const pct = totalApps > 0 ? Math.round((g.apps.length / totalApps) * 100) : 0;
               return (
                 <Box key={g.status}>
-                  <Stack direction="row" justifyContent="space-between" mb={0.3}>
-                    <Typography variant="body2" fontWeight={500}>{g.status}</Typography>
+                  <Stack direction="row" sx={{ justifyContent: "space-between", mb: 0.3 }}>
+                    <Typography variant="body2" sx={{ fontWeight: 500 }}>{g.status}</Typography>
                     <Typography variant="caption">{g.apps.length} ({pct}%)</Typography>
                   </Stack>
                   <LinearProgress variant="determinate" value={pct}
@@ -93,7 +93,7 @@ const ReportLifecycle: React.FC = () => {
           <TableBody>
             {filtered.flatMap((g) => g.apps.map((app) => (
               <TableRow key={app.id} hover sx={{ cursor: "pointer" }} onClick={() => navigate(`/systems?id=${app.id}`)}>
-                <TableCell><Typography variant="body2" fontWeight={500}>{app.name}</Typography></TableCell>
+                <TableCell><Typography variant="body2" sx={{ fontWeight: 500 }}>{app.name}</Typography></TableCell>
                 <TableCell>
                   <Chip label={g.status} size="small" sx={{ bgcolor: STATUS_COLORS[g.status] || "#757575", color: "#fff" }} />
                 </TableCell>

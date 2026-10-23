@@ -67,13 +67,13 @@ const SurveyList: React.FC = () => {
                 <Chip size="small" label={STATUS_LABEL[s.status]} color={STATUS_COLOR[s.status]} />
               </TableCell>
               <TableCell>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" sx={{ color: "text.secondary" }}>
                   {s.due_date ? new Date(s.due_date).toLocaleDateString("sv-SE") : "—"}
                 </Typography>
               </TableCell>
-              <TableCell><Typography variant="body2" color="text.secondary">{s.created_by ?? "—"}</Typography></TableCell>
+              <TableCell><Typography variant="body2" sx={{ color: "text.secondary" }}>{s.created_by ?? "—"}</Typography></TableCell>
               <TableCell>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" sx={{ color: "text.secondary" }}>
                   {new Date(s.updated_at).toLocaleString("sv-SE")}
                 </Typography>
               </TableCell>
@@ -122,10 +122,10 @@ const SurveyList: React.FC = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={3}>
+      <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between", mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>Enkäter</Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="h4" sx={{ fontWeight: 700 }}>Enkäter</Typography>
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>
             Skapa och skicka ut enkäter till t.ex. systemförvaltare — svaren kan sedan granskas och användas som underlag för nya integrationer.
           </Typography>
         </Box>
@@ -218,7 +218,7 @@ const NewSurveyDialog: React.FC<{
           </RadioGroup>
           {kind === "standard" ? (
             <>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" sx={{ color: "text.secondary" }}>
                 Enkäten skapar en svarsrad per objekt av vald typ — mottagaren får sina objekt listade och besvarar enkäten en gång per objekt.
               </Typography>
               <TargetTypePicker
@@ -228,7 +228,7 @@ const NewSurveyDialog: React.FC<{
               />
             </>
           ) : (
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: "text.secondary" }}>
               När enkäten är öppen erbjuds inloggade användare (i snitt var 3:e inloggning) att svara på frågorna
               om en slumpmässigt vald aktiv applikation. Ingen mottagarlista behövs — enkättypen kan inte ändras i efterhand.
             </Typography>

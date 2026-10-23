@@ -53,7 +53,7 @@ const ConflictList: React.FC<{ conflicts: ChangeConflict[] }> = ({ conflicts }) 
 
 const Field: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
   <Box>
-    <Typography variant="caption" color="text.secondary" display="block">{label}</Typography>
+    <Typography variant="caption" sx={{ color: "text.secondary", display: "block" }}>{label}</Typography>
     {children}
   </Box>
 );
@@ -141,14 +141,14 @@ const ChangeEntryDialog: React.FC<{
               </Alert>
             )}
             <Field label="Datum och tid"><Typography>{changeWhenLabel(entry)}</Typography></Field>
-            <Stack direction="row" spacing={3} flexWrap="wrap" useFlexGap>
+            <Stack direction="row" spacing={3} useFlexGap sx={{ flexWrap: "wrap" }}>
               <Field label="Typ av förändring"><Typography>{CHANGE_TYPE_LABELS[entry.change_type]}</Typography></Field>
               <Field label="Antal personer som berörs"><Typography>{AFFECTED_SHARE_LABELS[entry.affected_share]}</Typography></Field>
               <Field label="Påverkan på användare"><Typography>{USER_IMPACT_LABELS[entry.user_impact]}</Typography></Field>
             </Stack>
             {entry.nodes.length > 0 && (
               <Field label="Berör">
-                <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
+                <Stack direction="row" spacing={0.5} useFlexGap sx={{ flexWrap: "wrap" }}>
                   {entry.nodes.map((n) => (
                     <Chip key={n.id} size="small" variant="outlined" label={n.name} sx={{ borderColor: nodeColor(n.type), color: nodeColor(n.type) }} />
                   ))}
@@ -160,7 +160,7 @@ const ChangeEntryDialog: React.FC<{
             {entry.risks && <Field label="Risker"><Typography sx={{ whiteSpace: "pre-wrap" }}>{entry.risks}</Typography></Field>}
             {entry.notify_departments.length > 0 && (
               <Field label="Följande bör meddelas">
-                <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
+                <Stack direction="row" spacing={0.5} useFlexGap sx={{ flexWrap: "wrap" }}>
                   {entry.notify_departments.map((d) => <Chip key={d} size="small" label={d} />)}
                 </Stack>
               </Field>
@@ -171,7 +171,7 @@ const ChangeEntryDialog: React.FC<{
                 {entry.approved_by && ` · ${entry.approval_status === "approved" ? "godkänt av" : "hanterat av"} ${entry.approved_by}`}
               </Typography>
             </Field>
-            <Typography variant="caption" color="text.secondary">
+            <Typography variant="caption" sx={{ color: "text.secondary" }}>
               Loggad av {entry.created_by ?? "okänd"} {new Date(entry.created_at).toLocaleDateString("sv-SE")}
             </Typography>
           </Stack>
@@ -203,21 +203,22 @@ const ChangeEntryDialog: React.FC<{
           <TextField
             label="Rubrik" required autoFocus fullWidth value={form.title}
             placeholder="T.ex. Uppgradering av Momentum"
-            inputProps={{ maxLength: 255 }}
             onChange={(e) => set("title", e.target.value)}
+            slotProps={{ htmlInput: { maxLength: 255 } }}
           />
           <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
             <TextField
               label="Datum och tid, start" type="datetime-local" required fullWidth
-              InputLabelProps={{ shrink: true }} value={form.starts_at}
-              onChange={(e) => set("starts_at", e.target.value)}
+              value={form.starts_at} onChange={(e) => set("starts_at", e.target.value)}
+              slotProps={{ inputLabel: { shrink: true } }}
             />
             <TextField
-              label="Datum och tid, slut (valfritt)" type="datetime-local" fullWidth
-              InputLabelProps={{ shrink: true }} value={form.ends_at ?? ""}
-              inputProps={{ min: form.starts_at }}
+              label="Datum och tid, slut (valfritt)"
+              type="datetime-local"
+              fullWidth
+              value={form.ends_at ?? ""}
               onChange={(e) => set("ends_at", e.target.value || null)}
-            />
+              slotProps={{ htmlInput: { min: form.starts_at }, inputLabel: { shrink: true } }} />
           </Stack>
 
           {hasConflict && (
@@ -241,7 +242,7 @@ const ChangeEntryDialog: React.FC<{
             </Alert>
           )}
 
-          <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems={{ md: "flex-start" }}>
+          <Stack direction={{ xs: "column", md: "row" }} spacing={2} sx={{ alignItems: { md: "flex-start" } }}>
             <TextField
               select label="Typ av förändring" value={form.change_type} sx={{ minWidth: 180 }}
               onChange={(e) => set("change_type", e.target.value as ChangeType)}
@@ -275,9 +276,9 @@ const ChangeEntryDialog: React.FC<{
             getOptionLabel={(n) => n.name}
             isOptionEqualToValue={(a, b) => a.id === b.id}
             onChange={(_e, value) => set("node_ids", value.map((n) => n.id))}
-            renderTags={(value, getTagProps) =>
+            renderValue={(value, getItemProps) =>
               value.map((n, index) => {
-                const { key, ...tagProps } = getTagProps({ index });
+                const { key, ...tagProps } = getItemProps({ index });
                 return (
                   <Chip
                     key={key} size="small" variant="outlined" label={n.name} {...tagProps}
@@ -307,7 +308,7 @@ const ChangeEntryDialog: React.FC<{
           <Box>
             <Typography variant="subtitle2">Följande bör meddelas</Typography>
             {departments.length === 0 ? (
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" sx={{ color: "text.secondary" }}>
                 Inga avdelningar att välja – hämta katalogen från Entra ID under Användare.
               </Typography>
             ) : (
@@ -366,8 +367,8 @@ const ChangeEntryDialog: React.FC<{
             </TextField>
             <TextField
               label="Godkänt av" fullWidth value={form.approved_by}
-              inputProps={{ maxLength: 255 }}
               onChange={(e) => set("approved_by", e.target.value)}
+              slotProps={{ htmlInput: { maxLength: 255 } }}
             />
           </Stack>
 
@@ -390,7 +391,7 @@ const ChangeEntryDialog: React.FC<{
       </DialogContent>
       <DialogActions>
         {entry && !confirmRemove && <Button color="inherit" onClick={() => setConfirmRemove(true)}>Ta bort</Button>}
-        <Box flex={1} />
+        <Box sx={{ flex: 1 }} />
         <Button onClick={onClose}>Avbryt</Button>
         <Tooltip title={problem ?? ""}>
           <span>

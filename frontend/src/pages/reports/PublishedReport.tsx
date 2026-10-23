@@ -73,8 +73,8 @@ const PublishedReport: React.FC = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Stack direction="row" alignItems="center" spacing={1} mb={1} flexWrap="wrap" useFlexGap>
-        <Typography variant="h4" fontWeight={700}>{published.name}</Typography>
+      <Stack direction="row" spacing={1} useFlexGap sx={{ alignItems: "center", mb: 1, flexWrap: "wrap" }}>
+        <Typography variant="h4" sx={{ fontWeight: 700 }}>{published.name}</Typography>
         <Chip size="small" label={publishedDate(published.published_at)} />
         <Stack direction="row" spacing={1} sx={{ ml: "auto" }}>
           {published.survey_id && (
@@ -113,7 +113,7 @@ const PublishedReport: React.FC = () => {
         </Stack>
       </Stack>
 
-      <Typography variant="body2" color="text.secondary" gutterBottom>
+      <Typography variant="body2" gutterBottom sx={{ color: "text.secondary" }}>
         {published.survey_title} — {report.matching_count} av {report.answered_count} inkomna svar,
         publicerad {publishedDate(published.published_at)}
         {published.published_by && ` av ${published.published_by}`}

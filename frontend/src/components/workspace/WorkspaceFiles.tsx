@@ -84,7 +84,7 @@ const WorkspaceFiles: React.FC<Props> = ({ workspaceId, canEdit }) => {
 
       {canEdit && (
         <Box sx={{ mb: 2 }}>
-          <Stack direction={{ xs: "column", md: "row" }} spacing={1.5} alignItems={{ md: "center" }}>
+          <Stack direction={{ xs: "column", md: "row" }} spacing={1.5} sx={{ alignItems: { md: "center" } }}>
             <TextField
               size="small"
               label="Titel"
@@ -116,14 +116,14 @@ const WorkspaceFiles: React.FC<Props> = ({ workspaceId, canEdit }) => {
               Lägg till länk
             </Button>
           </Stack>
-          <Typography variant="caption" color="text.secondary">
+          <Typography variant="caption" sx={{ color: "text.secondary" }}>
             Länka till dokument som förvaltas någon annanstans, t.ex. i SharePoint, så att det inte uppstår inaktuella kopior.
           </Typography>
         </Box>
       )}
 
       {UPLOADS_ENABLED && canEdit && (
-        <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5} sx={{ mb: 2 }} alignItems="center">
+        <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5} sx={{ alignItems: "center", mb: 2 }}>
           <TextField
             size="small"
             label="Beskrivning (valfritt)"
@@ -145,7 +145,7 @@ const WorkspaceFiles: React.FC<Props> = ({ workspaceId, canEdit }) => {
             hidden
             onChange={(e) => handlePick(e.target.files?.[0])}
           />
-          <Typography variant="caption" color="text.secondary">Max {MAX_MB} MB per fil</Typography>
+          <Typography variant="caption" sx={{ color: "text.secondary" }}>Max {MAX_MB} MB per fil</Typography>
         </Stack>
       )}
       {upload.isPending && <LinearProgress sx={{ mb: 2 }} />}
@@ -164,7 +164,7 @@ const WorkspaceFiles: React.FC<Props> = ({ workspaceId, canEdit }) => {
           {files.map((f) => (
             <TableRow key={f.id} hover>
               <TableCell>
-                <Stack direction="row" spacing={1} alignItems="center">
+                <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                   {f.url
                     ? <LinkIcon fontSize="small" color="action" />
                     : <InsertDriveFileOutlinedIcon fontSize="small" color="action" />}
@@ -172,11 +172,11 @@ const WorkspaceFiles: React.FC<Props> = ({ workspaceId, canEdit }) => {
                 </Stack>
               </TableCell>
               <TableCell>
-                <Typography variant="body2" color="text.secondary">{f.description || "—"}</Typography>
+                <Typography variant="body2" sx={{ color: "text.secondary" }}>{f.description || "—"}</Typography>
               </TableCell>
               <TableCell>{f.url ? "—" : formatSize(f.size_bytes)}</TableCell>
               <TableCell>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" sx={{ color: "text.secondary" }}>
                   {new Date(f.uploaded_at).toLocaleDateString("sv-SE")}
                   {f.uploaded_by ? ` · ${f.uploaded_by}` : ""}
                 </Typography>

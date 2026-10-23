@@ -32,7 +32,7 @@ const NodeAccessDialog: React.FC<{ nodeId: string; onClose: () => void }> = ({ n
         {data && (
           <>
             {data.grants.length === 0 ? (
-              <Typography color="text.secondary" sx={{ py: 2 }}>{t("access.nodeDialog.empty")}</Typography>
+              <Typography sx={{ color: "text.secondary", py: 2 }}>{t("access.nodeDialog.empty")}</Typography>
             ) : (
               <Table size="small">
                 <TableHead>
@@ -55,7 +55,7 @@ const NodeAccessDialog: React.FC<{ nodeId: string; onClose: () => void }> = ({ n
                       <TableCell>
                         <Typography variant="body2">{viaLabel(r, t)}</Typography>
                         {r.via !== "node" && (
-                          <Typography variant="caption" color="text.secondary">{scopeLabel(r.grant, t)}</Typography>
+                          <Typography variant="caption" sx={{ color: "text.secondary" }}>{scopeLabel(r.grant, t)}</Typography>
                         )}
                       </TableCell>
                       {isAdmin && (
@@ -79,8 +79,8 @@ const NodeAccessDialog: React.FC<{ nodeId: string; onClose: () => void }> = ({ n
               </Table>
             )}
             <Box sx={{ mt: 2 }}>
-              <Typography variant="caption" color="text.secondary">{t("access.nodeDialog.admins")}:</Typography>
-              <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap sx={{ mt: 0.5 }}>
+              <Typography variant="caption" sx={{ color: "text.secondary" }}>{t("access.nodeDialog.admins")}:</Typography>
+              <Stack direction="row" spacing={0.5} useFlexGap sx={{ flexWrap: "wrap", mt: 0.5 }}>
                 {data.admins.map((a) => <Chip key={a.id} size="small" label={a.name} />)}
               </Stack>
             </Box>

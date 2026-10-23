@@ -20,7 +20,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 import AddLinkIcon from "@mui/icons-material/AddLink";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -227,8 +227,8 @@ const CreateNode: React.FC = () => {
 
   return (
     <Box sx={{ p: 3, maxWidth: 800, mx: "auto" }}>
-      <Typography variant="h5" mb={0.5}>{t("createNode.title")}</Typography>
-      <Typography variant="body2" color="text.secondary" mb={3}>
+      <Typography variant="h5" sx={{ mb: 0.5 }}>{t("createNode.title")}</Typography>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 3 }}>
         {t("createNode.subtitle")}
       </Typography>
 
@@ -249,8 +249,8 @@ const CreateNode: React.FC = () => {
       {/* ── Node type selector ── */}
       <Card sx={{ mb: 2 }}>
         <CardContent>
-          <Typography variant="subtitle2" mb={1.5}>{t("common.type")}</Typography>
-          <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+          <Typography variant="subtitle2" sx={{ mb: 1.5 }}>{t("common.type")}</Typography>
+          <Stack direction="row" spacing={1} useFlexGap sx={{ flexWrap: "wrap" }}>
             {NODE_TYPES.filter((nt) => typeAccess[nt] === "edit").map((nt) => (
               <Chip
                 key={nt}
@@ -266,7 +266,7 @@ const CreateNode: React.FC = () => {
               />
             ))}
           </Stack>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 1.5, fontStyle: "italic", fontSize: 12 }}>
+          <Typography variant="body2" sx={{ color: "text.secondary", mt: 1.5, fontStyle: "italic", fontSize: 12 }}>
             {t(`home.definitions.${DEFINITION_KEYS[nodeType]}`)}
           </Typography>
         </CardContent>
@@ -275,7 +275,7 @@ const CreateNode: React.FC = () => {
       {/* ── Core fields ── */}
       <Card sx={{ mb: 2 }}>
         <CardContent>
-          <Typography variant="subtitle2" mb={1.5}>{t("createNode.details")}</Typography>
+          <Typography variant="subtitle2" sx={{ mb: 1.5 }}>{t("createNode.details")}</Typography>
 
           <TextField
             fullWidth size="small" label={t("common.name")} required
@@ -291,7 +291,7 @@ const CreateNode: React.FC = () => {
           {attrFields.length > 0 && (
             <>
               <Divider sx={{ my: 1.5 }} />
-              <Typography variant="caption" color="text.secondary" mb={1} display="block">
+              <Typography variant="caption" sx={{ color: "text.secondary", mb: 1, display: "block" }}>
                 {t("createNode.attributes")}
               </Typography>
               <Stack spacing={1.5}>
@@ -311,7 +311,7 @@ const CreateNode: React.FC = () => {
           {nodeType === "Process" && (
             <>
               <Divider sx={{ my: 1.5 }} />
-              <Typography variant="caption" color="text.secondary" mb={1} display="block">
+              <Typography variant="caption" sx={{ color: "text.secondary", mb: 1, display: "block" }}>
                 {t("createNode.parentProcess")}
               </Typography>
               <Autocomplete
@@ -324,7 +324,7 @@ const CreateNode: React.FC = () => {
                 isOptionEqualToValue={(a, b) => a.id === b.id}
                 renderOption={(props, option) => (
                   <Box component="li" {...props} key={option.id}>
-                    <Stack direction="row" spacing={1} alignItems="center">
+                    <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                       <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: NODE_COLORS.Process, flexShrink: 0 }} />
                       <Typography variant="body2">{option.name}</Typography>
                     </Stack>
@@ -342,8 +342,8 @@ const CreateNode: React.FC = () => {
       {/* ── Optional connections ── */}
       <Card sx={{ mb: 3 }}>
         <CardContent>
-          <Stack direction="row" alignItems="center" justifyContent="space-between" mb={1}>
-            <Stack direction="row" spacing={1} alignItems="center">
+          <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between", mb: 1 }}>
+            <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
               <AddLinkIcon sx={{ color: "primary.main", fontSize: 20 }} />
               <Typography variant="subtitle2">{t("createNode.connectionsTitle")}</Typography>
             </Stack>
@@ -358,7 +358,7 @@ const CreateNode: React.FC = () => {
           </Stack>
 
           {connections.length === 0 && (
-            <Typography variant="body2" color="text.secondary" sx={{ py: 1 }}>
+            <Typography variant="body2" sx={{ color: "text.secondary", py: 1 }}>
               {t("createNode.noConnections")}
             </Typography>
           )}
@@ -373,7 +373,7 @@ const CreateNode: React.FC = () => {
               const newNodeLabel = name.trim() || t(`nodeTypes.${nodeType}`);
               return (
                 <Paper key={conn.id} variant="outlined" sx={{ p: 1.5 }}>
-                  <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5} alignItems={{ sm: "center" }}>
+                  <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5} sx={{ alignItems: { sm: "center" } }}>
                     {/* Direction */}
                     <FormControl size="small" sx={{ minWidth: 100 }}>
                       <InputLabel>{t("createNode.direction")}</InputLabel>
@@ -409,7 +409,7 @@ const CreateNode: React.FC = () => {
                       isOptionEqualToValue={(a, b) => a.id === b.id}
                       renderOption={(props, option) => (
                         <Box component="li" {...props} key={option.id}>
-                          <Stack direction="row" spacing={1} alignItems="center">
+                          <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                             <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: NODE_COLORS[option.type], flexShrink: 0 }} />
                             <Typography variant="body2">{option.name}</Typography>
                           </Stack>
@@ -430,7 +430,7 @@ const CreateNode: React.FC = () => {
                       >
                         {edgeOptions.map((et) => (
                           <MenuItem key={et} value={et}>
-                            <Stack direction="row" spacing={1} alignItems="center">
+                            <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                               <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: EDGE_STYLES[et]?.color, flexShrink: 0 }} />
                               <span>{t(`edgeTypes.${et}`)}</span>
                             </Stack>

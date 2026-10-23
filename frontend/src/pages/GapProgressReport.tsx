@@ -111,15 +111,17 @@ const GapProgressReport: React.FC = () => {
     return <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}><CircularProgress /></Box>;
   }
   if (!gapData || !summary) {
-    return <Box p={3}><Alert severity="error">Kunde inte ladda data</Alert></Box>;
+    return (
+      <Box sx={{ p: 3 }}><Alert severity="error">Kunde inte ladda data</Alert></Box>
+    );
   }
 
   return (
     <Box sx={{ py: 4, px: { xs: 2, md: 3 }, maxWidth: 1100, mx: "auto" }}>
-      <Typography variant="h4" fontWeight={700} gutterBottom>
+      <Typography variant="h4" gutterBottom sx={{ fontWeight: 700 }}>
         <ReportTitle fallback="GAP-analys – Uppgiftsprogress" />
       </Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 4 }}>
         Realtidsläge för arbetet med att stänga gapen. Uppdateras automatiskt när uppgifter skapas och markeras som klara.
         Procenten viktas efter uppgifternas omfattning (liten 1, medel 2, stor 3).
       </Typography>
@@ -141,9 +143,9 @@ const GapProgressReport: React.FC = () => {
       {/* Overall progress bar */}
       {(totals?.taskTotal ?? 0) > 0 && (
         <Box sx={{ mb: 4 }}>
-          <Stack direction="row" justifyContent="space-between" sx={{ mb: 0.5 }}>
-            <Typography variant="body2" fontWeight={600}>Samlad uppgiftsprogress</Typography>
-            <Typography variant="body2" color="text.secondary">{totals?.taskDone}/{totals?.taskActive} klara</Typography>
+          <Stack direction="row" sx={{ justifyContent: "space-between", mb: 0.5 }}>
+            <Typography variant="body2" sx={{ fontWeight: 600 }}>Samlad uppgiftsprogress</Typography>
+            <Typography variant="body2" sx={{ color: "text.secondary" }}>{totals?.taskDone}/{totals?.taskActive} klara</Typography>
           </Stack>
           <LinearProgress
             variant="determinate"
@@ -157,14 +159,14 @@ const GapProgressReport: React.FC = () => {
       <Divider sx={{ mb: 4 }} />
 
       {/* Domain breakdown */}
-      <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>Progress per domän</Typography>
+      <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>Progress per domän</Typography>
       <Stack spacing={2} sx={{ mb: 5 }}>
         {domainStats.map((d) => (
           <Paper key={d.domain} variant="outlined" sx={{ p: 2 }}>
-            <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
-              <Typography fontWeight={600}>{d.domain}</Typography>
-              <Stack direction="row" spacing={1.5} alignItems="center">
-                <Typography variant="caption" color="text.secondary">
+            <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center", mb: 1 }}>
+              <Typography sx={{ fontWeight: 600 }}>{d.domain}</Typography>
+              <Stack direction="row" spacing={1.5} sx={{ alignItems: "center" }}>
+                <Typography variant="caption" sx={{ color: "text.secondary" }}>
                   {d.withTasks}/{d.items} poster med uppgifter
                 </Typography>
                 {d.taskTotal > 0 && (
@@ -184,7 +186,7 @@ const GapProgressReport: React.FC = () => {
                 sx={{ height: 8, borderRadius: 4 }}
               />
             ) : (
-              <Typography variant="caption" color="text.disabled" sx={{ display: "block", textAlign: "center", py: 0.5 }}>
+              <Typography variant="caption" sx={{ color: "text.disabled", display: "block", textAlign: "center", py: 0.5 }}>
                 Inga uppgifter knutna ännu
               </Typography>
             )}
@@ -195,7 +197,7 @@ const GapProgressReport: React.FC = () => {
       <Divider sx={{ mb: 4 }} />
 
       {/* Item-level table */}
-      <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>Poster med uppgifter</Typography>
+      <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>Poster med uppgifter</Typography>
       {itemStats.filter((x) => x.s.total > 0).length === 0 ? (
         <Alert severity="info">Inga uppgifter har skapats ännu. Öppna GAP-analysen och lägg till uppgifter på enskilda gap-poster.</Alert>
       ) : (
@@ -218,20 +220,20 @@ const GapProgressReport: React.FC = () => {
                 .map(({ item, s, active, progress }) => (
                   <TableRow key={item.id} sx={{ "&:last-child td": { borderBottom: 0 } }}>
                     <TableCell>
-                      <Typography variant="body2" fontWeight={600}>{item.objekt}</Typography>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>{item.objekt}</Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography variant="caption" color="text.secondary">{item.domain}</Typography>
+                      <Typography variant="caption" sx={{ color: "text.secondary" }}>{item.domain}</Typography>
                     </TableCell>
                     <TableCell>
                       {item.prioritet && (
-                        <Typography variant="caption" fontWeight={700} sx={{ color: PRIORITET_COLOR[item.prioritet] }}>
+                        <Typography variant="caption" sx={{ fontWeight: 700, color: PRIORITET_COLOR[item.prioritet] }}>
                           {item.prioritet === "HOG" ? "HÖG" : item.prioritet}
                         </Typography>
                       )}
                     </TableCell>
                     <TableCell>
-                      <Stack direction="row" alignItems="center" spacing={1}>
+                      <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                         <LinearProgress
                           variant="determinate"
                           value={progress}
@@ -242,7 +244,7 @@ const GapProgressReport: React.FC = () => {
                       </Stack>
                     </TableCell>
                     <TableCell align="center">
-                      <Stack direction="row" justifyContent="center" spacing={0.5}>
+                      <Stack direction="row" spacing={0.5} sx={{ justifyContent: "center" }}>
                         {s.done > 0 && <StatusCount icon="done" count={s.done} />}
                         {s.in_progress > 0 && <StatusCount icon="in_progress" count={s.in_progress} />}
                         {s.todo > 0 && <StatusCount icon="todo" count={s.todo} />}
@@ -251,7 +253,7 @@ const GapProgressReport: React.FC = () => {
                     </TableCell>
                     <TableCell>
                       {s.last_activity ? (
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography variant="caption" sx={{ color: "text.secondary" }}>
                           {new Date(s.last_activity).toLocaleDateString("sv-SE")}
                         </Typography>
                       ) : "—"}
@@ -279,18 +281,18 @@ const SummaryCard: React.FC<{
     variant="outlined"
     sx={{ flex: 1, p: 2, bgcolor: highlight ? "primary.50" : undefined, borderColor: highlight ? "primary.main" : undefined }}
   >
-    <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ textTransform: "uppercase", letterSpacing: 0.5 }}>
+    <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.5 }}>
       {label}
     </Typography>
-    <Typography variant="h4" fontWeight={700} sx={{ color: accent ?? (highlight ? "primary.main" : "text.primary"), lineHeight: 1.2 }}>
+    <Typography variant="h4" sx={{ fontWeight: 700, color: accent ?? (highlight ? "primary.main" : "text.primary"), lineHeight: 1.2 }}>
       {value}
     </Typography>
-    <Typography variant="caption" color="text.secondary">{sub}</Typography>
+    <Typography variant="caption" sx={{ color: "text.secondary" }}>{sub}</Typography>
   </Paper>
 );
 
 const StatusCount: React.FC<{ icon: string; count: number }> = ({ icon, count }) => (
-  <Stack direction="row" alignItems="center" spacing={0.25}>
+  <Stack direction="row" spacing={0.25} sx={{ alignItems: "center" }}>
     <StatusIcon status={icon} />
     <Typography variant="caption" sx={{ color: STATUS_COLORS[icon], fontWeight: 600 }}>{count}</Typography>
   </Stack>

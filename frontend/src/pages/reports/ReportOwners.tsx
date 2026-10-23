@@ -34,9 +34,9 @@ const ReportOwners: React.FC = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom><ReportTitle fallback={t("reports.owners.title")} /></Typography>
-      <Typography variant="body2" color="text.secondary" mb={2}>{t("reports.owners.description")}</Typography>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>{t("reports.owners.description")}</Typography>
 
-      <Stack direction="row" spacing={2} mb={3} alignItems="center">
+      <Stack direction="row" spacing={2} sx={{ mb: 3, alignItems: "center" }}>
         <FormControl size="small" sx={{ minWidth: 200 }}>
           <InputLabel>{t("reports.owners.groupBy")}</InputLabel>
           <Select value={groupBy} label={t("reports.owners.groupBy")} onChange={(e) => setGroupBy(e.target.value as GroupBy)}>
@@ -56,8 +56,8 @@ const ReportOwners: React.FC = () => {
               <TableHead>
                 <TableRow sx={{ bgcolor: "grey.50" }}>
                   <TableCell colSpan={3}>
-                    <Stack direction="row" spacing={1} alignItems="center">
-                      <Typography variant="subtitle2" fontWeight={700}>{g.owner}</Typography>
+                    <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>{g.owner}</Typography>
                       <Chip label={g.apps.length} size="small" />
                     </Stack>
                   </TableCell>
@@ -67,8 +67,12 @@ const ReportOwners: React.FC = () => {
                 {g.apps.map((app) => (
                   <TableRow key={app.id} hover sx={{ cursor: "pointer" }} onClick={() => navigate(`/systems?id=${app.id}`)}>
                     <TableCell><Typography variant="body2">{app.name}</Typography></TableCell>
-                    <TableCell><Typography variant="caption" color="text.secondary">{String(app.attributes?.kategori || "")}</Typography></TableCell>
-                    <TableCell><Typography variant="caption" color="text.secondary">{String(app.attributes?.status || "")}</Typography></TableCell>
+                    <TableCell><Typography variant="caption" sx={{
+                      color: "text.secondary"
+                    }}>{String(app.attributes?.kategori || "")}</Typography></TableCell>
+                    <TableCell><Typography variant="caption" sx={{
+                      color: "text.secondary"
+                    }}>{String(app.attributes?.status || "")}</Typography></TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -84,9 +88,9 @@ const ReportOwners: React.FC = () => {
               <TableHead>
                 <TableRow sx={{ bgcolor: "warning.50" }}>
                   <TableCell colSpan={3}>
-                    <Stack direction="row" spacing={1} alignItems="center">
+                    <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                       <WarningAmberIcon color="warning" fontSize="small" />
-                      <Typography variant="subtitle2" fontWeight={700} color="warning.dark">
+                      <Typography variant="subtitle2" sx={{ fontWeight: 700, color: "warning.dark" }}>
                         {t("reports.owners.unassigned")} ({t("reports.owners.unassignedDesc")})
                       </Typography>
                       <Chip label={unowned.length} size="small" color="warning" />
@@ -98,8 +102,12 @@ const ReportOwners: React.FC = () => {
                 {unowned.map((app) => (
                   <TableRow key={app.id} hover sx={{ cursor: "pointer" }} onClick={() => navigate(`/systems?id=${app.id}`)}>
                     <TableCell><Typography variant="body2">{app.name}</Typography></TableCell>
-                    <TableCell><Typography variant="caption" color="text.secondary">{String(app.attributes?.kategori || "")}</Typography></TableCell>
-                    <TableCell><Typography variant="caption" color="text.secondary">{String(app.attributes?.status || "")}</Typography></TableCell>
+                    <TableCell><Typography variant="caption" sx={{
+                      color: "text.secondary"
+                    }}>{String(app.attributes?.kategori || "")}</Typography></TableCell>
+                    <TableCell><Typography variant="caption" sx={{
+                      color: "text.secondary"
+                    }}>{String(app.attributes?.status || "")}</Typography></TableCell>
                   </TableRow>
                 ))}
               </TableBody>

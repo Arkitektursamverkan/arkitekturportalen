@@ -168,7 +168,9 @@ const TreeItem: React.FC<TreeItemProps> = ({
         )}
         <ListItemText
           primary={
-            <Stack direction="row" alignItems="center" justifyContent="space-between">
+            <Stack
+              direction="row"
+              sx={{ alignItems: "center", justifyContent: "space-between" }}>
               <Typography variant="body2" noWrap sx={{ flexGrow: 1 }}>
                 {node.process.name}
               </Typography>
@@ -432,7 +434,7 @@ const ProcessExplorer: React.FC = () => {
       {/* Left panel — process tree */}
       <Box sx={{ width: 280, borderRight: 1, borderColor: "divider", overflow: "auto", bgcolor: "background.paper" }}>
         <Box sx={{ p: 2, borderBottom: 1, borderColor: "divider" }}>
-          <Typography variant="subtitle2" fontWeight={700}>{t("processExplorer.selectProcess")}</Typography>
+          <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>{t("processExplorer.selectProcess")}</Typography>
         </Box>
         <ListSearchBox value={searchText} onChange={setSearchText} />
         {loadingList ? (
@@ -477,14 +479,14 @@ const ProcessExplorer: React.FC = () => {
             {!selectedId && (
               <Box sx={{ height: "100%", overflowY: "auto", p: 2 }}>
                 <DomainArchitectureTeaser domainKey="business" />
-                <Box display="flex" alignItems="center" justifyContent="center" sx={{ py: 4 }}>
-                  <Typography color="text.secondary">{t("processExplorer.noSelection")}</Typography>
+                <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", py: 4 }}>
+                  <Typography sx={{ color: "text.secondary" }}>{t("processExplorer.noSelection")}</Typography>
                 </Box>
               </Box>
             )}
             {selectedId && loadingGraph && <LoadingSpinner />}
             {selectedId && error && (
-              <Box p={3}><ErrorAlert error={error as Error} /></Box>
+              <Box sx={{ p: 3 }}><ErrorAlert error={error as Error} /></Box>
             )}
             {selectedId && graph && !loadingGraph && flik === "flode" && flöde.flow?.scen && (
               <FlowSceneView
@@ -495,7 +497,7 @@ const ProcessExplorer: React.FC = () => {
             )}
             {selectedId && graph && !loadingGraph && flik === "flode" && !flöde.flow?.scen && (
               <Box sx={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <Typography color="text.secondary">
+                <Typography sx={{ color: "text.secondary" }}>
                   {flöde.isLoading ? t("flowScene.loading") : t("flowScene.none")}
                 </Typography>
               </Box>

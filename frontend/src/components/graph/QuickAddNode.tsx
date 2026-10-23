@@ -267,7 +267,7 @@ const QuickAddNode: React.FC<Props> = ({ anchorNodeId, anchorNodeType, anchorNod
         <DialogTitle>{t("quickAdd.title")}</DialogTitle>
         <DialogContent>
           {anchorNodeName && (
-            <Typography variant="body2" color="text.secondary" mb={2}>
+            <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
               {t("quickAdd.subtitle", { name: anchorNodeName })}
             </Typography>
           )}
@@ -275,22 +275,20 @@ const QuickAddNode: React.FC<Props> = ({ anchorNodeId, anchorNodeType, anchorNod
           {/* Recent connections */}
           {recents.length > 0 && (
             <>
-              <Stack direction="row" alignItems="center" spacing={0.5} mb={1}>
+              <Stack direction="row" spacing={0.5} sx={{ alignItems: "center", mb: 1 }}>
                 <HistoryIcon sx={{ fontSize: 14, color: "text.secondary" }} />
-                <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 600 }}>
                   Senaste kopplingarna
                 </Typography>
               </Stack>
-              <Stack spacing={0.25} mb={1}>
+              <Stack spacing={0.25} sx={{ mb: 1 }}>
                 {recents.map((r, i) => (
                   <Stack
                     key={i}
                     direction="row"
-                    alignItems="center"
                     spacing={1}
-                    sx={{ cursor: "pointer", borderRadius: 1, px: 0.5, "&:hover": { bgcolor: "action.hover" } }}
                     onClick={() => setSelectedRecents((prev) => { const next = new Set(prev); if (next.has(i)) next.delete(i); else next.add(i); return next; })}
-                  >
+                    sx={{ alignItems: "center", cursor: "pointer", borderRadius: 1, px: 0.5, "&:hover": { bgcolor: "action.hover" } }}>
                     <Checkbox
                       size="small"
                       checked={selectedRecents.has(i)}
@@ -329,8 +327,8 @@ const QuickAddNode: React.FC<Props> = ({ anchorNodeId, anchorNodeType, anchorNod
           )}
 
           {/* Step 1: Pick connection type */}
-          <Typography variant="subtitle2" mb={1}>{t("quickAdd.selectType")}</Typography>
-          <Stack direction="row" flexWrap="wrap" useFlexGap spacing={1} mb={2}>
+          <Typography variant="subtitle2" sx={{ mb: 1 }}>{t("quickAdd.selectType")}</Typography>
+          <Stack direction="row" useFlexGap spacing={1} sx={{ flexWrap: "wrap", mb: 2 }}>
             {options.map((opt, i) => (
               <Chip
                 key={i}
@@ -380,12 +378,12 @@ const QuickAddNode: React.FC<Props> = ({ anchorNodeId, anchorNodeType, anchorNod
                   isOptionEqualToValue={(a, b) => a.id === b.id}
                   renderOption={(props, option) => (
                     <Box component="li" {...props} key={option.id}>
-                      <Stack direction="row" spacing={1} alignItems="center">
+                      <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                         <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: NODE_COLORS[option.type], flexShrink: 0 }} />
                         <Box>
                           <Typography variant="body2">{option.name}</Typography>
                           {option.description && (
-                            <Typography variant="caption" color="text.secondary" noWrap sx={{ maxWidth: 300, display: "block" }}>
+                            <Typography variant="caption" noWrap sx={{ color: "text.secondary", maxWidth: 300, display: "block" }}>
                               {option.description}
                             </Typography>
                           )}

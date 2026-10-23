@@ -77,14 +77,14 @@ export const DocumentMetadataEditor: React.FC<Props> = ({ open, onClose, documen
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
       <DialogTitle>Sidfotsmetadata — {title}</DialogTitle>
       <DialogContent>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+        <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
           Fält som visas i PDF-sidfoten. Raderna fördelas växelvis i vänster
           och höger kolumn. Auto-fält (Dokumentnamn, Uppdaterad/genomgången)
           ankrar översta raden och hanteras automatiskt.
         </Typography>
 
         {isLoading ? (
-          <Typography variant="body2" color="text.secondary">Laddar…</Typography>
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>Laddar…</Typography>
         ) : (
           <Stack spacing={1}>
             {entries.map((e, i) => (
@@ -92,7 +92,7 @@ export const DocumentMetadataEditor: React.FC<Props> = ({ open, onClose, documen
                 key={i}
                 direction="row"
                 spacing={1}
-                alignItems="center"
+                sx={{ alignItems: "center" }}
               >
                 <TextField
                   label="Etikett"

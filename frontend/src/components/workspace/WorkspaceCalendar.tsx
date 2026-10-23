@@ -141,8 +141,8 @@ const WorkspaceCalendar: React.FC<Props> = ({ workspaceId, canEdit }) => {
 
   return (
     <Box>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
-        <Stack direction="row" alignItems="center" spacing={1}>
+      <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between", mb: 2 }}>
+        <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
           <IconButton
             size="small"
             aria-label="Föregående månad"
@@ -176,7 +176,7 @@ const WorkspaceCalendar: React.FC<Props> = ({ workspaceId, canEdit }) => {
 
       <Box sx={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 0.5, mb: 1 }}>
         {WEEKDAYS.map((d) => (
-          <Typography key={d} variant="caption" fontWeight={700} color="text.secondary" align="center">
+          <Typography key={d} variant="caption" align="center" sx={{ fontWeight: 700, color: "text.secondary" }}>
             {d}
           </Typography>
         ))}
@@ -202,11 +202,7 @@ const WorkspaceCalendar: React.FC<Props> = ({ workspaceId, canEdit }) => {
                 cursor: canEdit ? "copy" : "default",
               }}
             >
-              <Typography
-                variant="caption"
-                fontWeight={isToday ? 700 : 500}
-                color={isToday ? "primary.main" : "text.secondary"}
-              >
+              <Typography variant="caption" sx={{ color: isToday ? "primary.main" : "text.secondary", fontWeight: isToday ? 700 : 500 }}>
                 {day.getDate()}
               </Typography>
               <Stack spacing={0.25} sx={{ mt: 0.25 }}>
@@ -233,14 +229,14 @@ const WorkspaceCalendar: React.FC<Props> = ({ workspaceId, canEdit }) => {
       </Box>
 
       {canEdit && (
-        <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 1 }}>
+        <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mt: 1 }}>
           Dubbelklicka på en dag för att lägga till en händelse.
         </Typography>
       )}
 
       <Typography variant="subtitle2" sx={{ mt: 3, mb: 1 }}>Kommande</Typography>
       {upcoming.length === 0 ? (
-        <Typography variant="body2" color="text.secondary">Inga kommande händelser.</Typography>
+        <Typography variant="body2" sx={{ color: "text.secondary" }}>Inga kommande händelser.</Typography>
       ) : (
         <Stack spacing={1}>
           {upcoming.map((event) => (
@@ -250,13 +246,13 @@ const WorkspaceCalendar: React.FC<Props> = ({ workspaceId, canEdit }) => {
               sx={{ p: 1.5, cursor: "pointer" }}
               onClick={() => setEditing(event)}
             >
-              <Typography variant="body2" fontWeight={600}>{event.title}</Typography>
-              <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
-                <Typography variant="caption" color="text.secondary">{longLabel(event)}</Typography>
+              <Typography variant="body2" sx={{ fontWeight: 600 }}>{event.title}</Typography>
+              <Stack direction="row" spacing={1} sx={{ alignItems: "center", flexWrap: "wrap" }}>
+                <Typography variant="caption" sx={{ color: "text.secondary" }}>{longLabel(event)}</Typography>
                 {event.location && (
-                  <Stack direction="row" spacing={0.25} alignItems="center">
+                  <Stack direction="row" spacing={0.25} sx={{ alignItems: "center" }}>
                     <PlaceIcon sx={{ fontSize: 13, color: "text.secondary" }} />
-                    <Typography variant="caption" color="text.secondary">{event.location}</Typography>
+                    <Typography variant="caption" sx={{ color: "text.secondary" }}>{event.location}</Typography>
                   </Stack>
                 )}
               </Stack>
@@ -390,19 +386,19 @@ const EventDialog: React.FC<{
               type={allDay ? "date" : "datetime-local"}
               value={starts}
               onChange={(e) => setStarts(e.target.value)}
-              InputLabelProps={{ shrink: true }}
               disabled={!canEdit}
               fullWidth
+              slotProps={{ inputLabel: { shrink: true } }}
             />
             <TextField
               label="Slutar"
               type={allDay ? "date" : "datetime-local"}
               value={ends}
               onChange={(e) => setEnds(e.target.value)}
-              InputLabelProps={{ shrink: true }}
               helperText="Valfritt"
               disabled={!canEdit}
               fullWidth
+              slotProps={{ inputLabel: { shrink: true } }}
             />
           </Stack>
           <TextField
@@ -422,7 +418,7 @@ const EventDialog: React.FC<{
             fullWidth
           />
           {event && (
-            <Typography variant="caption" color="text.secondary">
+            <Typography variant="caption" sx={{ color: "text.secondary" }}>
               Skapad av {event.created_by ?? "okänd"} ·{" "}
               {new Date(event.created_at).toLocaleString("sv-SE")}
             </Typography>

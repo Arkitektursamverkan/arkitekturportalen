@@ -58,16 +58,10 @@ const WorkspaceDetail: React.FC = () => {
         {copy.listTitle}
       </Button>
 
-      <Stack
-        direction={{ xs: "column", sm: "row" }}
-        alignItems={{ sm: "center" }}
-        justifyContent="space-between"
-        sx={{ mt: 1, mb: 2 }}
-        spacing={1}
-      >
+      <Stack direction={{ xs: "column", sm: "row" }} spacing={1} sx={{ alignItems: { sm: "center" }, justifyContent: "space-between", mt: 1, mb: 2 }}>
         <Box>
-          <Stack direction="row" spacing={1} alignItems="center">
-            <Typography variant="h4" fontWeight={700}>{ws.name}</Typography>
+          <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+            <Typography variant="h4" sx={{ fontWeight: 700 }}>{ws.name}</Typography>
             <Chip
               size="small"
               variant="outlined"
@@ -77,11 +71,11 @@ const WorkspaceDetail: React.FC = () => {
             {ws.status === "archived" && <Chip size="small" label="Arkiverat" />}
           </Stack>
           {ws.description && (
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            <Typography variant="body2" sx={{ color: "text.secondary", mt: 0.5 }}>
               {ws.description}
             </Typography>
           )}
-          <Typography variant="caption" color="text.secondary">
+          <Typography variant="caption" sx={{ color: "text.secondary" }}>
             Din roll: {ROLE_LABEL[ws.my_role]}
             {!ws.is_member && " (via behörighet, inte medlemskap)"} · {ws.members.length}{" "}
             {copy.membersNoun}

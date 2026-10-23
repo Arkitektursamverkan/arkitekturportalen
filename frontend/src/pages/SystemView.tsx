@@ -123,7 +123,7 @@ const SystemView: React.FC = () => {
       {/* Left panel */}
       <Box sx={{ width: 260, borderRight: 1, borderColor: "divider", overflow: "auto", bgcolor: "background.paper" }}>
         <Box sx={{ p: 2, borderBottom: 1, borderColor: "divider" }}>
-          <Typography variant="subtitle2" fontWeight={700}>{t("systemView.selectApplication")}</Typography>
+          <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>{t("systemView.selectApplication")}</Typography>
         </Box>
         <ListSearchBox value={searchText} onChange={setSearchText} />
         <Box sx={{ px: 1.5, pb: 1 }}>
@@ -170,7 +170,9 @@ const SystemView: React.FC = () => {
               >
                 <ListItemText
                   primary={
-                    <Stack direction="row" alignItems="center" justifyContent="space-between">
+                    <Stack
+                      direction="row"
+                      sx={{ alignItems: "center", justifyContent: "space-between" }}>
                       <Typography variant="body2" noWrap sx={{ flexGrow: 1 }}>{a.name}</Typography>
                       {isDecommissioned(a.attributes) && (
                         <Chip label="Avvecklat" size="small" color="warning" variant="outlined" sx={{ height: 18, fontSize: 10, ml: 0.5 }} />
@@ -189,7 +191,7 @@ const SystemView: React.FC = () => {
               </ListItemButton>
             ))}
             {visibleApps.length === 0 && (
-              <Typography variant="body2" color="text.secondary" sx={{ px: 2, py: 3, textAlign: "center" }}>
+              <Typography variant="body2" sx={{ color: "text.secondary", px: 2, py: 3, textAlign: "center" }}>
                 Inga applikationer matchar filtret.
               </Typography>
             )}
@@ -204,13 +206,13 @@ const SystemView: React.FC = () => {
             {!selectedId && (
               <Box sx={{ height: "100%", overflowY: "auto", p: 2 }}>
                 <DomainArchitectureTeaser domainKey="application" />
-                <Box display="flex" alignItems="center" justifyContent="center" sx={{ py: 4 }}>
-                  <Typography color="text.secondary">{t("systemView.noSelection")}</Typography>
+                <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", py: 4 }}>
+                  <Typography sx={{ color: "text.secondary" }}>{t("systemView.noSelection")}</Typography>
                 </Box>
               </Box>
             )}
             {selectedId && loadingGraph && <LoadingSpinner />}
-            {selectedId && error && <Box p={3}><ErrorAlert error={error as Error} /></Box>}
+            {selectedId && error && <Box sx={{ p: 3 }}><ErrorAlert error={error as Error} /></Box>}
             {selectedId && flik === "systemprocesser" && <SystemProcessesTab flows={systemprocesser} />}
             {selectedId && graph && !loadingGraph && flik === "graf" && (
               <>

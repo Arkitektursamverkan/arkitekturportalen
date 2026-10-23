@@ -82,7 +82,7 @@ const UserManagement: React.FC = () => {
 
   return (
     <Box sx={{ p: 3, maxWidth: 1200, mx: "auto" }}>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
+      <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between", mb: 2 }}>
         <Typography variant="h4" component="h1" sx={{ fontWeight: 600 }}>
           Användare
         </Typography>
@@ -99,7 +99,7 @@ const UserManagement: React.FC = () => {
           </Button>
         </Stack>
       </Stack>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 3 }}>
         Lista över personer som loggat in i appen, konton som förberetts från systemrollerna,
         samt lokala konton som skapats här.
         Välj roll i menyn: Användare (läsa), Superanvändare (skapa/redigera objekt och kopplingar),
@@ -153,7 +153,7 @@ const UserManagement: React.FC = () => {
                 return (
                   <TableRow key={u.id} hover>
                     <TableCell>
-                      <Stack direction="row" alignItems="center" spacing={1}>
+                      <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                         <Typography variant="body2">{u.name}</Typography>
                         {isMe && (
                           <Chip label="Du" size="small" variant="outlined" sx={{ height: 18, fontSize: 10 }} />
@@ -161,7 +161,7 @@ const UserManagement: React.FC = () => {
                       </Stack>
                     </TableCell>
                     <TableCell>
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography variant="body2" sx={{ color: "text.secondary" }}>
                         {u.email}
                       </Typography>
                     </TableCell>
@@ -205,14 +205,14 @@ const UserManagement: React.FC = () => {
                       {role === "admin" ? (
                         <Chip label="Full åtkomst" size="small" variant="outlined" />
                       ) : (
-                        <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
+                        <Stack direction="row" spacing={0.5} useFlexGap sx={{ flexWrap: "wrap" }}>
                           {groupsOf(u.id).map((g) => <Chip key={g.id} label={g.name} size="small" variant="outlined" />)}
-                          {groupsOf(u.id).length === 0 && <Typography variant="body2" color="text.secondary">–</Typography>}
+                          {groupsOf(u.id).length === 0 && <Typography variant="body2" sx={{ color: "text.secondary" }}>–</Typography>}
                         </Stack>
                       )}
                     </TableCell>
                     <TableCell>
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography variant="body2" sx={{ color: "text.secondary" }}>
                         {u.last_login_at ? new Date(u.last_login_at).toLocaleString("sv-SE") : "–"}
                       </Typography>
                     </TableCell>

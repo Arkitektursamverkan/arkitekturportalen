@@ -115,7 +115,7 @@ const GrantDialog: React.FC<Props> = ({ onClose, fixedNode }) => {
               <MenuItem key={r.id} value={r.id}>
                 <Stack>
                   <Typography variant="body2">{r.name}</Typography>
-                  {r.description && <Typography variant="caption" color="text.secondary">{r.description}</Typography>}
+                  {r.description && <Typography variant="caption" sx={{ color: "text.secondary" }}>{r.description}</Typography>}
                 </Stack>
               </MenuItem>
             ))}

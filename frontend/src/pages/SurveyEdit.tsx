@@ -368,10 +368,10 @@ const SurveyEdit: React.FC = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
+      <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between", mb: 2 }}>
         <Box>
-          <Stack direction="row" alignItems="center" spacing={1}>
-            <Typography variant="h4" fontWeight={700}>{survey.title}</Typography>
+          <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+            <Typography variant="h4" sx={{ fontWeight: 700 }}>{survey.title}</Typography>
             <Chip
               size="small"
               label={
@@ -443,12 +443,12 @@ const SurveyEdit: React.FC = () => {
             type="date"
             value={dueDate}
             onChange={(e) => setDueDate(e.target.value)}
-            InputLabelProps={{ shrink: true }}
             helperText="Valfritt bäst före-datum — visas för mottagarna. Enkäten stängs inte automatiskt."
             sx={{ maxWidth: 300 }}
+            slotProps={{ inputLabel: { shrink: true } }}
           />
           {isRandom ? (
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: "text.secondary" }}>
               Slumpenkät: när enkäten är öppen erbjuds inloggade användare (i snitt var 3:e inloggning) att svara
               på frågorna om en slumpmässigt vald aktiv applikation. Samma användare får aldrig samma applikation två gånger.
             </Typography>
@@ -464,7 +464,7 @@ const SurveyEdit: React.FC = () => {
               />
             </Box>
           ) : (
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: "text.secondary" }}>
               Riktar sig till attributet <strong>{survey.target_attribute_key}</strong> på noder av typen <strong>{survey.target_node_type}</strong>.
             </Typography>
           )}
@@ -497,7 +497,7 @@ const SurveyEdit: React.FC = () => {
       </Paper>
 
       <Paper variant="outlined" sx={{ p: 3, mb: 3 }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
+        <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center", mb: 1 }}>
           <Typography variant="h6">Frågor</Typography>
           {canEditQuestions && <Button startIcon={<AddIcon />} onClick={addQuestion}>Lägg till fråga</Button>}
         </Stack>
@@ -522,7 +522,7 @@ const SurveyEdit: React.FC = () => {
             />
           ))}
           {questions.length === 0 && (
-            <Typography variant="body2" color="text.secondary">Inga frågor ännu.</Typography>
+            <Typography variant="body2" sx={{ color: "text.secondary" }}>Inga frågor ännu.</Typography>
           )}
         </Stack>
         {canEditQuestions && questionsChanged && (
@@ -541,7 +541,7 @@ const SurveyEdit: React.FC = () => {
       />
 
       <Paper variant="outlined" sx={{ p: 3, mb: 3 }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
+        <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center", mb: 1 }}>
           <Typography variant="h6">{isRandom ? "Slumpade svar" : "Mottagare"}</Typography>
           <Stack direction="row" spacing={1}>
             {!isRandom && (
@@ -605,21 +605,23 @@ const SurveyEdit: React.FC = () => {
         )}
 
         {isRandom && (
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
             Svarsrader skapas automatiskt när inloggade användare erbjuds enkäten — här ser du vem som fått
             vilken applikation och vilka som har svarat.
           </Typography>
         )}
 
         {!isRandom && responses && responses.length > 0 && (
-          <Stack direction="row" spacing={1} mb={2} alignItems="center">
+          <Stack direction="row" spacing={1} sx={{ mb: 2, alignItems: "center" }}>
             <Chip size="small" color="success" label={`${matched} matchade`} />
             <Chip size="small" color="warning" label={`${ambiguous} tvetydiga`} />
             <Chip size="small" label={`${unmatched} omatchade`} />
             {canLaunch && launchableRows.length > 0 && (
               <>
                 <Divider orientation="vertical" flexItem />
-                <Typography variant="body2" color="text.secondary">{selectedCount} av {launchableRows.length} valda att lansera till</Typography>
+                <Typography variant="body2" sx={{
+                  color: "text.secondary"
+                }}>{selectedCount} av {launchableRows.length} valda att lansera till</Typography>
                 <Button size="small" onClick={selectAll}>Välj alla</Button>
                 <Button size="small" onClick={selectNone}>Välj inga</Button>
               </>
@@ -629,10 +631,10 @@ const SurveyEdit: React.FC = () => {
 
         {canLaunch && recipientGroups.length > 0 && (
           <Box sx={{ mb: 2 }}>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+            <Typography variant="body2" sx={{ color: "text.secondary", mb: 0.5 }}>
               Välj per mottagare (bockar i alla dennes applikationer):
             </Typography>
-            <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+            <Stack direction="row" spacing={1} useFlexGap sx={{ flexWrap: "wrap" }}>
               {recipientGroups.map((g) => {
                 const selectedInGroup = g.ids.filter((rid) => selectedIds.has(rid)).length;
                 const fullySelected = selectedInGroup === g.ids.length;
@@ -677,8 +679,8 @@ const SurveyEdit: React.FC = () => {
                       />
                     </TableCell>
                   )}
-                  <TableCell>{r.node_name ?? <Typography variant="body2" color="text.secondary">Inget objekt</Typography>}</TableCell>
-                  <TableCell><Typography variant="body2" color="text.secondary">{r.raw_target_value ?? "—"}</Typography></TableCell>
+                  <TableCell>{r.node_name ?? <Typography variant="body2" sx={{ color: "text.secondary" }}>Inget objekt</Typography>}</TableCell>
+                  <TableCell><Typography variant="body2" sx={{ color: "text.secondary" }}>{r.raw_target_value ?? "—"}</Typography></TableCell>
                   <TableCell><Chip size="small" label={MATCH_LABEL[r.match_status]} color={MATCH_COLOR[r.match_status]} /></TableCell>
                   <TableCell>
                     {isAdmin && !isRandom ? (
@@ -749,7 +751,7 @@ const SurveyEdit: React.FC = () => {
       <Dialog open={manualDialogOpen} onClose={() => setManualDialogOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>Lägg till mottagare manuellt</DialogTitle>
         <DialogContent>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
             Koppla en person direkt till ett {NODE_TYPE_LABEL[targetNodeType as keyof typeof NODE_TYPE_LABEL]?.toLowerCase() ?? "objekt"} —
             t.ex. när det saknas ägare/förvaltare att matcha mot, eller den automatiska matchningen valde fel person.
             Väljer du inget objekt blir det ett generellt utskick utan objektkoppling.
@@ -823,7 +825,7 @@ const SurveyEdit: React.FC = () => {
       <Dialog open={emailListOpen} onClose={() => setEmailListOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>E-postadresser till mottagarna</DialogTitle>
         <DialogContent>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
             {emailList.length === 1 ? "1 adress" : `${emailList.length} adresser`}, separerade med
             semikolon — klistra in rakt i Till-fältet i Outlook. Bara de som fått enkäten utskickad
             kommer med, och varje person listas en gång även om hen har flera applikationer.
@@ -850,8 +852,8 @@ const SurveyEdit: React.FC = () => {
             maxRows={12}
             fullWidth
             value={emailListText}
-            InputProps={{ readOnly: true }}
             onFocus={(e) => e.target.select()}
+            slotProps={{ input: { readOnly: true } }}
           />
 
           {emailCopyState === "copied" && (
@@ -961,7 +963,7 @@ const ReportConditionRow: React.FC<{
   };
 
   return (
-    <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
+    <Stack direction="row" spacing={1} useFlexGap sx={{ alignItems: "center", flexWrap: "wrap" }}>
       <Box sx={{ width: 96 }}>
         {!first && (
           <Select
@@ -1031,7 +1033,7 @@ const ReportSettings: React.FC<{
 
   return (
     <Paper variant="outlined" sx={{ p: 3, mb: 3 }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
+      <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center", mb: 1 }}>
         <Typography variant="h6">Rapporter</Typography>
         {nextFreeSlot && (
           <Button
@@ -1042,7 +1044,7 @@ const ReportSettings: React.FC<{
           </Button>
         )}
       </Stack>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
         Märk frågorna ovan med ett rapportnummer, och ge rapporten namn och urval här.
         Frågorna som urvalet bygger på tas alltid med i rapporten, även omärkta.
         Rapportinställningar går att ändra även efter att enkäten publicerats — till skillnad
@@ -1050,7 +1052,7 @@ const ReportSettings: React.FC<{
       </Typography>
 
       {activeSlots.length === 0 && (
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" sx={{ color: "text.secondary" }}>
           Inga rapporter uppsatta. Frivilligt — en enkät fungerar lika bra utan.
         </Typography>
       )}
@@ -1070,7 +1072,7 @@ const ReportSettings: React.FC<{
 
           return (
             <Paper key={slot} variant="outlined" sx={{ p: 2 }}>
-              <Stack direction="row" spacing={2} alignItems="center" mb={1}>
+              <Stack direction="row" spacing={2} sx={{ alignItems: "center", mb: 1 }}>
                 <Chip size="small" color="primary" label={`Rapport ${slot}`} />
                 <TextField
                   size="small"
@@ -1100,13 +1102,13 @@ const ReportSettings: React.FC<{
                 />
               </Tooltip>
 
-              <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1 }}>
+              <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mb: 1 }}>
                 {included.length === 0
                   ? "Ingen fråga är märkt med den här rapporten ännu."
                   : `Frågor: ${included.map((q) => q.label || "(namnlös)").join(" · ")}`}
               </Typography>
 
-              <Typography variant="caption" color="text.secondary" display="block">
+              <Typography variant="caption" sx={{ color: "text.secondary", display: "block" }}>
                 Urval — ta bara med svar där villkoren stämmer. OCH binder starkare
                 än ELLER, så "A OCH B ELLER C" betyder "(A OCH B) ELLER C".
               </Typography>
@@ -1126,7 +1128,7 @@ const ReportSettings: React.FC<{
                   />
                 ))}
                 {definition.conditions.length === 0 && (
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" sx={{ color: "text.secondary" }}>
                     Inget villkor — samtliga inkomna svar tas med.
                   </Typography>
                 )}
@@ -1205,7 +1207,7 @@ const QuestionRow: React.FC<{
 
   return (
     <Paper variant="outlined" sx={{ p: 2 }}>
-      <Stack direction="row" spacing={2} alignItems="flex-start">
+      <Stack direction="row" spacing={2} sx={{ alignItems: "flex-start" }}>
         <Stack sx={{ flex: 1 }} spacing={1.5}>
           <Stack direction="row" spacing={2}>
             <VariableTextField
@@ -1242,11 +1244,11 @@ const QuestionRow: React.FC<{
 
           {question.type === "multiple_choice" && (
             <Stack spacing={1}>
-              <Typography variant="caption" color="text.secondary">
+              <Typography variant="caption" sx={{ color: "text.secondary" }}>
                 Alternativ — ett per rad
               </Typography>
               {options.map((opt, idx) => (
-                <Stack key={idx} direction="row" spacing={1} alignItems="center">
+                <Stack key={idx} direction="row" spacing={1} sx={{ alignItems: "center" }}>
                   <TextField
                     size="small"
                     fullWidth
@@ -1263,7 +1265,7 @@ const QuestionRow: React.FC<{
                 </Stack>
               ))}
               {options.length === 0 && (
-                <Typography variant="body2" color="text.secondary">Inga alternativ ännu.</Typography>
+                <Typography variant="body2" sx={{ color: "text.secondary" }}>Inga alternativ ännu.</Typography>
               )}
               {!disabled && (
                 <Box>
@@ -1277,11 +1279,11 @@ const QuestionRow: React.FC<{
 
           {question.type === "rating_matrix" && (
             <Stack spacing={1}>
-              <Typography variant="caption" color="text.secondary">
+              <Typography variant="caption" sx={{ color: "text.secondary" }}>
                 Parametrar att gradera — en per rad (t.ex. Användarvänlighet, Funktionalitet)
               </Typography>
               {(question.rows ?? []).map((row, idx) => (
-                <Stack key={idx} direction="row" spacing={1} alignItems="center">
+                <Stack key={idx} direction="row" spacing={1} sx={{ alignItems: "center" }}>
                   <TextField
                     size="small"
                     fullWidth
@@ -1304,7 +1306,7 @@ const QuestionRow: React.FC<{
                 </Stack>
               ))}
               {(question.rows ?? []).length === 0 && (
-                <Typography variant="body2" color="text.secondary">Inga parametrar ännu.</Typography>
+                <Typography variant="body2" sx={{ color: "text.secondary" }}>Inga parametrar ännu.</Typography>
               )}
               {!disabled && (
                 <Box>
@@ -1416,9 +1418,9 @@ const QuestionRow: React.FC<{
           {/* Deliberately not gated on `disabled`: which reports a question
               feeds is about reading the answers, not about what was asked,
               so it stays editable once the survey is collecting. */}
-          <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
+          <Stack direction="row" spacing={1} useFlexGap sx={{ alignItems: "center", flexWrap: "wrap" }}>
             <Tooltip title="Svaren på den här frågan tas med i de rapporter du märker den med. Frivilligt, och kan ändras när som helst.">
-              <Typography variant="caption" color="text.secondary">Ingår i rapport</Typography>
+              <Typography variant="caption" sx={{ color: "text.secondary" }}>Ingår i rapport</Typography>
             </Tooltip>
             {REPORT_SLOTS.map((slot) => {
               const selected = (question.reports ?? []).includes(slot);
@@ -1520,7 +1522,7 @@ const QuestionFlowEditor: React.FC<{
       );
     }
     return (
-      <Stack direction="row" spacing={1} alignItems="center">
+      <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
         <Select
           size="small"
           value={rule.op ?? "eq"}
@@ -1548,13 +1550,13 @@ const QuestionFlowEditor: React.FC<{
     <Box sx={{ pl: 1.5, borderLeft: "2px solid", borderColor: "divider" }}>
       {branchable && (
         <>
-          <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 0.5 }}>
+          <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mb: 0.5 }}>
             Förgrening: styr vilken fråga som visas härnäst utifrån svaret
             {rules.length > 1 ? " — första regeln som matchar används" : ""}
           </Typography>
           <Stack spacing={1} sx={{ mb: 1 }}>
             {rules.map((rule, idx) => (
-              <Stack key={idx} direction="row" spacing={1} alignItems="center">
+              <Stack key={idx} direction="row" spacing={1} sx={{ alignItems: "center" }}>
                 <Typography variant="body2">
                   {question.type === "multiple_choice" && question.allow_multiple
                     ? "Om svaret innehåller"
@@ -1588,7 +1590,7 @@ const QuestionFlowEditor: React.FC<{
           </Stack>
         </>
       )}
-      <Stack direction="row" spacing={1} alignItems="center">
+      <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
         <Typography variant="body2">{rules.length > 0 ? "Övriga svar →" : "Efter denna fråga →"}</Typography>
         <Select
           size="small"

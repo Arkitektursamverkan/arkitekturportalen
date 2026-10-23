@@ -282,8 +282,8 @@ const Connections: React.FC = () => {
 
   return (
     <Box sx={{ p: 3, maxWidth: 1000, mx: "auto" }}>
-      <Typography variant="h5" mb={0.5}>{t("connections.title")}</Typography>
-      <Typography variant="body2" color="text.secondary" mb={2}>
+      <Typography variant="h5" sx={{ mb: 0.5 }}>{t("connections.title")}</Typography>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
         {t("connections.subtitle")}
       </Typography>
 
@@ -297,7 +297,7 @@ const Connections: React.FC = () => {
 
       {/* ── Filters ── */}
       <Paper variant="outlined" sx={{ mb: 2, p: 1.5, borderRadius: 2 }}>
-        <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap" useFlexGap>
+        <Stack direction="row" spacing={2} useFlexGap sx={{ alignItems: "center", flexWrap: "wrap" }}>
           <FilterListIcon fontSize="small" color="action" />
           <Autocomplete
             multiple
@@ -319,10 +319,10 @@ const Connections: React.FC = () => {
                 {t(`nodeTypes.${option}`)}
               </li>
             )}
-            renderTags={(value, getTagProps) =>
+            renderValue={(value, getItemProps) =>
               value.map((option, index) => (
                 <Chip
-                  {...getTagProps({ index })}
+                  {...getItemProps({ index })}
                   key={option}
                   label={t(`nodeTypes.${option}`)}
                   size="small"
@@ -355,10 +355,10 @@ const Connections: React.FC = () => {
                 {t(`edgeTypes.${option}`)}
               </li>
             )}
-            renderTags={(value, getTagProps) =>
+            renderValue={(value, getItemProps) =>
               value.map((option, index) => (
                 <Chip
-                  {...getTagProps({ index })}
+                  {...getItemProps({ index })}
                   key={option}
                   label={t(`edgeTypes.${option}`)}
                   size="small"
@@ -394,10 +394,10 @@ const Connections: React.FC = () => {
                 {option.name}
               </li>
             )}
-            renderTags={(value, getTagProps) =>
+            renderValue={(value, getItemProps) =>
               value.map((option, index) => (
                 <Chip
-                  {...getTagProps({ index })}
+                  {...getItemProps({ index })}
                   key={option.id}
                   label={option.name}
                   size="small"
@@ -417,7 +417,7 @@ const Connections: React.FC = () => {
           )}
         </Stack>
         {hasFilters && (
-          <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: "block" }}>
+          <Typography variant="caption" sx={{ color: "text.secondary", mt: 0.5, display: "block" }}>
             {t("connections.filter.showing", { edges: typeFilteredEdges.length, total: edges.length })}
           </Typography>
         )}
@@ -426,12 +426,12 @@ const Connections: React.FC = () => {
       {tab === 1 && (
         <Box sx={{ flexGrow: 1, position: "relative", height: "calc(100vh - 320px)", minHeight: 400 }}>
           {(loadingNodes || loadingEdges) ? (
-            <Box display="flex" justifyContent="center" alignItems="center" height="100%">
+            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}>
               <CircularProgress />
             </Box>
           ) : graphData.nodes.length === 0 ? (
-            <Box p={4} textAlign="center">
-              <Typography color="text.secondary">
+            <Box sx={{ p: 4, textAlign: "center" }}>
+              <Typography sx={{ color: "text.secondary" }}>
                 {t("connections.noConnections")}
               </Typography>
             </Box>
@@ -452,15 +452,15 @@ const Connections: React.FC = () => {
       {/* ── Create connection ── */}
       <Card sx={{ mb: 2 }}>
         <CardContent>
-          <Stack direction="row" spacing={1} alignItems="center" mb={1.5}>
+          <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 1.5 }}>
             <AddLinkIcon sx={{ color: "primary.main" }} />
-            <Typography variant="h6" fontSize={16} fontWeight={600}>
+            <Typography variant="h6" sx={{ fontSize: 16, fontWeight: 600 }}>
               {t("connections.createSection.title")}
             </Typography>
           </Stack>
           <Divider sx={{ mb: 2.5 }} />
 
-          <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems={{ md: "center" }}>
+          <Stack direction={{ xs: "column", md: "row" }} spacing={2} sx={{ alignItems: { md: "center" } }}>
             {/* Source — filtered to only nodes that have at least one valid target */}
             <NodeAutocomplete
               label={t("connections.createSection.source")}
@@ -485,7 +485,7 @@ const Connections: React.FC = () => {
               >
                 {availableFormEdgeTypes.map((et) => (
                   <MenuItem key={et} value={et}>
-                    <Stack direction="row" spacing={1} alignItems="center">
+                    <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                       <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: EDGE_STYLES[et]?.color, flexShrink: 0 }} />
                       <span>{t(`edgeTypes.${et}`)}</span>
                     </Stack>
@@ -543,11 +543,11 @@ const Connections: React.FC = () => {
       {/* ── Existing connections ── */}
       <Card>
         <CardContent>
-          <Stack direction="row" alignItems="center" justifyContent="space-between" mb={1.5}>
-            <Typography variant="h6" fontSize={16} fontWeight={600}>
+          <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between", mb: 1.5 }}>
+            <Typography variant="h6" sx={{ fontSize: 16, fontWeight: 600 }}>
               {t("connections.listSection.title")}
               {!loadingEdges && (
-                <Typography component="span" variant="body2" color="text.secondary" ml={1}>
+                <Typography component="span" variant="body2" sx={{ color: "text.secondary", ml: 1 }}>
                   ({edges.length})
                 </Typography>
               )}
@@ -563,11 +563,11 @@ const Connections: React.FC = () => {
           <Divider sx={{ mb: 2 }} />
 
           {loadingEdges ? (
-            <Box display="flex" justifyContent="center" p={4}>
+            <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
               <CircularProgress size={28} />
             </Box>
           ) : filteredEdges.length === 0 ? (
-            <Typography color="text.secondary" align="center" py={4}>
+            <Typography align="center" sx={{ color: "text.secondary", py: 4 }}>
               {t("connections.listSection.noData")}
             </Typography>
           ) : (
@@ -682,8 +682,8 @@ function EditableConnectionRow({
       <TableRow>
         <TableCell colSpan={4}>
           <Stack spacing={1.5} sx={{ py: 1 }}>
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Typography variant="caption" color="text.secondary" fontWeight={600}>
+            <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+              <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 600 }}>
                 {editing === "source" ? t("connections.replaceSource") : t("connections.replaceTarget")}
               </Typography>
               <Chip
@@ -694,7 +694,7 @@ function EditableConnectionRow({
               />
               <SwapHorizIcon sx={{ fontSize: 16, color: "text.secondary" }} />
             </Stack>
-            <Stack direction="row" spacing={1} alignItems="center">
+            <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
               <Autocomplete
                 sx={{ flexGrow: 1, minWidth: 220 }}
                 size="small"
@@ -706,7 +706,7 @@ function EditableConnectionRow({
                 isOptionEqualToValue={(a, b) => a.id === b.id}
                 renderOption={(props, option) => (
                   <Box component="li" {...props} key={option.id}>
-                    <Stack direction="row" spacing={1} alignItems="center">
+                    <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                       <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: NODE_COLORS[option.type], flexShrink: 0 }} />
                       <Typography variant="body2">{option.name}</Typography>
                     </Stack>
@@ -737,7 +737,7 @@ function EditableConnectionRow({
   return (
     <TableRow hover>
       <TableCell>
-        <Stack direction="row" spacing={0.5} alignItems="center">
+        <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
           <NodeCell node={src} fallback={edge.source_id} t={t} />
           <IconButton size="small" onClick={() => setEditing("source")} title={t("connections.replaceSource")}>
             <SwapHorizIcon sx={{ fontSize: 14, color: "action.active" }} />
@@ -745,7 +745,7 @@ function EditableConnectionRow({
         </Stack>
       </TableCell>
       <TableCell align="center">
-        <Stack spacing={0.5} alignItems="center">
+        <Stack spacing={0.5} sx={{ alignItems: "center" }}>
           <Tooltip title={t(`edgeTypeDescriptions.${edge.type}`)} placement="top">
             <Chip
               label={t(`edgeTypes.${edge.type}`)}
@@ -766,7 +766,7 @@ function EditableConnectionRow({
         </Stack>
       </TableCell>
       <TableCell>
-        <Stack direction="row" spacing={0.5} alignItems="center">
+        <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
           <NodeCell node={tgt} fallback={edge.target_id} t={t} />
           <IconButton size="small" onClick={() => setEditing("target")} title={t("connections.replaceTarget")}>
             <SwapHorizIcon sx={{ fontSize: 14, color: "action.active" }} />
@@ -808,9 +808,9 @@ function ConnectionGuide() {
   return (
     <Accordion variant="outlined" sx={{ mb: 2 }} disableGutters>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Stack direction="row" spacing={1} alignItems="center">
+        <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
           <InfoOutlinedIcon fontSize="small" color="action" />
-          <Typography variant="body2" fontWeight={600}>{t("connections.guide.title")}</Typography>
+          <Typography variant="body2" sx={{ fontWeight: 600 }}>{t("connections.guide.title")}</Typography>
         </Stack>
       </AccordionSummary>
       <AccordionDetails sx={{ p: 0 }}>
@@ -835,9 +835,9 @@ function ConnectionGuide() {
                     />
                   </TableCell>
                   <TableCell>
-                    <Stack direction="row" spacing={0.75} alignItems="center">
+                    <Stack direction="row" spacing={0.75} sx={{ alignItems: "center" }}>
                       <Box sx={{ width: 20, height: 2, bgcolor: EDGE_STYLES[edgeType]?.color }} />
-                      <Typography variant="body2" fontSize={12}>{t(`edgeTypes.${edgeType}`)}</Typography>
+                      <Typography variant="body2" sx={{ fontSize: 12 }}>{t(`edgeTypes.${edgeType}`)}</Typography>
                     </Stack>
                   </TableCell>
                   <TableCell>
@@ -848,7 +848,7 @@ function ConnectionGuide() {
                     />
                   </TableCell>
                   <TableCell>
-                    <Typography variant="body2" color="text.secondary" fontSize={12}>
+                    <Typography variant="body2" sx={{ color: "text.secondary", fontSize: 12 }}>
                       {t(`edgeTypeDescriptions.${edgeType}`)}
                     </Typography>
                   </TableCell>
@@ -886,7 +886,7 @@ function NodeAutocomplete({
       isOptionEqualToValue={(a, b) => a.id === b.id}
       renderOption={(props, option) => (
         <Box component="li" {...props} key={option.id}>
-          <Stack direction="row" spacing={1} alignItems="center">
+          <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
             <Box
               sx={{
                 width: 10, height: 10, borderRadius: "50%",
@@ -913,17 +913,17 @@ function NodeCell({
 }) {
   if (!node) {
     return (
-      <Typography variant="body2" color="text.disabled" fontFamily="monospace" fontSize={11}>
+      <Typography variant="body2" sx={{ color: "text.disabled", fontFamily: "monospace", fontSize: 11 }}>
         {fallback}
       </Typography>
     );
   }
   return (
-    <Stack direction="row" spacing={0.75} alignItems="center">
+    <Stack direction="row" spacing={0.75} sx={{ alignItems: "center" }}>
       <Box
         sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: NODE_COLORS[node.type], flexShrink: 0 }}
       />
-      <Typography variant="body2" fontWeight={500}>{node.name}</Typography>
+      <Typography variant="body2" sx={{ fontWeight: 500 }}>{node.name}</Typography>
       <Chip
         label={t(`nodeTypes.${node.type}`)}
         size="small"

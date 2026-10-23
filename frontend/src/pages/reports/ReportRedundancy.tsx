@@ -43,14 +43,14 @@ const ReportRedundancy: React.FC = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom><ReportTitle fallback={t("reports.redundancy.title")} /></Typography>
-      <Typography variant="body2" color="text.secondary" mb={2}>{t("reports.redundancy.description")}</Typography>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>{t("reports.redundancy.description")}</Typography>
 
-      <Stack direction="row" spacing={2} mb={3}>
+      <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
         <Chip label={`${groups.length} ${t("reports.redundancy.processesWithRedundancy")}`} color={groups.length > 0 ? "warning" : "success"} />
       </Stack>
 
       {groups.length === 0 ? (
-        <Card><CardContent><Typography color="text.secondary">{t("reports.redundancy.noRedundancy")}</Typography></CardContent></Card>
+        <Card><CardContent><Typography sx={{ color: "text.secondary" }}>{t("reports.redundancy.noRedundancy")}</Typography></CardContent></Card>
       ) : (
         <TableContainer component={Card}>
           <Table size="small">
@@ -64,10 +64,10 @@ const ReportRedundancy: React.FC = () => {
             <TableBody>
               {groups.map((g) => (
                 <TableRow key={g.process.id} hover sx={{ cursor: "pointer" }} onClick={() => navigate(`/processes?id=${g.process.id}`)}>
-                  <TableCell><Typography variant="body2" fontWeight={500}>{g.process.name}</Typography></TableCell>
+                  <TableCell><Typography variant="body2" sx={{ fontWeight: 500 }}>{g.process.name}</Typography></TableCell>
                   <TableCell align="center"><Chip label={g.apps.length} size="small" color="warning" /></TableCell>
                   <TableCell>
-                    <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
+                    <Stack direction="row" spacing={0.5} useFlexGap sx={{ flexWrap: "wrap" }}>
                       {g.apps.map((app) => (
                         <Chip key={app.id} label={app.name} size="small" variant="outlined"
                           onClick={(e) => { e.stopPropagation(); navigate(`/systems?id=${app.id}`); }} />

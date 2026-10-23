@@ -79,16 +79,16 @@ const ReportGDPR: React.FC = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom><ReportTitle fallback={t("reports.gdpr.title")} /></Typography>
-      <Typography variant="body2" color="text.secondary" mb={2}>{t("reports.gdpr.description")}</Typography>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>{t("reports.gdpr.description")}</Typography>
 
       {!hasPersonalData && (
         <Alert severity="info" sx={{ mb: 3 }}>{t("reports.gdpr.hint")}</Alert>
       )}
 
-      <Stack direction="row" spacing={2} mb={3} alignItems="center">
+      <Stack direction="row" spacing={2} sx={{ mb: 3, alignItems: "center" }}>
         <Chip label={`${personalCount} ${t("reports.gdpr.personalData").toLowerCase()}`} color={personalCount > 0 ? "warning" : "default"} />
         <Chip label={`${rows.length} ${t("reports.gdpr.allObjects").toLowerCase()}`} variant="outlined" />
-        <Box flexGrow={1} />
+        <Box sx={{ flexGrow: 1 }} />
         <FormControl size="small" sx={{ minWidth: 200 }}>
           <InputLabel>{t("reports.processSupport.filterLabel")}</InputLabel>
           <Select value={filter} label={t("reports.processSupport.filterLabel")} onChange={(e) => setFilter(e.target.value as "all" | "personal")}>
@@ -114,7 +114,7 @@ const ReportGDPR: React.FC = () => {
             {filtered.map((row) => (
               <TableRow key={row.id} hover sx={{ cursor: "pointer", bgcolor: row.isPersonal ? "warning.50" : undefined }}
                 onClick={() => navigate(`/info-objects?id=${row.id}`)}>
-                <TableCell><Typography variant="body2" fontWeight={500}>{row.name}</Typography></TableCell>
+                <TableCell><Typography variant="body2" sx={{ fontWeight: 500 }}>{row.name}</Typography></TableCell>
                 <TableCell>
                   <Chip label={row.isPersonal ? t("reports.gdpr.yes") : t("reports.gdpr.no")}
                     size="small" color={row.isPersonal ? "warning" : "default"} />
@@ -122,13 +122,13 @@ const ReportGDPR: React.FC = () => {
                 <TableCell><Typography variant="caption">{row.legalBasis || t("reports.gdpr.notSet")}</Typography></TableCell>
                 <TableCell><Typography variant="caption">{row.retentionPeriod || t("reports.gdpr.notSet")}</Typography></TableCell>
                 <TableCell>
-                  <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
+                  <Stack direction="row" spacing={0.5} useFlexGap sx={{ flexWrap: "wrap" }}>
                     {row.apps.map((a) => <Chip key={a.id} label={a.name} size="small" variant="outlined" />)}
-                    {row.apps.length === 0 && <Typography variant="caption" color="text.secondary">—</Typography>}
+                    {row.apps.length === 0 && <Typography variant="caption" sx={{ color: "text.secondary" }}>—</Typography>}
                   </Stack>
                 </TableCell>
                 <TableCell>
-                  <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
+                  <Stack direction="row" spacing={0.5} useFlexGap sx={{ flexWrap: "wrap" }}>
                     {row.purposes.slice(0, 3).map((p) => <Chip key={p} label={p} size="small" variant="outlined" />)}
                     {row.purposes.length > 3 && <Chip label={`+${row.purposes.length - 3}`} size="small" />}
                   </Stack>

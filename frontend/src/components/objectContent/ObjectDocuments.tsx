@@ -70,7 +70,7 @@ const ObjectDocuments: React.FC<{ nodeId: string }> = ({ nodeId }) => {
   };
 
   return (
-    <Box maxWidth={1100}>
+    <Box sx={{ maxWidth: 1100 }}>
       {failure && <Alert severity="error" sx={{ mb: 2 }} onClose={() => setFailure(null)}>{failure}</Alert>}
 
       {permissions.write_documents && (
@@ -87,7 +87,7 @@ const ObjectDocuments: React.FC<{ nodeId: string }> = ({ nodeId }) => {
       )}
 
       {documents.length === 0 ? (
-        <Typography color="text.secondary" sx={{ py: 3 }}>
+        <Typography sx={{ color: "text.secondary", py: 3 }}>
           {permissions.write_documents ? t("objectContent.docs.empty") : t("objectContent.docs.emptyReadOnly")}
         </Typography>
       ) : (
@@ -172,13 +172,13 @@ const DocumentTable: React.FC<TableProps> = ({ docs, onFetch, onEdit, onVersions
           return (
             <TableRow key={d.id} hover>
               <TableCell>
-                <Stack direction="row" spacing={1} alignItems="flex-start">
+                <Stack direction="row" spacing={1} sx={{ alignItems: "flex-start" }}>
                   {d.kind === "link"
                     ? <LinkIcon fontSize="small" color="action" sx={{ mt: 0.25 }} />
                     : <InsertDriveFileOutlinedIcon fontSize="small" color="action" sx={{ mt: 0.25 }} />}
                   <Box>
-                    <Stack direction="row" spacing={0.75} alignItems="center">
-                      <Typography variant="body2" fontWeight={500}>{d.title}</Typography>
+                    <Stack direction="row" spacing={0.75} sx={{ alignItems: "center" }}>
+                      <Typography variant="body2" sx={{ fontWeight: 500 }}>{d.title}</Typography>
                       {d.classification === "begransad" && (
                         <Chip
                           icon={<LockIcon sx={{ fontSize: 12 }} />}
@@ -191,7 +191,7 @@ const DocumentTable: React.FC<TableProps> = ({ docs, onFetch, onEdit, onVersions
                       )}
                     </Stack>
                     {d.description && (
-                      <Typography variant="caption" color="text.secondary" display="block">{d.description}</Typography>
+                      <Typography variant="caption" sx={{ color: "text.secondary", display: "block" }}>{d.description}</Typography>
                     )}
                   </Box>
                 </Stack>
@@ -199,29 +199,29 @@ const DocumentTable: React.FC<TableProps> = ({ docs, onFetch, onEdit, onVersions
               <TableCell>{t(`objectContent.docs.types.${d.doc_type}`)}</TableCell>
               <TableCell>
                 {v ? (
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" sx={{ color: "text.secondary" }}>
                     {t("objectContent.docs.versionLabel", { n: v.version_no })} · {formatSize(v.size_bytes)}
                   </Typography>
                 ) : (
-                  <Typography variant="body2" color="text.secondary" noWrap sx={{ maxWidth: 220 }} title={d.url ?? ""}>
+                  <Typography variant="body2" noWrap title={d.url ?? ""} sx={{ color: "text.secondary", maxWidth: 220 }}>
                     {d.url}
                   </Typography>
                 )}
               </TableCell>
               <TableCell>
                 {d.review_date ? (
-                  <Stack direction="row" spacing={0.5} alignItems="center">
+                  <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
                     {overdue && (
                       <Tooltip title={t("objectContent.docs.reviewOverdue")}>
                         <WarningAmberIcon fontSize="small" color="warning" />
                       </Tooltip>
                     )}
-                    <Typography variant="body2" color={overdue ? "warning.main" : "text.secondary"}>{d.review_date}</Typography>
+                    <Typography variant="body2" sx={{ color: overdue ? "warning.main" : "text.secondary" }}>{d.review_date}</Typography>
                   </Stack>
                 ) : "—"}
               </TableCell>
               <TableCell>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" sx={{ color: "text.secondary" }}>
                   {formatDate(d.updated_at)}{d.updated_by ? ` · ${d.updated_by}` : ""}
                 </Typography>
               </TableCell>
@@ -353,16 +353,16 @@ const DocumentDialog: React.FC<DialogProps> = ({ nodeId, mode, doc, permissions,
           {error && <Alert severity="error">{error}</Alert>}
           {mode === "file" && (
             <Box>
-              <Stack direction="row" spacing={1.5} alignItems="center">
+              <Stack direction="row" spacing={1.5} sx={{ alignItems: "center" }}>
                 <Button variant="outlined" startIcon={<UploadFileIcon />} onClick={() => inputRef.current?.click()}>
                   {t("objectContent.docs.chooseFile")}
                 </Button>
-                <Typography variant="body2" color={file ? "text.primary" : "text.secondary"} noWrap>
+                <Typography variant="body2" noWrap sx={{ color: file ? "text.primary" : "text.secondary" }}>
                   {file ? `${file.name} (${formatSize(file.size)})` : t("objectContent.docs.noFile")}
                 </Typography>
               </Stack>
               <input ref={inputRef} type="file" hidden accept={ACCEPT} onChange={(e) => pick(e.target.files?.[0])} />
-              <Typography variant="caption" color="text.secondary">{t("objectContent.docs.maxSize", { mb: MAX_MB })}</Typography>
+              <Typography variant="caption" sx={{ color: "text.secondary" }}>{t("objectContent.docs.maxSize", { mb: MAX_MB })}</Typography>
             </Box>
           )}
           {mode === "link" && <Alert severity="info" variant="outlined">{t("objectContent.docs.linkHint")}</Alert>}
@@ -387,8 +387,8 @@ const DocumentDialog: React.FC<DialogProps> = ({ nodeId, mode, doc, permissions,
               value={meta.review_date ?? ""}
               onChange={(e) => set("review_date", e.target.value || null)}
               size="small"
-              InputLabelProps={{ shrink: true }}
               sx={{ flex: 1 }}
+              slotProps={{ inputLabel: { shrink: true } }}
             />
           </Stack>
           <TextField
@@ -457,7 +457,7 @@ const VersionsDialog: React.FC<{ nodeId: string; doc: NodeDocument; onClose: () 
       <DialogContent>
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
         {UPLOADS_ENABLED && doc.can_edit && (
-          <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 2, pt: 1 }}>
+          <Stack direction="row" spacing={1.5} sx={{ alignItems: "center", mb: 2, pt: 1 }}>
             <TextField
               size="small"
               label={t("objectContent.docs.versionComment")}
@@ -487,11 +487,11 @@ const VersionsDialog: React.FC<{ nodeId: string; doc: NodeDocument; onClose: () 
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2">{v.filename}</Typography>
-                    {v.comment && <Typography variant="caption" color="text.secondary">{v.comment}</Typography>}
+                    {v.comment && <Typography variant="caption" sx={{ color: "text.secondary" }}>{v.comment}</Typography>}
                   </TableCell>
                   <TableCell>{formatSize(v.size_bytes)}</TableCell>
                   <TableCell>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" sx={{ color: "text.secondary" }}>
                       {formatDate(v.uploaded_at)}{v.uploaded_by ? ` · ${v.uploaded_by}` : ""}
                     </Typography>
                   </TableCell>

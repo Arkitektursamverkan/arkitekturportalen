@@ -72,7 +72,9 @@ const TargetArchitecture: React.FC = () => {
     return <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}><CircularProgress /></Box>;
   }
   if (error || !data) {
-    return <Box p={3}><Alert severity="error">{(error as Error)?.message ?? "Kunde inte ladda målarkitektur"}</Alert></Box>;
+    return (
+      <Box sx={{ p: 3 }}><Alert severity="error">{(error as Error)?.message ?? "Kunde inte ladda målarkitektur"}</Alert></Box>
+    );
   }
   const c = data.content;
   const sections = c.sections;
@@ -104,12 +106,12 @@ const TargetArchitecture: React.FC = () => {
 
   const content = (
     <Box sx={{ maxWidth: 900, mx: "auto", width: "100%" }}>
-      <Stack direction="row" alignItems="center" mb={1}>
+      <Stack direction="row" sx={{ alignItems: "center", mb: 1 }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography variant="h4" sx={{ fontWeight: 700 }}>
             {t("targetArchitecture.title", { defaultValue: "Målarkitektur" })}
           </Typography>
-          <Typography variant="caption" color="text.secondary">
+          <Typography variant="caption" sx={{ color: "text.secondary" }}>
             {t("targetArchitecture.subtitle", { defaultValue: "Önskat läge för IT-arkitekturen" })}
             {data.updated_by && ` · ${t("common.updated", { defaultValue: "Uppdaterad" })} ${new Date(data.updated_at).toLocaleString("sv-SE")} av ${data.updated_by}`}
           </Typography>
@@ -210,7 +212,7 @@ const TocSidebar: React.FC<{ items: TocItem[]; currentHash: string }> = ({ items
         alignSelf: "flex-start", maxHeight: "calc(100vh - 100px)", overflowY: "auto",
       }}
     >
-      <Typography variant="overline" color="text.secondary" sx={{ pl: 2 }}>
+      <Typography variant="overline" sx={{ color: "text.secondary", pl: 2 }}>
         Innehåll
       </Typography>
       <List dense>
@@ -230,9 +232,11 @@ const TocSidebar: React.FC<{ items: TocItem[]; currentHash: string }> = ({ items
           >
             <ListItemText
               primary={item.label}
-              primaryTypographyProps={{
-                fontSize: item.indent ? 12 : 13,
-                fontWeight: active === item.id ? 600 : 400,
+              slotProps={{
+                primary: { sx: {
+                  fontSize: item.indent ? 12 : 13,
+                  fontWeight: active === item.id ? 600 : 400,
+                } }
               }}
             />
           </ListItemButton>
@@ -278,7 +282,7 @@ const AdminControls: React.FC<{
 }> = ({ isAdmin, canMoveUp, canMoveDown, onEdit, onMoveUp, onMoveDown, onDelete }) => {
   if (!isAdmin) return null;
   return (
-    <Stack direction="row" spacing={0.5} alignItems="center">
+    <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
       <Tooltip title="Flytta upp">
         <span>
           <IconButton size="small" disabled={!canMoveUp} onClick={onMoveUp}>
@@ -309,8 +313,8 @@ const SectionHeader: React.FC<{
   variant?: "h5" | "h6";
   admin: React.ReactNode;
 }> = ({ number, title, variant = "h5", admin }) => (
-  <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
-    <Typography variant={variant} fontWeight={variant === "h5" ? 600 : 700}>
+  <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 1 }}>
+    <Typography variant={variant} sx={{ fontWeight: variant === "h5" ? 600 : 700 }}>
       {number}. {title}
     </Typography>
     {admin}
@@ -362,11 +366,11 @@ const DomainSectionView: React.FC<SectionViewProps & { section: DomainSection }>
         variant="h6"
         admin={<AdminControls {...{ isAdmin, canMoveUp, canMoveDown, onEdit, onMoveUp, onMoveDown, onDelete }} />}
       />
-      <Grid container spacing={3} alignItems="center" sx={{ mb: 2 }}>
-        <Grid item xs={12} md={7}>
+      <Grid container spacing={3} sx={{ alignItems: "center", mb: 2 }}>
+        <Grid size={{ xs: 12, md: 7 }}>
           <DomainPyramid highlight={section.domain_key} />
         </Grid>
-        <Grid item xs={12} md={5}>
+        <Grid size={{ xs: 12, md: 5 }}>
           <Stack spacing={2}>
             {section.answers && <AnswersBox text={section.answers} accent={accent} />}
             {section.describes && <DescribesBox text={section.describes} accent={accent} />}
@@ -377,7 +381,7 @@ const DomainSectionView: React.FC<SectionViewProps & { section: DomainSection }>
       {section.desired_state.length > 0 && (
         <Card variant="outlined" sx={{ mb: 2 }}>
           <CardContent>
-            <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1 }}>Önskat läge</Typography>
+            <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1 }}>Önskat läge</Typography>
             <Box component="ul" sx={{ pl: 3, my: 0 }}>
               {section.desired_state.map((item, i) => (
                 <Box component="li" key={i} sx={{ mb: 0.5 }}>
@@ -576,8 +580,8 @@ const FactBoxEditor: React.FC<{
   const set = <K extends keyof FactBoxData>(k: K, v: FactBoxData[K]) => onChange({ ...data, [k]: v });
   return (
     <Box sx={{ p: 2, border: "1px solid", borderColor: "divider", borderRadius: 1 }}>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={1}>
-        <Typography variant="subtitle2" fontWeight={700}>Faktaruta</Typography>
+      <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between", mb: 1 }}>
+        <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>Faktaruta</Typography>
         <IconButton size="small" onClick={onRemove}><DeleteIcon fontSize="small" /></IconButton>
       </Stack>
       <Stack spacing={1.5}>
@@ -614,7 +618,7 @@ const AddSectionDialog: React.FC<{
             </RadioGroup>
           </FormControl>
           <TextField autoFocus label="Rubrik" value={title} onChange={(e) => setTitle(e.target.value)} fullWidth />
-          <Typography variant="caption" color="text.secondary">
+          <Typography variant="caption" sx={{ color: "text.secondary" }}>
             Numreringen sätts automatiskt baserat på ordning. Du kan flytta stycket efter att det skapats.
           </Typography>
         </Stack>

@@ -64,16 +64,16 @@ const ReportRisk: React.FC = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom><ReportTitle fallback={t("reports.risk.title")} /></Typography>
-      <Typography variant="body2" color="text.secondary" mb={2}>{t("reports.risk.description")}</Typography>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>{t("reports.risk.description")}</Typography>
 
-      <Stack direction="row" spacing={2} mb={2}>
+      <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
         <Chip label={`${criticalCount} ${t("reports.risk.critical").toLowerCase()}`} color="error" size="small" />
         <Chip label={`${highCount} ${t("reports.risk.high").toLowerCase()}`} color="warning" size="small" />
         <Chip label={`${rows.length} ${t("reports.portfolio.name").toLowerCase()}`} variant="outlined" size="small" />
       </Stack>
 
       <Alert severity="info" sx={{ mb: 3 }}>
-        <Typography variant="body2" fontWeight={600}>{t("reports.risk.scoring")}</Typography>
+        <Typography variant="body2" sx={{ fontWeight: 600 }}>{t("reports.risk.scoring")}</Typography>
         <Typography variant="caption">{t("reports.risk.scoringDesc")}</Typography>
       </Alert>
 
@@ -98,7 +98,7 @@ const ReportRisk: React.FC = () => {
               const level = scoreToLevel(row.compositeScore, t);
               return (
                 <TableRow key={row.id} hover sx={{ cursor: "pointer" }} onClick={() => navigate(`/systems?id=${row.id}`)}>
-                  <TableCell><Typography variant="body2" fontWeight={500}>{row.name}</Typography></TableCell>
+                  <TableCell><Typography variant="body2" sx={{ fontWeight: 500 }}>{row.name}</Typography></TableCell>
                   <TableCell align="center">
                     <Chip label={row.businessCriticality} size="small"
                       sx={{ bgcolor: row.businessCriticality >= 3 ? "#e53935" : row.businessCriticality >= 1 ? "#ff9800" : "#eee", color: row.businessCriticality >= 1 ? "#fff" : undefined }} />
@@ -111,7 +111,7 @@ const ReportRisk: React.FC = () => {
                     <Chip label={row.integrationExposure} size="small"
                       sx={{ bgcolor: row.integrationExposure >= 3 ? "#e53935" : row.integrationExposure >= 1 ? "#ff9800" : "#eee", color: row.integrationExposure >= 1 ? "#fff" : undefined }} />
                   </TableCell>
-                  <TableCell align="center"><Typography variant="body2" fontWeight={700}>{row.compositeScore}</Typography></TableCell>
+                  <TableCell align="center"><Typography variant="body2" sx={{ fontWeight: 700 }}>{row.compositeScore}</Typography></TableCell>
                   <TableCell><Chip label={level.label} size="small" color={level.color} /></TableCell>
                 </TableRow>
               );

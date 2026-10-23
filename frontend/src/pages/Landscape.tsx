@@ -111,8 +111,8 @@ const Landscape: React.FC = () => {
         renderOption={(props, option, { selected }) => (
           <li {...props}><Checkbox icon={icon} checkedIcon={checkedIcon} sx={{ mr: 1 }} checked={selected} />{option}</li>
         )}
-        renderTags={(val, getTagProps) =>
-          val.map((option, index) => <Chip {...getTagProps({ index })} key={option} label={option} size="small" />)
+        renderValue={(val, getItemProps) =>
+          val.map((option, index) => <Chip {...getItemProps({ index })} key={option} label={option} size="small" />)
         }
         renderInput={(params) => <TextField {...params} placeholder={label} />}
         sx={{ minWidth: 200, maxWidth: 350 }}
@@ -126,7 +126,7 @@ const Landscape: React.FC = () => {
         <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 2, mb: 1 }}>
           <Box>
             <Typography variant="h6">{t("landscape.title")}</Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: "text.secondary" }}>
               {t("landscape.description")}
               {activeFilters > 0 && filteredGraph && ` — ${filteredGraph.nodes.length} applikationer visas`}
             </Typography>
@@ -143,7 +143,7 @@ const Landscape: React.FC = () => {
 
       <Box sx={{ flexGrow: 1, position: "relative", overflow: "hidden" }}>
         {isLoading && <LoadingSpinner />}
-        {error && <Box p={3}><ErrorAlert error={error as Error} onRetry={refetch} /></Box>}
+        {error && <Box sx={{ p: 3 }}><ErrorAlert error={error as Error} onRetry={refetch} /></Box>}
         {filteredGraph && !isLoading && (
           <>
             <CytoscapeGraph data={filteredGraph} layout="cose" height="100%" cyRef={cyRef} positionKey="landscape" />

@@ -24,7 +24,7 @@ const FreezeNotice: React.FC = () => {
   if (freezes.length === 0) return null;
 
   return (
-    <Stack spacing={1} mb={3}>
+    <Stack spacing={1} sx={{ mb: 3 }}>
       {freezes.map(({ date, event }) => {
         const needs = [...event.nodes.filter((n) => n.type !== "Process").map((n) => n.name), event.other_dependencies]
           .filter(Boolean)

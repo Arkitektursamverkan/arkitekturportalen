@@ -59,15 +59,15 @@ const ReportIntegrations: React.FC = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom><ReportTitle fallback={t("reports.integrations.title")} /></Typography>
-      <Typography variant="body2" color="text.secondary" mb={2}>{t("reports.integrations.description")}</Typography>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>{t("reports.integrations.description")}</Typography>
 
-      <Stack direction="row" spacing={2} mb={3} alignItems="center">
+      <Stack direction="row" spacing={2} sx={{ mb: 3, alignItems: "center" }}>
         <Chip label={`${pairs.length} ${t("reports.integrations.integrationLinks")}`} variant="outlined" />
         <Chip label={`${hubs.length} ${t("reports.integrations.connectedApps")}`} variant="outlined" />
         {hubs.filter((h) => h.degree >= 5).length > 0 && (
           <Chip icon={<WarningAmberIcon />} label={`${hubs.filter((h) => h.degree >= 5).length} ${t("reports.integrations.highDegreeHubs")}`} color="warning" size="small" />
         )}
-        <Box flexGrow={1} />
+        <Box sx={{ flexGrow: 1 }} />
         <FormControl size="small" sx={{ minWidth: 150 }}>
           <InputLabel>{t("reports.integrations.view")}</InputLabel>
           <Select value={view} label={t("reports.integrations.view")} onChange={(e) => setView(e.target.value as "hubs" | "pairs")}>
@@ -96,10 +96,10 @@ const ReportIntegrations: React.FC = () => {
             <TableBody>
               {sortedHubs.map((hub) => (
                 <TableRow key={hub.id} hover sx={{ cursor: "pointer" }} onClick={() => navigate(`/systems?id=${hub.id}`)}>
-                  <TableCell><Typography variant="body2" fontWeight={500}>{hub.name}</Typography></TableCell>
+                  <TableCell><Typography variant="body2" sx={{ fontWeight: 500 }}>{hub.name}</Typography></TableCell>
                   <TableCell align="center"><Chip label={hub.degree} size="small" /></TableCell>
                   <TableCell align="center"><Chip label={hub.processCount} size="small" variant="outlined" /></TableCell>
-                  <TableCell align="center"><Typography variant="body2" fontWeight={600}>{hub.riskScore}</Typography></TableCell>
+                  <TableCell align="center"><Typography variant="body2" sx={{ fontWeight: 600 }}>{hub.riskScore}</Typography></TableCell>
                   <TableCell><Chip label={riskLabel(hub.riskScore)} size="small" color={riskColor(hub.riskScore) as any} /></TableCell>
                 </TableRow>
               ))}
@@ -128,8 +128,8 @@ const ReportIntegrations: React.FC = () => {
                   <TableCell align="center">
                     <Typography
                       variant="body2"
-                      fontWeight={700}
                       title={p.direction ? t(`integrationDirection.${p.direction}`) : undefined}
+                      sx={{ fontWeight: 700 }}
                     >
                       {p.direction ? DIRECTION_GLYPHS[p.direction] : "—"}
                     </Typography>

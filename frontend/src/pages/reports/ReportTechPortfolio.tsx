@@ -56,9 +56,9 @@ const ReportTechPortfolio: React.FC = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom><ReportTitle fallback={t("reports.techPortfolio.title")} /></Typography>
-      <Typography variant="body2" color="text.secondary" mb={2}>{t("reports.techPortfolio.description")}</Typography>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>{t("reports.techPortfolio.description")}</Typography>
 
-      <Stack direction="row" spacing={2} mb={3} flexWrap="wrap" useFlexGap>
+      <Stack direction="row" spacing={2} useFlexGap sx={{ mb: 3, flexWrap: "wrap" }}>
         <Chip label={`${total} ${t("reports.techPortfolio.componentCount")}`} variant="outlined" />
         {hostings.map((h) => (
           <Chip key={h} label={`${h}: ${hostingTotals.get(h)} (${pctOf(hostingTotals.get(h) ?? 0)}%)`}
@@ -68,7 +68,7 @@ const ReportTechPortfolio: React.FC = () => {
 
       <Card sx={{ mb: 3 }}>
         <CardContent>
-          <Typography variant="h6" fontSize={16} fontWeight={600} mb={2}>{t("reports.techPortfolio.matrix")}</Typography>
+          <Typography variant="h6" sx={{ fontSize: 16, fontWeight: 600, mb: 2 }}>{t("reports.techPortfolio.matrix")}</Typography>
           <TableContainer>
             <Table size="small">
               <TableHead>
@@ -86,7 +86,7 @@ const ReportTechPortfolio: React.FC = () => {
                   const rowTotal = [...row.values()].reduce((s, l) => s + l.length, 0);
                   return (
                     <TableRow key={type} hover>
-                      <TableCell><Typography variant="body2" fontWeight={500}>{type}</Typography></TableCell>
+                      <TableCell><Typography variant="body2" sx={{ fontWeight: 500 }}>{type}</Typography></TableCell>
                       {hostings.map((h) => {
                         const n = row.get(h)?.length ?? 0;
                         return (
@@ -125,10 +125,10 @@ const ReportTechPortfolio: React.FC = () => {
             {types.map((type) => (
               <TableRow key={type} hover>
                 <TableCell sx={{ verticalAlign: "top", whiteSpace: "nowrap" }}>
-                  <Typography variant="body2" fontWeight={500}>{type}</Typography>
+                  <Typography variant="body2" sx={{ fontWeight: 500 }}>{type}</Typography>
                 </TableCell>
                 <TableCell>
-                  <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
+                  <Stack direction="row" spacing={0.5} useFlexGap sx={{ flexWrap: "wrap" }}>
                     {hostings.flatMap((h) =>
                       [...(cells.get(type)!.get(h) ?? [])]
                         .sort((a, b) => a.name.localeCompare(b.name, "sv"))

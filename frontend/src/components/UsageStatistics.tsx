@@ -14,9 +14,9 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import LoginOutlinedIcon from "@mui/icons-material/LoginOutlined";
 import EventNoteIcon from "@mui/icons-material/EventNote";
 import BarChartIcon from "@mui/icons-material/BarChart";
@@ -73,14 +73,14 @@ function MetricCard({
     >
       <Box sx={{ color, display: "flex", alignItems: "center", gap: 0.5 }}>
         {icon}
-        <Typography variant="caption" color="text.secondary" fontWeight={500}>
+        <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 500 }}>
           {label}
         </Typography>
       </Box>
       {loading ? (
         <Skeleton width={48} height={32} />
       ) : (
-        <Typography variant="h5" fontWeight={700} sx={{ color }}>
+        <Typography variant="h5" sx={{ fontWeight: 700, color }}>
           {value.toLocaleString("sv-SE")}
         </Typography>
       )}
@@ -115,16 +115,16 @@ function ChartTooltip({
         minWidth: 140,
       }}
     >
-      <Typography variant="caption" color="text.secondary" display="block" mb={0.5}>
+      <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mb: 0.5 }}>
         {dateStr}
       </Typography>
       {payload.map((entry) => (
-        <Stack key={entry.name} direction="row" justifyContent="space-between" spacing={2}>
-          <Stack direction="row" alignItems="center" spacing={0.5}>
+        <Stack key={entry.name} direction="row" spacing={2} sx={{ justifyContent: "space-between" }}>
+          <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
             <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: entry.color }} />
             <Typography variant="caption">{entry.name}</Typography>
           </Stack>
-          <Typography variant="caption" fontWeight={600}>
+          <Typography variant="caption" sx={{ fontWeight: 600 }}>
             {entry.value}
           </Typography>
         </Stack>
@@ -139,11 +139,11 @@ function EntityBar({ label, count, max }: { label: string; count: number; max: n
   const pct = max > 0 ? Math.round((count / max) * 100) : 0;
   return (
     <Box>
-      <Stack direction="row" justifyContent="space-between" mb={0.25}>
-        <Typography variant="caption" color="text.primary" fontWeight={500}>
+      <Stack direction="row" sx={{ justifyContent: "space-between", mb: 0.25 }}>
+        <Typography variant="caption" sx={{ color: "text.primary", fontWeight: 500 }}>
           {label}
         </Typography>
-        <Typography variant="caption" color="text.secondary">
+        <Typography variant="caption" sx={{ color: "text.secondary" }}>
           {count}
         </Typography>
       </Stack>
@@ -216,10 +216,10 @@ const UsageStatistics: React.FC = () => {
   return (
     <Stack spacing={2}>
       {/* Period picker */}
-      <Stack direction="row" alignItems="center" justifyContent="space-between" flexWrap="wrap" gap={1}>
-        <Stack direction="row" alignItems="center" spacing={1}>
+      <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 1 }}>
+        <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
           <EventNoteIcon sx={{ color: "text.secondary", fontSize: 18 }} />
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>
             Visar data för de senaste{" "}
             <strong>{period}</strong> dagarna
           </Typography>
@@ -279,7 +279,7 @@ const UsageStatistics: React.FC = () => {
 
       {/* Activity chart */}
       <Box>
-        <Typography variant="subtitle2" color="text.secondary" mb={1.5}>
+        <Typography variant="subtitle2" sx={{ color: "text.secondary", mb: 1.5 }}>
           Aktivitet över tid
         </Typography>
 
@@ -368,15 +368,15 @@ const UsageStatistics: React.FC = () => {
             </ResponsiveContainer>
 
             {/* Legend */}
-            <Stack direction="row" spacing={2} justifyContent="center" mt={0.5}>
+            <Stack direction="row" spacing={2} sx={{ justifyContent: "center", mt: 0.5 }}>
               {[
                 { color: CREATE_COLOR, label: "Tillägg" },
                 { color: UPDATE_COLOR, label: "Uppdateringar" },
                 { color: DELETE_COLOR, label: "Borttagningar" },
               ].map(({ color, label }) => (
-                <Stack key={label} direction="row" alignItems="center" spacing={0.5}>
+                <Stack key={label} direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
                   <Box sx={{ width: 12, height: 3, bgcolor: color, borderRadius: 1 }} />
-                  <Typography variant="caption" color="text.secondary">
+                  <Typography variant="caption" sx={{ color: "text.secondary" }}>
                     {label}
                   </Typography>
                 </Stack>
@@ -390,7 +390,7 @@ const UsageStatistics: React.FC = () => {
       {!isLoading && !isError && (data?.by_entity_type.length ?? 0) > 0 && (
         <Box>
           <Divider sx={{ mb: 2 }} />
-          <Typography variant="subtitle2" color="text.secondary" mb={1.5}>
+          <Typography variant="subtitle2" sx={{ color: "text.secondary", mb: 1.5 }}>
             Mest ändrade typer
           </Typography>
           <Stack spacing={1.5}>

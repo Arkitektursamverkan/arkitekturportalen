@@ -91,14 +91,14 @@ const ReportManualObjects: React.FC = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h5" fontWeight={700} gutterBottom>
+      <Typography variant="h5" gutterBottom sx={{ fontWeight: 700 }}>
         <ReportTitle fallback={t("reports.manualObjects.title")} />
       </Typography>
-      <Typography variant="body2" color="text.secondary" mb={3}>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 3 }}>
         {t("reports.manualObjects.description")}
       </Typography>
 
-      <Stack direction="row" spacing={2} mb={2} alignItems="center" flexWrap="wrap" useFlexGap>
+      <Stack direction="row" spacing={2} useFlexGap sx={{ mb: 2, alignItems: "center", flexWrap: "wrap" }}>
         <TextField
           size="small"
           placeholder={t("common.search")}
@@ -125,9 +125,9 @@ const ReportManualObjects: React.FC = () => {
       </Stack>
 
       {isLoading ? (
-        <Typography color="text.secondary">{t("common.loading")}</Typography>
+        <Typography sx={{ color: "text.secondary" }}>{t("common.loading")}</Typography>
       ) : filtered.length === 0 ? (
-        <Typography color="text.secondary" sx={{ py: 4, textAlign: "center" }}>
+        <Typography sx={{ color: "text.secondary", py: 4, textAlign: "center" }}>
           {manualNodes.length === 0
             ? t("reports.manualObjects.empty")
             : t("reports.manualObjects.noMatch")}
@@ -152,21 +152,21 @@ const ReportManualObjects: React.FC = () => {
                   onClick={() => handleRowClick(node)}
                 >
                   <TableCell>
-                    <Stack direction="row" alignItems="center" spacing={1}>
+                    <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                       <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: (NODE_COLORS as Record<string, string>)[node.type], flexShrink: 0 }} />
-                      <Typography variant="body2" fontWeight={500}>{node.name}</Typography>
+                      <Typography variant="body2" sx={{ fontWeight: 500 }}>{node.name}</Typography>
                     </Stack>
                   </TableCell>
                   <TableCell>
                     <Chip label={t(`nodeTypes.${node.type}`)} size="small" />
                   </TableCell>
                   <TableCell>
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography variant="caption" sx={{ color: "text.secondary" }}>
                       {node.description ?? "—"}
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography variant="caption" sx={{ color: "text.secondary" }}>
                       {node.created_at
                         ? new Date(node.created_at).toLocaleDateString("sv-SE")
                         : "—"}

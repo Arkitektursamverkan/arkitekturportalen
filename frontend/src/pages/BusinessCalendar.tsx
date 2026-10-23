@@ -11,7 +11,7 @@ import AddIcon from "@mui/icons-material/Add";
 import BlockIcon from "@mui/icons-material/Block";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
 import LockIcon from "@mui/icons-material/Lock";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -149,10 +149,10 @@ const BusinessCalendar: React.FC = () => {
 
   return (
     <Box sx={{ p: 3, maxWidth: 1400, mx: "auto" }}>
-      <Stack direction={{ xs: "column", md: "row" }} alignItems={{ md: "center" }} spacing={2} mb={2}>
-        <Box flex={1}>
-          <Typography variant="h4" fontWeight={700}>{t("nav.businessCalendar")}</Typography>
-          <Typography variant="body2" color="text.secondary">
+      <Stack direction={{ xs: "column", md: "row" }} spacing={2} sx={{ alignItems: { md: "center" }, mb: 2 }}>
+        <Box sx={{ flex: 1 }}>
+          <Typography variant="h4" sx={{ fontWeight: 700 }}>{t("nav.businessCalendar")}</Typography>
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>
             Återkommande händelser som verksamheten är beroende av IT för. Alla kan föreslå en post;
             en redaktör fastställer den.
           </Typography>
@@ -172,7 +172,7 @@ const BusinessCalendar: React.FC = () => {
         </Button>
       </Stack>
 
-      <Stack direction="row" spacing={2} mb={2} flexWrap="wrap" useFlexGap>
+      <Stack direction="row" spacing={2} useFlexGap sx={{ mb: 2, flexWrap: "wrap" }}>
         <Legend color={FREEZE_COLOR} label="Verksamhetskritiskt" icon />
         <Legend color={CHANGE_COLOR} label="Förändring i IT-miljön" />
         <Legend color={EVENT_COLOR} label="Verksamhetshändelse" />
@@ -183,7 +183,7 @@ const BusinessCalendar: React.FC = () => {
 
       {view === "month" ? (
         <Paper variant="outlined">
-          <Stack direction="row" alignItems="center" spacing={1} sx={{ p: 1.5 }}>
+          <Stack direction="row" spacing={1} sx={{ alignItems: "center", p: 1.5 }}>
             <IconButton size="small" onClick={() => shiftMonth(-1)} aria-label="Föregående månad"><ChevronLeftIcon /></IconButton>
             <IconButton size="small" onClick={() => shiftMonth(1)} aria-label="Nästa månad"><ChevronRightIcon /></IconButton>
             <Typography variant="h6" sx={{ textTransform: "capitalize", flex: 1 }}>
@@ -195,7 +195,7 @@ const BusinessCalendar: React.FC = () => {
           <Box sx={{ display: "grid", gridTemplateColumns: "36px repeat(7, minmax(0, 1fr))", borderTop: 1, borderColor: "divider" }}>
             <Box />
             {WEEKDAY_HEADERS.map((d) => (
-              <Typography key={d} variant="caption" color="text.secondary" sx={{ p: 0.5, textAlign: "center", fontWeight: 600 }}>
+              <Typography key={d} variant="caption" sx={{ color: "text.secondary", p: 0.5, textAlign: "center", fontWeight: 600 }}>
                 {d}
               </Typography>
             ))}
@@ -203,7 +203,7 @@ const BusinessCalendar: React.FC = () => {
               const monday = addDays(gridStart, w * 7);
               return (
                 <React.Fragment key={w}>
-                  <Typography variant="caption" color="text.secondary" sx={{ p: 0.5, textAlign: "center", borderTop: 1, borderColor: "divider" }}>
+                  <Typography variant="caption" sx={{ color: "text.secondary", p: 0.5, textAlign: "center", borderTop: 1, borderColor: "divider" }}>
                     v{weekNumber(monday)}
                   </Typography>
                   {Array.from({ length: 7 }, (_d, d) => {
@@ -254,7 +254,7 @@ const BusinessCalendar: React.FC = () => {
       ) : isLoading ? (
         <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}><CircularProgress /></Box>
       ) : occurrences.length === 0 ? (
-        <Typography color="text.secondary">Inga händelser de kommande {UPCOMING_DAYS} dagarna.</Typography>
+        <Typography sx={{ color: "text.secondary" }}>Inga händelser de kommande {UPCOMING_DAYS} dagarna.</Typography>
       ) : (
         <Stack spacing={2}>
           {[...byDate.entries()].map(([date, items]) => (
@@ -273,16 +273,16 @@ const BusinessCalendar: React.FC = () => {
                       "&:hover": { bgcolor: "action.hover" },
                     }}
                   >
-                    <Stack direction="row" alignItems="center" spacing={1} flexWrap="wrap" useFlexGap>
-                      <Typography variant="body2" color="text.secondary" sx={{ minWidth: 92 }}>
+                    <Stack direction="row" spacing={1} useFlexGap sx={{ alignItems: "center", flexWrap: "wrap" }}>
+                      <Typography variant="body2" sx={{ color: "text.secondary", minWidth: 92 }}>
                         {event.duration_days > 1
                           ? `${compactDate(start)} – ${compactDate(occurrenceEnd(start, event))}`
                           : timeLabel(event)}
                       </Typography>
-                      <Typography fontWeight={600}>{event.title}</Typography>
+                      <Typography sx={{ fontWeight: 600 }}>{event.title}</Typography>
                       <StatusChips event={event} />
                       {event.departments.map((d) => <Chip key={d} size="small" label={d} />)}
-                      <Box flex={1} />
+                      <Box sx={{ flex: 1 }} />
                       <DependencyChips event={event} />
                     </Stack>
                   </Paper>
@@ -351,7 +351,7 @@ const ChangePill: React.FC<{ entry: ChangeEntry; date: string; onClick: () => vo
 
 const ChangeLogTable: React.FC<{ entries: ChangeEntry[]; onOpen: (c: ChangeEntry) => void }> = ({ entries, onOpen }) =>
   entries.length === 0 ? (
-    <Typography color="text.secondary">Förändringsloggen är tom.</Typography>
+    <Typography sx={{ color: "text.secondary" }}>Förändringsloggen är tom.</Typography>
   ) : (
     <Paper variant="outlined" sx={{ overflowX: "auto" }}>
       <Table size="small">
@@ -370,16 +370,16 @@ const ChangeLogTable: React.FC<{ entries: ChangeEntry[]; onOpen: (c: ChangeEntry
             <TableRow key={c.id} hover sx={{ cursor: "pointer" }} onClick={() => onOpen(c)}>
               <TableCell sx={{ whiteSpace: "nowrap" }}>{changeWhenLabel(c)}</TableCell>
               <TableCell>
-                <Stack direction="row" alignItems="center" spacing={0.5}>
+                <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
                   {c.conflicts.length > 0 && (
                     <Tooltip title={`Genomförs trots krock med ${c.conflicts.map((k) => k.title).join(", ")}`}>
                       <WarningAmberIcon fontSize="small" color="warning" />
                     </Tooltip>
                   )}
-                  <Typography variant="body2" fontWeight={600}>{c.title}</Typography>
+                  <Typography variant="body2" sx={{ fontWeight: 600 }}>{c.title}</Typography>
                 </Stack>
                 {c.nodes.length > 0 && (
-                  <Typography variant="caption" color="text.secondary">{c.nodes.map((n) => n.name).join(", ")}</Typography>
+                  <Typography variant="caption" sx={{ color: "text.secondary" }}>{c.nodes.map((n) => n.name).join(", ")}</Typography>
                 )}
               </TableCell>
               <TableCell>{CHANGE_TYPE_LABELS[c.change_type]}</TableCell>
@@ -392,7 +392,7 @@ const ChangeLogTable: React.FC<{ entries: ChangeEntry[]; onOpen: (c: ChangeEntry
                   label={APPROVAL_STATUS_LABELS[c.approval_status]}
                 />
                 {c.approved_by && (
-                  <Typography variant="caption" color="text.secondary" display="block">{c.approved_by}</Typography>
+                  <Typography variant="caption" sx={{ color: "text.secondary", display: "block" }}>{c.approved_by}</Typography>
                 )}
               </TableCell>
             </TableRow>
@@ -403,7 +403,7 @@ const ChangeLogTable: React.FC<{ entries: ChangeEntry[]; onOpen: (c: ChangeEntry
   );
 
 const Legend: React.FC<{ color: string; label: string; dashed?: boolean; icon?: boolean }> = ({ color, label, dashed, icon }) => (
-  <Stack direction="row" alignItems="center" spacing={0.75}>
+  <Stack direction="row" spacing={0.75} sx={{ alignItems: "center" }}>
     <Box
       sx={{
         width: 18, height: 12, borderRadius: 0.5, display: "flex", alignItems: "center", justifyContent: "center",
@@ -412,7 +412,7 @@ const Legend: React.FC<{ color: string; label: string; dashed?: boolean; icon?: 
     >
       {icon && <LockIcon sx={{ fontSize: 9, color: "#fff" }} />}
     </Box>
-    <Typography variant="caption" color="text.secondary">{label}</Typography>
+    <Typography variant="caption" sx={{ color: "text.secondary" }}>{label}</Typography>
   </Stack>
 );
 
@@ -470,7 +470,7 @@ const DependencyChips: React.FC<{ event: CalendarEvent }> = ({ event }) => (
 
 const DetailRow: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
   <Box>
-    <Typography variant="caption" color="text.secondary" display="block">{label}</Typography>
+    <Typography variant="caption" sx={{ color: "text.secondary", display: "block" }}>{label}</Typography>
     {children}
   </Box>
 );
@@ -503,7 +503,7 @@ const EventDetailDialog: React.FC<{
   return (
     <Dialog open onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>
-        <Stack direction="row" alignItems="center" spacing={1} flexWrap="wrap" useFlexGap>
+        <Stack direction="row" spacing={1} useFlexGap sx={{ alignItems: "center", flexWrap: "wrap" }}>
           <span>{event.title}</span>
           <StatusChips event={event} />
         </Stack>
@@ -526,7 +526,7 @@ const EventDetailDialog: React.FC<{
               {" · "}{timeLabel(event)}
             </Typography>
             {event.recurrence !== "once" && (
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" sx={{ color: "text.secondary" }}>
                 Från {event.start_date}{event.end_date ? ` till ${event.end_date}` : ", tills vidare"}
               </Typography>
             )}
@@ -538,7 +538,7 @@ const EventDetailDialog: React.FC<{
           )}
           {(dependencies.length > 0 || event.other_dependencies) && (
             <DetailRow label="Måste fungera">
-              <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
+              <Stack direction="row" spacing={0.5} useFlexGap sx={{ flexWrap: "wrap" }}>
                 {dependencies.map((n) => (
                   <Tooltip key={n.id} title={t(`nodeTypes.${n.type}`)}>
                     <span><NodeChip node={n} onClick={() => open(n)} /></span>
@@ -554,14 +554,14 @@ const EventDetailDialog: React.FC<{
           )}
           {processes.length > 0 && (
             <DetailRow label="Berörd process">
-              <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
+              <Stack direction="row" spacing={0.5} useFlexGap sx={{ flexWrap: "wrap" }}>
                 {processes.map((n) => <NodeChip key={n.id} node={n} onClick={() => open(n)} />)}
               </Stack>
             </DetailRow>
           )}
           {event.departments.length > 0 && (
             <DetailRow label="Berörd avdelning">
-              <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
+              <Stack direction="row" spacing={0.5} useFlexGap sx={{ flexWrap: "wrap" }}>
                 {event.departments.map((d) => <Chip key={d} size="small" label={d} />)}
               </Stack>
             </DetailRow>
@@ -569,7 +569,7 @@ const EventDetailDialog: React.FC<{
           {event.responsible && (
             <DetailRow label="Ansvarig / kontakt"><Typography>{event.responsible}</Typography></DetailRow>
           )}
-          <Typography variant="caption" color="text.secondary">
+          <Typography variant="caption" sx={{ color: "text.secondary" }}>
             {proposed ? "Föreslagen" : "Upplagd"} av {event.proposed_by ?? "okänd"} {new Date(event.created_at).toLocaleDateString("sv-SE")}
             {!proposed && event.resolved_by && event.resolved_by !== event.proposed_by && ` · fastställd av ${event.resolved_by}`}
           </Typography>
@@ -595,7 +595,7 @@ const EventDetailDialog: React.FC<{
           </Button>
         )}
         {canEdit && <Button disabled={busy} onClick={onEdit}>Ändra</Button>}
-        <Box flex={1} />
+        <Box sx={{ flex: 1 }} />
         {isEditor && proposed && (
           <>
             <Button
@@ -697,8 +697,8 @@ const EventFormDialog: React.FC<{
           <TextField
             label="Titel" required autoFocus fullWidth value={form.title}
             placeholder="T.ex. Nyckelutlämning"
-            inputProps={{ maxLength: 255 }}
             onChange={(e) => set("title", e.target.value)}
+            slotProps={{ htmlInput: { maxLength: 255 } }}
           />
           <TextField
             label="Beskrivning" fullWidth multiline minRows={2} value={form.description}
@@ -708,18 +708,20 @@ const EventFormDialog: React.FC<{
           <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
             <TextField
               label={recurring ? "Första tillfället från" : "Från datum"} type="date" required fullWidth
-              InputLabelProps={{ shrink: true }} value={form.start_date}
-              onChange={(e) => set("start_date", e.target.value)}
+              value={form.start_date} onChange={(e) => set("start_date", e.target.value)}
+              slotProps={{ inputLabel: { shrink: true } }}
             />
             <TextField
-              label="Till datum" type="date" required fullWidth
-              InputLabelProps={{ shrink: true }} value={lastDay}
-              inputProps={{ min: form.start_date }}
+              label="Till datum"
+              type="date"
+              required
+              fullWidth
+              value={lastDay}
               helperText={multiDay ? `${form.duration_days} dagar` : "Samma dag = endagshändelse"}
               onChange={(e) =>
                 e.target.value && form.start_date && set("duration_days", daysBetween(form.start_date, e.target.value) + 1)
               }
-            />
+              slotProps={{ htmlInput: { min: form.start_date }, inputLabel: { shrink: true } }} />
           </Stack>
           <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
             <TextField
@@ -735,13 +737,13 @@ const EventFormDialog: React.FC<{
             {recurring && (
               <TextField
                 label="Återkommer t.o.m. (valfritt)" type="date" fullWidth
-                InputLabelProps={{ shrink: true }} value={form.end_date ?? ""}
-                helperText="Tomt = tills vidare."
+                value={form.end_date ?? ""} helperText="Tomt = tills vidare."
                 onChange={(e) => set("end_date", e.target.value || null)}
+                slotProps={{ inputLabel: { shrink: true } }}
               />
             )}
           </Stack>
-          <Stack direction={{ xs: "column", sm: "row" }} spacing={2} alignItems={{ sm: "center" }}>
+          <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ alignItems: { sm: "center" } }}>
             <FormControlLabel
               sx={{ minWidth: 120 }}
               control={
@@ -759,12 +761,12 @@ const EventFormDialog: React.FC<{
             {!allDay && (
               <>
                 <TextField
-                  label={multiDay ? "Från (första dagen)" : "Från"} type="time" fullWidth InputLabelProps={{ shrink: true }}
-                  value={form.start_time ?? ""} onChange={(e) => set("start_time", e.target.value)}
+                  label={multiDay ? "Från (första dagen)" : "Från"} type="time" fullWidth value={form.start_time ?? ""}
+                  onChange={(e) => set("start_time", e.target.value)} slotProps={{ inputLabel: { shrink: true } }}
                 />
                 <TextField
-                  label={multiDay ? "Till (sista dagen)" : "Till"} type="time" fullWidth InputLabelProps={{ shrink: true }}
-                  value={form.end_time ?? ""} onChange={(e) => set("end_time", e.target.value)}
+                  label={multiDay ? "Till (sista dagen)" : "Till"} type="time" fullWidth value={form.end_time ?? ""}
+                  onChange={(e) => set("end_time", e.target.value)} slotProps={{ inputLabel: { shrink: true } }}
                 />
               </>
             )}
@@ -778,9 +780,9 @@ const EventFormDialog: React.FC<{
             getOptionLabel={(n) => n.name}
             isOptionEqualToValue={(a, b) => a.id === b.id}
             onChange={(_e, value) => set("node_ids", value.map((n) => n.id))}
-            renderTags={(value, getTagProps) =>
+            renderValue={(value, getItemProps) =>
               value.map((n, index) => {
-                const { key, ...tagProps } = getTagProps({ index });
+                const { key, ...tagProps } = getItemProps({ index });
                 return (
                   <Chip
                     key={key} size="small" variant="outlined" label={n.name} {...tagProps}
@@ -803,9 +805,9 @@ const EventFormDialog: React.FC<{
             options={(departmentList?.departments ?? []).map((d) => d.name)}
             value={form.departments}
             onChange={(_e, value) => set("departments", value.map((d) => d.trim()).filter(Boolean))}
-            renderTags={(value, getTagProps) =>
+            renderValue={(value, getItemProps) =>
               value.map((d, index) => {
-                const { key, ...tagProps } = getTagProps({ index });
+                const { key, ...tagProps } = getItemProps({ index });
                 return <Chip key={key} size="small" label={d} {...tagProps} />;
               })
             }
@@ -828,15 +830,15 @@ const EventFormDialog: React.FC<{
           />
           <TextField
             label="Ansvarig / kontakt" fullWidth value={form.responsible}
-            inputProps={{ maxLength: 255 }}
             onChange={(e) => set("responsible", e.target.value)}
+            slotProps={{ htmlInput: { maxLength: 255 } }}
           />
           <Box>
             <FormControlLabel
               control={<Switch color="error" checked={form.change_freeze} onChange={(e) => set("change_freeze", e.target.checked)} />}
               label="Verksamhetskritiskt"
             />
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: "text.secondary" }}>
               Inga förändringar får genomföras som påverkar dem som arbetar med detta. Det gäller
               {multiDay
                 ? allDay ? " alla dagar som händelsen pågår." : ` från ${form.start_time ?? ""} första dagen till ${form.end_time ?? ""} sista dagen.`

@@ -6,7 +6,7 @@ import {
 } from "@mui/material";
 import LabelOutlinedIcon from "@mui/icons-material/LabelOutlined";
 import EditIcon from "@mui/icons-material/Edit";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import AddIcon from "@mui/icons-material/Add";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
@@ -87,7 +87,7 @@ const ReportTagBar: React.FC<{ reportKey: string }> = ({ reportKey }) => {
         />
       ))}
       {isAdmin && current.length === 0 && (
-        <Typography variant="caption" color="text.disabled">
+        <Typography variant="caption" sx={{ color: "text.disabled" }}>
           {t("reports.tags.none", { defaultValue: "Otaggad" })}
         </Typography>
       )}
@@ -118,7 +118,7 @@ const ReportTagBar: React.FC<{ reportKey: string }> = ({ reportKey }) => {
               sx={{ p: 0.5, mr: 1 }}
             />
             <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: tag.color, mr: 1 }} />
-            <ListItemText primary={tag.name} primaryTypographyProps={{ fontSize: 13 }} />
+            <ListItemText primary={tag.name} slotProps={{ primary: { sx: { fontSize: 13 } } }} />
           </MenuItem>
         ))}
         <Divider />
@@ -131,7 +131,7 @@ const ReportTagBar: React.FC<{ reportKey: string }> = ({ reportKey }) => {
         >
           <ListItemText
             primary={t("reports.overview.manageTags", { defaultValue: "Hantera taggar" })}
-            primaryTypographyProps={{ fontSize: 13 }}
+            slotProps={{ primary: { sx: { fontSize: 13 } } }}
           />
         </MenuItem>
       </Menu>
@@ -166,7 +166,7 @@ const TagRow: React.FC<{
   const [color, setColor] = useState(tag.color);
 
   return (
-    <Stack direction="row" spacing={1} alignItems="center">
+    <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
       <TextField
         type="color"
         size="small"
@@ -197,9 +197,9 @@ const TagRow: React.FC<{
           }
         }}
         sx={{ width: 80 }}
-        inputProps={{ min: 0, max: 9999 }}
+        slotProps={{ htmlInput: { min: 0, max: 9999 } }}
       />
-      <Typography variant="caption" color="text.disabled" sx={{ width: 64 }}>
+      <Typography variant="caption" sx={{ color: "text.disabled", width: 64 }}>
         {t("reports.tags.count", { defaultValue: "{{count}} rapp.", count: tag.report_keys.length })}
       </Typography>
       <Tooltip title={t("common.delete", { defaultValue: "Ta bort" })}>
@@ -248,7 +248,7 @@ const TagManagerDialog: React.FC<{
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>{t("reports.overview.manageTags", { defaultValue: "Hantera taggar" })}</DialogTitle>
       <DialogContent>
-        <Typography variant="body2" color="text.secondary" mb={2}>
+        <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
           {t("reports.tags.help", {
             defaultValue:
               "Ordningen styr var taggen hamnar i menyn — lägre tal först. Tar du bort en tagg blir rapporterna under den otaggade, inget annat händer.",
@@ -270,7 +270,7 @@ const TagManagerDialog: React.FC<{
 
         <Divider sx={{ my: 2 }} />
 
-        <Stack direction="row" spacing={1} alignItems="center">
+        <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
           <TextField
             type="color"
             size="small"
@@ -365,7 +365,7 @@ const RenameReportDialog: React.FC<{
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
       <DialogTitle>{t("reports.rename.action", { defaultValue: "Byt namn på rapporten" })}</DialogTitle>
       <DialogContent>
-        <Typography variant="body2" color="text.secondary" mb={2}>
+        <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
           {t("reports.rename.help", {
             defaultValue:
               "Namnet visas i menyn och som rubrik på rapporten, på både svenska och engelska.",
@@ -381,10 +381,10 @@ const RenameReportDialog: React.FC<{
           onKeyDown={(e) => {
             if (e.key === "Enter") save();
           }}
-          inputProps={{ maxLength: 200 }}
+          slotProps={{ htmlInput: { maxLength: 200 } }}
         />
         {override && (
-          <Typography variant="caption" color="text.disabled" sx={{ display: "block", mt: 1 }}>
+          <Typography variant="caption" sx={{ color: "text.disabled", display: "block", mt: 1 }}>
             {t("reports.rename.original", {
               defaultValue: "Ursprungligt namn: {{name}}",
               name: original,

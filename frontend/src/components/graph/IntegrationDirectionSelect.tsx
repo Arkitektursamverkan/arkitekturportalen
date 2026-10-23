@@ -72,10 +72,10 @@ const IntegrationDirectionSelect: React.FC<Props> = ({
 
   return (
     <Box>
-      <Typography variant="body2" fontWeight={600} mb={0.25}>
+      <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.25 }}>
         {t("integrationDirection.question")}
       </Typography>
-      <Typography variant="caption" color="text.secondary" display="block" mb={1}>
+      <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mb: 1 }}>
         {t("integrationDirection.helper")}
       </Typography>
       <ToggleButtonGroup
@@ -97,14 +97,14 @@ const IntegrationDirectionSelect: React.FC<Props> = ({
               sx={{ justifyContent: "flex-start", textAlign: "left", textTransform: "none", py: 1 }}
             >
               <Stack spacing={0.25} sx={{ minWidth: 0 }}>
-                <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
-                  <Typography variant="body2" fontWeight={600}>{from}</Typography>
-                  <Typography variant="body2" fontWeight={700} sx={{ fontSize: 16, lineHeight: 1 }}>
+                <Stack direction="row" spacing={1} sx={{ alignItems: "center", flexWrap: "wrap" }}>
+                  <Typography variant="body2" sx={{ fontWeight: 600 }}>{from}</Typography>
+                  <Typography variant="body2" sx={{ fontWeight: 700, fontSize: 16, lineHeight: 1 }}>
                     {glyph}
                   </Typography>
-                  <Typography variant="body2" fontWeight={600}>{to}</Typography>
+                  <Typography variant="body2" sx={{ fontWeight: 600 }}>{to}</Typography>
                 </Stack>
-                <Typography variant="caption" color="text.secondary" sx={{ textTransform: "none" }}>
+                <Typography variant="caption" sx={{ color: "text.secondary", textTransform: "none" }}>
                   {sentence(direction)}
                 </Typography>
               </Stack>

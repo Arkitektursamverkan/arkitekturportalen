@@ -100,7 +100,7 @@ const ReportPrinciplesDocument: React.FC = () => {
         className="no-print"
         sx={{ mb: 2 }}
       >
-        <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 1 }}>
+        <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mb: 1 }}>
           Senast uppdaterad: {document ? new Date(document.updated_at).toLocaleString("sv-SE") : "—"}
         </Typography>
         <DocumentExportPanel
@@ -119,7 +119,7 @@ const ReportPrinciplesDocument: React.FC = () => {
       <Typography variant="h3" component="h1" sx={{ fontWeight: 700, mb: 1 }}>
         {orgName ? `Principer – ${genitive(orgName)} IT-arkitektur` : "Principer för IT-arkitekturen"}
       </Typography>
-      <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 4 }}>
+      <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mb: 4 }}>
         Styrande principer för arkitekturarbetet
       </Typography>
 
@@ -130,7 +130,7 @@ const ReportPrinciplesDocument: React.FC = () => {
       {/* 2. Övergripande principer */}
       <SectionHeading number="2" title="Övergripande principer" />
       {overarching.length === 0 ? (
-        <Typography variant="body2" color="text.secondary" sx={{ fontStyle: "italic", mb: 2 }}>
+        <Typography variant="body2" sx={{ color: "text.secondary", fontStyle: "italic", mb: 2 }}>
           (Inga övergripande principer registrerade)
         </Typography>
       ) : (
@@ -147,7 +147,7 @@ const ReportPrinciplesDocument: React.FC = () => {
               3.{idx + 1} {domain}
             </Typography>
             {list.length === 0 ? (
-              <Typography variant="body2" color="text.secondary" sx={{ fontStyle: "italic" }}>
+              <Typography variant="body2" sx={{ color: "text.secondary", fontStyle: "italic" }}>
                 (Inga principer registrerade)
               </Typography>
             ) : (
@@ -226,7 +226,7 @@ interface HeadingProps {
 }
 
 const SectionHeading: React.FC<HeadingProps> = ({ number, title, isAdmin, onEdit }) => (
-  <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 5, mb: 2, pb: 1, borderBottom: "2px solid #ddd" }}>
+  <Stack direction="row" spacing={1} sx={{ alignItems: "center", mt: 5, mb: 2, pb: 1, borderBottom: "2px solid #ddd" }}>
     <Typography variant="h4" component="h2" sx={{ fontWeight: 700, flexGrow: 1 }}>
       {number}. {title}
     </Typography>
@@ -241,7 +241,7 @@ const SectionHeading: React.FC<HeadingProps> = ({ number, title, isAdmin, onEdit
 );
 
 const SubsectionHeading: React.FC<HeadingProps> = ({ number, title, isAdmin, onEdit }) => (
-  <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 3, mb: 1.5 }}>
+  <Stack direction="row" spacing={1} sx={{ alignItems: "center", mt: 3, mb: 1.5 }}>
     <Typography variant="h6" component="h3" sx={{ fontWeight: 600, flexGrow: 1 }}>
       {number} {title}
     </Typography>
@@ -280,7 +280,7 @@ const PrincipleBlock: React.FC<{ principle: Principle; ordinal: number }> = ({ p
       WebkitColumnBreakInside: "avoid",
     }}
   >
-    <Stack direction="row" alignItems="baseline" spacing={1.5} sx={{ mb: 1 }}>
+    <Stack direction="row" spacing={1.5} sx={{ alignItems: "baseline", mb: 1 }}>
       <Typography variant="h6" component="h4" sx={{ fontWeight: 600 }}>
         {ordinal}. {principle.name}
       </Typography>

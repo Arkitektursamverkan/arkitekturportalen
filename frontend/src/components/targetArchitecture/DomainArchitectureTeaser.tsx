@@ -50,11 +50,11 @@ export const DomainArchitectureTeaser: React.FC<Props> = ({ domainKey }) => {
         my: 2,
       }}
     >
-      <Grid container spacing={2} alignItems="center">
-        <Grid item xs={12} sm={5}>
+      <Grid container spacing={2} sx={{ alignItems: "center" }}>
+        <Grid size={{ xs: 12, sm: 5 }}>
           <DomainPyramid highlight={domainKey} height={200} />
         </Grid>
-        <Grid item xs={12} sm={7}>
+        <Grid size={{ xs: 12, sm: 7 }}>
           <Stack spacing={1.5}>
             {domain.answers && <AnswersBox text={domain.answers} accent={accent} />}
             {domain.describes && <DescribesBox text={domain.describes} accent={accent} />}

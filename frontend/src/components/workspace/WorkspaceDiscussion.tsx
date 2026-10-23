@@ -38,12 +38,12 @@ const PostCard: React.FC<{
       variant="outlined"
       sx={{ p: 2, ml: indented ? { xs: 2, sm: 5 } : 0, bgcolor: indented ? "action.hover" : undefined }}
     >
-      <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
-        <Typography variant="subtitle2" fontWeight={700}>
+      <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "flex-start" }}>
+        <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
           {post.author_name || post.created_by || "Okänd"}
         </Typography>
-        <Stack direction="row" spacing={0.5} alignItems="center">
-          <Typography variant="caption" color="text.secondary">
+        <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
+          <Typography variant="caption" sx={{ color: "text.secondary" }}>
             {new Date(post.created_at).toLocaleString("sv-SE")}
             {post.edited_at ? " · redigerad" : ""}
           </Typography>
@@ -146,7 +146,7 @@ const WorkspaceDiscussion: React.FC<Props> = ({ workspaceId, canWrite, isOwner }
             placeholder="Dela information, ställ en fråga…"
             minRows={3}
           />
-          <Stack direction="row" justifyContent="flex-end" sx={{ mt: 1 }}>
+          <Stack direction="row" sx={{ justifyContent: "flex-end", mt: 1 }}>
             <Button
               variant="contained"
               startIcon={<SendIcon />}
@@ -219,7 +219,7 @@ const WorkspaceDiscussion: React.FC<Props> = ({ workspaceId, canWrite, isOwner }
           </Box>
         ))}
         {threads.length === 0 && (
-          <Typography variant="body2" color="text.secondary" sx={{ py: 4, textAlign: "center" }}>
+          <Typography variant="body2" sx={{ color: "text.secondary", py: 4, textAlign: "center" }}>
             Inga inlägg ännu.
           </Typography>
         )}

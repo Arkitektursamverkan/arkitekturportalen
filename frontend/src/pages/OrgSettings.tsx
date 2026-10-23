@@ -93,11 +93,11 @@ const OrgSettings: React.FC = () => {
 
   return (
     <Container maxWidth="md" sx={{ py: 3 }}>
-      <Stack direction="row" spacing={1} alignItems="center" mb={1}>
+      <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 1 }}>
         <BusinessIcon color="primary" />
         <Typography variant="h5">Organisation</Typography>
       </Stack>
-      <Typography variant="body2" color="text.secondary" mb={3}>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 3 }}>
         Inställningar för hela installationen. Ett tomt fält använder standardvärdet från installationens
         miljövariabler.
       </Typography>
@@ -117,7 +117,7 @@ const OrgSettings: React.FC = () => {
                 size="small"
               />
             ))}
-            <Stack direction="row" spacing={2} alignItems="flex-start">
+            <Stack direction="row" spacing={2} sx={{ alignItems: "flex-start" }}>
               <TextField
                 label="Profilfärg"
                 value={form.brand_color}
@@ -153,8 +153,8 @@ const OrgSettings: React.FC = () => {
 
             {update.isError && <Alert severity="error">{errorText(update.error)}</Alert>}
             {saved && <Alert severity="success">Sparat.</Alert>}
-            <Stack direction="row" justifyContent="space-between" alignItems="center">
-              <Typography variant="caption" color="text.secondary">
+            <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center" }}>
+              <Typography variant="caption" sx={{ color: "text.secondary" }}>
                 {data.updated_by ? `Senast ändrad av ${data.updated_by}` : ""}
               </Typography>
               <Button variant="contained" startIcon={<SaveIcon />} onClick={handleSave} disabled={update.isPending}>
@@ -170,10 +170,10 @@ const OrgSettings: React.FC = () => {
       <Card>
         <CardContent>
           <Typography variant="h6" gutterBottom>Logotyp</Typography>
-          <Typography variant="body2" color="text.secondary" mb={2}>
+          <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
             PNG, JPEG, WebP eller SVG, högst 512 kB.
           </Typography>
-          <Stack direction={{ xs: "column", sm: "row" }} spacing={2} alignItems={{ sm: "center" }}>
+          <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ alignItems: { sm: "center" } }}>
             <Box
               sx={{
                 width: 200, height: 80, border: "1px solid", borderColor: "divider", borderRadius: 1,
@@ -183,7 +183,7 @@ const OrgSettings: React.FC = () => {
               {logoSrc ? (
                 <Box component="img" src={logoSrc} alt="Logotyp" sx={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }} />
               ) : (
-                <Typography variant="caption" color="text.secondary">Ingen logotyp</Typography>
+                <Typography variant="caption" sx={{ color: "text.secondary" }}>Ingen logotyp</Typography>
               )}
             </Box>
             <input ref={fileRef} type="file" hidden accept="image/png,image/jpeg,image/webp,image/svg+xml" onChange={handleLogo} />
@@ -201,7 +201,7 @@ const OrgSettings: React.FC = () => {
       </Card>
 
       {version && (
-        <Typography variant="caption" color="text.secondary" display="block" mt={2}>
+        <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mt: 2 }}>
           Arkitekturportalen version {version}
         </Typography>
       )}
@@ -245,7 +245,7 @@ const ModulesCard: React.FC<{ data: OrgSettingsAdmin }> = ({ data }) => {
     <Card sx={{ mb: 3 }}>
       <CardContent>
         <Typography variant="h6" gutterBottom>Moduler</Typography>
-        <Typography variant="body2" color="text.secondary" mb={2}>
+        <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
           Valfria delar av portalen. En avstängd modul syns inte och går inte att nå, men dess innehåll finns kvar
           och kommer tillbaka när modulen slås på igen. Arkitekturobjekten, rapporterna, lösningsskisserna och
           administrationen finns alltid.
@@ -270,10 +270,10 @@ const ModulesCard: React.FC<{ data: OrgSettingsAdmin }> = ({ data }) => {
               }
               label={
                 <Box>
-                  <Typography variant="body2" fontWeight={600}>{m.name}</Typography>
-                  <Typography variant="caption" color="text.secondary">{m.description}</Typography>
+                  <Typography variant="body2" sx={{ fontWeight: 600 }}>{m.name}</Typography>
+                  <Typography variant="caption" sx={{ color: "text.secondary" }}>{m.description}</Typography>
                   {m.unavailable && (
-                    <Typography variant="caption" color="warning.main" display="block">{m.unavailable}</Typography>
+                    <Typography variant="caption" sx={{ color: "warning.main", display: "block" }}>{m.unavailable}</Typography>
                   )}
                 </Box>
               }
@@ -287,7 +287,7 @@ const ModulesCard: React.FC<{ data: OrgSettingsAdmin }> = ({ data }) => {
         )}
         {update.isError && <Alert severity="error" sx={{ mt: 2 }}>{errorText(update.error)}</Alert>}
         {saved && <Alert severity="success" sx={{ mt: 2 }}>Sparat.</Alert>}
-        <Stack direction="row" justifyContent="flex-end" mt={2}>
+        <Stack direction="row" sx={{ justifyContent: "flex-end", mt: 2 }}>
           <Button variant="contained" startIcon={<SaveIcon />} onClick={handleSave} disabled={update.isPending}>
             Spara moduler
           </Button>

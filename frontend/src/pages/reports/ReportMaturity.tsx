@@ -14,9 +14,9 @@ function Gauge({ label, value, total, color }: { label: string; value: number; t
   const pct = total > 0 ? Math.round((value / total) * 100) : 0;
   return (
     <Box>
-      <Stack direction="row" justifyContent="space-between" mb={0.5}>
+      <Stack direction="row" sx={{ justifyContent: "space-between", mb: 0.5 }}>
         <Typography variant="body2">{label}</Typography>
-        <Typography variant="body2" fontWeight={600}>{pct}% ({value}/{total})</Typography>
+        <Typography variant="body2" sx={{ fontWeight: 600 }}>{pct}% ({value}/{total})</Typography>
       </Stack>
       <LinearProgress variant="determinate" value={pct} sx={{ height: 8, borderRadius: 4, bgcolor: "#eee", "& .MuiLinearProgress-bar": { bgcolor: color } }} />
     </Box>
@@ -57,35 +57,35 @@ const ReportMaturity: React.FC = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom><ReportTitle fallback={t("reports.maturity.title")} /></Typography>
-      <Typography variant="body2" color="text.secondary" mb={3}>{t("reports.maturity.description")}</Typography>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 3 }}>{t("reports.maturity.description")}</Typography>
 
-      <Grid container spacing={2} mb={3}>
+      <Grid container spacing={2} sx={{ mb: 3 }}>
         {TYPES.map((nt) => (
-          <Grid item xs={6} sm={4} md key={nt}>
+          <Grid key={nt} size={{ xs: 6, sm: 4, md: "grow" }}>
             <Card>
               <CardContent sx={{ textAlign: "center", py: 2 }}>
                 <Box sx={{ width: 14, height: 14, borderRadius: "50%", bgcolor: NODE_COLORS[nt], mx: "auto", mb: 1 }} />
-                <Typography variant="h4" fontWeight={700}>{stats.counts[nt] || 0}</Typography>
-                <Typography variant="caption" color="text.secondary">{t(`nodeTypes.${nt}`)}</Typography>
+                <Typography variant="h4" sx={{ fontWeight: 700 }}>{stats.counts[nt] || 0}</Typography>
+                <Typography variant="caption" sx={{ color: "text.secondary" }}>{t(`nodeTypes.${nt}`)}</Typography>
               </CardContent>
             </Card>
           </Grid>
         ))}
-        <Grid item xs={6} sm={4} md>
+        <Grid size={{ xs: 6, sm: 4, md: "grow" }}>
           <Card>
             <CardContent sx={{ textAlign: "center", py: 2 }}>
-              <Typography variant="h4" fontWeight={700}>{stats.totalEdges}</Typography>
-              <Typography variant="caption" color="text.secondary">{t("home.stats.connections")}</Typography>
+              <Typography variant="h4" sx={{ fontWeight: 700 }}>{stats.totalEdges}</Typography>
+              <Typography variant="caption" sx={{ color: "text.secondary" }}>{t("home.stats.connections")}</Typography>
             </CardContent>
           </Card>
         </Grid>
       </Grid>
 
       <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card>
             <CardContent>
-              <Typography variant="h6" fontSize={16} fontWeight={600} mb={2}>{t("reports.maturity.coverage")}</Typography>
+              <Typography variant="h6" sx={{ fontSize: 16, fontWeight: 600, mb: 2 }}>{t("reports.maturity.coverage")}</Typography>
               <Stack spacing={2}>
                 <Gauge label={t("reports.maturity.appsSupporting")} value={stats.appsWithSupport} total={stats.totalApps} color="#4CAF50" />
                 <Gauge label={t("reports.maturity.processesSupported")} value={stats.processesSupported} total={stats.totalProcesses} color="#2196F3" />
@@ -95,26 +95,26 @@ const ReportMaturity: React.FC = () => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card>
             <CardContent>
-              <Typography variant="h6" fontSize={16} fontWeight={600} mb={2}>{t("reports.maturity.health")}</Typography>
+              <Typography variant="h6" sx={{ fontSize: 16, fontWeight: 600, mb: 2 }}>{t("reports.maturity.health")}</Typography>
               <Stack spacing={2}>
-                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center" }}>
                   <Typography variant="body2">{t("reports.maturity.orphans")}</Typography>
                   <Chip label={stats.orphanCount} size="small" color={stats.orphanCount === 0 ? "success" : stats.orphanCount < 5 ? "warning" : "error"} />
                 </Stack>
-                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center" }}>
                   <Typography variant="body2">{t("reports.maturity.unsupportedProcesses")}</Typography>
                   <Chip label={stats.totalProcesses - stats.processesSupported} size="small"
                     color={stats.totalProcesses - stats.processesSupported === 0 ? "success" : "warning"} />
                 </Stack>
-                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center" }}>
                   <Typography variant="body2">{t("reports.maturity.appsNoProcess")}</Typography>
                   <Chip label={stats.totalApps - stats.appsWithSupport} size="small"
                     color={stats.totalApps - stats.appsWithSupport === 0 ? "success" : "warning"} />
                 </Stack>
-                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center" }}>
                   <Typography variant="body2">{t("reports.maturity.completeness")}</Typography>
                   <Chip label={`${stats.totalNodes > 0 ? Math.round(((stats.totalNodes - stats.orphanCount) / stats.totalNodes) * 100) : 0}%`}
                     size="small" color="primary" />

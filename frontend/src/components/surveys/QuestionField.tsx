@@ -42,7 +42,7 @@ const QuestionField: React.FC<{
       return (
         <FormControl>
           <FormLabel>{label}</FormLabel>
-          {resolvedHelpText && <Typography variant="caption" color="text.secondary">{resolvedHelpText}</Typography>}
+          {resolvedHelpText && <Typography variant="caption" sx={{ color: "text.secondary" }}>{resolvedHelpText}</Typography>}
           <RadioGroup
             row
             value={value === true ? "yes" : value === false ? "no" : ""}
@@ -60,7 +60,7 @@ const QuestionField: React.FC<{
         return (
           <FormControl>
             <FormLabel>{label}</FormLabel>
-            {resolvedHelpText && <Typography variant="caption" color="text.secondary">{resolvedHelpText}</Typography>}
+            {resolvedHelpText && <Typography variant="caption" sx={{ color: "text.secondary" }}>{resolvedHelpText}</Typography>}
             <Stack>
               {options.map((opt) => (
                 <FormControlLabel
@@ -88,7 +88,7 @@ const QuestionField: React.FC<{
       return (
         <FormControl>
           <FormLabel>{label}</FormLabel>
-          {resolvedHelpText && <Typography variant="caption" color="text.secondary">{resolvedHelpText}</Typography>}
+          {resolvedHelpText && <Typography variant="caption" sx={{ color: "text.secondary" }}>{resolvedHelpText}</Typography>}
           <RadioGroup value={single} onChange={(e) => onChange([e.target.value])}>
             {options.map((opt) => (
               <FormControlLabel key={opt} value={opt} control={<Radio disabled={disabled} />} label={opt} />
@@ -106,9 +106,9 @@ const QuestionField: React.FC<{
         <Box>
           <FormLabel>{label}</FormLabel>
           {resolvedHelpText && (
-            <Typography variant="caption" color="text.secondary" display="block" mb={1}>{resolvedHelpText}</Typography>
+            <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mb: 1 }}>{resolvedHelpText}</Typography>
           )}
-          <Stack direction="row" spacing={0.5} alignItems="center" flexWrap="wrap" useFlexGap sx={{ mt: 1 }}>
+          <Stack direction="row" spacing={0.5} useFlexGap sx={{ alignItems: "center", flexWrap: "wrap", mt: 1 }}>
             {question.scale_min_emoji && <Typography sx={{ mr: 1, fontSize: 20 }}>{question.scale_min_emoji}</Typography>}
             {scaleValues.map((n) => (
               <Button
@@ -125,9 +125,9 @@ const QuestionField: React.FC<{
             {question.scale_max_emoji && <Typography sx={{ ml: 1, fontSize: 20 }}>{question.scale_max_emoji}</Typography>}
           </Stack>
           {(question.scale_min_label || question.scale_max_label) && (
-            <Stack direction="row" justifyContent="space-between" sx={{ mt: 0.5 }}>
-              <Typography variant="caption" color="text.secondary">{question.scale_min_label ?? ""}</Typography>
-              <Typography variant="caption" color="text.secondary">{question.scale_max_label ?? ""}</Typography>
+            <Stack direction="row" sx={{ justifyContent: "space-between", mt: 0.5 }}>
+              <Typography variant="caption" sx={{ color: "text.secondary" }}>{question.scale_min_label ?? ""}</Typography>
+              <Typography variant="caption" sx={{ color: "text.secondary" }}>{question.scale_max_label ?? ""}</Typography>
             </Stack>
           )}
         </Box>
@@ -143,18 +143,18 @@ const QuestionField: React.FC<{
         <Box>
           <FormLabel>{label}</FormLabel>
           {resolvedHelpText && (
-            <Typography variant="caption" color="text.secondary" display="block">{resolvedHelpText}</Typography>
+            <Typography variant="caption" sx={{ color: "text.secondary", display: "block" }}>{resolvedHelpText}</Typography>
           )}
           {(question.scale_min_label || question.scale_max_label) && (
-            <Typography variant="caption" color="text.secondary" display="block">
+            <Typography variant="caption" sx={{ color: "text.secondary", display: "block" }}>
               {min} = {question.scale_min_label ?? "lägsta"} · {max} = {question.scale_max_label ?? "högsta"}
             </Typography>
           )}
           <Stack spacing={1.5} sx={{ mt: 1.5 }}>
             {rows.map((row) => (
               <Box key={row}>
-                <Typography variant="body2" fontWeight={600} sx={{ mb: 0.5 }}>{row}</Typography>
-                <Stack direction="row" spacing={0.5} alignItems="center" flexWrap="wrap" useFlexGap>
+                <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5 }}>{row}</Typography>
+                <Stack direction="row" spacing={0.5} useFlexGap sx={{ alignItems: "center", flexWrap: "wrap" }}>
                   {scaleValues.map((n) => (
                     <Button
                       key={n}
@@ -179,7 +179,7 @@ const QuestionField: React.FC<{
         <Box>
           <FormLabel>{label}</FormLabel>
           {resolvedHelpText && (
-            <Typography variant="caption" color="text.secondary" display="block" mb={1}>{resolvedHelpText}</Typography>
+            <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mb: 1 }}>{resolvedHelpText}</Typography>
           )}
           <SystemPicker
             nodeTypeFilter={question.node_type_filter}

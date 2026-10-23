@@ -44,22 +44,22 @@ const ReportCosts: React.FC = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom><ReportTitle fallback={t("reports.costs.title")} /></Typography>
-      <Typography variant="body2" color="text.secondary" mb={2}>{t("reports.costs.description")}</Typography>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>{t("reports.costs.description")}</Typography>
 
       {!hasData && <Alert severity="info" sx={{ mb: 3 }}>{t("reports.costs.hint")}</Alert>}
 
       {hasData && (
         <Card sx={{ mb: 3 }}>
           <CardContent>
-            <Typography variant="h6" fontSize={16} fontWeight={600} mb={1}>{t("reports.costs.totalCost")}</Typography>
-            <Typography variant="h4" fontWeight={700}>{fmt(totalCost)} kr</Typography>
-            <Stack spacing={1.5} mt={2}>
+            <Typography variant="h6" sx={{ fontSize: 16, fontWeight: 600, mb: 1 }}>{t("reports.costs.totalCost")}</Typography>
+            <Typography variant="h4" sx={{ fontWeight: 700 }}>{fmt(totalCost)} kr</Typography>
+            <Stack spacing={1.5} sx={{ mt: 2 }}>
               {sorted.filter((r) => r.cost > 0).slice(0, 10).map((r) => {
                 const pct = totalCost > 0 ? Math.round((r.cost / totalCost) * 100) : 0;
                 return (
                   <Box key={r.id}>
-                    <Stack direction="row" justifyContent="space-between" mb={0.3}>
-                      <Typography variant="body2" fontWeight={500}>{r.name}</Typography>
+                    <Stack direction="row" sx={{ justifyContent: "space-between", mb: 0.3 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 500 }}>{r.name}</Typography>
                       <Typography variant="caption">{fmt(r.cost)} kr ({pct}%)</Typography>
                     </Stack>
                     <LinearProgress variant="determinate" value={pct}
@@ -89,17 +89,17 @@ const ReportCosts: React.FC = () => {
           <TableBody>
             {sorted.map((row) => (
               <TableRow key={row.id} hover sx={{ cursor: "pointer" }} onClick={() => navigate(`/systems?id=${row.id}`)}>
-                <TableCell><Typography variant="body2" fontWeight={500}>{row.name}</Typography></TableCell>
+                <TableCell><Typography variant="body2" sx={{ fontWeight: 500 }}>{row.name}</Typography></TableCell>
                 <TableCell align="right">
                   {row.cost > 0
-                    ? <Typography variant="body2" fontWeight={600}>{fmt(row.cost)} kr</Typography>
-                    : <Typography variant="caption" color="text.secondary">—</Typography>}
+                    ? <Typography variant="body2" sx={{ fontWeight: 600 }}>{fmt(row.cost)} kr</Typography>
+                    : <Typography variant="caption" sx={{ color: "text.secondary" }}>—</Typography>}
                 </TableCell>
                 <TableCell><Typography variant="caption">{row.licenseModel || "—"}</Typography></TableCell>
                 <TableCell align="right">
                   {row.costPerProcess > 0
                     ? <Typography variant="caption">{fmt(row.costPerProcess)} kr</Typography>
-                    : <Typography variant="caption" color="text.secondary">—</Typography>}
+                    : <Typography variant="caption" sx={{ color: "text.secondary" }}>—</Typography>}
                 </TableCell>
               </TableRow>
             ))}

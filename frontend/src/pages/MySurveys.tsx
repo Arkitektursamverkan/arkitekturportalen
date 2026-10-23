@@ -49,17 +49,21 @@ const isOverdue = (r: SurveyResponseSummary) =>
 
 const DueDateCell: React.FC<{ r: SurveyResponseSummary }> = ({ r }) => {
   if (!r.survey_due_date) {
-    return <Typography variant="body2" color="text.secondary">—</Typography>;
+    return (
+      <Typography variant="body2" sx={{ color: "text.secondary" }}>—</Typography>
+    );
   }
   const formatted = new Date(r.survey_due_date).toLocaleDateString("sv-SE");
   if (isOverdue(r)) {
     return (
-      <Typography variant="body2" color="error" fontWeight={600}>
+      <Typography variant="body2" color="error" sx={{ fontWeight: 600 }}>
         {formatted}
       </Typography>
     );
   }
-  return <Typography variant="body2" color="text.secondary">{formatted}</Typography>;
+  return (
+    <Typography variant="body2" sx={{ color: "text.secondary" }}>{formatted}</Typography>
+  );
 };
 
 const SurveyTable: React.FC<{
@@ -85,7 +89,7 @@ const SurveyTable: React.FC<{
             <TableCell>{r.node_name ?? "—"}</TableCell>
             <TableCell><DueDateCell r={r} /></TableCell>
             <TableCell>
-              <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
+              <Stack direction="row" spacing={0.5} useFlexGap sx={{ flexWrap: "wrap" }}>
                 {statusChips(r).map((c) => (
                   <Chip key={c.label} size="small" label={c.label} color={c.color} />
                 ))}
@@ -116,7 +120,7 @@ const HowItWorks: React.FC = () => (
     <Typography variant="subtitle2" sx={{ mb: 1.5 }}>Så går det till</Typography>
     <Stack direction={{ xs: "column", sm: "row" }} spacing={{ xs: 1.5, sm: 3 }}>
       {STEPS.map((step, i) => (
-        <Stack key={step.title} direction="row" spacing={1.5} sx={{ flex: 1 }} alignItems="flex-start">
+        <Stack key={step.title} direction="row" spacing={1.5} sx={{ alignItems: "flex-start", flex: 1 }}>
           <Box
             sx={{
               width: 24, height: 24, borderRadius: "50%", flexShrink: 0,
@@ -128,8 +132,8 @@ const HowItWorks: React.FC = () => (
             {i + 1}
           </Box>
           <Box>
-            <Typography variant="body2" fontWeight={600}>{step.title}</Typography>
-            <Typography variant="body2" color="text.secondary">{step.text}</Typography>
+            <Typography variant="body2" sx={{ fontWeight: 600 }}>{step.title}</Typography>
+            <Typography variant="body2" sx={{ color: "text.secondary" }}>{step.text}</Typography>
           </Box>
         </Stack>
       ))}
@@ -148,8 +152,8 @@ const MySurveys: React.FC = () => {
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
-      <Typography variant="h4" fontWeight={700} gutterBottom>Mina enkäter</Typography>
-      <Typography variant="body1" color="text.secondary" mb={3} sx={{ maxWidth: 640 }}>
+      <Typography variant="h4" gutterBottom sx={{ fontWeight: 700 }}>Mina enkäter</Typography>
+      <Typography variant="body1" sx={{ color: "text.secondary", mb: 3, maxWidth: 640 }}>
         Välkommen. Här samlas enkäter som är ställda till dig — till exempel i din roll som
         systemförvaltare eller systemägare. Dina svar hjälper oss att hålla bilden av
         organisationens IT-landskap aktuell.

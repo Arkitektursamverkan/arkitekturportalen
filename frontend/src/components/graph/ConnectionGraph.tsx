@@ -397,10 +397,10 @@ const ConnectionGraph: React.FC<Props> = ({
           sx={{ position: "absolute", bottom: 16, left: "50%", transform: "translateX(-50%)", zIndex: 10, minWidth: 300 }}
         >
           <CardContent sx={{ py: 1.5, "&:last-child": { pb: 1.5 } }}>
-            <Stack direction="row" alignItems="center" spacing={2} justifyContent="space-between">
-              <Stack direction="row" spacing={1} alignItems="center">
+            <Stack direction="row" spacing={2} sx={{ alignItems: "center", justifyContent: "space-between" }}>
+              <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                 <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: EDGE_STYLES[selectedEdge.type]?.color }} />
-                <Typography variant="body2" fontWeight={500}>{t(`edgeTypes.${selectedEdge.type}`)}</Typography>
+                <Typography variant="body2" sx={{ fontWeight: 500 }}>{t(`edgeTypes.${selectedEdge.type}`)}</Typography>
                 <Chip label={t("connections.graph.selectedEdge")} size="small" variant="outlined" />
               </Stack>
               <Stack direction="row" spacing={1}>
@@ -424,10 +424,10 @@ const ConnectionGraph: React.FC<Props> = ({
         <DialogTitle>{t("connections.graph.dialogTitle")}</DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ mt: 1 }}>
-            <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
+            <Stack direction="row" spacing={1} sx={{ alignItems: "center", flexWrap: "wrap" }}>
               <Chip size="small" label={pendingSource?.name}
                 sx={{ bgcolor: NODE_COLORS[pendingSource?.type ?? "Process"], color: "#fff" }} />
-              <Typography variant="body2" color="text.secondary">→</Typography>
+              <Typography variant="body2" sx={{ color: "text.secondary" }}>→</Typography>
               <Chip size="small" label={dialogTarget?.name}
                 sx={{ bgcolor: NODE_COLORS[dialogTarget?.type ?? "Process"], color: "#fff" }} />
             </Stack>

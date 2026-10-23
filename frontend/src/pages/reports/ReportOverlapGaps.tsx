@@ -6,7 +6,7 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import WarningIcon from "@mui/icons-material/Warning";
-import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutlineOutlined";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useOverlapGaps } from "@/api/views";
@@ -33,7 +33,9 @@ const ReportOverlapGaps: React.FC = () => {
   const { data, isLoading, error, refetch } = useOverlapGaps();
 
   if (isLoading) return <LoadingSpinner height="60vh" />;
-  if (error) return <Box p={3}><ErrorAlert error={error as Error} onRetry={refetch} /></Box>;
+  if (error) return (
+    <Box sx={{ p: 3 }}><ErrorAlert error={error as Error} onRetry={refetch} /></Box>
+  );
   if (!data) return null;
 
   const { overlaps, gaps } = data;
@@ -45,7 +47,7 @@ const ReportOverlapGaps: React.FC = () => {
       <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2 }}>
         <Tab
           label={
-            <Stack direction="row" spacing={1} alignItems="center">
+            <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
               <WarningIcon fontSize="small" sx={{ color: "warning.main" }} />
               <span>{t("overlapGaps.overlaps")}</span>
               <Chip
@@ -58,7 +60,7 @@ const ReportOverlapGaps: React.FC = () => {
         />
         <Tab
           label={
-            <Stack direction="row" spacing={1} alignItems="center">
+            <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
               <ErrorOutlineIcon fontSize="small" sx={{ color: "error.main" }} />
               <span>{t("overlapGaps.gaps")}</span>
               <Chip
@@ -79,7 +81,7 @@ const ReportOverlapGaps: React.FC = () => {
         <Stack spacing={2}>
           <Accordion defaultExpanded>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography fontWeight={600}>
+              <Typography sx={{ fontWeight: 600 }}>
                 {t("overlapGaps.overlappingProcesses")}
                 <Chip label={overlaps.overlapping_processes.length} size="small" sx={{ ml: 1 }} />
               </Typography>
@@ -91,7 +93,7 @@ const ReportOverlapGaps: React.FC = () => {
 
           <Accordion defaultExpanded>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography fontWeight={600}>
+              <Typography sx={{ fontWeight: 600 }}>
                 {t("overlapGaps.overlappingInfoObjects")}
                 <Chip label={overlaps.overlapping_info_objects.length} size="small" sx={{ ml: 1 }} />
               </Typography>
@@ -137,7 +139,9 @@ const ReportOverlapGaps: React.FC = () => {
 
 interface OverlapRow { id: string; name: string; app_count: number; app_names: string[] }
 const OverlapTable: React.FC<{ rows: OverlapRow[]; t: (k: string) => string; nodeType: string; navigate: (path: string) => void }> = ({ rows, t, nodeType, navigate }) => {
-  if (!rows.length) return <Box p={2}><Typography color="text.secondary">{t("common.noData")}</Typography></Box>;
+  if (!rows.length) return (
+    <Box sx={{ p: 2 }}><Typography sx={{ color: "text.secondary" }}>{t("common.noData")}</Typography></Box>
+  );
   return (
     <Table size="small">
       <TableHead>
@@ -156,7 +160,7 @@ const OverlapTable: React.FC<{ rows: OverlapRow[]; t: (k: string) => string; nod
             sx={{ cursor: "pointer" }}
           >
             <TableCell>
-              <Stack direction="row" spacing={1} alignItems="center">
+              <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                 <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: (NODE_COLORS as Record<string, string>)[nodeType] ?? "#999", flexShrink: 0 }} />
                 <Typography variant="body2">{r.name}</Typography>
               </Stack>
@@ -165,7 +169,7 @@ const OverlapTable: React.FC<{ rows: OverlapRow[]; t: (k: string) => string; nod
               <Chip label={r.app_count} size="small" color="warning" />
             </TableCell>
             <TableCell>
-              <Stack direction="row" spacing={0.5} flexWrap="wrap">
+              <Stack direction="row" spacing={0.5} sx={{ flexWrap: "wrap" }}>
                 {(r.app_names ?? []).map((a) => <Chip key={a} label={a} size="small" variant="outlined" />)}
               </Stack>
             </TableCell>
@@ -183,12 +187,12 @@ const GapSection: React.FC<{
 }> = ({ title, rows, color, nodeType, navigate, t }) => (
   <Paper variant="outlined">
     <Box sx={{ p: 1.5, borderBottom: 1, borderColor: "divider", bgcolor: `${color}.50` }}>
-      <Typography fontWeight={600}>
+      <Typography sx={{ fontWeight: 600 }}>
         {title} <Chip label={rows.length} size="small" color={color} sx={{ ml: 1 }} />
       </Typography>
     </Box>
     {!rows.length ? (
-      <Box p={2}><Typography color="text.secondary">{t("common.noData")}</Typography></Box>
+      <Box sx={{ p: 2 }}><Typography sx={{ color: "text.secondary" }}>{t("common.noData")}</Typography></Box>
     ) : (
       <Table size="small">
         <TableBody>

@@ -88,7 +88,7 @@ export default function PlatformImport() {
   return (
     <Box>
       <Typography variant="h4" gutterBottom>Import from Integration Platform</Typography>
-      <Typography variant="body2" color="text.secondary" gutterBottom>
+      <Typography variant="body2" gutterBottom sx={{ color: "text.secondary" }}>
         Connect to the Integration Platform, select a data source, and map fields to EA node attributes.
       </Typography>
 
@@ -186,12 +186,12 @@ export default function PlatformImport() {
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
               <Card variant="outlined">
                 <CardContent>
-                  <Typography variant="subtitle2" color="text.secondary">Source</Typography>
+                  <Typography variant="subtitle2" sx={{ color: "text.secondary" }}>Source</Typography>
                   <Typography gutterBottom>{selectedSource?.flow_name} — {selectedSource?.record_count} records</Typography>
-                  <Typography variant="subtitle2" color="text.secondary">Node Type</Typography>
+                  <Typography variant="subtitle2" sx={{ color: "text.secondary" }}>Node Type</Typography>
                   <Typography gutterBottom>{selectedNodeType}</Typography>
                   <Divider sx={{ my: 1 }} />
-                  <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                  <Typography variant="subtitle2" gutterBottom sx={{ color: "text.secondary" }}>
                     Field Mappings ({getMappings().length})
                   </Typography>
                   <Table size="small">
@@ -240,14 +240,14 @@ export default function PlatformImport() {
                     <CardContent>
                       <Typography variant="subtitle2" color="error">Errors:</Typography>
                       {importResult.errors.slice(0, 10).map((e, i) => (
-                        <Typography key={i} variant="body2" color="text.secondary">{e}</Typography>
+                        <Typography key={i} variant="body2" sx={{ color: "text.secondary" }}>{e}</Typography>
                       ))}
                     </CardContent>
                   </Card>
                 )}
                 <Divider sx={{ my: 1 }} />
                 <Typography variant="subtitle2" gutterBottom>Automatic sync</Typography>
-                <Typography variant="body2" color="text.secondary" mb={1.5}>
+                <Typography variant="body2" sx={{ color: "text.secondary", mb: 1.5 }}>
                   Save this configuration as a sync profile so the Integration Platform can automatically push updates to the EA Application whenever the flow runs.
                 </Typography>
                 <Box sx={{ display: "flex", gap: 1 }}>

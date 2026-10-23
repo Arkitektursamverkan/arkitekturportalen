@@ -180,7 +180,7 @@ function DateEditPopover({
       transformOrigin={{ vertical: "top", horizontal: "right" }}
     >
       <Box sx={{ p: 1.5, display: "flex", flexDirection: "column", gap: 1 }}>
-        <Typography variant="caption" color="text.secondary">
+        <Typography variant="caption" sx={{ color: "text.secondary" }}>
           Justera datum
         </Typography>
         <input
@@ -189,7 +189,7 @@ function DateEditPopover({
           onChange={(e) => onChange(e.target.value)}
           style={{ fontSize: "0.8rem", padding: "4px 6px", borderRadius: 4, border: "1px solid #ccc" }}
         />
-        <Stack direction="row" spacing={1} justifyContent="flex-end">
+        <Stack direction="row" spacing={1} sx={{ justifyContent: "flex-end" }}>
           <Button size="small" onClick={onClose} sx={{ textTransform: "none", fontSize: "0.75rem" }}>
             Avbryt
           </Button>
@@ -455,7 +455,7 @@ function StepDialog({
             >
               {(Object.keys(ICONS) as JourneyIcon[]).map((k) => (
                 <MenuItem key={k} value={k}>
-                  <Stack direction="row" spacing={1} alignItems="center">
+                  <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                     {React.cloneElement(ICONS[k], { sx: { fontSize: 20 } })}
                     <span>{k}</span>
                   </Stack>
@@ -502,7 +502,7 @@ function StepCard({
           <Tooltip title="Ta bort"><IconButton size="small" onClick={onDelete}><DeleteIcon fontSize="small" /></IconButton></Tooltip>
         </Stack>
       )}
-      <Stack direction="row" spacing={2} alignItems="flex-start">
+      <Stack direction="row" spacing={2} sx={{ alignItems: "flex-start" }}>
         <Box
           sx={{
             width: 48, height: 48, borderRadius: "50%", bgcolor: "action.hover", color: "text.secondary",
@@ -512,15 +512,15 @@ function StepCard({
           {ICONS[step.icon] ?? ICONS.route}
         </Box>
         <Box sx={{ flexGrow: 1, pr: 10 }}>
-          <Stack direction="row" spacing={1} alignItems="center">
+          <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
             <Typography variant="caption" sx={{ color: "text.disabled", fontWeight: 600, fontSize: "0.68rem", textTransform: "uppercase", letterSpacing: 0.8 }}>
               Steg {index + 1}
             </Typography>
             {hidden && <Chip size="small" label="Visas inte: modulen är avstängd" />}
           </Stack>
-          <Typography variant="h6" fontWeight={700} sx={{ mb: 0.25 }}>{step.title}</Typography>
+          <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.25 }}>{step.title}</Typography>
           {step.subtitle && (
-            <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1.5, fontStyle: "italic" }}>
+            <Typography variant="subtitle2" sx={{ color: "text.secondary", mb: 1.5, fontStyle: "italic" }}>
               {step.subtitle}
             </Typography>
           )}
@@ -578,7 +578,7 @@ const ArchitectureJourneyPage: React.FC = () => {
 
   return (
     <Box sx={{ p: 3, maxWidth: 860, mx: "auto" }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+      <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center", mb: 3 }}>
         <Button startIcon={<ArrowBackIcon />} onClick={() => navigate("/")} size="small">
           Tillbaka till startsidan
         </Button>
@@ -599,9 +599,9 @@ const ArchitectureJourneyPage: React.FC = () => {
         </Stack>
       ) : (
         <>
-          <Typography variant="h4" fontWeight={700} gutterBottom>{content.title}</Typography>
+          <Typography variant="h4" gutterBottom sx={{ fontWeight: 700 }}>{content.title}</Typography>
           {content.intro && (
-            <Typography variant="body1" color="text.secondary" sx={{ mb: 4, maxWidth: 640 }}>
+            <Typography variant="body1" sx={{ color: "text.secondary", mb: 4, maxWidth: 640 }}>
               {content.intro}
             </Typography>
           )}
@@ -638,7 +638,7 @@ const ArchitectureJourneyPage: React.FC = () => {
             Lägg till steg
           </Button>
           {save.isError && <Alert severity="error" sx={{ mt: 2 }}>Det gick inte att spara resan.</Alert>}
-          <Stack direction="row" justifyContent="space-between" sx={{ mt: 3 }}>
+          <Stack direction="row" sx={{ justifyContent: "space-between", mt: 3 }}>
             <Button color="warning" onClick={handleReset} disabled={save.isPending || data.is_default}>
               Återställ standard
             </Button>

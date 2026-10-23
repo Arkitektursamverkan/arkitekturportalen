@@ -10,7 +10,7 @@ import MapIcon from "@mui/icons-material/Map";
 import GavelIcon from "@mui/icons-material/Gavel";
 import FlagIcon from "@mui/icons-material/Flag";
 import DeviceHubIcon from "@mui/icons-material/DeviceHub";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 import AnalyticsIcon from "@mui/icons-material/Analytics";
 import DnsIcon from "@mui/icons-material/Dns";
 import SettingsEthernetIcon from "@mui/icons-material/SettingsEthernet";

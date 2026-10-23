@@ -215,15 +215,15 @@ export const AnalysisPanel: React.FC<Props> = ({ answers }) => {
       {/* Coverage */}
       <Card variant="outlined">
         <CardContent>
-          <Typography variant="subtitle2" fontWeight={700}>Kompletteringsgrad</Typography>
+          <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>Kompletteringsgrad</Typography>
           <LinearProgress variant="determinate" value={completion} sx={{ my: 1, height: 8, borderRadius: 1 }} />
-          <Typography variant="caption" color="text.secondary">{completion}% ifyllt ({totalFilled}/{totalFields} fält)</Typography>
+          <Typography variant="caption" sx={{ color: "text.secondary" }}>{completion}% ifyllt ({totalFilled}/{totalFields} fält)</Typography>
           <Stack spacing={0.5} sx={{ mt: 1.5 }}>
             {coverage.map((c) => (
-              <Stack key={c.key} direction="row" alignItems="center" spacing={1}>
+              <Stack key={c.key} direction="row" spacing={1} sx={{ alignItems: "center" }}>
                 <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: DOMAIN_COLORS[c.key] }} />
                 <Typography variant="caption" sx={{ flex: 1 }}>{c.label}</Typography>
-                <Typography variant="caption" color="text.secondary">{c.filled}/{c.total}</Typography>
+                <Typography variant="caption" sx={{ color: "text.secondary" }}>{c.filled}/{c.total}</Typography>
               </Stack>
             ))}
           </Stack>
@@ -233,16 +233,16 @@ export const AnalysisPanel: React.FC<Props> = ({ answers }) => {
       {/* Risk score */}
       <Card variant="outlined">
         <CardContent>
-          <Stack direction="row" alignItems="center" justifyContent="space-between" mb={1}>
-            <Typography variant="subtitle2" fontWeight={700}>Riskpoäng</Typography>
+          <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between", mb: 1 }}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>Riskpoäng</Typography>
             <Chip label={`${risk.score} · ${risk.level}`} size="small" sx={{ bgcolor: risk.color, color: "#fff" }} />
           </Stack>
           {risk.reasons.length === 0 ? (
-            <Typography variant="caption" color="text.secondary">Fyll i sektionerna så beräknas en riskprofil.</Typography>
+            <Typography variant="caption" sx={{ color: "text.secondary" }}>Fyll i sektionerna så beräknas en riskprofil.</Typography>
           ) : (
             <Stack spacing={0.25}>
               {risk.reasons.map((r, i) => (
-                <Typography key={i} variant="caption" color="text.secondary">{r}</Typography>
+                <Typography key={i} variant="caption" sx={{ color: "text.secondary" }}>{r}</Typography>
               ))}
             </Stack>
           )}
@@ -253,11 +253,11 @@ export const AnalysisPanel: React.FC<Props> = ({ answers }) => {
       {helpRequests.length > 0 && (
         <Card variant="outlined">
           <CardContent>
-            <Stack direction="row" alignItems="center" spacing={1} mb={1}>
+            <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 1 }}>
               <FlagIcon fontSize="small" sx={{ color: "#ED6C02" }} />
-              <Typography variant="subtitle2" fontWeight={700}>Hjälp begärd ({helpRequests.length})</Typography>
+              <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>Hjälp begärd ({helpRequests.length})</Typography>
             </Stack>
-            <Typography variant="caption" color="text.secondary">
+            <Typography variant="caption" sx={{ color: "text.secondary" }}>
               Frågor markerade för granskning eller stöd. Visas för arkitekt vid review.
             </Typography>
             <Stack spacing={0.25} sx={{ mt: 1 }}>
@@ -273,15 +273,15 @@ export const AnalysisPanel: React.FC<Props> = ({ answers }) => {
       {notApplicable.length > 0 && (
         <Card variant="outlined">
           <CardContent>
-            <Stack direction="row" alignItems="center" spacing={1} mb={1}>
-              <Typography variant="subtitle2" fontWeight={700}>Ej relevant ({notApplicable.length})</Typography>
+            <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 1 }}>
+              <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>Ej relevant ({notApplicable.length})</Typography>
             </Stack>
-            <Typography variant="caption" color="text.secondary">
+            <Typography variant="caption" sx={{ color: "text.secondary" }}>
               Frågor som inte är relevanta för denna lösning och därför inte behöver besvaras.
             </Typography>
             <Stack spacing={0.25} sx={{ mt: 1 }}>
               {notApplicable.map((f) => (
-                <Typography key={f} variant="body2" color="text.secondary">• {fieldLabel(f)}</Typography>
+                <Typography key={f} variant="body2" sx={{ color: "text.secondary" }}>• {fieldLabel(f)}</Typography>
               ))}
             </Stack>
           </CardContent>
@@ -292,16 +292,16 @@ export const AnalysisPanel: React.FC<Props> = ({ answers }) => {
       {proposals.length > 0 && (
         <Card variant="outlined">
           <CardContent>
-            <Stack direction="row" alignItems="center" spacing={1} mb={1}>
+            <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 1 }}>
               <AutoAwesomeIcon fontSize="small" color="info" />
-              <Typography variant="subtitle2" fontWeight={700}>Nya förslag ({proposals.length})</Typography>
+              <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>Nya förslag ({proposals.length})</Typography>
             </Stack>
-            <Typography variant="caption" color="text.secondary">
+            <Typography variant="caption" sx={{ color: "text.secondary" }}>
               Objekt som inte finns i EA-modellen ännu. Skapas som riktiga noder vid godkännande.
             </Typography>
             <Stack spacing={0.5} sx={{ mt: 1 }}>
               {proposals.map((p, i) => (
-                <Stack key={i} direction="row" spacing={1} alignItems="baseline">
+                <Stack key={i} direction="row" spacing={1} sx={{ alignItems: "baseline" }}>
                   <Chip label={p.type} size="small" variant="outlined" sx={{ height: 18, fontSize: 10 }} />
                   <Typography variant="body2">{p.name}</Typography>
                 </Stack>
@@ -315,18 +315,18 @@ export const AnalysisPanel: React.FC<Props> = ({ answers }) => {
       {overlaps.length > 0 && (
         <Card variant="outlined">
           <CardContent>
-            <Stack direction="row" alignItems="center" spacing={1} mb={1}>
+            <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 1 }}>
               <WarningAmberIcon fontSize="small" color="warning" />
-              <Typography variant="subtitle2" fontWeight={700}>Överlapp upptäckt</Typography>
+              <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>Överlapp upptäckt</Typography>
             </Stack>
-            <Typography variant="caption" color="text.secondary">
+            <Typography variant="caption" sx={{ color: "text.secondary" }}>
               Följande processer stöds redan av befintliga applikationer. Är det här initiativet ett komplement, ersättare eller något helt nytt?
             </Typography>
             <Stack spacing={1} sx={{ mt: 1 }}>
               {overlaps.map((o) => (
                 <Box key={o.processId}>
-                  <Typography variant="body2" fontWeight={600}>{o.processName}</Typography>
-                  <Stack direction="row" flexWrap="wrap" gap={0.5} sx={{ mt: 0.5 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 600 }}>{o.processName}</Typography>
+                  <Stack direction="row" sx={{ flexWrap: "wrap", gap: 0.5, mt: 0.5 }}>
                     {o.apps.map((a) => <Chip key={a.id} label={a.name} size="small" sx={{ bgcolor: "#2196F3", color: "#fff" }} />)}
                   </Stack>
                 </Box>
@@ -340,23 +340,23 @@ export const AnalysisPanel: React.FC<Props> = ({ answers }) => {
       {governance && (
       <Card variant="outlined">
         <CardContent>
-          <Typography variant="subtitle2" fontWeight={700} mb={1}>Relevanta arkitekturprinciper</Typography>
+          <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1 }}>Relevanta arkitekturprinciper</Typography>
           {matchedPrinciples.length === 0 ? (
-            <Typography variant="caption" color="text.secondary">
+            <Typography variant="caption" sx={{ color: "text.secondary" }}>
               Inga aktiva principer hittades för relevanta domäner. Lägg till i Arkitekturprinciper.
             </Typography>
           ) : (
             <Stack spacing={1}>
               {matchedPrinciples.map((p) => (
                 <Box key={p.id} sx={{ p: 1, borderLeft: "3px solid", borderColor: p.status === "Förslag" ? "warning.main" : "primary.main", bgcolor: "action.hover", borderRadius: "2px" }}>
-                  <Stack direction="row" spacing={0.5} alignItems="center">
-                    <Typography variant="caption" fontWeight={700}>{p.identifier} · {p.domain}</Typography>
+                  <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
+                    <Typography variant="caption" sx={{ fontWeight: 700 }}>{p.identifier} · {p.domain}</Typography>
                     {p.status === "Förslag" && (
                       <Chip label="Förslag" size="small" variant="outlined" color="warning" sx={{ height: 16, fontSize: 10 }} />
                     )}
                   </Stack>
                   <Typography variant="body2">{p.name}</Typography>
-                  {p.purpose && <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 0.25 }}>{p.purpose}</Typography>}
+                  {p.purpose && <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mt: 0.25 }}>{p.purpose}</Typography>}
                 </Box>
               ))}
             </Stack>
@@ -368,9 +368,9 @@ export const AnalysisPanel: React.FC<Props> = ({ answers }) => {
       {/* Procurement checklist */}
       <Card variant="outlined">
         <CardContent>
-          <Stack direction="row" alignItems="center" spacing={1} mb={1}>
+          <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 1 }}>
             <CheckCircleIcon fontSize="small" color="primary" />
-            <Typography variant="subtitle2" fontWeight={700}>Frågor inför upphandling</Typography>
+            <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>Frågor inför upphandling</Typography>
           </Stack>
           <Box component="ol" sx={{ pl: 3, my: 0 }}>
             {checklist.map((q, i) => (
@@ -379,7 +379,7 @@ export const AnalysisPanel: React.FC<Props> = ({ answers }) => {
               </Box>
             ))}
           </Box>
-          <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 1 }}>
+          <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mt: 1 }}>
             Listan utökas dynamiskt allteftersom du fyller i skissen.
           </Typography>
         </CardContent>

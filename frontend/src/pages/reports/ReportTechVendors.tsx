@@ -60,9 +60,9 @@ const ReportTechVendors: React.FC = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom><ReportTitle fallback={t("reports.techVendors.title")} /></Typography>
-      <Typography variant="body2" color="text.secondary" mb={2}>{t("reports.techVendors.description")}</Typography>
+      <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>{t("reports.techVendors.description")}</Typography>
 
-      <Stack direction="row" spacing={2} mb={3}>
+      <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
         <Chip label={`${vendors.length} ${t("reports.techVendors.vendorCount")}`} variant="outlined" />
         <Chip label={`${totalComponents} ${t("reports.techVendors.componentCount")}`} variant="outlined" />
         <Chip label={`${totalApps} ${t("reports.techVendors.appCount")}`} variant="outlined" />
@@ -70,14 +70,14 @@ const ReportTechVendors: React.FC = () => {
 
       <Card sx={{ mb: 3 }}>
         <CardContent>
-          <Typography variant="h6" fontSize={16} fontWeight={600} mb={2}>{t("reports.techVendors.distribution")}</Typography>
+          <Typography variant="h6" sx={{ fontSize: 16, fontWeight: 600, mb: 2 }}>{t("reports.techVendors.distribution")}</Typography>
           <Stack spacing={1.5}>
             {vendors.slice(0, 15).map((v) => {
               const pct = pctOf(v.components.length);
               return (
                 <Box key={v.vendor}>
-                  <Stack direction="row" justifyContent="space-between" mb={0.3}>
-                    <Typography variant="body2" fontWeight={500}>{v.vendor}</Typography>
+                  <Stack direction="row" sx={{ justifyContent: "space-between", mb: 0.3 }}>
+                    <Typography variant="body2" sx={{ fontWeight: 500 }}>{v.vendor}</Typography>
                     <Typography variant="caption">{v.components.length} ({pct}%)</Typography>
                   </Stack>
                   <LinearProgress variant="determinate" value={pct}
@@ -105,17 +105,17 @@ const ReportTechVendors: React.FC = () => {
           <TableBody>
             {vendors.map((v) => (
               <TableRow key={v.vendor} hover>
-                <TableCell><Typography variant="body2" fontWeight={500}>{v.vendor}</Typography></TableCell>
+                <TableCell><Typography variant="body2" sx={{ fontWeight: 500 }}>{v.vendor}</Typography></TableCell>
                 <TableCell align="center"><Chip label={v.components.length} size="small" /></TableCell>
                 <TableCell align="center"><Typography variant="caption">{pctOf(v.components.length)}%</Typography></TableCell>
                 <TableCell align="center"><Typography variant="caption">{v.appCount}</Typography></TableCell>
                 <TableCell>
-                  <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
+                  <Stack direction="row" spacing={0.5} useFlexGap sx={{ flexWrap: "wrap" }}>
                     {v.types.map((type) => <Chip key={type} label={type} size="small" />)}
                   </Stack>
                 </TableCell>
                 <TableCell>
-                  <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
+                  <Stack direction="row" spacing={0.5} useFlexGap sx={{ flexWrap: "wrap" }}>
                     {v.components.slice(0, 8).map((tc) => (
                       <Chip key={tc.id} label={tc.name} size="small" variant="outlined"
                         onClick={() => navigate(`/tech-components?id=${tc.id}`)} sx={{ cursor: "pointer" }} />
