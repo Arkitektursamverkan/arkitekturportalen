@@ -70,8 +70,10 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     await repo.initialize()
     set_repository(repo)
     if settings.EA_DB_ENGINE == "postgres":
+        from app.dal.postgres_repository import PostgresRepository
         from app.services import org_settings
-        await org_settings.load(repo._session_factory)  # type: ignore[attr-defined]
+        if isinstance(repo, PostgresRepository):
+            await org_settings.load(repo._session_factory)
     log.info("app.started", db_engine=settings.EA_DB_ENGINE)
 
     yield
