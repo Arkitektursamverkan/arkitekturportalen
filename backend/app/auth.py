@@ -64,13 +64,24 @@ class AuthError(Exception):
 
 # ── Password hashing ────────────────────────────────────────────────────────
 
+# bcrypt only uses the first 72 bytes of a password. bcrypt 4 cut longer
+# passwords silently; bcrypt 5 refuses them. Cutting here keeps the hashes
+# made before bcrypt 5 valid and lets passwords up to the schema's 128
+# characters through, exactly as before.
+_BCRYPT_MAX_BYTES = 72
+
+
+def _password_bytes(plain: str) -> bytes:
+    return plain.encode()[:_BCRYPT_MAX_BYTES]
+
+
 def hash_password(plain: str) -> str:
-    return bcrypt.hashpw(plain.encode(), bcrypt.gensalt()).decode()
+    return bcrypt.hashpw(_password_bytes(plain), bcrypt.gensalt()).decode()
 
 
 def verify_password(plain: str, hashed: str) -> bool:
     try:
-        return bcrypt.checkpw(plain.encode(), hashed.encode())
+        return bcrypt.checkpw(_password_bytes(plain), hashed.encode())
     except ValueError:
         return False
 
