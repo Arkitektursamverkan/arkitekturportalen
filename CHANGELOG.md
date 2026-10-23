@@ -9,6 +9,12 @@ funktioner, en ny korrigering för rättelser.
 
 - (inget än)
 
+## 0.3.0 – 2026-10-23
+
+- Modulen Arkitekten (`arkitekten`): processbilderna och länken till Arkitekten (`ARKITEKTEN_URL`). Kräver Integrationsplattformen.
+- Familjen `affarsprocess` från Arkitekten 0.2; det äldre namnet `2c8` läses som förut.
+- Fliken Flödesschema heter Processbild.
+
 ## 0.2.2 – 2026-10-22
 
 - Fliken Systemprocesser på en applikation: systemprocesser som publicerats ur Arkitekten visas hos applikationen.
