@@ -1,6 +1,7 @@
 import axios, { AxiosError } from "axios";
 import { InteractionRequiredAuthError } from "@azure/msal-browser";
-import { isAuthConfigured, msalInstance, tokenRequest } from "@/auth/msalConfig";
+import { tokenRequest } from "@/auth/msalConfig";
+import { getMsal } from "@/auth/msal";
 import { getLocalToken, hasValidLocalToken, clearLocalToken } from "@/auth/localSession";
 
 export const apiClient = axios.create({
@@ -22,12 +23,14 @@ apiClient.interceptors.request.use(async (config) => {
     }
   }
 
-  // 2. Entra ID via MSAL
-  if (isAuthConfigured) {
-    const account = msalInstance.getActiveAccount() ?? msalInstance.getAllAccounts()[0];
+  // 2. Entra ID via MSAL. getMsal() väntar ut initieringen, så en begäran
+  // som går iväg tidigt kan aldrig anropa en oinitierad instans.
+  const msal = await getMsal();
+  if (msal) {
+    const account = msal.getActiveAccount() ?? msal.getAllAccounts()[0];
     if (account) {
       try {
-        const result = await msalInstance.acquireTokenSilent({
+        const result = await msal.acquireTokenSilent({
           ...tokenRequest,
           account,
         });
@@ -39,7 +42,7 @@ apiClient.interceptors.request.use(async (config) => {
         // request without credentials. Several requests can land here at
         // once; MSAL rejects all but the first redirect, which is fine.
         if (err instanceof InteractionRequiredAuthError) {
-          msalInstance.acquireTokenRedirect({ ...tokenRequest, account }).catch(() => {});
+          msal.acquireTokenRedirect({ ...tokenRequest, account }).catch(() => {});
         }
       }
     }

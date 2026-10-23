@@ -86,7 +86,7 @@ jobs:
 
   # ── Frontend ──────────────────────────────────────────────────────────────────
   frontend:
-    name: Frontend — type-check + build
+    name: Frontend — type-check + tests + build
     runs-on: ubuntu-latest
 
     defaults:
@@ -106,6 +106,9 @@ jobs:
 
       - name: Type-check
         run: npm run type-check
+
+      - name: Tests
+        run: npm test
 
       - name: Build
         run: npm run build

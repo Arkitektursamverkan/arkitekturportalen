@@ -7,7 +7,9 @@ funktioner, en ny korrigering för rättelser.
 
 ## Ej släppt
 
-- (inget än)
+- Inloggningen: MSAL initieras färdigt innan appen renderas eller något anropar den, så felet `uninitialized_public_client_application` (synligt på inloggningssidan utan Entra-inställningar) är borta. Inloggningsfel från Microsoft visas på svenska med felkod i stället för att krascha.
+- MSAL lyft till `@azure/msal-browser` 5 och `@azure/msal-react` 5. Webbplatsens rot är MSAL 5:s omdirigeringsbrygga, så appregistreringen behöver ingen ny omdirigeringsadress; `index.html` skickas nu med `Cache-Control: no-store`.
+- Frontendtester med Vitest (`npm test`), även i CI.
 
 ## 0.3.1 – 2026-10-23
 

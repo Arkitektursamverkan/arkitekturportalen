@@ -1,7 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { InteractionRequiredAuthError } from "@azure/msal-browser";
 import { apiClient } from "./client";
-import { directoryRequest, isAuthConfigured, msalInstance } from "@/auth/msalConfig";
+import { directoryRequest } from "@/auth/msalConfig";
+import { getMsal } from "@/auth/msal";
 
 /**
  * Personer och avdelningar ur Entra ID.
@@ -69,15 +70,16 @@ export function useDirectoryStatus() {
 
 /** Graph-biljett för den inloggade administratören; frågar i ett fönster om det behövs. */
 async function acquireGraphToken(): Promise<string> {
-  const account = msalInstance.getActiveAccount() ?? msalInstance.getAllAccounts()[0];
-  if (!isAuthConfigured || !account) {
+  const msal = await getMsal();
+  const account = msal ? msal.getActiveAccount() ?? msal.getAllAccounts()[0] : null;
+  if (!msal || !account) {
     throw new Error("Katalogen kan bara hämtas av en administratör som är inloggad med Microsoft-konto.");
   }
   try {
-    return (await msalInstance.acquireTokenSilent({ ...directoryRequest, account })).accessToken;
+    return (await msal.acquireTokenSilent({ ...directoryRequest, account })).accessToken;
   } catch (err) {
     if (err instanceof InteractionRequiredAuthError) {
-      return (await msalInstance.acquireTokenPopup({ ...directoryRequest, account })).accessToken;
+      return (await msal.acquireTokenPopup({ ...directoryRequest, account })).accessToken;
     }
     throw err;
   }

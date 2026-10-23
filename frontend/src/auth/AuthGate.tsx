@@ -14,24 +14,29 @@ import {
 import LoginIcon from "@mui/icons-material/Login";
 import MicrosoftIcon from "@mui/icons-material/Microsoft";
 import { useQueryClient } from "@tanstack/react-query";
-import { isAuthConfigured, loginRequest } from "./msalConfig";
+import { loginRequest } from "./msalConfig";
+import { describeAuthError } from "./msal";
 import { hasValidLocalToken, setLocalToken } from "./localSession";
 import { apiClient } from "@/api/client";
 import { orgLogoUrl, usePublicOrgSettings } from "@/api/orgSettings";
 
 interface Props {
   children: React.ReactNode;
+  /** Sant när MSAL är initierad och MsalProvider finns ovanför (Entra inställt). */
+  msalEnabled: boolean;
+  /** Fel från inloggningssvaret eller MSAL:s start (se initMsal). */
+  initialError?: unknown;
 }
 
-const AuthGate: React.FC<Props> = ({ children }) => {
+const AuthGate: React.FC<Props> = ({ children, msalEnabled, initialError }) => {
+  // Utan MsalProvider ger hookarna MSAL:s tomma standardkontext (ingen
+  // inloggning, inget pågår); instansen anropas bara när msalEnabled är sant.
   const isMsalAuthenticated = useIsAuthenticated();
   const { instance, inProgress } = useMsal();
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(
+    initialError ? describeAuthError(initialError) : null,
+  );
   const [hasLocal, setHasLocal] = useState<boolean>(hasValidLocalToken());
-
-  useEffect(() => {
-    instance.handleRedirectPromise().catch((e) => setError(e?.message ?? "Login failed"));
-  }, [instance]);
 
   useEffect(() => {
     const refresh = () => setHasLocal(hasValidLocalToken());
@@ -43,7 +48,7 @@ const AuthGate: React.FC<Props> = ({ children }) => {
     };
   }, []);
 
-  const isAuthenticated = isMsalAuthenticated || hasLocal;
+  const isAuthenticated = (msalEnabled && isMsalAuthenticated) || hasLocal;
   const { data: org } = usePublicOrgSettings();
   const logoSrc = orgLogoUrl(org?.logo_version ?? null);
   // The organisation's colour on the sign-in button; the app keeps its theme.
@@ -51,7 +56,7 @@ const AuthGate: React.FC<Props> = ({ children }) => {
     ? { bgcolor: org.brand_color, "&:hover": { bgcolor: org.brand_color, filter: "brightness(0.9)" } }
     : {};
 
-  if (inProgress !== InteractionStatus.None) {
+  if (msalEnabled && inProgress !== InteractionStatus.None) {
     return (
       <CenterBox>
         <CircularProgress />
@@ -80,7 +85,7 @@ const AuthGate: React.FC<Props> = ({ children }) => {
           Logga in för att fortsätta.
         </Typography>
 
-        {isAuthConfigured && (
+        {msalEnabled && (
           <>
             <Button
               variant="contained"
@@ -88,9 +93,7 @@ const AuthGate: React.FC<Props> = ({ children }) => {
               startIcon={<MicrosoftIcon />}
               onClick={() => {
                 setError(null);
-                instance.loginRedirect(loginRequest).catch((e) =>
-                  setError(e?.message ?? "Login failed"),
-                );
+                instance.loginRedirect(loginRequest).catch((e) => setError(describeAuthError(e)));
               }}
               sx={{ minWidth: 280, ...brandSx }}
             >
@@ -100,7 +103,7 @@ const AuthGate: React.FC<Props> = ({ children }) => {
           </>
         )}
 
-        <LocalLoginForm onSuccess={() => setHasLocal(true)} onError={setError} />
+        <LocalLoginForm onSuccess={() => setHasLocal(true)} onError={(e) => setError(e || null)} />
 
         {error && (
           <Alert severity="error" sx={{ mt: 2, maxWidth: 400 }}>
