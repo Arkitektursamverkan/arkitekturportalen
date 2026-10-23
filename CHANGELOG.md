@@ -11,6 +11,7 @@ funktioner, en ny korrigering för rättelser.
 - MSAL lyft till `@azure/msal-browser` 5 och `@azure/msal-react` 5. Webbplatsens rot är MSAL 5:s omdirigeringsbrygga, så appregistreringen behöver ingen ny omdirigeringsadress; `index.html` skickas nu med `Cache-Control: no-store`.
 - Frontendtester med Vitest (`npm test`), även i CI.
 - Beroenden uppdaterade: alembic 1.20, bcrypt 5 (lösenord längre än 72 byte kapas som förut, så befintliga lösenord fungerar), neo4j-drivrutinen 6, structlog 26 och anyio 4.15.
+- Frontendens beroenden uppdaterade: Vite 8 (Rolldown) med `@vitejs/plugin-react` 6, Vitest 4, react-router-dom 7 och zustand 5.
 
 ## 0.3.1 – 2026-10-23
 
