@@ -19,6 +19,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+import type { SvgIconProps } from "@mui/material/SvgIcon";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import AddIcon from "@mui/icons-material/Add";
 import AnalyticsIcon from "@mui/icons-material/Analytics";
@@ -60,7 +61,7 @@ import MarkdownView from "@/components/common/MarkdownView";
 import { SHORTCUT_REGISTRY } from "@/config/shortcutRegistry";
 import { useRoleStore } from "@/store/roleStore";
 
-const ICONS: Record<JourneyIcon, React.ReactElement> = {
+const ICONS: Record<JourneyIcon, React.ReactElement<SvgIconProps>> = {
   assessment: <AssessmentIcon sx={{ fontSize: 28 }} />,
   flag: <FlagIcon sx={{ fontSize: 28 }} />,
   analytics: <AnalyticsIcon sx={{ fontSize: 28 }} />,
