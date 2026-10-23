@@ -15,14 +15,6 @@ updates:
       # typescript-eslint 8 (peer: typescript <6.1). Remove when it is.
       - dependency-name: "typescript"
         versions: [">= 7.0.0"]
-      # MUI 5 → 9 removes the system props (mb, alignItems … on Box, Stack,
-      # Typography), *Props in favour of slotProps and some icons: about 950
-      # type errors in 120 files. It needs its own migration (codemods plus
-      # a visual review), not a Dependabot bump. Remove when that is done.
-      - dependency-name: "@mui/material"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "@mui/icons-material"
-        update-types: ["version-update:semver-major"]
   - package-ecosystem: "docker"
     directory: "/backend"
     schedule:
