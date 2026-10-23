@@ -7,7 +7,7 @@ funktioner, en ny korrigering för rättelser.
 
 ## Ej släppt
 
-- (inget än)
+- Beroenden uppdaterade: React 19 (med MSAL 4), ESLint 10 med typescript-eslint 8 (flat config), Node 24 LTS och nginx 1.29 i webbens Docker-avbild, pytest 9, python-multipart 0.0.32, jinja2 3.1.6, pydantic-settings 2.16, pytest-cov 7 och nyare GitHub Actions. TypeScript 7 och MUI 9 väntar.
 
 ## 0.3.0 – 2026-10-23
 
