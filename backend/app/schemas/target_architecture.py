@@ -2,10 +2,9 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Annotated, Literal, Union
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, Field
-
 
 DomainKey = Literal["business", "data", "application", "technology"]
 
@@ -47,7 +46,7 @@ class DomainSection(BaseModel):
 
 
 Section = Annotated[
-    Union[TextSection, VisionSection, DomainSection],
+    TextSection | VisionSection | DomainSection,
     Field(discriminator="kind"),
 ]
 

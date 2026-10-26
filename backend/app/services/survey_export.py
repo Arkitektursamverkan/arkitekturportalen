@@ -9,8 +9,9 @@ import csv
 import io
 import re
 import unicodedata
-from datetime import datetime, timezone
-from typing import Any, Callable
+from collections.abc import Callable
+from datetime import UTC, datetime
+from typing import Any
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 CSV_DELIMITER = ";"
@@ -18,7 +19,7 @@ CSV_DELIMITER = ";"
 try:
     _LOCAL_TZ: Any = ZoneInfo("Europe/Stockholm")
 except ZoneInfoNotFoundError:  # pragma: no cover — no tzdata in the image
-    _LOCAL_TZ = timezone.utc
+    _LOCAL_TZ = UTC
 
 _STATUS_LABEL = {
     "draft": "Utkast",
@@ -56,7 +57,7 @@ def format_datetime(value: datetime | None) -> str:
     if value is None:
         return ""
     if value.tzinfo is None:
-        value = value.replace(tzinfo=timezone.utc)
+        value = value.replace(tzinfo=UTC)
     return value.astimezone(_LOCAL_TZ).strftime("%Y-%m-%d %H:%M")
 
 

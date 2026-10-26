@@ -52,7 +52,7 @@ class PrincipleRead(BaseModel):
     model_config = {"populate_by_name": True}
 
     @classmethod
-    def from_node(cls, node: NodeRead) -> "PrincipleRead":
+    def from_node(cls, node: NodeRead) -> PrincipleRead:
         attrs = node.attributes or {}
         return cls(
             id=node.id,

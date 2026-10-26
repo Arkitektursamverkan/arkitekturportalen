@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 from uuid import UUID
 
@@ -26,7 +26,7 @@ log = structlog.get_logger(__name__)
 
 
 def _now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def _record_to_node_read(r: dict) -> NodeRead:
@@ -40,8 +40,8 @@ def _record_to_node_read(r: dict) -> NodeRead:
         archived=bool(r.get("archived", False)),
         attributes=r.get("attributes", {}),
         last_synced_at=r.get("last_synced_at"),
-        created_at=r.get("created_at", datetime.now(timezone.utc)),
-        updated_at=r.get("updated_at", datetime.now(timezone.utc)),
+        created_at=r.get("created_at", datetime.now(UTC)),
+        updated_at=r.get("updated_at", datetime.now(UTC)),
     )
 
 
@@ -52,8 +52,8 @@ def _record_to_edge_read(r: dict) -> EdgeRead:
         target_id=UUID(r["target_id"]),
         type=EdgeType(r["type"]),
         attributes=r.get("attributes", {}),
-        created_at=r.get("created_at", datetime.now(timezone.utc)),
-        updated_at=r.get("updated_at", datetime.now(timezone.utc)),
+        created_at=r.get("created_at", datetime.now(UTC)),
+        updated_at=r.get("updated_at", datetime.now(UTC)),
     )
 
 

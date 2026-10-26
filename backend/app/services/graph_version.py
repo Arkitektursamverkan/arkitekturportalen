@@ -10,8 +10,8 @@ are skipped if no node or edge audit entries exist since the last snapshot.
 """
 from __future__ import annotations
 
-from datetime import datetime, timezone
-from typing import Any, TYPE_CHECKING
+from datetime import UTC, datetime
+from typing import TYPE_CHECKING, Any
 
 import structlog
 
@@ -37,7 +37,7 @@ def _audit_to_dict(row: AuditLogORM) -> dict[str, Any]:
 
 
 async def take_graph_snapshot(
-    repo: "PostgresRepository",
+    repo: PostgresRepository,
     *,
     created_by: str | None = None,
     triggered_by: str = "manual",
@@ -54,7 +54,7 @@ async def take_graph_snapshot(
     snapshot_blob: dict[str, Any] = {
         "nodes": [n.model_dump(mode="json") for n in nodes],
         "edges": [e.model_dump(mode="json") for e in edges],
-        "captured_at": datetime.now(timezone.utc).isoformat(),
+        "captured_at": datetime.now(UTC).isoformat(),
     }
     audit_entries = [_audit_to_dict(r) for r in new_audit_rows]
 
@@ -78,7 +78,7 @@ async def take_graph_snapshot(
 
 
 async def ensure_current_graph_snapshot(
-    repo: "PostgresRepository",
+    repo: PostgresRepository,
     *,
     created_by: str | None = None,
 ) -> bool:

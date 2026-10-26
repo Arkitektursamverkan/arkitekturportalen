@@ -7,7 +7,7 @@ selects on are shown too, without needing a tag.
 """
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from app.schemas.survey_logic import is_empty_answer, match_rule
@@ -152,7 +152,7 @@ def compile_report(
         "anonymous": anonymous,
         "survey_id": str(survey.id),
         "survey_title": survey.title,
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "conditions": _describe_conditions(
             report.get("conditions") or [], survey.questions or [], object_word
         ),

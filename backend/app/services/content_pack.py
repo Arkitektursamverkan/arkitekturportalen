@@ -26,10 +26,11 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from pathlib import Path
-from typing import Any, Awaitable, Callable
+from typing import Any
 
 from sqlalchemy import select
 
@@ -455,7 +456,7 @@ async def export_pack(repo: PostgresRepository, name: str, description: str = ""
     files[MANIFEST] = {
         "format": FORMAT, "version": VERSION, "name": name, "description": description,
         "modules": _pack_modules(files),
-        "exported_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "exported_at": datetime.now(UTC).isoformat(timespec="seconds"),
     }
     return files
 

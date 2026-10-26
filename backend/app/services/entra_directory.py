@@ -12,7 +12,7 @@ from __future__ import annotations
 import base64
 import json
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import httpx
 import structlog
@@ -111,7 +111,7 @@ async def sync_directory(repo: PostgresRepository, graph_token: str) -> int:
         # An empty answer is far more likely a filter or permission problem
         # than an empty company – keep what we have.
         raise DirectoryError("Entra ID lämnade inga personer – den befintliga kopian behålls")
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     async with repo._session_factory() as s:
         for p in people:
             row = {

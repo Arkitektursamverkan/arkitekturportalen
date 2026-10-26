@@ -15,8 +15,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from alembic import op
 from sqlalchemy.util import await_only
+
+from alembic import op
 
 revision = "0066"
 down_revision = None

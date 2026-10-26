@@ -11,8 +11,8 @@ from sqlalchemy import select
 from app import modules
 from app.access import load_policy
 from app.api.v1.calendar import list_pending_events
-from app.api.v1.comments import subject_enabled
 from app.api.v1.change_proposals import list_pending_proposals
+from app.api.v1.comments import subject_enabled
 from app.auth import CurrentUser
 from app.dal.postgres_repository import PostgresRepository
 from app.dependencies import get_repository, require_editor

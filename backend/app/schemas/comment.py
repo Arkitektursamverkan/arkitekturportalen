@@ -7,7 +7,6 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
-
 CommentSubjectType = Literal["principle", "target_architecture", "glossary_term", "nulaagesanalys", "gap_analys"]
 CommentStatus = Literal["pending", "approved", "rejected"]
 

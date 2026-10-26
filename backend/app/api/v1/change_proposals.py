@@ -11,7 +11,7 @@ ea_audit_log, which is the record kept for good.
 """
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 from uuid import UUID
 
@@ -264,7 +264,7 @@ async def resolve_proposal(
         before = _snapshot(p)
         p.status = data.outcome
         p.resolved_by = _display_name(user)
-        p.resolved_at = datetime.now(timezone.utc)
+        p.resolved_at = datetime.now(UTC)
         p.resolution_note = (data.note or "").strip() or None
         await repo._audit(
             s, "PROPOSE_DONE" if data.outcome == "done" else "PROPOSE_REJECT",
@@ -304,7 +304,7 @@ async def withdraw_proposal(
         before = _snapshot(p)
         p.status = "withdrawn"
         p.resolved_by = _display_name(user)
-        p.resolved_at = datetime.now(timezone.utc)
+        p.resolved_at = datetime.now(UTC)
         await repo._audit(
             s, "PROPOSE_WITHDRAW", "node", p.node_id,
             entity_name=node.name if node else None,

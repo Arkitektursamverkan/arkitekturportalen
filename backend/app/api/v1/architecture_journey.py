@@ -2,7 +2,7 @@
 of the documents a step can point to."""
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
@@ -80,7 +80,7 @@ async def approve_document(
         )
     repo = _get_pg_repo()
     approved_by = body.approved_by.strip() or editor.name or editor.email or ""
-    approved_at = body.approved_at if body.approved_at is not None else datetime.now(timezone.utc)
+    approved_at = body.approved_at if body.approved_at is not None else datetime.now(UTC)
     await repo.set_document_approval(
         document_type=doc_type,
         approved_at=approved_at,

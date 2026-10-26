@@ -10,9 +10,13 @@ from app.auth import CurrentUser
 from app.dal.postgres_repository import PostgresRepository
 from app.dependencies import get_repository, require_editor, require_user
 from app.schemas.gap_task import (
-    GapStatusLogCreate, GapStatusLogRead,
-    GapTaskCreate, GapTaskItemSummary, GapTaskRead,
-    GapTaskSummaryResponse, GapTaskUpdate,
+    GapStatusLogCreate,
+    GapStatusLogRead,
+    GapTaskCreate,
+    GapTaskItemSummary,
+    GapTaskRead,
+    GapTaskSummaryResponse,
+    GapTaskUpdate,
 )
 
 router = APIRouter(prefix="/gap-tasks", tags=["gap-tasks"])

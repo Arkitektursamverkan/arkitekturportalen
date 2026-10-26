@@ -6,8 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from app.auth import CurrentUser
 from app.dal.postgres_repository import PostgresRepository
 from app.dependencies import get_repository, require_editor, require_user
-from app.schemas.home_block import HomeBlockRead, HomeBlockUpdate, HomeBlocksList
-
+from app.schemas.home_block import HomeBlockRead, HomeBlocksList, HomeBlockUpdate
 
 router = APIRouter(prefix="/home-blocks", tags=["home-blocks"])
 

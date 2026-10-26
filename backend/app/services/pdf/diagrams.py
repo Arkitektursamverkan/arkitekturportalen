@@ -75,9 +75,11 @@ def domain_pyramid_svg(
         return "#1a1a1a" if highlight is None or highlight == key else "#888888"
 
     parts: list[str] = [
-        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{view_box}" '
-        f'width="{width_mm}mm" height="{height_mm}mm" '
-        f'preserveAspectRatio="xMidYMid meet" font-family="{_FONT}">'
+        (
+            f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{view_box}" '
+            f'width="{width_mm}mm" height="{height_mm}mm" '
+            f'preserveAspectRatio="xMidYMid meet" font-family="{_FONT}">'
+        )
     ]
 
     # Dashed enclosing circle — the holistic frame.

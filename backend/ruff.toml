@@ -1,0 +1,20 @@
+target-version = "py311"
+
+[lint]
+# Broad excepts here are deliberate boundaries: an import reports each failing
+# row and carries on, the health check answers false, external calls become 502.
+ignore = ["BLE001", "S110", "S112"]
+
+[lint.flake8-bugbear]
+# FastAPI's parameter markers are declarations, not calls whose result is shared.
+extend-immutable-calls = [
+    "fastapi.Body",
+    "fastapi.Cookie",
+    "fastapi.Depends",
+    "fastapi.File",
+    "fastapi.Form",
+    "fastapi.Header",
+    "fastapi.Path",
+    "fastapi.Query",
+    "fastapi.Security",
+]

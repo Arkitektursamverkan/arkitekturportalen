@@ -6,7 +6,7 @@ import re
 import secrets
 import unicodedata
 import uuid
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from typing import Any, cast
 from uuid import UUID
 
@@ -16,39 +16,43 @@ from sqlalchemy.engine import CursorResult
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
+from app.dal.access_repository import (
+    AccessRepository,  # also registers the role, group and grant models
+)
 from app.dal.graph_repository import GraphRepository
-from app.dal.workspace_repository import WorkspaceRepository  # also registers the workspace models
-from app.dal.node_content_repository import NodeContentRepository  # also registers the document and note models
-from app.dal.access_repository import AccessRepository  # also registers the role, group and grant models
+from app.dal.node_content_repository import (
+    NodeContentRepository,  # also registers the document and note models
+)
+from app.dal.workspace_repository import (
+    WorkspaceRepository,  # also registers the workspace models
+)
 from app.models.audit import AuditLogORM
 from app.models.base import Base
+from app.models.comment import CommentORM
 from app.models.document_metadata import DocumentMetadataORM
+from app.models.document_stamp import DocumentStampORM
 from app.models.document_version import DocumentVersionORM
 from app.models.edge import EdgeORM
-from app.models.glossary_term import GlossaryTermORM
-from app.models.node import NodeORM
-from app.models.principle_document import PrincipleDocumentORM
-from app.models.target_architecture import TargetArchitectureORM
-from app.models.nulaagesanalys import NulaagesanalysORM
+from app.models.flag import NodeFlagORM
 from app.models.gap_analys import GapAnalysORM
 from app.models.gap_task import GapStatusLogORM, GapTaskORM
-from app.models.solution_sketch import SolutionSketchORM
+from app.models.glossary_request import GlossaryRequestORM
+from app.models.glossary_term import GlossaryTermORM
+from app.models.graph_snapshot import GraphSnapshotORM
+from app.models.home_banner import HomeBannerORM
+from app.models.home_block import HomeBlockORM
+from app.models.node import NodeORM
+from app.models.nulaagesanalys import NulaagesanalysORM
+from app.models.principle_document import PrincipleDocumentORM
 from app.models.published_report import PublishedReportORM
 from app.models.report_name import ReportNameORM
 from app.models.report_tag import ReportTagLinkORM, ReportTagORM
+from app.models.solution_sketch import SolutionSketchORM
 from app.models.survey import SurveyORM
 from app.models.survey_response import SurveyResponseORM
-from app.schemas.survey_logic import compute_visible_question_ids
-from app.models.home_block import HomeBlockORM
-from app.models.home_banner import HomeBannerORM
-from app.models.comment import CommentORM
-from app.models.flag import NodeFlagORM
-from app.models.document_stamp import DocumentStampORM
-from app.models.glossary_request import GlossaryRequestORM
-from app.models.graph_snapshot import GraphSnapshotORM
+from app.models.target_architecture import TargetArchitectureORM
 from app.models.user import UserORM
 from app.schemas.audit import AuditLogList, AuditLogRead
-from app.schemas.document_stamp import JourneyDocumentStatus, JourneyStatusResponse
 from app.schemas.common import (
     EdgeType,
     ExternalSource,
@@ -58,8 +62,10 @@ from app.schemas.common import (
     IntegrationDirection,
     NodeType,
 )
+from app.schemas.document_stamp import JourneyDocumentStatus, JourneyStatusResponse
 from app.schemas.edge import EdgeCreate, EdgeRead
 from app.schemas.node import NodeCreate, NodeRead, NodeUpdate
+from app.schemas.survey_logic import compute_visible_question_ids
 
 log = structlog.get_logger(__name__)
 
@@ -270,7 +276,7 @@ class PostgresRepository(GraphRepository):
             after = _node_snapshot(row)
             # A save that changes nothing is not a change: no audit row.
             if after != before:
-                row.updated_at = datetime.now(timezone.utc)
+                row.updated_at = datetime.now(UTC)
                 await self._audit(
                     s, "UPDATE", "node", node_id,
                     entity_name=row.name, entity_subtype=row.type,
@@ -329,12 +335,12 @@ class PostgresRepository(GraphRepository):
                 # un-prune it, since the source pruning step (sync.py) archives
                 # nodes that drop out of a batch and relies on this to reverse it.
                 row.archived = False
-                row.last_synced_at = datetime.now(timezone.utc)
+                row.last_synced_at = datetime.now(UTC)
                 after = _node_snapshot(row)
                 # Every sync re-sends every record; only log the ones the
                 # source actually changed, or the audit log drowns in no-ops.
                 if after != before:
-                    row.updated_at = datetime.now(timezone.utc)
+                    row.updated_at = datetime.now(UTC)
                     await self._audit(
                         s, "UPDATE", "node", row.id,
                         entity_name=row.name, entity_subtype=row.type,
@@ -353,7 +359,7 @@ class PostgresRepository(GraphRepository):
                     external_source=external_source,
                     external_id=external_id,
                     attributes=data.attributes,
-                    last_synced_at=datetime.now(timezone.utc),
+                    last_synced_at=datetime.now(UTC),
                 )
                 s.add(orm)
                 await self._audit(
@@ -432,7 +438,7 @@ class PostgresRepository(GraphRepository):
             else:
                 attrs.pop("note", None)
             row.attributes = attrs
-            row.updated_at = datetime.now(timezone.utc)
+            row.updated_at = datetime.now(UTC)
             after = _edge_snapshot(row)
             await self._audit(
                 s, "UPDATE", "edge", edge_id,
@@ -455,7 +461,7 @@ class PostgresRepository(GraphRepository):
             attrs = dict(row.attributes or {})
             attrs["direction"] = direction.value
             row.attributes = attrs
-            row.updated_at = datetime.now(timezone.utc)
+            row.updated_at = datetime.now(UTC)
             after = _edge_snapshot(row)
             await self._audit(
                 s, "UPDATE", "edge", edge_id,
@@ -642,9 +648,14 @@ class PostgresRepository(GraphRepository):
         """Aggregate anonymised usage data from the audit log."""
         from collections import defaultdict
         from datetime import timedelta
-        from app.schemas.statistics import DailyActivity, EntityTypeStat, UsageStatistics
 
-        cutoff = datetime.now(timezone.utc) - timedelta(days=period_days)
+        from app.schemas.statistics import (
+            DailyActivity,
+            EntityTypeStat,
+            UsageStatistics,
+        )
+
+        cutoff = datetime.now(UTC) - timedelta(days=period_days)
         # Usage means people: leave out what syncs and imports wrote.
         by_people = or_(AuditLogORM.user_name.is_(None), AuditLogORM.user_name != SYNC_AUDIT_USER)
 
@@ -1030,7 +1041,7 @@ class PostgresRepository(GraphRepository):
             row = await s.get(UserORM, user_id)
             if row is None:
                 return
-            row.last_login_at = datetime.now(timezone.utc)
+            row.last_login_at = datetime.now(UTC)
             await s.commit()
 
     async def list_users(self) -> list[UserORM]:
@@ -1103,7 +1114,7 @@ class PostgresRepository(GraphRepository):
         """
         async with self._session_factory() as s:
             node_rows = (
-                await s.execute(select(NodeORM).where(NodeORM.archived == False))  # noqa: E712
+                await s.execute(select(NodeORM).where(NodeORM.archived == False))
             ).scalars().all()
             user_rows = (await s.execute(select(UserORM))).scalars().all()
 
@@ -1233,7 +1244,7 @@ class PostgresRepository(GraphRepository):
                 merged = dict(row.sections or {})
                 merged.update(updates)
                 row.sections = merged
-                row.updated_at = datetime.now(timezone.utc)
+                row.updated_at = datetime.now(UTC)
                 await self._audit(
                     s, "UPDATE", "principle_document", row.id,
                     entity_name="Arkitekturprinciper",
@@ -1251,7 +1262,7 @@ class PostgresRepository(GraphRepository):
         async with self._session_factory() as s:
             row = (await s.execute(select(PrincipleDocumentORM).limit(1))).scalar_one_or_none()
             if row is not None:
-                row.updated_at = datetime.now(timezone.utc)
+                row.updated_at = datetime.now(UTC)
                 await s.commit()
 
     # ── Target architecture ───────────────────────────────────────────────────
@@ -1284,7 +1295,7 @@ class PostgresRepository(GraphRepository):
             else:
                 before = {"content": row.content}
                 row.content = content
-                row.updated_at = datetime.now(timezone.utc)
+                row.updated_at = datetime.now(UTC)
                 row.updated_by = updated_by
                 await self._audit(
                     s, "UPDATE", "target_architecture", row.id,
@@ -1327,7 +1338,7 @@ class PostgresRepository(GraphRepository):
             else:
                 before = {"content": row.content}
                 row.content = content
-                row.updated_at = datetime.now(timezone.utc)
+                row.updated_at = datetime.now(UTC)
                 row.updated_by = updated_by
                 await self._audit(
                     s, "UPDATE", "nulaagesanalys", row.id,
@@ -1370,7 +1381,7 @@ class PostgresRepository(GraphRepository):
             else:
                 before = {"content": row.content}
                 row.content = content
-                row.updated_at = datetime.now(timezone.utc)
+                row.updated_at = datetime.now(UTC)
                 row.updated_by = updated_by
                 await self._audit(
                     s, "UPDATE", "gap_analys", row.id,
@@ -1510,7 +1521,7 @@ class PostgresRepository(GraphRepository):
             else:
                 row.body = body
                 row.enabled = enabled
-                row.updated_at = datetime.now(timezone.utc)
+                row.updated_at = datetime.now(UTC)
                 row.updated_by = updated_by
             await s.commit()
             await s.refresh(row)
@@ -1548,7 +1559,7 @@ class PostgresRepository(GraphRepository):
             row.body = body
             row.severity = severity
             row.enabled = enabled
-            row.updated_at = datetime.now(timezone.utc)
+            row.updated_at = datetime.now(UTC)
             row.updated_by = updated_by
             await s.commit()
             await s.refresh(row)
@@ -1617,7 +1628,7 @@ class PostgresRepository(GraphRepository):
                 row.status = status
             if answers is not None:
                 row.answers = answers
-            row.updated_at = datetime.now(timezone.utc)
+            row.updated_at = datetime.now(UTC)
             row.updated_by = updated_by
             await s.commit()
             await s.refresh(row)
@@ -1724,7 +1735,7 @@ class PostgresRepository(GraphRepository):
                 row.due_date = due_date
             if include_decommissioned is not None:
                 row.include_decommissioned = include_decommissioned
-            row.updated_at = datetime.now(timezone.utc)
+            row.updated_at = datetime.now(UTC)
             row.updated_by = updated_by
             await s.commit()
             await s.refresh(row)
@@ -1976,7 +1987,7 @@ class PostgresRepository(GraphRepository):
                 await s.execute(
                     select(NodeORM).where(
                         NodeORM.type == survey.target_node_type,
-                        NodeORM.archived == False,  # noqa: E712
+                        NodeORM.archived == False,
                     )
                 )
             ).scalars().all()
@@ -2438,7 +2449,7 @@ class PostgresRepository(GraphRepository):
             select(NodeORM)
             .where(
                 NodeORM.type == survey.target_node_type,
-                NodeORM.archived == False,  # noqa: E712
+                NodeORM.archived == False,
                 ~exists().where(
                     SurveyResponseORM.survey_id == survey.id,
                     SurveyResponseORM.node_id == NodeORM.id,
@@ -2493,7 +2504,7 @@ class PostgresRepository(GraphRepository):
 
             row.answers = answers
             row.status = "submitted"
-            row.submitted_at = datetime.now(timezone.utc)
+            row.submitted_at = datetime.now(UTC)
             row.submitted_by = submitted_by
             await s.commit()
             await s.refresh(row)
@@ -2509,7 +2520,7 @@ class PostgresRepository(GraphRepository):
             if row.status != "submitted":
                 raise ValueError("Endast inskickade svar kan markeras som granskade")
             row.status = "reviewed"
-            row.reviewed_at = datetime.now(timezone.utc)
+            row.reviewed_at = datetime.now(UTC)
             row.reviewed_by = reviewed_by
             await s.commit()
             await s.refresh(row)
@@ -2597,7 +2608,7 @@ class PostgresRepository(GraphRepository):
                 return None
             row.status = status
             row.reply = reply
-            row.reviewed_at = datetime.now(timezone.utc)
+            row.reviewed_at = datetime.now(UTC)
             row.reviewed_by = reviewed_by
             await s.commit()
             await s.refresh(row)
@@ -2725,7 +2736,7 @@ class PostgresRepository(GraphRepository):
             else:
                 row.entries = entries
                 row.updated_by = updated_by
-                row.updated_at = datetime.now(timezone.utc)
+                row.updated_at = datetime.now(UTC)
             await s.commit()
             await s.refresh(row)
             return row
@@ -2829,8 +2840,8 @@ class PostgresRepository(GraphRepository):
             for k, v in updates.items():
                 setattr(row, k, v)
             if updates.get("status") == "done" and row.completed_at is None:
-                row.completed_at = datetime.now(timezone.utc)
-            row.updated_at = datetime.now(timezone.utc)
+                row.completed_at = datetime.now(UTC)
+            row.updated_at = datetime.now(UTC)
             await s.commit()
             await s.refresh(row)
             return row
@@ -2880,13 +2891,6 @@ class PostgresRepository(GraphRepository):
     async def get_document_stamp(self, document_type: str) -> DocumentStampORM | None:
         async with self._session_factory() as s:
             return await s.get(DocumentStampORM, document_type)
-
-    _JOURNEY_DOC_TYPES = [
-        "nulaagesanalys",
-        "target_architecture",
-        "gap_analys",
-        "principles",
-    ]
 
     async def get_journey_stamps(self) -> JourneyStatusResponse:
         """Return stamp status for all four Architecture Journey documents.
@@ -2978,7 +2982,7 @@ class PostgresRepository(GraphRepository):
             else:
                 row.approved_at = approved_at
                 row.approved_by = approved_by or None
-                row.updated_at = datetime.now(timezone.utc)
+                row.updated_at = datetime.now(UTC)
             await s.commit()
             await s.refresh(row)
             return row
@@ -2993,7 +2997,7 @@ class PostgresRepository(GraphRepository):
             row = await s.get(DocumentStampORM, document_type)
             if row:
                 row.approved_at = approved_at
-                row.updated_at = datetime.now(timezone.utc)
+                row.updated_at = datetime.now(UTC)
                 await s.commit()
 
     async def set_revised_at_override(
@@ -3012,7 +3016,7 @@ class PostgresRepository(GraphRepository):
                 s.add(row)
             else:
                 row.revised_at_override = revised_at_override
-                row.updated_at = datetime.now(timezone.utc)
+                row.updated_at = datetime.now(UTC)
             await s.commit()
 
     async def clear_document_approval(self, document_type: str) -> DocumentStampORM | None:
@@ -3026,7 +3030,7 @@ class PostgresRepository(GraphRepository):
                 return None
             row.approved_at = None
             row.approved_by = None
-            row.updated_at = datetime.now(timezone.utc)
+            row.updated_at = datetime.now(UTC)
             await s.commit()
             await s.refresh(row)
             return row
@@ -3188,14 +3192,14 @@ class PostgresRepository(GraphRepository):
     async def respond_to_flag(
         self, *, flag_id: UUID, response: str | None, responded_by: str | None
     ) -> NodeFlagORM | None:
-        from datetime import datetime, timezone
+        from datetime import datetime
         async with self._session_factory() as s:
             flag_row = await s.get(NodeFlagORM, flag_id)
             if flag_row is None:
                 return None
             flag_row.response = response
             flag_row.responded_by = responded_by if response else None
-            flag_row.responded_at = datetime.now(timezone.utc) if response else None
+            flag_row.responded_at = datetime.now(UTC) if response else None
             await s.commit()
             await s.refresh(flag_row)
             return flag_row

@@ -7,7 +7,7 @@ import uuid
 from dataclasses import dataclass, field
 
 import structlog
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from fastapi.responses import StreamingResponse
 
 from app.access import filter_nodes, get_optional_user
@@ -15,9 +15,8 @@ from app.auth import CurrentUser
 from app.dal.graph_repository import GraphRepository
 from app.dependencies import get_repository, require_admin
 from app.schemas.common import EdgeType, ExternalSource, NodeType
-from app.schemas.node import NodeCreate, NodeUpdate
-
 from app.schemas.edge import EdgeCreate
+from app.schemas.node import NodeCreate, NodeUpdate
 
 log = structlog.get_logger(__name__)
 
@@ -521,7 +520,7 @@ def _detect_delimiter(text: str) -> str:
     """Auto-detect CSV delimiter (comma or semicolon) from the first data lines."""
     for line in text.splitlines():
         stripped = line.strip()
-        if not stripped or stripped.startswith("#") or stripped.startswith("["):
+        if not stripped or stripped.startswith(("#", "[")):
             continue
         # First real data/header line — check which delimiter produces more columns
         if stripped.count(";") > stripped.count(","):

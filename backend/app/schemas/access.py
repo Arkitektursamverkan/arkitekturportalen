@@ -49,7 +49,7 @@ class RoleCreate(BaseModel):
     permissions: list[str] = Field(default_factory=list)
 
     @model_validator(mode="after")
-    def _perms(self) -> "RoleCreate":
+    def _perms(self) -> RoleCreate:
         self.permissions = _check_permissions(self.permissions)
         return self
 
@@ -60,7 +60,7 @@ class RoleUpdate(BaseModel):
     permissions: list[str] | None = None
 
     @model_validator(mode="after")
-    def _perms(self) -> "RoleUpdate":
+    def _perms(self) -> RoleUpdate:
         if self.permissions is not None:
             self.permissions = _check_permissions(self.permissions)
         return self
@@ -133,7 +133,7 @@ class GrantCreate(BaseModel):
     note: str = ""
 
     @model_validator(mode="after")
-    def _consistent(self) -> "GrantCreate":
+    def _consistent(self) -> GrantCreate:
         # Exactly the fields the principal and scope need — nothing left over
         # that could later be read as meaning something.
         if self.principal_type == "role":

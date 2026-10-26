@@ -11,7 +11,7 @@ to ea_audit_log.
 """
 from __future__ import annotations
 
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 from typing import Any
 from uuid import UUID
 
@@ -229,7 +229,7 @@ async def create_event(
         e.title = e.title.strip()
         if is_editor:
             e.resolved_by = e.proposed_by
-            e.resolved_at = datetime.now(timezone.utc)
+            e.resolved_at = datetime.now(UTC)
         s.add(e)
         await s.flush()
         for n in nodes:
@@ -308,7 +308,7 @@ async def resolve_event(
         before = _snapshot(e, node_ids)
         e.status = data.outcome
         e.resolved_by = _display_name(user)
-        e.resolved_at = datetime.now(timezone.utc)
+        e.resolved_at = datetime.now(UTC)
         e.resolution_note = (data.note or "").strip() or None
         await repo._audit(
             s, "PROPOSE_APPROVE" if data.outcome == "approved" else "PROPOSE_REJECT",
@@ -348,7 +348,7 @@ async def delete_event(
         if own_proposal:
             e.status = "withdrawn"
             e.resolved_by = _display_name(user)
-            e.resolved_at = datetime.now(timezone.utc)
+            e.resolved_at = datetime.now(UTC)
             await repo._audit(
                 s, "PROPOSE_WITHDRAW", "calendar_event", e.id,
                 entity_name=e.title,

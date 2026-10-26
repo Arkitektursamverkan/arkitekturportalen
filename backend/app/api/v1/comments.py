@@ -68,7 +68,7 @@ async def list_comments(
     rows = await repo.list_comments(
         subject_type=subject_type,
         subject_id=subject_id,
-        statuses=None if is_admin else None,  # filter in-memory below
+        statuses=None,  # filter in-memory below
     )
     if not is_admin:
         actor = _identity(user)
@@ -129,11 +129,10 @@ async def delete_comment(
         raise HTTPException(status_code=404, detail="Comment not found")
     _require_subject(row.subject_type)
     is_admin = user.role in ("admin", "system")
-    if not is_admin:
-        if row.created_by != _identity(user) or row.status != "pending":
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Endast författaren kan ta bort sin egen kommentar (innan den granskats)",
-            )
+    if not is_admin and (row.created_by != _identity(user) or row.status != "pending"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Endast författaren kan ta bort sin egen kommentar (innan den granskats)",
+        )
     await repo.delete_comment(comment_id)
     return Response(status_code=204)

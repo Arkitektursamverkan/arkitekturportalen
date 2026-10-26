@@ -1,7 +1,7 @@
 """Admin CRUD + lifecycle endpoints for surveys ("enkäter")."""
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import UUID
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Query, Response, status
@@ -9,6 +9,7 @@ from fastapi import APIRouter, Body, Depends, HTTPException, Query, Response, st
 from app.auth import CurrentUser
 from app.dal.postgres_repository import PostgresRepository
 from app.dependencies import get_repository, require_admin, require_editor
+from app.schemas.published_report import PublishedReportSummary, PublishReportRequest
 from app.schemas.survey import (
     REPORT_SLOTS,
     SurveyCreate,
@@ -23,10 +24,17 @@ from app.schemas.survey_logic import (
     validate_branch_targets,
     validate_report_definitions,
 )
-from app.schemas.published_report import PublishedReportSummary, PublishReportRequest
-from app.schemas.survey_response import ManualRecipientAdd, RecipientAssign, SurveyResponseSummary
+from app.schemas.survey_response import (
+    ManualRecipientAdd,
+    RecipientAssign,
+    SurveyResponseSummary,
+)
 from app.services.survey_export import build_responses_csv, export_filename
-from app.services.survey_report import available_reports, compile_report, report_questions
+from app.services.survey_report import (
+    available_reports,
+    compile_report,
+    report_questions,
+)
 
 router = APIRouter(prefix="/surveys", tags=["surveys"])
 
@@ -144,12 +152,15 @@ async def update_survey(
     incoming_questions = (
         [q.model_dump() for q in data.questions] if data.questions is not None else None
     )
-    if incoming_questions is not None and await repo.survey_has_submitted_responses(survey_id):
-        if questions_differ_beyond_reports(existing.questions or [], incoming_questions):
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Frågor kan inte längre ändras eftersom svar redan har skickats in",
-            )
+    if (
+        incoming_questions is not None
+        and await repo.survey_has_submitted_responses(survey_id)
+        and questions_differ_beyond_reports(existing.questions or [], incoming_questions)
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Frågor kan inte längre ändras eftersom svar redan har skickats in",
+        )
 
     incoming_reports = (
         [r.model_dump() for r in data.reports] if data.reports is not None else None
@@ -254,12 +265,12 @@ async def export_survey_responses(
 
     # Unanswered slots carry no data — exporting them would just be noise.
     answered = [r for r in rows if r["status"] in ("submitted", "reviewed")]
-    epoch = datetime.min.replace(tzinfo=timezone.utc)
+    epoch = datetime.min.replace(tzinfo=UTC)
     answered.sort(key=lambda r: ((r.get("node_name") or "").lower(), r.get("submitted_at") or epoch))
 
     node_names = await _node_names_for(repo, survey.questions or [])
     csv_text = build_responses_csv(survey, answered, node_names)
-    filename = export_filename(survey.title, datetime.now(timezone.utc))
+    filename = export_filename(survey.title, datetime.now(UTC))
     return Response(
         # BOM so Excel reads it as UTF-8 rather than latin-1.
         content=("\ufeff" + csv_text).encode("utf-8"),
@@ -353,7 +364,7 @@ async def export_survey_report(
     rows = await repo.list_survey_responses(survey_id=survey_id)
     node_names = await _node_names_for(repo, questions)
     report = compile_report(survey, rows, node_names, number)
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     stem = f"{survey.title} {report['name']}"
 
     if format == "pdf":

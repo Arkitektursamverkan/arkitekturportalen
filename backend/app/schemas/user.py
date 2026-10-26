@@ -7,7 +7,6 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
-
 Role = Literal["user", "superuser", "admin"]
 AccessLevel = Literal["none", "read", "edit"]
 
