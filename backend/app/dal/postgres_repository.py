@@ -7,11 +7,12 @@ import secrets
 import unicodedata
 import uuid
 from datetime import date, datetime, timezone
-from typing import Any
+from typing import Any, cast
 from uuid import UUID
 
 import structlog
 from sqlalchemy import delete, exists, func, or_, select, text
+from sqlalchemy.engine import CursorResult
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
@@ -486,9 +487,9 @@ class PostgresRepository(GraphRepository):
 
     async def clear_audit_log(self) -> int:
         async with self._session_factory() as s:
-            result = await s.execute(delete(AuditLogORM))
+            result = cast(CursorResult[Any], await s.execute(delete(AuditLogORM)))
             await s.commit()
-            return result.rowcount  # type: ignore[return-value]
+            return result.rowcount
 
     async def list_audit_logs(
         self,

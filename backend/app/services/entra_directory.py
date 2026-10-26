@@ -140,4 +140,4 @@ async def department_counts(repo: PostgresRepository) -> list[tuple[str, int]]:
                 .order_by(DirectoryPersonORM.department)
             )
         ).all()
-    return [(name, count) for name, count in rows]
+    return [(name, count) for name, count in rows if name is not None]
