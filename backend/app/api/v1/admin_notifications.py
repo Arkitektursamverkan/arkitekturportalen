@@ -56,7 +56,7 @@ class SurveyResponsePendingEntry(BaseModel):
     response_id: UUID
     node_name: str
     submitted_by: str | None
-    submitted_at: datetime
+    submitted_at: datetime | None
 
 
 class NotificationsResponse(BaseModel):
