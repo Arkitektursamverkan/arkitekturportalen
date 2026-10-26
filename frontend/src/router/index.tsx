@@ -37,6 +37,7 @@ const ArchitectureJourneyPage = lazy(() => import("@/pages/ArchitectureJourneyPa
 const Nulaagesanalys = lazy(() => import("@/pages/Nulaagesanalys"));
 const GapAnalys = lazy(() => import("@/pages/GapAnalys"));
 const GapProgressReport = lazy(() => import("@/pages/GapProgressReport"));
+const ReportChanges = lazy(() => import("@/pages/reports/ReportChanges"));
 const UserManagement = lazy(() => import("@/pages/UserManagement"));
 const AccessManagement = lazy(() => import("@/pages/AccessManagement"));
 const SurveyList = lazy(() => import("@/pages/SurveyList"));
@@ -190,6 +191,7 @@ const AppRouter: React.FC = () => (
         <Route path="/reports/roadmap" element={<ReportRoadmap />} />
         <Route path="/reports/principles" element={<ReportPrinciplesDocument />} />
         <Route path="/reports/gap-progress" element={<GapProgressReport />} />
+        <Route path="/reports/changes" element={<ReportChanges />} />
         <Route path="/reports/manual-objects" element={<ReportManualObjects />} />
         <Route path="/reports/flagged-objects" element={<ReportFlaggedObjects />} />
         <Route path="/reports/published/:id" element={<EditorRoute><PublishedReport /></EditorRoute>} />

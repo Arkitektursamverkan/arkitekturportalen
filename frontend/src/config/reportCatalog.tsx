@@ -12,6 +12,7 @@ import ListAltIcon from "@mui/icons-material/ListAlt";
 import MemoryIcon from "@mui/icons-material/Memory";
 import OutlinedFlagIcon from "@mui/icons-material/OutlinedFlag";
 import PeopleIcon from "@mui/icons-material/People";
+import TimelineIcon from "@mui/icons-material/Timeline";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 
 /**
@@ -69,6 +70,7 @@ export const REPORT_CATALOG: ReportMeta[] = [
   meta("costs", "nav.reportCosts", "costs", <InventoryIcon />),
   meta("roadmap", "nav.reportRoadmap", "roadmap", <HubIcon />),
   meta("gap-progress", "nav.reportGapProgress", "gapProgress", <AnalyticsIcon />),
+  meta("changes", "nav.reportChanges", "changes", <TimelineIcon />),
   meta("manual-objects", "nav.reportManualObjects", "manualObjects", <AddCircleOutlineIcon />),
   meta("flagged-objects", "nav.reportFlaggedObjects", "flaggedObjects", <OutlinedFlagIcon />),
 ];

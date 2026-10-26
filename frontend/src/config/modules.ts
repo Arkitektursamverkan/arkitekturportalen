@@ -5,7 +5,7 @@
  * and the router; its API answers 404 anyway. Everything not listed here is
  * the core and always shown.
  */
-export type ModuleKey = "calendar" | "collaboration" | "governance" | "glossary" | "surveys" | "arkitekten";
+export type ModuleKey = "calendar" | "collaboration" | "governance" | "glossary" | "surveys" | "changes" | "arkitekten";
 
 /**
  * Arkitekten (module "arkitekten") has no pages here: it is its own service,
@@ -30,6 +30,7 @@ const MODULE_PATHS: [string, ModuleKey][] = [
   ["/my-surveys", "surveys"],
   ["/s/", "surveys"],
   ["/reports/published/", "surveys"],
+  ["/reports/changes", "changes"],
 ];
 
 /** The module a page belongs to, or null for the core. */

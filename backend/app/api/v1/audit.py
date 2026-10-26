@@ -5,6 +5,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
+from app import modules
 from app.dal.postgres_repository import PostgresRepository
 from app.dependencies import get_repository, require_admin
 from app.schemas.audit import AuditLogList, RestoreResponse
@@ -58,5 +59,8 @@ async def restore_entity(
 @router.delete("", dependencies=[Depends(require_admin)])
 async def clear_audit_log() -> dict:
     repo = _get_pg_repo()
-    count = await repo.clear_audit_log()
-    return {"deleted": count}
+    # The change statistics are counted from the object history: while the
+    # module is on, clearing the log leaves that part.
+    keep = modules.enabled("changes")
+    count = await repo.clear_audit_log(keep_node_history=keep)
+    return {"deleted": count, "kept_node_history": keep}

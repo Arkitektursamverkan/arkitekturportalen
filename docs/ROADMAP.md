@@ -76,6 +76,7 @@ finns kvar; slås den på igen är allt som förut.
 | Arkitekturstyrning | Arkitekturprinciper och principdokumentet, nulägesanalys, målarkitektur, GAP-analys med handlingsplan |
 | Ordlista | Ordlistan och begreppsförfrågningar |
 | Enkäter | Enkäter, Mina enkäter, publicerade enkätrapporter |
+| Förändringsstatistik | Rapporten Förändringsstatistik: tillagda, uppdaterade och borttagna objekt per BDAT-lager och objekttyp över tid; objekthistoriken i revisionsloggen töms inte |
 
 Kärnan är arkitekturobjekten och kopplingarna, vyer och rapporter,
 lösningsskisser, administration samt import och synk.

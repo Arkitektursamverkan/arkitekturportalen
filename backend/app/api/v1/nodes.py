@@ -37,12 +37,17 @@ async def list_nodes(
     return await filter_nodes(user, nodes)
 
 
+def _who(user: CurrentUser) -> str:
+    """The name the audit log keeps for a change."""
+    return user.name or user.email
+
+
 @router.post("", response_model=NodeRead, status_code=status.HTTP_201_CREATED)
 async def create_node(data: NodeCreate, user: CurrentUser = Depends(require_user)) -> NodeRead:
     parent_id = (data.attributes or {}).get("parent_id")
     (await load_policy(user)).require_create(data.type, parent_id)
     repo = get_repository()
-    return await repo.create_node(data)
+    return await repo.create_node(data, user_name=_who(user))
 
 
 @router.get("/{node_id}", response_model=NodeRead)
@@ -70,7 +75,7 @@ async def update_node(node_id: UUID, data: NodeUpdate, user: CurrentUser = Depen
         new_parent = data.attributes.get("parent_id") or None
         if new_parent != (existing.attributes.get("parent_id") or None):
             policy.require_create(existing.type, new_parent)
-    node = await repo.update_node(node_id, data)
+    node = await repo.update_node(node_id, data, user_name=_who(user))
     if not node:
         raise HTTPException(status_code=404, detail="Node not found")
     return node
@@ -121,7 +126,7 @@ async def delete_node(
             s.add(log)
             await s.commit()
 
-    deleted = await repo.delete_node(node_id)
+    deleted = await repo.delete_node(node_id, user_name=_who(current_user))
     if not deleted:
         raise HTTPException(status_code=404, detail="Node not found")
     return Response(status_code=204)

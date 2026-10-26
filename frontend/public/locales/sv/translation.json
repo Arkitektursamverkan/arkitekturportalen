@@ -60,6 +60,7 @@
     "reportRoadmap": "Strategisk färdplan",
     "reportPrinciplesDocument": "Principdokument",
     "reportGapProgress": "GAP-analys progress",
+    "reportChanges": "Förändringsstatistik",
     "reportManualObjects": "Manuellt tillagda objekt",
     "reportFlaggedObjects": "Flaggade objekt",
     "create": "Skapa objekt",
@@ -1062,6 +1063,9 @@
     },
     "gapProgress": {
       "description": "Hur långt GAP-analysens uppgifter har kommit mot målbilden, viktat efter uppgifternas omfattning."
+    },
+    "changes": {
+      "description": "Hur arkitekturen förändras över tid: tillagda, uppdaterade och borttagna objekt per BDAT-lager och objekttyp, med grafer att borra ned i."
     },
     "rename": {
       "action": "Byt namn på rapporten",
