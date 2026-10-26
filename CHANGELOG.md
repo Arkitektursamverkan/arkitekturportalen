@@ -7,11 +7,17 @@ funktioner, en ny korrigering för rättelser.
 
 ## Ej släppt
 
+- (inget än)
+
+## 0.3.2 – 2026-10-26
+
 - Inloggningen: MSAL initieras färdigt innan appen renderas eller något anropar den, så felet `uninitialized_public_client_application` (synligt på inloggningssidan utan Entra-inställningar) är borta. Inloggningsfel från Microsoft visas på svenska med felkod i stället för att krascha.
 - MSAL lyft till `@azure/msal-browser` 5 och `@azure/msal-react` 5. Webbplatsens rot är MSAL 5:s omdirigeringsbrygga, så appregistreringen behöver ingen ny omdirigeringsadress; `index.html` skickas nu med `Cache-Control: no-store`.
 - Frontendtester med Vitest (`npm test`), även i CI.
 - Beroenden uppdaterade: alembic 1.20, bcrypt 5 (lösenord längre än 72 byte kapas som förut, så befintliga lösenord fungerar), neo4j-drivrutinen 6, structlog 26 och anyio 4.15.
 - Frontendens beroenden uppdaterade: Vite 8 (Rolldown) med `@vitejs/plugin-react` 6, Vitest 4, react-router-dom 7 och zustand 5.
+- Backendens beroenden uppdaterade: SQLAlchemy 2.1 (med `[asyncio]`, som numera behövs för greenlet), FastAPI 0.156, httpx 0.28, pydantic-settings 2.16.1 och ruff 0.17 med en egen `ruff.toml`.
+- Borttagningsloggen sparar tidpunkten med tidszon; tidigare lästes den som serverns lokala tid.
 
 ## 0.3.1 – 2026-10-23
 
