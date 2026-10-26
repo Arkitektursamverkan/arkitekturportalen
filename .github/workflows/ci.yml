@@ -3,15 +3,71 @@ name: CI
 on:
   push:
     branches: [main, develop]
+    paths-ignore: ["**.md", "docs/**", ".github/dependabot.yml"]
   pull_request:
     branches: [main, develop]
+    paths-ignore: ["**.md", "docs/**", ".github/dependabot.yml"]
   # The release workflow runs the same checks before it publishes images.
   workflow_call:
 
+# A newer push to the same pull request makes the running checks moot.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
+  # ── What changed ──────────────────────────────────────────────────────────────
+  # Actions minutes are limited: a pull request or a push to a branch checks only
+  # the parts it touches. A release (a tag) checks everything.
+  changes:
+    name: Vad som ändrats
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.diff.outputs.backend }}
+      frontend: ${{ steps.diff.outputs.frontend }}
+      docker: ${{ steps.diff.outputs.docker }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - id: diff
+        env:
+          EVENT: ${{ github.event_name }}
+          REF: ${{ github.ref }}
+          BASE: ${{ github.event.pull_request.base.sha }}
+          BEFORE: ${{ github.event.before }}
+        run: |
+          range=""
+          if [ "$EVENT" = pull_request ]; then
+            range="$BASE...HEAD"
+          elif [ "$EVENT" = push ] && [[ "$REF" == refs/heads/* ]] && [[ ! "$BEFORE" =~ ^0*$ ]]; then
+            range="$BEFORE..HEAD"
+          fi
+          if [ -z "$range" ] || ! files=$(git diff --name-only "$range"); then
+            printf 'backend=true\nfrontend=true\ndocker=true\n' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "$files"
+          has() { grep -qE "$1" <<<"$files" && echo true || echo false; }
+          shared='^\.github/workflows/'
+          {
+            echo "backend=$(has "^backend/|$shared")"
+            echo "frontend=$(has "^frontend/|$shared")"
+            # The image test runs on main and for releases; in a pull request
+            # only when the images or their wiring change.
+            if [ "$EVENT" = pull_request ]; then
+              echo "docker=$(has "Dockerfile|docker-compose|nginx|\.dockerignore|^deploy/|^\.env\.example|$shared")"
+            else
+              echo "docker=true"
+            fi
+          } >> "$GITHUB_OUTPUT"
+
   # ── Backend ───────────────────────────────────────────────────────────────────
   backend:
     name: Backend — lint + test
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
     runs-on: ubuntu-latest
 
     services:
@@ -87,6 +143,8 @@ jobs:
   # ── Frontend ──────────────────────────────────────────────────────────────────
   frontend:
     name: Frontend — type-check + tests + build
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
     runs-on: ubuntu-latest
 
     defaults:
@@ -117,7 +175,11 @@ jobs:
   docker:
     name: Docker build smoke test
     runs-on: ubuntu-latest
-    needs: [backend, frontend]
+    needs: [changes, backend, frontend]
+    # Runs when the checks it waits for passed or were not needed.
+    if: >-
+      !cancelled() && needs.changes.outputs.docker == 'true'
+      && !contains(needs.*.result, 'failure')
 
     steps:
       - uses: actions/checkout@v7

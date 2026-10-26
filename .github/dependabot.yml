@@ -1,15 +1,25 @@
+# Månadsvis, och mindre uppdateringar samlade i en pull request per
+# paketsystem: varje pull request kör CI, och Actions-minuterna är begränsade.
+# Nya huvudversioner kommer var för sig. Säkerhetsuppdateringar kommer som
+# förut, direkt.
 version: 2
 updates:
   - package-ecosystem: "pip"
     directory: "/backend"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     open-pull-requests-limit: 5
+    groups:
+      sma-uppdateringar:
+        update-types: ["minor", "patch"]
   - package-ecosystem: "npm"
     directory: "/frontend"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     open-pull-requests-limit: 5
+    groups:
+      sma-uppdateringar:
+        update-types: ["minor", "patch"]
     ignore:
       # TypeScript 7 (the native compiler) is not supported by
       # typescript-eslint 8 (peer: typescript <6.1). Remove when it is.
@@ -18,13 +28,19 @@ updates:
   - package-ecosystem: "docker"
     directory: "/backend"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     open-pull-requests-limit: 5
+    groups:
+      sma-uppdateringar:
+        update-types: ["minor", "patch"]
   - package-ecosystem: "docker"
     directory: "/frontend"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     open-pull-requests-limit: 5
+    groups:
+      sma-uppdateringar:
+        update-types: ["minor", "patch"]
     ignore:
       # Only even-numbered Node releases get long-term support; stay on LTS.
       - dependency-name: "node"
@@ -32,5 +48,8 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     open-pull-requests-limit: 5
+    groups:
+      sma-uppdateringar:
+        update-types: ["minor", "patch"]
