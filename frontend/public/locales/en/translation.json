@@ -60,6 +60,7 @@
     "reportRoadmap": "Strategic Roadmap",
     "reportPrinciplesDocument": "Principle Document",
     "reportGapProgress": "GAP Analysis Progress",
+    "reportChanges": "Change statistics",
     "reportManualObjects": "Manually Added Objects",
     "reportFlaggedObjects": "Flagged Objects",
     "create": "Create object",
@@ -1062,6 +1063,9 @@
     },
     "gapProgress": {
       "description": "How far the GAP analysis tasks have come towards the target state, weighted by task size."
+    },
+    "changes": {
+      "description": "How the architecture changes over time: objects added, updated and removed per BDAT layer and object type, with charts to drill into."
     },
     "rename": {
       "action": "Rename report",

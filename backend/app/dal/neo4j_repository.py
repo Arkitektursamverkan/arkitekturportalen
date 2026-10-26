@@ -115,7 +115,7 @@ class Neo4jRepository(GraphRepository):
             )
             return [_record_to_node_read(r["p"]) async for r in result]
 
-    async def create_node(self, data: NodeCreate) -> NodeRead:
+    async def create_node(self, data: NodeCreate, user_name: str | None = None) -> NodeRead:
         now = _now_iso()
         node_id = str(uuid.uuid4())
         async with self._driver.session() as s:
@@ -135,7 +135,7 @@ class Neo4jRepository(GraphRepository):
             assert record is not None
             return _record_to_node_read(record["p"])
 
-    async def update_node(self, node_id: UUID, data: NodeUpdate) -> NodeRead | None:
+    async def update_node(self, node_id: UUID, data: NodeUpdate, user_name: str | None = None) -> NodeRead | None:
         updates = data.model_dump(exclude_none=True)
         updates["updated_at"] = _now_iso()
         async with self._driver.session() as s:
@@ -146,7 +146,7 @@ class Neo4jRepository(GraphRepository):
             record = await result.single()
             return _record_to_node_read(record["p"]) if record else None
 
-    async def delete_node(self, node_id: UUID) -> bool:
+    async def delete_node(self, node_id: UUID, user_name: str | None = None) -> bool:
         async with self._driver.session() as s:
             result = await s.run(
                 "MATCH (n:EANode {id: $id}) DETACH DELETE n RETURN count(n) AS cnt",

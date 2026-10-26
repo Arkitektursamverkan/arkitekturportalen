@@ -19,6 +19,7 @@ from pydantic import BaseModel, Field
 
 from app.config import settings
 from app.dal.graph_repository import GraphRepository
+from app.dal.postgres_repository import SYNC_AUDIT_USER
 from app.dependencies import get_repository, require_admin
 from app.schemas.common import ExternalSource, NodeType
 from app.schemas.node import NodeCreate, NodeUpdate
@@ -223,7 +224,7 @@ async def _run_sync(profile: SyncProfile, repo: GraphRepository) -> dict[str, An
                     continue
                 parent_id = _resolve_parent(proc.attributes, prefix_to_id, name_to_id)
                 if parent_id:
-                    await repo.update_node(proc.id, NodeUpdate(attributes=_with_parent(proc.attributes, parent_id)))
+                    await repo.update_node(proc.id, NodeUpdate(attributes=_with_parent(proc.attributes, parent_id)), user_name=SYNC_AUDIT_USER)
 
             # Group prefix-less processes from this flow under a container node so
             # they appear in the process tree rather than being invisible orphans.
@@ -252,7 +253,7 @@ async def _run_sync(profile: SyncProfile, repo: GraphRepository) -> dict[str, An
                     )
                     cid = str(container_node.id)
                     for proc in orphaned:
-                        await repo.update_node(proc.id, NodeUpdate(attributes=_with_parent(proc.attributes, cid)))
+                        await repo.update_node(proc.id, NodeUpdate(attributes=_with_parent(proc.attributes, cid)), user_name=SYNC_AUDIT_USER)
                     log.info("sync.no_prefix_container", flow_id=profile.flow_id, count=len(orphaned))
         except Exception as exc:
             log.warning("sync.parent_resolve_error", error=str(exc))
@@ -285,7 +286,7 @@ async def _run_sync(profile: SyncProfile, repo: GraphRepository) -> dict[str, An
                     and node.external_id not in synced_external_ids
                     and not node.archived
                     and node.last_synced_at is not None):
-                await repo.update_node(node.id, NodeUpdate(archived=True))
+                await repo.update_node(node.id, NodeUpdate(archived=True), user_name=SYNC_AUDIT_USER)
                 archived_count += 1
         if archived_count:
             log.info("sync.archived", flow_id=profile.flow_id, count=archived_count)

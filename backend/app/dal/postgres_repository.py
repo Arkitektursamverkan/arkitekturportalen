@@ -243,7 +243,7 @@ class PostgresRepository(GraphRepository):
             rows = (await s.execute(q)).scalars().all()
             return [_node_to_read(r) for r in rows]
 
-    async def create_node(self, data: NodeCreate) -> NodeRead:
+    async def create_node(self, data: NodeCreate, user_name: str | None = None) -> NodeRead:
         async with self._session_factory() as s:
             orm = NodeORM(
                 id=uuid.uuid4(),
@@ -258,14 +258,14 @@ class PostgresRepository(GraphRepository):
             await self._audit(
                 s, "CREATE", "node", orm.id,
                 entity_name=data.name, entity_subtype=data.type.value,
-                snapshot_after=_node_snapshot(orm),
+                snapshot_after=_node_snapshot(orm), user_name=user_name,
             )
             await s.commit()
             await s.refresh(orm)
             log.info("node.created", id=str(orm.id), type=orm.type, name=orm.name)
             return _node_to_read(orm)
 
-    async def update_node(self, node_id: UUID, data: NodeUpdate) -> NodeRead | None:
+    async def update_node(self, node_id: UUID, data: NodeUpdate, user_name: str | None = None) -> NodeRead | None:
         async with self._session_factory() as s:
             row = await s.get(NodeORM, node_id)
             if not row:
@@ -280,13 +280,13 @@ class PostgresRepository(GraphRepository):
                 await self._audit(
                     s, "UPDATE", "node", node_id,
                     entity_name=row.name, entity_subtype=row.type,
-                    snapshot_before=before, snapshot_after=after,
+                    snapshot_before=before, snapshot_after=after, user_name=user_name,
                 )
             await s.commit()
             await s.refresh(row)
             return _node_to_read(row)
 
-    async def delete_node(self, node_id: UUID) -> bool:
+    async def delete_node(self, node_id: UUID, user_name: str | None = None) -> bool:
         async with self._session_factory() as s:
             row = await s.get(NodeORM, node_id)
             if not row:
@@ -302,12 +302,12 @@ class PostgresRepository(GraphRepository):
                     s, "DELETE", "edge", edge.id,
                     entity_name=f"{edge.source_id} → {edge.target_id}",
                     entity_subtype=edge.type,
-                    snapshot_before=_edge_snapshot(edge),
+                    snapshot_before=_edge_snapshot(edge), user_name=user_name,
                 )
             await self._audit(
                 s, "DELETE", "node", node_id,
                 entity_name=row.name, entity_subtype=row.type,
-                snapshot_before=node_snap,
+                snapshot_before=node_snap, user_name=user_name,
             )
             await s.delete(row)
             await s.commit()
@@ -491,9 +491,14 @@ class PostgresRepository(GraphRepository):
 
     # ── Audit log queries ──────────────────────────────────────────────────────
 
-    async def clear_audit_log(self) -> int:
+    async def clear_audit_log(self, keep_node_history: bool = False) -> int:
+        """Delete the audit log; with keep_node_history the rows about
+        objects stay, since the change statistics are counted from them."""
+        stmt = delete(AuditLogORM)
+        if keep_node_history:
+            stmt = stmt.where(AuditLogORM.entity_type != "node")
         async with self._session_factory() as s:
-            result = cast(CursorResult[Any], await s.execute(delete(AuditLogORM)))
+            result = cast(CursorResult[Any], await s.execute(stmt))
             await s.commit()
             return result.rowcount
 

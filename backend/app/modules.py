@@ -41,6 +41,8 @@ MODULES: tuple[Module, ...] = (
            "Organisationens begrepp och förfrågningar om nya begrepp."),
     Module("surveys", "Enkäter",
            "Enkäter till användarna, Mina enkäter och publicerade enkätrapporter."),
+    Module("changes", "Förändringsstatistik",
+           "Hur arkitekturen förändras över tid: tillagda, ändrade och borttagna objekt per BDAT-lager och objekttyp, med grafer och filter."),
     Module("arkitekten", "Arkitekten (processritaren)",
            "Processbilder ur Arkitekten på processkartan, publicering ur Arkitekten och en länk till verktyget.",
            requires_platform=True),

@@ -45,15 +45,16 @@ class GraphRepository(ABC):
         """Return nodes, optionally filtered by type / external source."""
 
     @abstractmethod
-    async def create_node(self, data: NodeCreate) -> NodeRead:
-        """Persist a new node and return it with server-generated fields."""
+    async def create_node(self, data: NodeCreate, user_name: str | None = None) -> NodeRead:
+        """Persist a new node and return it with server-generated fields.
+        `user_name` is who made the change, for the audit log."""
 
     @abstractmethod
-    async def update_node(self, node_id: UUID, data: NodeUpdate) -> NodeRead | None:
+    async def update_node(self, node_id: UUID, data: NodeUpdate, user_name: str | None = None) -> NodeRead | None:
         """Partial-update a node; return None if not found."""
 
     @abstractmethod
-    async def delete_node(self, node_id: UUID) -> bool:
+    async def delete_node(self, node_id: UUID, user_name: str | None = None) -> bool:
         """Delete a node (cascades to its edges); return True if deleted."""
 
     @abstractmethod

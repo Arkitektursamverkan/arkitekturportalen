@@ -15,6 +15,7 @@ from app.api.v1 import (
     calendar,
     change_log,
     change_proposals,
+    change_statistics,
     comments,
     csv_import,
     directory,
@@ -95,6 +96,7 @@ api_router.include_router(comments.router)
 api_router.include_router(admin_notifications.router)
 api_router.include_router(document_metadata.router)
 api_router.include_router(glossary.router, dependencies=[Depends(modules.requires("glossary"))])
+api_router.include_router(change_statistics.router, dependencies=[Depends(modules.requires("changes"))])
 api_router.include_router(nulaagesanalys.router, dependencies=[Depends(modules.requires("governance"))])
 api_router.include_router(gap_analys.router, dependencies=[Depends(modules.requires("governance"))])
 api_router.include_router(gap_tasks.router, dependencies=[Depends(modules.requires("governance"))])
