@@ -7,6 +7,10 @@ funktioner, en ny korrigering för rättelser.
 
 ## Ej släppt
 
+- (inget än)
+
+## 0.4.0 – 2026-10-26
+
 - Ny modul **Förändringsstatistik** (`changes`): rapporten Förändringsstatistik under Rapporter visar hur arkitekturen förändras – tillagda, uppdaterade och borttagna objekt per BDAT-lager (verksamhet, information, applikation, teknik) och objekttyp mellan två datum. Grafer över förändringar och antal objekt över tid, per objekttyp och per ändrat fält; klick i graferna borrar ned (en stapel öppnar perioden, en typ eller ett fält filtrerar). Filter på händelse, källa och vem som ändrat, sorterbara tabeller per objekt och per händelse, CSV-export. Arkiverade objekt räknas som borttagna, återställda som tillagda. Alla inloggade ser rapporten, men bara de objekt de får se; vem som ändrat visas för administratörer. Underlaget är revisionsloggen (`GET /api/v1/change-statistics`).
 - Med modulen på tömmer *Töm revisionsloggen* inte längre objekthistoriken, som statistiken räknas från.
 - Revisionsloggen sparar vem som skapat, ändrat eller tagit bort ett objekt (tidigare tomt för ändringar i portalen), och synkroniseringens arkiveringar och processträd står på Synkronisering.
