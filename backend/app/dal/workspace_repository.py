@@ -8,9 +8,11 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, date, datetime
+from typing import Any, cast
 from uuid import UUID
 
 from sqlalchemy import delete, func, select
+from sqlalchemy.engine import CursorResult
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.models.user import UserORM
@@ -287,12 +289,12 @@ class WorkspaceRepository:
 
     async def remove_member(self, workspace_id: UUID, user_id: UUID) -> bool:
         async with self._session_factory() as s:
-            res = await s.execute(
+            res = cast(CursorResult[Any], await s.execute(
                 delete(WorkspaceMemberORM).where(
                     WorkspaceMemberORM.workspace_id == workspace_id,
                     WorkspaceMemberORM.user_id == user_id,
                 )
-            )
+            ))
             await s.commit()
             return res.rowcount > 0
 
