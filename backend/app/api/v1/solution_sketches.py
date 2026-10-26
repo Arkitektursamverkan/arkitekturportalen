@@ -11,9 +11,9 @@ from app.dependencies import get_repository, require_editor, require_user
 from app.schemas.solution_sketch import (
     SketchCreate,
     SketchRead,
+    SketchStatus,
     SketchSummary,
     SketchUpdate,
-    SketchStatus,
 )
 
 router = APIRouter(prefix="/solution-sketches", tags=["solution-sketches"])

@@ -4,7 +4,6 @@ from __future__ import annotations
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-
 # Values that have shipped as defaults in this repository at some point.
 _PLACEHOLDER_SECRETS = {
     "",

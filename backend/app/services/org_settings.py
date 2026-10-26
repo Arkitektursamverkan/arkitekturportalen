@@ -185,7 +185,7 @@ def _logo_type(data: bytes) -> str:
     if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
         return "image/webp"
     head = data[:1024].lstrip().lower()
-    if (head.startswith(b"<?xml") or head.startswith(b"<svg")) and b"<svg" in data[:4096].lower():
+    if head.startswith((b"<?xml", b"<svg")) and b"<svg" in data[:4096].lower():
         return "image/svg+xml"
     raise OrgSettingsError("Logotypen ska vara PNG, JPEG, WebP eller SVG")
 

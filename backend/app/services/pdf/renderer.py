@@ -10,6 +10,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from app.config import settings
 from app.models.document_version import DocumentVersionORM
+from app.services import org_settings
 from app.services.document_version import (
     DOCUMENT_GAP_ANALYS,
     DOCUMENT_GLOSSARY,
@@ -18,7 +19,6 @@ from app.services.document_version import (
     DOCUMENT_TARGET_ARCHITECTURE,
 )
 from app.services.pdf.diagrams import domain_pyramid_svg
-from app.services import org_settings
 
 log = structlog.get_logger(__name__)
 
@@ -102,7 +102,7 @@ def _format_datetime_iso(value: Any) -> str:
         return ""
     if isinstance(value, str):
         try:
-            dt = datetime.fromisoformat(value.replace("Z", "+00:00"))
+            dt = datetime.fromisoformat(value)
         except ValueError:
             return value
     elif isinstance(value, datetime):

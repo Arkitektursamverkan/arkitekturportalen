@@ -57,7 +57,7 @@ class WorkspaceSummary(BaseModel):
 
 
 class WorkspaceRead(WorkspaceSummary):
-    members: list["MemberRead"]
+    members: list[MemberRead]
 
 
 # ── Members ─────────────────────────────────────────────────────────────────

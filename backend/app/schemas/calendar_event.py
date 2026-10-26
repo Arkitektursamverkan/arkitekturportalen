@@ -54,7 +54,7 @@ class CalendarEventBase(BaseModel):
         return list(dict.fromkeys(cleaned))
 
     @model_validator(mode="after")
-    def _check_times(self) -> "CalendarEventBase":
+    def _check_times(self) -> CalendarEventBase:
         if self.recurrence == "once":
             self.end_date = None
         elif self.end_date is not None and self.end_date < self.start_date:

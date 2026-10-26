@@ -18,7 +18,17 @@ from datetime import date
 from urllib.parse import quote
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Response, UploadFile, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    File,
+    Form,
+    HTTPException,
+    Query,
+    Response,
+    UploadFile,
+    status,
+)
 from pydantic import ValidationError
 
 from app.access import load_policy
@@ -245,7 +255,7 @@ async def create_link(
 async def update_document(
     node_id: UUID, document_id: UUID, data: DocumentUpdate, user: CurrentUser = Depends(require_user),
 ) -> DocumentRead:
-    node, perms, doc = await _document(node_id, document_id, user)
+    _node, perms, doc = await _document(node_id, document_id, user)
     require(_can_edit_document(doc, perms, user))
     fields = data.model_dump(exclude_none=True, exclude={"clear_review_date"})
     if data.clear_review_date:

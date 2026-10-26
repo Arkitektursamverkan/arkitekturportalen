@@ -25,7 +25,7 @@ class ChangeWindow(BaseModel):
         return v.replace(tzinfo=None) if v is not None else None
 
     @model_validator(mode="after")
-    def _check_window(self) -> "ChangeWindow":
+    def _check_window(self) -> ChangeWindow:
         if self.ends_at is not None and self.ends_at < self.starts_at:
             raise ValueError("Sluttiden kan inte ligga före starttiden")
         return self

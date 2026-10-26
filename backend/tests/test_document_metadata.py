@@ -103,8 +103,9 @@ async def test_metadata_is_snapshotted_into_version(client, api_headers, repo):
 
     # The freeze: version row's snapshot must still contain Person A
     # even though the live metadata is now Person B.
-    from sqlalchemy import text as _t
     from uuid import UUID
+
+    from sqlalchemy import text as _t
     versions = await client.get(
         "/api/v1/target-architecture/versions", headers=api_headers
     )

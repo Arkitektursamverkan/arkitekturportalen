@@ -1,7 +1,7 @@
 """Node CRUD endpoints."""
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import UTC, datetime
 from uuid import UUID, uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
@@ -116,7 +116,7 @@ async def delete_node(
                 node_type=node.type,
                 reason=data.reason.strip(),
                 deleted_by=current_user.email or current_user.name,
-                deleted_at=datetime.utcnow(),
+                deleted_at=datetime.now(UTC),
             )
             s.add(log)
             await s.commit()

@@ -26,7 +26,8 @@ what the everyone grants give.
 """
 from __future__ import annotations
 
-from typing import Annotated, Any, Iterable, Literal, TypeVar
+from collections.abc import Iterable
+from typing import Annotated, Any, Literal, TypeVar
 from uuid import UUID
 
 from fastapi import Header, HTTPException, status

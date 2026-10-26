@@ -3,20 +3,19 @@ from __future__ import annotations
 
 import json
 import os
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 from uuid import UUID
 
 import structlog
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Query
+from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
 from fastapi.responses import StreamingResponse
 
 from app.dal.graph_repository import GraphRepository
 from app.dependencies import get_repository, require_admin
-from app.schemas.node import NodeCreate, NodeRead, NodeUpdate
-
 from app.schemas.edge import EdgeCreate
+from app.schemas.node import NodeCreate, NodeRead, NodeUpdate
 
 log = structlog.get_logger(__name__)
 
@@ -31,7 +30,7 @@ async def _dump_all(repo: GraphRepository) -> dict[str, Any]:
     edges = await repo.list_edges()
     return {
         "version": "1.0",
-        "exported_at": datetime.now(timezone.utc).isoformat(),
+        "exported_at": datetime.now(UTC).isoformat(),
         "nodes": [n.model_dump(mode="json") for n in nodes],
         "edges": [e.model_dump(mode="json") for e in edges],
     }
@@ -134,7 +133,7 @@ async def export_database(
     repo = get_repository()
     data = await _dump_all(repo)
     content = json.dumps(data, ensure_ascii=False, indent=2)
-    filename = f"ea_backup_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}.json"
+    filename = f"ea_backup_{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}.json"
     return StreamingResponse(
         iter([content]),
         media_type="application/json",
@@ -196,7 +195,7 @@ async def create_snapshot(
     data = await _dump_all(repo)
     data["label"] = label
 
-    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
     filename = f"snapshot_{timestamp}.json"
     filepath = SNAPSHOT_DIR / filename
     filepath.write_text(json.dumps(data, ensure_ascii=False, indent=2))

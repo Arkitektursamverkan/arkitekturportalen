@@ -22,7 +22,6 @@ from app.dependencies import set_repository
 from app.main import create_app
 from app.models.base import Base
 
-
 TEST_DB_URL = os.environ.get(
     "DATABASE_URL",
     "postgresql+asyncpg://ea_user:ea_pass@localhost:5432/ea_db_test",

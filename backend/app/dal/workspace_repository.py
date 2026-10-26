@@ -7,7 +7,7 @@ as `repo.workspaces`.
 from __future__ import annotations
 
 import uuid
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from uuid import UUID
 
 from sqlalchemy import delete, func, select
@@ -205,7 +205,7 @@ class WorkspaceRepository:
                 row.status = status
             if visibility is not None:
                 row.visibility = visibility
-            row.updated_at = datetime.now(timezone.utc)
+            row.updated_at = datetime.now(UTC)
             row.updated_by = updated_by
             await s.commit()
             await s.refresh(row)
@@ -378,7 +378,7 @@ class WorkspaceRepository:
                 row.body = body
             if sort_order is not None:
                 row.sort_order = sort_order
-            row.updated_at = datetime.now(timezone.utc)
+            row.updated_at = datetime.now(UTC)
             row.updated_by = updated_by
             await s.commit()
             await s.refresh(row)
@@ -462,7 +462,7 @@ class WorkspaceRepository:
                 row.meeting_date = meeting_date
             if body is not None:
                 row.body = body
-            row.updated_at = datetime.now(timezone.utc)
+            row.updated_at = datetime.now(UTC)
             row.updated_by = updated_by
             await s.commit()
             await s.refresh(row)
@@ -538,7 +538,7 @@ class WorkspaceRepository:
             for field in ("title", "starts_at", "ends_at", "all_day", "location", "description"):
                 if field in changes:
                     setattr(row, field, changes[field])
-            row.updated_at = datetime.now(timezone.utc)
+            row.updated_at = datetime.now(UTC)
             row.updated_by = updated_by
             await s.commit()
             await s.refresh(row)
@@ -672,7 +672,7 @@ class WorkspaceRepository:
             if row is None:
                 return None
             row.body = body
-            row.edited_at = datetime.now(timezone.utc)
+            row.edited_at = datetime.now(UTC)
             await s.commit()
             await s.refresh(row)
             return row
@@ -769,7 +769,7 @@ class WorkspaceRepository:
                 row.description = description
             if status is not None and status != row.status:
                 row.status = status
-                row.completed_at = datetime.now(timezone.utc) if status == "done" else None
+                row.completed_at = datetime.now(UTC) if status == "done" else None
             if set_assignee:
                 row.assignee_user_id = assignee_user_id
             if clear_due_date:
@@ -778,7 +778,7 @@ class WorkspaceRepository:
                 row.due_date = due_date
             if sort_order is not None:
                 row.sort_order = sort_order
-            row.updated_at = datetime.now(timezone.utc)
+            row.updated_at = datetime.now(UTC)
             row.updated_by = updated_by
             await s.commit()
             await s.refresh(row)

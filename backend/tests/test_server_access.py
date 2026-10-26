@@ -77,7 +77,7 @@ async def test_utan_behorighet_syns_servern_inte(client, api_headers, repo, monk
 
 @pytest.mark.asyncio
 async def test_lasa_ser_men_andrar_inte(client, api_headers, repo):
-    server_id, tjanst_id, edge_id = await _server_med_tjanst(client, api_headers, "Larmserver – läs")
+    server_id, _tjanst_id, edge_id = await _server_med_tjanst(client, api_headers, "Larmserver – läs")
     lasare = await _anvandare(repo, "lasa.servrar@example.org", servrar="read")
 
     assert (await client.get(f"/api/v1/nodes/{server_id}", headers=lasare)).status_code == 200

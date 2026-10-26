@@ -1,8 +1,8 @@
 """FastAPI application factory with lifespan management."""
 from __future__ import annotations
 
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from typing import AsyncIterator
 
 import structlog
 from fastapi import FastAPI
@@ -17,6 +17,7 @@ log = structlog.get_logger(__name__)
 
 def _configure_logging() -> None:
     import logging
+
     import structlog
 
     structlog.configure(

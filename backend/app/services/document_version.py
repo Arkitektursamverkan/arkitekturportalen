@@ -8,9 +8,10 @@ version_major += 1 and version_minor = 0).
 """
 from __future__ import annotations
 
-import structlog
 from datetime import datetime
 from typing import Any
+
+import structlog
 
 from app.dal.postgres_repository import PostgresRepository
 from app.models.audit import AuditLogORM

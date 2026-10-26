@@ -7,7 +7,6 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
-
 SketchStatus = Literal["draft", "in_review", "approved", "archived"]
 
 

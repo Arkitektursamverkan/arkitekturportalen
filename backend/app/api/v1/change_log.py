@@ -35,8 +35,8 @@ from app.schemas.change_entry import (
     ChangeEntryWrite,
     ChangeLogPermissions,
 )
-from app.services.calendar_recurrence import occurrences
 from app.services import org_settings
+from app.services.calendar_recurrence import occurrences
 
 router = APIRouter(prefix="/change-log", tags=["change-log"])
 

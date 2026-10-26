@@ -15,7 +15,7 @@ from __future__ import annotations
 import time
 import uuid
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import Any, Literal
 
 import bcrypt
@@ -89,7 +89,7 @@ def verify_password(plain: str, hashed: str) -> bool:
 # ── Local JWT issue/verify ──────────────────────────────────────────────────
 
 def issue_local_token(user: UserORM) -> str:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     payload = {
         "sub": str(user.id),
         "name": user.name,
@@ -168,7 +168,7 @@ async def find_or_create_user(
     or local account); else auto-create (bootstrap-admin lookup).
     Local: find by user-id (sub); the user must already exist (admin-created).
     """
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     if token_type == "entra":
         oid = claims.get("oid")

@@ -7,7 +7,7 @@ exposes it as `repo.node_content`. Access decisions are the API layer's.
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 from uuid import UUID
 
@@ -139,7 +139,7 @@ class NodeContentRepository:
                 id=uuid.uuid4(), document_id=doc.id, version_no=last + 1, uploaded_by=actor, **file,
             ))
             row.updated_by = actor
-            row.updated_at = datetime.now(timezone.utc)
+            row.updated_at = datetime.now(UTC)
             _audit(s, "UPDATE", row, node_name, node_type, actor,
                    f"Version {last + 1}: {file['filename']}")
             await s.commit()
@@ -242,7 +242,7 @@ class NodeContentRepository:
             if row is None:
                 return None
             if "body" in fields and fields["body"] != row.body:
-                row.edited_at = datetime.now(timezone.utc)
+                row.edited_at = datetime.now(UTC)
             for k, v in fields.items():
                 setattr(row, k, v)
             await s.commit()

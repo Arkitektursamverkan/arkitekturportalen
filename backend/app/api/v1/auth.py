@@ -5,7 +5,7 @@ local-account email+password login, returning a JWT signed by us.
 """
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, EmailStr, Field
@@ -52,7 +52,7 @@ async def login_local(data: LocalLoginRequest) -> LocalLoginResponse:
             detail="Felaktig e-post eller lösenord",
         )
 
-    user.last_login_at = datetime.now(timezone.utc)
+    user.last_login_at = datetime.now(UTC)
     await repo.touch_user_login(user.id)
     await repo.record_login_event(user.id)
     token = issue_local_token(user)

@@ -12,10 +12,9 @@ from app.dependencies import get_repository, require_editor, require_user
 from app.schemas.home_banner import (
     HomeBannerCreate,
     HomeBannerRead,
-    HomeBannerUpdate,
     HomeBannersList,
+    HomeBannerUpdate,
 )
-
 
 router = APIRouter(prefix="/home-banners", tags=["home-banners"])
 
