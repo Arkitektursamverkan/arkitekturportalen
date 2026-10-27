@@ -1133,7 +1133,7 @@
       "maxSize": "Max {{mb}} MB. Allowed: Office, PDF, text, images, Visio and e-mail.",
       "tooLarge": "The file is too large (max {{mb}} MB).",
       "download": "Download",
-      "openPdf": "Open",
+      "viewPdf": "View PDF",
       "openLink": "Open link",
       "edit": "Edit",
       "delete": "Delete",
@@ -1299,5 +1299,11 @@
     "noServers": "The service is not connected to a server yet. Connections are made from the server.",
     "edit": "Edit the server service",
     "noAccess": "You have no access to Servers. Ask an administrator for access."
+  },
+  "pdfViewer": {
+    "download": "Download",
+    "openSource": "Open at source",
+    "maximize": "Maximize",
+    "restore": "Restore size"
   }
 }

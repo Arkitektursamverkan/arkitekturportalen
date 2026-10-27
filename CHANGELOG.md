@@ -7,7 +7,7 @@ funktioner, en ny korrigering för rättelser.
 
 ## Ej släppt
 
-- (inget än)
+- **PDF-visare** under fliken Filer: ögat (*Visa PDF*) öppnar PDF:en i ett fönster i portalen, som går att flytta (titelraden), ändra storlek på (nedre högra hörnet), förstora (dubbelklick) och stänga (Esc). Appen bakom går att använda medan det är öppet, och läge och storlek sparas till nästa gång. Fungerar för uppladdade PDF:er och för länkar till SharePoint och OneDrive: filen hämtas med Microsoft Graph i den inloggade användarens namn, så man ser bara det man har behörighet till i SharePoint. Kräver den delegerade Graph-behörigheten `Files.Read.All` med administratörsmedgivande i portalens appregistrering. Länkar som inte är en PDF får ett meddelande och en knapp för att öppna dem där de finns.
 
 ## 0.4.0 – 2026-10-26
 

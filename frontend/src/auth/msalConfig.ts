@@ -51,6 +51,11 @@ export const directoryRequest = {
   scopes: ["https://graph.microsoft.com/User.Read.All"],
 };
 
+/** Läsa filer i SharePoint och OneDrive som användaren själv har behörighet till – för PDF-visaren. */
+export const filesRequest = {
+  scopes: ["https://graph.microsoft.com/Files.Read.All"],
+};
+
 export const tokenRequest = {
   scopes: [ENTRA_API_SCOPE],
 };

@@ -195,26 +195,20 @@ export function useDeleteDocument(nodeId: string) {
   });
 }
 
-/** Fetches through the API client so the auth header is applied, then saves
- *  the file — or, for a PDF asked to be opened, shows it in a new tab. */
-export async function fetchDocumentFile(
-  nodeId: string,
-  docId: string,
-  version: DocumentVersion,
-  mode: "download" | "open" = "download",
-): Promise<void> {
+/** Fetches through the API client so the auth header is applied. */
+export async function fetchDocumentBlob(nodeId: string, docId: string, version: DocumentVersion): Promise<Blob> {
   const { data } = await apiClient.get<Blob>(`/nodes/${nodeId}/documents/${docId}/download`, {
     params: { version: version.version_no },
     responseType: "blob",
     timeout: 120_000,
   });
+  return data;
+}
+
+/** Saves the file in the browser's downloads. */
+export async function fetchDocumentFile(nodeId: string, docId: string, version: DocumentVersion): Promise<void> {
+  const data = await fetchDocumentBlob(nodeId, docId, version);
   const url = URL.createObjectURL(data);
-  if (mode === "open") {
-    window.open(url, "_blank", "noopener");
-    // The new tab has loaded the blob by the time a minute has passed.
-    setTimeout(() => URL.revokeObjectURL(url), 60_000);
-    return;
-  }
   const a = document.createElement("a");
   a.href = url;
   a.download = version.filename;

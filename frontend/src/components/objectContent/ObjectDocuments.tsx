@@ -15,11 +15,14 @@ import LockIcon from "@mui/icons-material/Lock";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
 import LinkIcon from "@mui/icons-material/Link";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useTranslation } from "react-i18next";
 import ErrorAlert from "@/components/common/ErrorAlert";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
+import PdfViewerWindow, { type PdfSource } from "@/components/common/PdfViewerWindow";
+import { canViewSharePoint, fetchSharePointPdf, isSharePointUrl } from "@/api/sharepoint";
 import {
-  DOCUMENT_TYPES, fetchDocumentFile, useCreateLink, useDeleteDocument, useDocumentVersions,
+  DOCUMENT_TYPES, fetchDocumentBlob, fetchDocumentFile, useCreateLink, useDeleteDocument, useDocumentVersions,
   useNodeDocuments, useUpdateDocument, useUploadDocument, useUploadVersion,
   type DocumentMeta, type NodeDocument, type NodePermissions,
 } from "@/api/nodeContent";
@@ -57,16 +60,26 @@ const ObjectDocuments: React.FC<{ nodeId: string }> = ({ nodeId }) => {
   const del = useDeleteDocument(nodeId);
   const [dialog, setDialog] = useState<DialogState>(null);
   const [failure, setFailure] = useState<string | null>(null);
+  const [viewing, setViewing] = useState<PdfSource | null>(null);
 
   if (isLoading) return <LoadingSpinner height={200} />;
   if (error || !data) return <ErrorAlert error={error as Error} />;
 
   const { permissions, documents } = data;
-  const fetchFile = (doc: NodeDocument, mode: "download" | "open") => {
+  const fetchFile = (doc: NodeDocument) => {
     if (!doc.current_version) return;
-    fetchDocumentFile(doc.node_id, doc.id, doc.current_version, mode).catch((e) =>
+    fetchDocumentFile(doc.node_id, doc.id, doc.current_version).catch((e) =>
       setFailure(errorText(e, t("common.error"))),
     );
+  };
+  const view = (doc: NodeDocument) => {
+    const v = doc.current_version;
+    if (v) {
+      setViewing({ title: doc.title, load: async () => ({ blob: await fetchDocumentBlob(doc.node_id, doc.id, v), name: v.filename }) });
+    } else if (doc.url) {
+      const url = doc.url;
+      setViewing({ title: doc.title, sourceUrl: url, load: () => fetchSharePointPdf(url) });
+    }
   };
 
   return (
@@ -94,6 +107,7 @@ const ObjectDocuments: React.FC<{ nodeId: string }> = ({ nodeId }) => {
         <DocumentTable
           docs={documents}
           onFetch={fetchFile}
+          onView={view}
           onEdit={(doc) => setDialog({ mode: "edit", doc })}
           onVersions={(doc) => setDialog({ mode: "versions", doc })}
           onDelete={(doc) => setDialog({ mode: "delete", doc })}
@@ -109,6 +123,7 @@ const ObjectDocuments: React.FC<{ nodeId: string }> = ({ nodeId }) => {
           onClose={() => setDialog(null)}
         />
       )}
+      {viewing && <PdfViewerWindow source={viewing} onClose={() => setViewing(null)} />}
       {dialog?.mode === "versions" && (
         <VersionsDialog nodeId={nodeId} doc={dialog.doc} onClose={() => setDialog(null)} />
       )}
@@ -144,13 +159,14 @@ const ObjectDocuments: React.FC<{ nodeId: string }> = ({ nodeId }) => {
 
 interface TableProps {
   docs: NodeDocument[];
-  onFetch: (doc: NodeDocument, mode: "download" | "open") => void;
+  onFetch: (doc: NodeDocument) => void;
+  onView: (doc: NodeDocument) => void;
   onEdit: (doc: NodeDocument) => void;
   onVersions: (doc: NodeDocument) => void;
   onDelete: (doc: NodeDocument) => void;
 }
 
-const DocumentTable: React.FC<TableProps> = ({ docs, onFetch, onEdit, onVersions, onDelete }) => {
+const DocumentTable: React.FC<TableProps> = ({ docs, onFetch, onView, onEdit, onVersions, onDelete }) => {
   const { t } = useTranslation();
 
   return (
@@ -226,6 +242,13 @@ const DocumentTable: React.FC<TableProps> = ({ docs, onFetch, onEdit, onVersions
                 </Typography>
               </TableCell>
               <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
+                {(v?.content_type === "application/pdf" || (d.kind === "link" && canViewSharePoint && isSharePointUrl(d.url))) && (
+                  <Tooltip title={t("objectContent.docs.viewPdf")}>
+                    <IconButton size="small" onClick={() => onView(d)}>
+                      <VisibilityIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                )}
                 {d.kind === "link" && d.url && (
                   <Tooltip title={t("objectContent.docs.openLink")}>
                     <IconButton size="small" component="a" href={d.url} target="_blank" rel="noopener noreferrer">
@@ -233,16 +256,9 @@ const DocumentTable: React.FC<TableProps> = ({ docs, onFetch, onEdit, onVersions
                     </IconButton>
                   </Tooltip>
                 )}
-                {v?.content_type === "application/pdf" && (
-                  <Tooltip title={t("objectContent.docs.openPdf")}>
-                    <IconButton size="small" onClick={() => onFetch(d, "open")}>
-                      <OpenInNewIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                )}
                 {v && (
                   <Tooltip title={t("objectContent.docs.download")}>
-                    <IconButton size="small" onClick={() => onFetch(d, "download")}>
+                    <IconButton size="small" onClick={() => onFetch(d)}>
                       <DownloadIcon fontSize="small" />
                     </IconButton>
                   </Tooltip>
