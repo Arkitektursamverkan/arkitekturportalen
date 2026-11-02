@@ -27,7 +27,7 @@ what the everyone grants give.
 from __future__ import annotations
 
 from collections.abc import Iterable
-from typing import Annotated, Any, Literal, TypeVar
+from typing import Annotated, Any, Literal
 from uuid import UUID
 
 from fastapi import Header, HTTPException, status
@@ -69,7 +69,6 @@ ALL_TYPES: tuple[str, ...] = (*MANAGED_TYPES, *TYPE_FAMILY)
 PRINCIPAL_ROLES: tuple[str, ...] = ("user", "superuser")
 
 Level = Literal["none", "read", "edit"]
-T = TypeVar("T")
 
 
 def _type_str(t: Any) -> str:
@@ -267,7 +266,7 @@ async def ensure_visible(user: CurrentUser | None, node: Any) -> Policy:
     return policy
 
 
-async def filter_nodes(user: CurrentUser | None, nodes: Iterable[T]) -> list[T]:
+async def filter_nodes[T](user: CurrentUser | None, nodes: Iterable[T]) -> list[T]:
     return (await load_policy(user)).filter_nodes(nodes)
 
 
@@ -295,7 +294,7 @@ async def hidden_node_ids(user: CurrentUser | None, policy: Policy | None = None
     return hidden
 
 
-def filter_edges(edges: Iterable[T], hidden_ids: set[str]) -> list[T]:
+def filter_edges[T](edges: Iterable[T], hidden_ids: set[str]) -> list[T]:
     """Drop edges with either end among the hidden nodes."""
     if not hidden_ids:
         return list(edges)
