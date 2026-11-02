@@ -92,10 +92,10 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Set up Python 3.11
+      - name: Set up Python 3.14
         uses: actions/setup-python@v7
         with:
-          python-version: "3.11"
+          python-version: "3.14"
           cache: pip
 
       # WeasyPrint (PDF export) needs the same system libraries as backend/Dockerfile.
@@ -154,10 +154,10 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Set up Node 24
+      - name: Set up Node 26
         uses: actions/setup-node@v7
         with:
-          node-version: "24"
+          node-version: "26"
 
       - name: Install dependencies
         run: npm install
