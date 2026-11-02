@@ -53,11 +53,27 @@ async def test_osatt_varde_hamtas_fran_miljon(client, api_headers):
     assert data["defaults"]["allowed_email_domains"] == "example.net"
 
     public = (await client.get("/api/v1/org-settings/public")).json()
-    assert {k: v for k, v in public.items() if k not in ("modules", "navigation", "domain_lists")} == {
+    assert {k: v for k, v in public.items() if k not in ("modules", "navigation", "domain_lists", "app_name")} == {
         "org_name": "Miljöbolaget", "org_short_name": "Miljöbolaget", "brand_color": None, "logo_version": None,
     }
     assert org_settings.email_domain_allowed("kim@example.net")
     assert not org_settings.email_domain_allowed("kim@example.org")
+
+
+@pytest.mark.asyncio
+async def test_portalens_namn(client, api_headers):
+    public = (await client.get("/api/v1/org-settings/public")).json()
+    assert public["app_name"] is None
+
+    resp = await client.put("/api/v1/org-settings", json={"app_name": "  Arkitekturnavet "}, headers=api_headers)
+    assert resp.status_code == 200, resp.text
+    # Syns utan inloggning, eftersom inloggningssidan visar namnet.
+    assert (await client.get("/api/v1/org-settings/public")).json()["app_name"] == "Arkitekturnavet"
+
+    assert (await client.put("/api/v1/org-settings", json={"app_name": "x" * 101}, headers=api_headers)).status_code == 422
+
+    await client.put("/api/v1/org-settings", json={"app_name": ""}, headers=api_headers)
+    assert (await client.get("/api/v1/org-settings/public")).json()["app_name"] is None
 
 
 @pytest.mark.asyncio
@@ -101,7 +117,7 @@ async def test_ogiltiga_varden_avvisas(client, api_headers, falt):
     resp = await client.put("/api/v1/org-settings", json=falt, headers=api_headers)
     assert resp.status_code == 422
     assert (await client.get("/api/v1/org-settings", headers=api_headers)).json()["values"] == {
-        "org_name": None, "org_short_name": None, "brand_color": None,
+        "app_name": None, "org_name": None, "org_short_name": None, "brand_color": None,
         "allowed_email_domains": None, "change_log_departments": None, "anonymous_read": None, "modules": None,
     }
 

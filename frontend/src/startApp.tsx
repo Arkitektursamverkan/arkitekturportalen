@@ -10,6 +10,7 @@ import { buildTheme } from "./theme/theme";
 import { useThemeStore } from "./store/themeStore";
 import { initMsal } from "./auth/msal";
 import AuthGate from "./auth/AuthGate";
+import AppNameSync from "./components/layout/AppNameSync";
 import UserSync from "./auth/UserSync";
 import "./i18n";
 import App from "./App";
@@ -69,6 +70,7 @@ const ThemedApp: React.FC<ThemedAppProps> = ({ msalEnabled, authError }) => {
     <ThemeProvider theme={muiTheme}>
       <CssBaseline />
       <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: "bottom", horizontal: "left" }}>
+        <AppNameSync />
         <AuthGate msalEnabled={msalEnabled} initialError={authError}>
           <UserSync>
             <App />

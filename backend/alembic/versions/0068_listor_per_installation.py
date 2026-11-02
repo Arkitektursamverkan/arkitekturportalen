@@ -1,4 +1,6 @@
-"""Listor per installation.
+"""Listor per installation och portalens namn.
+
+Kolumnen ea_org_settings.app_name: NULL betyder standardnamnet.
 
 Kolumnen ea_org_settings.domain_lists: NULL betyder alla inbyggda listor och
 inga egna, så en befintlig installation ser likadan ut efter uppgraderingen.
@@ -24,6 +26,7 @@ OPPNA = (
 
 def upgrade() -> None:
     op.execute("ALTER TABLE ea_org_settings ADD COLUMN IF NOT EXISTS domain_lists JSONB")
+    op.execute("ALTER TABLE ea_org_settings ADD COLUMN IF NOT EXISTS app_name VARCHAR(100)")
     op.execute(
         f"""
         UPDATE ea_access_grants
@@ -37,6 +40,7 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     op.execute("ALTER TABLE ea_org_settings DROP COLUMN IF EXISTS domain_lists")
+    op.execute("ALTER TABLE ea_org_settings DROP COLUMN IF EXISTS app_name")
     op.execute(
         "UPDATE ea_access_grants SET node_types = node_types - 'CustomObject' "
         "WHERE node_types @> '[\"CustomObject\"]'::jsonb"
