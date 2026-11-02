@@ -232,7 +232,7 @@ def _with_read(p: set[str]) -> frozenset[str]:
 
 # ── Loading ─────────────────────────────────────────────────────────────────
 
-async def _hidden_lists() -> dict[str, frozenset[str]]:
+async def _hidden_lists() -> tuple[frozenset[str], frozenset[str]]:
     """What the installation's switched-off lists hide."""
     from app.dependencies import get_repository
     from app.domain_lists import CUSTOM_TYPE, LIST_KEY, parse
@@ -247,7 +247,7 @@ async def _hidden_lists() -> dict[str, frozenset[str]]:
             for n in await repo.list_nodes(node_type=CUSTOM_TYPE, archived=archived, limit=100_000):
                 if (n.attributes or {}).get(LIST_KEY) in off:
                     ids.add(str(n.id))
-    return {"hidden_types": frozenset(lists.disabled), "hidden_ids": frozenset(ids)}
+    return frozenset(lists.disabled), frozenset(ids)
 
 
 async def load_policy(user: CurrentUser | None) -> Policy:
@@ -255,9 +255,9 @@ async def load_policy(user: CurrentUser | None) -> Policy:
     # a switched-off list, so that it is up to date when it comes back.
     if user is not None and user.role == "system":
         return Policy(full=True)
-    hidden = await _hidden_lists()
+    hidden_types, hidden_ids = await _hidden_lists()
     if user is not None and user.role == "admin":
-        return Policy(full=True, **hidden)
+        return Policy(full=True, hidden_types=hidden_types, hidden_ids=hidden_ids)
     from app.dal.postgres_repository import PostgresRepository
     from app.dependencies import get_repository
 
@@ -265,11 +265,11 @@ async def load_policy(user: CurrentUser | None) -> Policy:
     if not isinstance(repo, PostgresRepository):
         # Grants live in PostgreSQL. Without it: everyone reads, editors edit.
         editor = user is not None and user.role == "superuser"
-        return Policy(full=editor, grants=[_Everyone()], **hidden)
+        return Policy(full=editor, grants=[_Everyone()], hidden_types=hidden_types, hidden_ids=hidden_ids)
     grants = await repo.access.grants_for(user)
-    policy = Policy(grants=grants, **hidden)
+    policy = Policy(grants=grants, hidden_types=hidden_types, hidden_ids=hidden_ids)
     if policy.needs_parents:
-        policy = Policy(grants=grants, parents=await repo.access.process_parents(), **hidden)
+        policy = Policy(grants=grants, parents=await repo.access.process_parents(), hidden_types=hidden_types, hidden_ids=hidden_ids)
     return policy
 
 

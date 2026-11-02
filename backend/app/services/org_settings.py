@@ -240,7 +240,7 @@ def domain_lists() -> dict[str, Any] | None:
 
 
 async def set_domain_lists(
-    session_factory: async_sessionmaker[AsyncSession], value: dict[str, Any], updated_by: str
+    session_factory: async_sessionmaker[AsyncSession], value: dict[str, Any] | None, updated_by: str | None
 ) -> None:
     """Store the lists (validated by the caller)."""
     async with session_factory() as s:
