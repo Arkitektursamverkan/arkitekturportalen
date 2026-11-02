@@ -41,6 +41,8 @@ class OrgSettingsORM(Base):
     modules: Mapped[str | None] = mapped_column(Text, nullable=True)
     # The left menu (app.schemas.navigation); NULL = the standard menu.
     navigation: Mapped[dict[str, Any] | None] = mapped_column(JSONB, nullable=True)
+    # Lists switched off and added (app.domain_lists); NULL = the built-in ones.
+    domain_lists: Mapped[dict[str, Any] | None] = mapped_column(JSONB, nullable=True)
     logo: Mapped[bytes | None] = mapped_column(LargeBinary, nullable=True)
     logo_content_type: Mapped[str | None] = mapped_column(String(50), nullable=True)
     updated_at: Mapped[datetime] = mapped_column(

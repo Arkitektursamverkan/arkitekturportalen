@@ -5,7 +5,9 @@ export type NodeType =
   | "InformationSource"
   | "TechnologyComponent"
   | "Server"
-  | "ServerService";
+  | "ServerService"
+  // An object in a list an admin added; attributes.list_key names the list.
+  | "CustomObject";
 
 export type EdgeType =
   | "USES"

@@ -34,6 +34,18 @@ export const ALLOWED_CONNECTIONS: Partial<Record<NodeType, Partial<Record<NodeTy
   ServerService: {
     Server: ["RUNS_ON"],
   },
+  // An object in an own list can be connected to anything; what it means is
+  // the installation's to say.
+  CustomObject: {
+    Process: ["USES"],
+    Application: ["USES"],
+    InformationObject: ["USES"],
+    InformationSource: ["USES"],
+    TechnologyComponent: ["USES"],
+    Server: ["USES"],
+    ServerService: ["USES"],
+    CustomObject: ["USES"],
+  },
 };
 
 export function getValidEdgeTypes(sourceType: NodeType, targetType: NodeType): EdgeType[] {
@@ -107,6 +119,8 @@ export const ATTR_FIELDS: Record<NodeType, AttrField[]> = {
     { key: "placering", labelKey: "attributes.placering" },
     { key: "ansvarig", labelKey: "attributes.ansvarig" },
   ],
+  // An own list's fields are the installation's (config/domainLists.ts).
+  CustomObject: [],
   ServerService: [
     { key: "leverantör", labelKey: "attributes.leverantör" },
     { key: "komponenttyp", labelKey: "csvImport.columns.component_type" },
@@ -126,6 +140,7 @@ export const NODE_COLORS: Record<NodeType, string> = {
   TechnologyComponent: "#F44336", // red
   Server: "#607D8B",             // blue grey
   ServerService: "#00897B",      // teal
+  CustomObject: "#78909C",       // blue grey
 };
 
 export const NODE_BORDER_COLORS: Record<NodeType, string> = {
@@ -136,6 +151,7 @@ export const NODE_BORDER_COLORS: Record<NodeType, string> = {
   TechnologyComponent: "#B71C1C",
   Server: "#37474F",
   ServerService: "#00695C",
+  CustomObject: "#455A64",
 };
 
 export const NODE_SHAPES: Record<NodeType, string> = {
@@ -146,6 +162,7 @@ export const NODE_SHAPES: Record<NodeType, string> = {
   TechnologyComponent: "hexagon",
   Server: "barrel",
   ServerService: "round-tag",
+  CustomObject: "round-rectangle",
 };
 
 export interface EdgeStyle {

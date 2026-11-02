@@ -13,7 +13,8 @@ import AppsIcon from "@mui/icons-material/Apps";
 import DnsIcon from "@mui/icons-material/Dns";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { useModules } from "@/api/orgSettings";
+import { LIST_KEY, OPTIONAL_LISTS, listPath, type DomainKey as ListDomain } from "@/config/domainLists";
+import { useModules, usePublicOrgSettings } from "@/api/orgSettings";
 import { useNodes } from "@/api/nodes";
 import { useTargetArchitecture, type DomainKey, type DomainSection } from "@/api/targetArchitecture";
 import { DomainPyramid } from "@/components/targetArchitecture/DomainPyramid";
@@ -90,6 +91,12 @@ const DOMAINS: DomainInfo[] = [
   },
 ];
 
+// The optional built-in lists' pages, and the lists' domain names in this dialog.
+const TYPE_PAGE: Partial<Record<NodeType, string>> = Object.fromEntries(OPTIONAL_LISTS.map((l) => [l.type, l.path]));
+const OWN_DOMAIN: Record<ListDomain, DomainKey> = {
+  business: "business", information: "data", application: "application", technology: "technology",
+};
+
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & { children: React.ReactElement },
   ref: React.Ref<unknown>,
@@ -128,6 +135,9 @@ const DomainOverviewDialog: React.FC<Props> = ({ open, onClose }) => {
       (s): s is DomainSection => s.kind === "domain" && s.domain_key === key,
     );
 
+  const { pathEnabled } = useModules();
+  const { data: org } = usePublicOrgSettings();
+  const customLists = (org?.domain_lists?.custom ?? []).filter((c) => c.active);
   const structuralIds = React.useMemo(() => structuralProcessIds(nodes ?? []), [nodes]);
   const countOf = (type: NodeType) =>
     nodes
@@ -266,7 +276,7 @@ const DomainOverviewDialog: React.FC<Props> = ({ open, onClose }) => {
                       </Box>
 
                       <Stack direction="row" spacing={1} useFlexGap sx={{ flexWrap: "wrap" }}>
-                        {domain.counts.filter((c) => (c.type !== "Server" && c.type !== "ServerService") || canSeeServers).map(({ type, labelKey }) => {
+                        {domain.counts.filter((c) => pathEnabled(TYPE_PAGE[c.type] ?? "/")).filter((c) => (c.type !== "Server" && c.type !== "ServerService") || canSeeServers).map(({ type, labelKey }) => {
                           const count = countOf(type);
                           return (
                             <Chip
@@ -277,10 +287,18 @@ const DomainOverviewDialog: React.FC<Props> = ({ open, onClose }) => {
                             />
                           );
                         })}
+                        {customLists.filter((c) => OWN_DOMAIN[c.domain] === domain.key).map((c) => (
+                          <Chip
+                            key={c.key}
+                            size="small"
+                            variant="outlined"
+                            label={`${(nodes ?? []).filter((n) => n.attributes?.[LIST_KEY] === c.key).length} ${c.name.toLowerCase()}`}
+                          />
+                        ))}
                       </Stack>
 
                       <Stack spacing={0.5} sx={{ alignItems: "flex-start" }}>
-                        {domain.links.filter((l) => (l.path !== "/servers" && l.path !== "/server-services") || canSeeServers).map((link) => (
+                        {domain.links.filter((l) => pathEnabled(l.path)).filter((l) => (l.path !== "/servers" && l.path !== "/server-services") || canSeeServers).map((link) => (
                           <Button
                             key={link.path}
                             size="small"
@@ -289,6 +307,17 @@ const DomainOverviewDialog: React.FC<Props> = ({ open, onClose }) => {
                             sx={{ color: domain.accent }}
                           >
                             {t(link.labelKey)}
+                          </Button>
+                        ))}
+                        {customLists.filter((c) => OWN_DOMAIN[c.domain] === domain.key).map((c) => (
+                          <Button
+                            key={c.key}
+                            size="small"
+                            endIcon={<LaunchIcon fontSize="small" />}
+                            onClick={() => go(listPath(c.key))}
+                            sx={{ color: domain.accent }}
+                          >
+                            {c.name}
                           </Button>
                         ))}
                       </Stack>

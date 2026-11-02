@@ -56,6 +56,7 @@ MANAGED_TYPES: tuple[str, ...] = (
     "TechnologyComponent",
     "Server",
     "ArchitecturePrinciple",
+    "CustomObject",
 )
 
 # Types that have no grants of their own but follow another type's: a
@@ -84,8 +85,14 @@ class Policy:
         full: bool = False,
         grants: Iterable[Any] = (),
         parents: dict[str, str | None] | None = None,
+        hidden_types: Iterable[str] = (),
+        hidden_ids: Iterable[str] = (),
     ) -> None:
         self.full = full
+        # Lists switched off for the installation (app.domain_lists): hidden
+        # from everyone, admins too, whatever the grants say.
+        self.hidden_types = frozenset(hidden_types)
+        self.hidden_ids = frozenset(hidden_ids)
         self._all: set[str] = set()
         self._by_type: dict[str, set[str]] = {}
         self._by_node: dict[str, set[str]] = {}
@@ -107,6 +114,10 @@ class Policy:
     def needs_parents(self) -> bool:
         return bool(self._by_subtree)
 
+    @property
+    def sees_everything(self) -> bool:
+        return self.full and not self.hidden_types and not self.hidden_ids
+
     # ── Questions ───────────────────────────────────────────────────────────
 
     def ancestors(self, node_id: str) -> list[str]:
@@ -122,6 +133,8 @@ class Policy:
 
     def type_perms(self, node_type: Any) -> frozenset[str]:
         """What holds for every object of the type, whatever else applies."""
+        if _type_str(node_type) in self.hidden_types:
+            return frozenset()
         if self.full:
             return ALL_PERMISSIONS
         return _with_read(self._all | self._type_grants(_type_str(node_type)))
@@ -134,9 +147,11 @@ class Policy:
     def perms(self, node_id: Any, node_type: Any, *, parent_id: Any = None) -> frozenset[str]:
         """Permissions on one object. `parent_id` stands in for the object's
         place in the process tree when it doesn't exist yet."""
+        t = _type_str(node_type)
+        if t in self.hidden_types or (node_id is not None and str(node_id) in self.hidden_ids):
+            return frozenset()
         if self.full:
             return ALL_PERMISSIONS
-        t = _type_str(node_type)
         p = set(self._all) | self._type_grants(t)
         nid = str(node_id) if node_id is not None else None
         if nid:
@@ -197,12 +212,12 @@ class Policy:
     # ── Filtering ───────────────────────────────────────────────────────────
 
     def filter_nodes[T](self, nodes: Iterable[T], type_of=lambda n: n.type, id_of=lambda n: n.id) -> list[T]:  # type: ignore[no-untyped-def]
-        if self.full:
+        if self.sees_everything:
             return list(nodes)
         return [n for n in nodes if self.can_see(id_of(n), type_of(n))]
 
     def filter_graph(self, graph: GraphData) -> GraphData:
-        if self.full:
+        if self.sees_everything:
             return graph
         nodes = [n for n in graph.nodes if self.can_see(n.id, n.type)]
         keep = {n.id for n in nodes}
@@ -217,9 +232,32 @@ def _with_read(p: set[str]) -> frozenset[str]:
 
 # ── Loading ─────────────────────────────────────────────────────────────────
 
+async def _hidden_lists() -> tuple[frozenset[str], frozenset[str]]:
+    """What the installation's switched-off lists hide."""
+    from app.dependencies import get_repository
+    from app.domain_lists import CUSTOM_TYPE, LIST_KEY, parse
+    from app.services import org_settings
+
+    lists = parse(org_settings.domain_lists())
+    off = {c.key for c in lists.custom if not c.active}
+    ids: set[str] = set()
+    if off:
+        repo = get_repository()
+        for archived in (False, True):
+            for n in await repo.list_nodes(node_type=CUSTOM_TYPE, archived=archived, limit=100_000):
+                if (n.attributes or {}).get(LIST_KEY) in off:
+                    ids.add(str(n.id))
+    return frozenset(lists.disabled), frozenset(ids)
+
+
 async def load_policy(user: CurrentUser | None) -> Policy:
-    if user is not None and user.role in ("admin", "system"):
+    # The system user is what sync and integrations run as: they go on filling
+    # a switched-off list, so that it is up to date when it comes back.
+    if user is not None and user.role == "system":
         return Policy(full=True)
+    hidden_types, hidden_ids = await _hidden_lists()
+    if user is not None and user.role == "admin":
+        return Policy(full=True, hidden_types=hidden_types, hidden_ids=hidden_ids)
     from app.dal.postgres_repository import PostgresRepository
     from app.dependencies import get_repository
 
@@ -227,11 +265,11 @@ async def load_policy(user: CurrentUser | None) -> Policy:
     if not isinstance(repo, PostgresRepository):
         # Grants live in PostgreSQL. Without it: everyone reads, editors edit.
         editor = user is not None and user.role == "superuser"
-        return Policy(full=editor, grants=[_Everyone()])
+        return Policy(full=editor, grants=[_Everyone()], hidden_types=hidden_types, hidden_ids=hidden_ids)
     grants = await repo.access.grants_for(user)
-    policy = Policy(grants=grants)
+    policy = Policy(grants=grants, hidden_types=hidden_types, hidden_ids=hidden_ids)
     if policy.needs_parents:
-        policy = Policy(grants=grants, parents=await repo.access.process_parents())
+        policy = Policy(grants=grants, parents=await repo.access.process_parents(), hidden_types=hidden_types, hidden_ids=hidden_ids)
     return policy
 
 
@@ -277,11 +315,11 @@ async def filter_graph(user: CurrentUser | None, graph: GraphData) -> GraphData:
 async def hidden_node_ids(user: CurrentUser | None, policy: Policy | None = None) -> set[str]:
     """Ids of every object (archived too) the user may not see."""
     policy = policy or await load_policy(user)
-    if policy.full:
+    if policy.sees_everything:
         return set()
     from app.dependencies import get_repository
     repo = get_repository()
-    hidden: set[str] = set()
+    hidden: set[str] = set(policy.hidden_ids)
     # Objects of a type the user sees in full need no look; the rest are
     # checked one by one, since a grant may reach a single object.
     for t in ALL_TYPES:
@@ -314,7 +352,8 @@ async def effective_access(user: CurrentUser) -> tuple[dict[str, Level], Level]:
     servers or server services (the pages then list just those)."""
     policy = await load_policy(user)
     type_access: dict[str, Level] = {t: policy.type_level(t) for t in ALL_TYPES}
-    servers = type_access["Server"]
+    # Either list can be switched off on its own.
+    servers = type_access["Server"] if type_access["Server"] != "none" else type_access["ServerService"]
     if servers == "none" and policy.node_ids_with_grants():
         from app.dependencies import get_repository
         repo = get_repository()

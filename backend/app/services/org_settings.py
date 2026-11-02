@@ -110,6 +110,7 @@ def _remember(row: OrgSettingsORM | None) -> None:
     if row.modules is not None:
         _stored["modules"] = [k for k in module_catalog.KEYS if k in row.modules.split(",")]
     _stored["navigation"] = row.navigation
+    _stored["domain_lists"] = row.domain_lists
     _stored["logo"] = (row.logo, row.logo_content_type) if row.logo is not None else None
     _stored["updated_at"] = row.updated_at
 
@@ -227,6 +228,27 @@ async def set_navigation(
             row = OrgSettingsORM(id=1)
             s.add(row)
         row.navigation = value
+        row.updated_by = updated_by
+        await s.commit()
+        await s.refresh(row)
+        _remember(row)
+
+
+def domain_lists() -> dict[str, Any] | None:
+    """The lists as an admin set them (app.domain_lists), or None for the built-in ones."""
+    return _stored.get("domain_lists")
+
+
+async def set_domain_lists(
+    session_factory: async_sessionmaker[AsyncSession], value: dict[str, Any] | None, updated_by: str | None
+) -> None:
+    """Store the lists (validated by the caller)."""
+    async with session_factory() as s:
+        row = await s.get(OrgSettingsORM, 1)
+        if row is None:
+            row = OrgSettingsORM(id=1)
+            s.add(row)
+        row.domain_lists = value
         row.updated_by = updated_by
         await s.commit()
         await s.refresh(row)

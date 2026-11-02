@@ -12,6 +12,8 @@ from app import modules as module_catalog
 from app.auth import CurrentUser
 from app.dal.postgres_repository import PostgresRepository
 from app.dependencies import get_repository, require_admin
+from app.domain_lists import CUSTOM_TYPE, LIST_KEY, DomainLists
+from app.domain_lists import parse as parse_lists
 from app.models.org_settings import OrgSettingsORM
 from app.schemas.navigation import Navigation
 from app.services import org_settings
@@ -60,6 +62,8 @@ class OrgSettingsPublic(BaseModel):
     modules: list[str]
     # The left menu as an admin arranged it; None = the standard menu.
     navigation: Navigation | None = None
+    # Lists switched off and added (app.domain_lists).
+    domain_lists: DomainLists = DomainLists()
 
 
 def _get_pg_repo() -> PostgresRepository:
@@ -81,6 +85,7 @@ def _public() -> OrgSettingsPublic:
         logo_version=str(int(cur.updated_at.timestamp())) if cur.has_logo and cur.updated_at else None,
         modules=[k for k in module_catalog.KEYS if module_catalog.enabled(k)],
         navigation=Navigation.model_validate(nav) if (nav := org_settings.navigation()) else None,
+        domain_lists=parse_lists(org_settings.domain_lists()),
     )
 
 
@@ -157,6 +162,25 @@ async def reset_navigation(admin: CurrentUser = Depends(require_admin)) -> OrgSe
     """Back to the standard menu."""
     repo = _get_pg_repo()
     await org_settings.set_navigation(repo._session_factory, None, _who(admin))
+    return _public()
+
+
+@router.put("/domain-lists", response_model=OrgSettingsPublic)
+async def update_domain_lists(data: DomainLists, admin: CurrentUser = Depends(require_admin)) -> OrgSettingsPublic:
+    """Switch lists off and on, and add, change and remove own lists."""
+    repo = _get_pg_repo()
+    current = parse_lists(org_settings.domain_lists())
+    # A key is what the objects point at, so a list keeps it, and goes only when empty.
+    removed = {c.key for c in current.custom} - {c.key for c in data.custom}
+    if removed:
+        for archived in (False, True):
+            for n in await repo.list_nodes(node_type=CUSTOM_TYPE, archived=archived, limit=100_000):
+                if (n.attributes or {}).get(LIST_KEY) in removed:
+                    raise HTTPException(
+                        status_code=409,
+                        detail="Listan har objekt. Stäng av den, eller ta bort objekten först.",
+                    )
+    await org_settings.set_domain_lists(repo._session_factory, data.model_dump(mode="json"), _who(admin))
     return _public()
 
 

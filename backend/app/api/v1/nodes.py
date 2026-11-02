@@ -11,8 +11,12 @@ from app.access import ensure_visible, filter_nodes, get_optional_user, load_pol
 from app.auth import CurrentUser
 from app.dal.postgres_repository import PostgresRepository
 from app.dependencies import get_repository, require_admin, require_user
+from app.domain_lists import LIST_KEY
+from app.domain_lists import parse as parse_lists
 from app.models.node_deletion_log import NodeDeletionLogORM
+from app.schemas.common import NodeType
 from app.schemas.node import NodeCreate, NodeRead, NodeUpdate
+from app.services import org_settings
 
 router = APIRouter(prefix="/nodes", tags=["nodes"])
 
@@ -42,10 +46,20 @@ def _who(user: CurrentUser) -> str:
     return user.name or user.email
 
 
+def _require_active_list(data: NodeCreate) -> None:
+    """An object in an own list needs a list to be in."""
+    if data.type != NodeType.CUSTOM_OBJECT:
+        return
+    key = (data.attributes or {}).get(LIST_KEY)
+    if not any(c.key == key and c.active for c in parse_lists(org_settings.domain_lists()).custom):
+        raise HTTPException(status_code=422, detail="Listan finns inte eller är avstängd")
+
+
 @router.post("", response_model=NodeRead, status_code=status.HTTP_201_CREATED)
 async def create_node(data: NodeCreate, user: CurrentUser = Depends(require_user)) -> NodeRead:
     parent_id = (data.attributes or {}).get("parent_id")
     (await load_policy(user)).require_create(data.type, parent_id)
+    _require_active_list(data)
     repo = get_repository()
     return await repo.create_node(data, user_name=_who(user))
 

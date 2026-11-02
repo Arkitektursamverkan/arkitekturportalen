@@ -71,7 +71,8 @@
     "accessManagement": "Access",
     "serverServices": "Server services",
     "architectureJourney": "Architecture journey",
-    "navigationSettings": "Menu"
+    "navigationSettings": "Menu",
+    "domainLists": "Lists"
   },
   "home": {
     "welcome": "Welcome to the EA Portal",
@@ -1210,7 +1211,8 @@
       "TechnologyComponent": "Technology components",
       "Server": "Servers and server services",
       "ArchitecturePrinciple": "Architecture principles",
-      "ServerService": "Server services"
+      "ServerService": "Server services",
+      "CustomObject": "Own lists"
     },
     "globalRoles": {
       "user": "Users",
@@ -1308,5 +1310,49 @@
     "openSource": "Open at source",
     "maximize": "Maximize",
     "restore": "Restore size"
+  },
+  "domainLists": {
+    "title": "Lists",
+    "intro": "Which lists this installation has under the architecture domains. The settings are stored in the installation's database and do not change on upgrade.",
+    "builtin": "Built-in lists",
+    "builtinHint": "A switched-off list is hidden for everyone, in menus, search and graphs. Nothing is deleted: the objects return when the list is switched on, and sync to the list goes on in the meantime. Applications, processes and information objects cannot be switched off, since the reports build on them.",
+    "own": "Own lists",
+    "ownHint": "Own lists have a name, a domain and their own fields. Their objects can be connected to other objects and appear in search and graphs.",
+    "noOwn": "No own lists yet.",
+    "newList": "New list",
+    "editList": "Edit list",
+    "listName": "List name",
+    "domain": "Domain",
+    "fields": "Fields",
+    "fieldsHint": "Name and description are always there.",
+    "fieldLabel": "Field name",
+    "fieldType": "Type",
+    "fieldOptions": "Choices, comma separated",
+    "addField": "Add field",
+    "removeField": "Remove field",
+    "removeList": "Remove list",
+    "removeHasObjects": "The list has objects. Switch it off, or remove the objects first.",
+    "saveError": "Could not save.",
+    "syncHint": "Should the list be filled from, for example, SharePoint? Choose it as the target under Import from the platform or Sync profiles. Its fields are suggested when you map.",
+    "fieldTypes": {
+      "text": "Text",
+      "number": "Number",
+      "date": "Date",
+      "choice": "Choice",
+      "link": "Link"
+    }
+  },
+  "customList": {
+    "newObject": "New object",
+    "editObject": "Edit object",
+    "name": "Name",
+    "description": "Description",
+    "saveError": "Could not save.",
+    "notFound": "The list does not exist or is switched off.",
+    "empty": "No objects yet.",
+    "noSelection": "Select an object in the list.",
+    "connections": "Connections",
+    "connect": "Manage connections",
+    "noConnections": "No connections yet."
   }
 }

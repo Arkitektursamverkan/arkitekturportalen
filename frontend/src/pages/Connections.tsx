@@ -123,7 +123,7 @@ const Connections: React.FC = () => {
   const [filterNodeIds, setFilterNodeIds] = useState<NodeRead[]>([]);
   const [search, setSearch] = useState("");
 
-  const ALL_NODE_TYPES: NodeType[] = ["Process", "Application", "InformationObject", "InformationSource", "TechnologyComponent", "Server", "ServerService"];
+  const ALL_NODE_TYPES: NodeType[] = ["Process", "Application", "InformationObject", "InformationSource", "TechnologyComponent", "Server", "ServerService", "CustomObject"];
   const ALL_EDGE_TYPES: EdgeType[] = ["USES", "SUPPORTS", "HANDLES", "REALIZES", "CONTAINS", "RUNS_ON", "INTEGRATES_WITH"];
 
   // Filtered edges based on node type + edge type filters

@@ -7,7 +7,10 @@ funktioner, en ny korrigering för rättelser.
 
 ## Ej släppt
 
-- (inget än)
+- Ny sida **Administration → Listor**. Informationskällor, Teknikkomponenter, Servrar och Servertjänster går att stänga av per installation: listan och dess objekt döljs för alla, i menyer, sökning och grafer, men inget raderas och synk till listan fortsätter. Applikationer, processer och informationsobjekt går inte att stänga av, eftersom rapporterna bygger på dem.
+- **Egna listor**: en administratör lägger till listor med namn, domän och egna fält (text, tal, datum, val, länk). Objekten kan kopplas till andra objekt och syns i sökning och grafer, och listan kan fyllas från Integrationsplattformen, till exempel från SharePoint. Egna listor ingår inte i rapporterna eller Förändringsstatistik. Behörigheter styrs med den nya typen *Egna listor*.
+- Inställningarna ligger i installationens databas och ändras inte vid uppgradering. Utan inställning är allt som förut. Efter att egna listor börjat användas går det inte att gå tillbaka till en äldre version utan att återställa databasen från backup.
+- En synk med en egen källa, utanför SharePoint och 2C8, kan inte längre göra att objektlistorna slutar fungera.
 
 ## 0.5.2 – 2026-11-02
 

@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "./client";
+import { listPathEnabled, type DomainLists } from "@/config/domainLists";
 import { moduleForPath, type ModuleKey } from "@/config/modules";
 import type { Navigation } from "@/config/navigation";
 
@@ -43,6 +44,8 @@ export interface OrgSettingsPublic {
   modules: string[];
   /** The left menu as an admin arranged it; null = the standard menu. */
   navigation: Navigation | null;
+  /** Lists switched off and added under the architecture domains. */
+  domain_lists: DomainLists;
 }
 
 const ADMIN_KEY = ["org-settings", "admin"] as const;
@@ -144,6 +147,7 @@ export function useModules(): {
 } {
   const { data, isError } = usePublicOrgSettings();
   const modules = data?.modules;
+  const lists = data?.domain_lists;
   // Stable while the module list is, so the functions can be hook dependencies.
   const fns = useMemo(() => {
     const on = new Set(modules ?? []);
@@ -152,12 +156,26 @@ export function useModules(): {
       enabled,
       pathEnabled: (path: string) => {
         const key = moduleForPath(path);
-        return key === null || enabled(key);
+        return (key === null || enabled(key)) && listPathEnabled(path, lists);
       },
     };
-  }, [modules]);
+  }, [modules, lists]);
   // If the settings cannot be read, show the core rather than spin forever.
   return { ready: data !== undefined || isError, ...fns };
+}
+
+/** Which lists the installation has. */
+export function useSaveDomainLists() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (lists: DomainLists) =>
+      (await apiClient.put<OrgSettingsPublic>("/org-settings/domain-lists", lists)).data,
+    onSuccess: (data) => {
+      qc.setQueryData(PUBLIC_KEY, data);
+      // What is hidden and what may be created follow the lists.
+      qc.invalidateQueries();
+    },
+  });
 }
 
 /** Arrange the left menu for everyone, or with null go back to the standard. */

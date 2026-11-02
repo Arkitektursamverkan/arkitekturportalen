@@ -53,7 +53,7 @@ async def test_osatt_varde_hamtas_fran_miljon(client, api_headers):
     assert data["defaults"]["allowed_email_domains"] == "example.net"
 
     public = (await client.get("/api/v1/org-settings/public")).json()
-    assert {k: v for k, v in public.items() if k not in ("modules", "navigation")} == {
+    assert {k: v for k, v in public.items() if k not in ("modules", "navigation", "domain_lists")} == {
         "org_name": "Miljöbolaget", "org_short_name": "Miljöbolaget", "brand_color": None, "logo_version": None,
     }
     assert org_settings.email_domain_allowed("kim@example.net")

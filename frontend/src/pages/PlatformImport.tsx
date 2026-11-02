@@ -136,7 +136,7 @@ export default function PlatformImport() {
                 <InputLabel>EA Node Type</InputLabel>
                 <Select value={selectedNodeType} label="EA Node Type"
                   onChange={(e) => { setSelectedNodeType(e.target.value); setFieldMap({}); }}>
-                  {nodeTypes.map((nt) => <MenuItem key={nt.type} value={nt.type}>{nt.type}</MenuItem>)}
+                  {nodeTypes.map((nt) => <MenuItem key={nt.type} value={nt.type}>{nt.label ?? nt.type}</MenuItem>)}
                 </Select>
               </FormControl>
               <Box sx={{ display: "flex", gap: 1 }}>

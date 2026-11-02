@@ -19,6 +19,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useSnackbar } from "notistack";
 import type { FlagType, GraphNode, NodeRead as NodeReadType } from "@/types/graph";
+import { LIST_KEY, listPath } from "@/config/domainLists";
 import { NODE_COLORS, ATTR_FIELDS, getValidEdgeTypes, getIntegrationDirection } from "@/config/graphConfig";
 import IntegrationDirectionSelect from "./IntegrationDirectionSelect";
 import { useGraphStore } from "@/store/graphStore";
@@ -47,6 +48,10 @@ const EXPLORER_PATHS: Record<string, string> = {
   Server: "/servers",
   ServerService: "/server-services",
 };
+
+/** The page an object opens in; an object in an own list has its list's. */
+const explorerPath = (type: string, attributes?: Record<string, unknown> | null): string | undefined =>
+  type === "CustomObject" ? listPath(String(attributes?.[LIST_KEY])) : EXPLORER_PATHS[type];
 
 const NodeDetailPanel: React.FC = () => {
   const { t } = useTranslation();
@@ -93,7 +98,7 @@ const NodeDetailPanel: React.FC = () => {
   const open = Boolean(selectedNode || selectedEdge);
 
   const navigateToNode = (node: GraphNode, tab?: string) => {
-    const path = EXPLORER_PATHS[node.type];
+    const path = explorerPath(node.type, node.attributes);
     if (path) navigate(`${path}?id=${node.id}${tab ? `&flik=${tab}` : ""}`);
   };
 
@@ -434,7 +439,7 @@ const NodeDetail: React.FC<NodeDetailProps> = ({ node, navigate, t, isAdmin, isE
             const definedFields = ATTR_FIELDS[node.type as keyof typeof ATTR_FIELDS] ?? [];
             const definedKeys = new Set(definedFields.map((f) => f.key));
             // Show defined fields first (always), then any extra stored attrs
-            const extraKeys = Object.keys(attrs).filter((k) => k !== "parent_id" && !definedKeys.has(k));
+            const extraKeys = Object.keys(attrs).filter((k) => k !== "parent_id" && k !== LIST_KEY && !definedKeys.has(k));
             // Ett förslag på ett fält objektet ännu saknar ska också synas.
             for (const f of pendingByField.keys()) {
               const k = f.startsWith("attributes.") ? f.slice("attributes.".length) : null;
@@ -520,11 +525,11 @@ const NodeDetail: React.FC<NodeDetailProps> = ({ node, navigate, t, isAdmin, isE
           ) : null;
         })()
       )}
-      {EXPLORER_PATHS[node.type] && !editable && (
+      {explorerPath(node.type, node.attributes) && !editable && (
         <ObjectContentLink nodeId={node.id} onOpen={(tab) => navigate(node, tab)} t={t} />
       )}
 
-      {EXPLORER_PATHS[node.type] && !editable && (
+      {explorerPath(node.type, node.attributes) && !editable && (
         <Box sx={{ mt: 2 }}>
           <IconButton size="small" onClick={() => navigate(node)} title="Open detail view">
             <OpenInNewIcon fontSize="small" />

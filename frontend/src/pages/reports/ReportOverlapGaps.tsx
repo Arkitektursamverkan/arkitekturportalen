@@ -24,6 +24,7 @@ const NODE_ROUTE: Record<NodeType, string> = {
   TechnologyComponent: "/tech-components",
   Server: "/servers",
   ServerService: "/server-services",
+  CustomObject: "/",
 };
 
 const ReportOverlapGaps: React.FC = () => {

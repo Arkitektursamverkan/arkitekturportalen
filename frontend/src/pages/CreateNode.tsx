@@ -50,6 +50,7 @@ const DEFINITION_KEYS: Record<NodeType, string> = {
   TechnologyComponent: "technologyComponent",
   Server: "server",
   ServerService: "serverService",
+  CustomObject: "customObject",
 };
 
 const NODE_TYPES: NodeType[] = [

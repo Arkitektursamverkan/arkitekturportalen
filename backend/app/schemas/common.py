@@ -17,6 +17,8 @@ class NodeType(str, Enum):
     # A service run on servers (DNS, nätverk …), from the Servertjänster list.
     SERVER_SERVICE = "ServerService"
     ARCHITECTURE_PRINCIPLE = "ArchitecturePrinciple"
+    # An object in a list an admin added; attributes.list_key names the list (app.domain_lists).
+    CUSTOM_OBJECT = "CustomObject"
 
 
 class PrincipleDomain(str, Enum):
