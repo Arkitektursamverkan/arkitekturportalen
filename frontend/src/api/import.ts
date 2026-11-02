@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "./client";
 import { triggerDownload } from "./targetArchitecture";
 
@@ -122,6 +122,13 @@ export function useImportUnifiedCsv() {
       qc.invalidateQueries({ queryKey: ["edges"] });
       qc.invalidateQueries({ queryKey: ["views"] });
     },
+  });
+}
+
+export function useSeedStatus() {
+  return useQuery({
+    queryKey: ["seed-status"],
+    queryFn: () => apiClient.get<{ available: boolean }>("/seed/status").then((r) => r.data),
   });
 }
 

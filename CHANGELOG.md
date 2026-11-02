@@ -7,7 +7,7 @@ funktioner, en ny korrigering för rättelser.
 
 ## Ej släppt
 
-- (inget än)
+- Knappen *Ladda demodata* under Inställningar var alltid inaktiverad och sa att databasen innehöll skarp data, även i en tom portal. Nu går den att använda så länge portalen saknar objekt (en inläst ordlista räknas inte), och bara för administratörer.
 
 ## 0.5.1 – 2026-11-02
 
