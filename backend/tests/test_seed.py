@@ -30,6 +30,20 @@ async def test_seed_loads_into_an_empty_database(client, api_headers, repo):
     assert resp.json()["sharepoint"]["created"] > 0
     assert (await client.get("/api/v1/seed/status", headers=api_headers)).json() == {"available": False}
 
+    # What the help text promises: all of it can be removed under Data management.
+    demo = await client.delete(
+        "/api/v1/nodes", params={"node_type": "Application", "external_source": "SHAREPOINT"}, headers=api_headers
+    )
+    process = await client.delete(
+        "/api/v1/nodes", params={"node_type": "Process", "external_source": "2C8"}, headers=api_headers
+    )
+    assert demo.json()["deleted"] > 0 and process.json()["deleted"] > 0
+    for node_type in ("InformationObject", "InformationSource", "TechnologyComponent"):
+        resp = await client.delete("/api/v1/nodes", params={"node_type": node_type}, headers=api_headers)
+        assert resp.json()["deleted"] > 0, node_type
+    assert (await client.get("/api/v1/seed/status", headers=api_headers)).json() == {"available": True}
+    assert await repo.list_edges() == []
+
 
 @pytest.mark.asyncio
 async def test_nodes_make_it_unavailable_and_seed_refuses(client, api_headers, repo):
