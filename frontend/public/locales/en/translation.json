@@ -1,6 +1,7 @@
 {
   "app": {
-    "title": "EA Portal",
+    "title": "{{appName}}",
+    "defaultName": "EA Portal",
     "tagline": "Enterprise Architecture – Proof of Concept"
   },
   "nav": {
@@ -75,16 +76,16 @@
     "domainLists": "Lists"
   },
   "home": {
-    "welcome": "Welcome to the EA Portal",
+    "welcome": "Welcome to {{appName}}",
     "description": "Visualise and analyse your enterprise architecture with interactive graph views.",
     "quickLinks": "Quick links",
     "blocks": {
-      "about": "About the EA Portal",
+      "about": "About {{appName}}",
       "empty": "Nothing here yet. Click the pencil to add content.",
       "edit": "Edit",
       "save": "Save",
       "cancel": "Cancel",
-      "aboutTooltip": "About the EA Portal"
+      "aboutTooltip": "About {{appName}}"
     },
     "stats": {
       "processes": "Processes",
@@ -136,7 +137,7 @@
     "title": "Domain — the BDAT model",
     "subtitle": "Business · Information · Application · Technology",
     "heading": "Four layers that hang together",
-    "intro1": "The EA portal describes the organisation's architecture in four layers following the BDAT model. Each layer answers its own question: business answers why, information answers what, applications answer how and technology answers with what.",
+    "intro1": "{{appName}} describes the organisation's architecture in four layers following the BDAT model. Each layer answers its own question: business answers why, information answers what, applications answer how and technology answers with what.",
     "intro2": "Business sets the direction through its processes — what we actually do. Information is what the business handles: the concepts, the information objects and the sources they are stored in. Applications are the support that does the work, and technology is the platform they run on.",
     "intro3": "Every object in the portal belongs to one of the layers, and it is the connections between the layers that make it possible to answer questions such as \"which applications support this process?\" or \"which information is affected if this server goes away?\". Pick a layer in the pyramid or a card below to explore that domain.",
     "pyramidCaption": "Click a layer to jump to that domain",
@@ -1030,7 +1031,7 @@
     },
     "manualObjects": {
       "title": "Manually Added Objects",
-      "description": "Shows objects added directly in the EA portal that are not synced from an external source (SharePoint, 2C8, etc.). Use this to ensure no objects are missing from source systems.",
+      "description": "Shows objects added directly in {{appName}} that are not synced from an external source (SharePoint, 2C8, etc.). Use this to ensure no objects are missing from source systems.",
       "addedAt": "Added",
       "empty": "No manually added objects found.",
       "noMatch": "No objects match the search."

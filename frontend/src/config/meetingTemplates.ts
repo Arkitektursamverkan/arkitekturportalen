@@ -79,7 +79,7 @@ export const MEETING_TEMPLATES: MeetingTemplate[] = [
 ## Arbetssätt
 
 - Mötesfrekvens: 
-- Var dokumentationen finns: det här uppdraget i EA-portalen
+- Var dokumentationen finns: det här uppdraget i portalen
 
 ## Åtgärder
 

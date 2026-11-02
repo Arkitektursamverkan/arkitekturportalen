@@ -1,6 +1,7 @@
 {
   "app": {
-    "title": "EA-portalen",
+    "title": "{{appName}}",
+    "defaultName": "EA-portalen",
     "tagline": "Enterprise Architecture – Proof of Concept"
   },
   "nav": {
@@ -75,16 +76,16 @@
     "domainLists": "Listor"
   },
   "home": {
-    "welcome": "Välkommen till EA-portalen",
+    "welcome": "Välkommen till {{appName}}",
     "description": "Visualisering och analys av organisationens digitala IT-miljö",
     "quickLinks": "Snabblänkar",
     "blocks": {
-      "about": "Om EA-portalen",
+      "about": "Om {{appName}}",
       "empty": "Inget innehåll än. Klicka på pennan för att skriva något.",
       "edit": "Redigera",
       "save": "Spara",
       "cancel": "Avbryt",
-      "aboutTooltip": "Om EA-portalen"
+      "aboutTooltip": "Om {{appName}}"
     },
     "stats": {
       "processes": "Processer",
@@ -136,7 +137,7 @@
     "title": "Domän — BDAT-modellen",
     "subtitle": "Verksamhet · Information · Applikation · Teknik",
     "heading": "Fyra lager som hänger ihop",
-    "intro1": "EA-portalen beskriver organisationens arkitektur i fyra lager enligt BDAT-modellen. Varje lager svarar på sin egen fråga: verksamheten på varför, informationen på vad, applikationerna på hur och tekniken på med vad.",
+    "intro1": "{{appName}} beskriver organisationens arkitektur i fyra lager enligt BDAT-modellen. Varje lager svarar på sin egen fråga: verksamheten på varför, informationen på vad, applikationerna på hur och tekniken på med vad.",
     "intro2": "Verksamheten sätter riktningen genom processerna — det vi faktiskt gör. Informationen är det verksamheten hanterar: begreppen, informationsobjekten och de källor de lagras i. Applikationerna är stödet som utför arbetet, och tekniken är plattformen de körs på.",
     "intro3": "Varje objekt i portalen hör hemma i ett av lagren, och det är kopplingarna mellan lagren som gör det möjligt att svara på frågor som \"vilka applikationer stödjer den här processen?\" eller \"vilken information påverkas om den här servern försvinner?\". Välj ett lager i pyramiden eller ett kort nedan för att utforska domänen.",
     "pyramidCaption": "Klicka på ett lager för att gå till domänen",
@@ -1030,7 +1031,7 @@
     },
     "manualObjects": {
       "title": "Manuellt tillagda objekt",
-      "description": "Visar objekt som lagts till direkt i EA-portalen och inte är synkade från en extern källa (SharePoint, 2C8 eller liknande). Används för att säkerställa att inga objekt saknas i ursprungssystemen.",
+      "description": "Visar objekt som lagts till direkt i {{appName}} och inte är synkade från en extern källa (SharePoint, 2C8 eller liknande). Används för att säkerställa att inga objekt saknas i ursprungssystemen.",
       "addedAt": "Tillagt",
       "empty": "Inga manuellt tillagda objekt hittades.",
       "noMatch": "Inga objekt matchar sökningen."

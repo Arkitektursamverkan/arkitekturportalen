@@ -23,6 +23,7 @@ router = APIRouter(prefix="/org-settings", tags=["org-settings"])
 
 
 class OrgSettingsValues(BaseModel):
+    app_name: str | None = None
     org_name: str | None = None
     org_short_name: str | None = None
     brand_color: str | None = None
@@ -53,6 +54,8 @@ class OrgSettingsAdminRead(BaseModel):
 
 
 class OrgSettingsPublic(BaseModel):
+    # None = the web app's standard name.
+    app_name: str | None = None
     org_name: str | None
     org_short_name: str | None
     brand_color: str | None
@@ -79,6 +82,7 @@ def _get_pg_repo() -> PostgresRepository:
 def _public() -> OrgSettingsPublic:
     cur = org_settings.current()
     return OrgSettingsPublic(
+        app_name=cur.app_name,
         org_name=cur.org_name,
         org_short_name=cur.org_short_name,
         brand_color=cur.brand_color,

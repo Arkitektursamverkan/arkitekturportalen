@@ -13,6 +13,7 @@ import {
 } from "@/api/orgSettings";
 
 const FIELDS: { key: TextKey; label: string; help: string }[] = [
+  { key: "app_name", label: "Portalens namn", help: "Visas i stället för standardnamnet: i sidhuvudet, på inloggningssidan, i webbläsarens flik och i texterna. Tomt = standardnamnet." },
   { key: "org_name", label: "Organisationens namn", help: "Visas på inloggningssidan och i PDF-rapporter." },
   { key: "org_short_name", label: "Kortnamn", help: "Används där det fulla namnet inte får plats." },
   {
@@ -31,7 +32,7 @@ type TextKey = Exclude<keyof OrgSettingsValues, "anonymous_read" | "modules">;
 type Form = Record<TextKey, string> & { anonymous_read: "" | "on" | "off" };
 
 const EMPTY: Form = {
-  org_name: "", org_short_name: "", brand_color: "", allowed_email_domains: "", change_log_departments: "",
+  app_name: "", org_name: "", org_short_name: "", brand_color: "", allowed_email_domains: "", change_log_departments: "",
   anonymous_read: "",
 };
 
@@ -55,6 +56,7 @@ const OrgSettings: React.FC = () => {
     if (!data) return;
     const v = data.values;
     setForm({
+      app_name: v.app_name ?? "",
       org_name: v.org_name ?? "",
       org_short_name: v.org_short_name ?? "",
       brand_color: v.brand_color ?? "",

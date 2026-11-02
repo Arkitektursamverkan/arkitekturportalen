@@ -6,6 +6,7 @@ import { moduleForPath, type ModuleKey } from "@/config/modules";
 import type { Navigation } from "@/config/navigation";
 
 export interface OrgSettingsValues {
+  app_name: string | null;
   org_name: string | null;
   org_short_name: string | null;
   brand_color: string | null;
@@ -36,6 +37,8 @@ export interface OrgSettingsAdmin {
 }
 
 export interface OrgSettingsPublic {
+  /** What the portal calls itself; null = the standard name. */
+  app_name: string | null;
   org_name: string | null;
   org_short_name: string | null;
   brand_color: string | null;

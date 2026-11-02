@@ -12,6 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 import LoginIcon from "@mui/icons-material/Login";
+import { useTranslation } from "react-i18next";
 import MicrosoftIcon from "@mui/icons-material/Microsoft";
 import { useQueryClient } from "@tanstack/react-query";
 import { loginRequest } from "./msalConfig";
@@ -29,6 +30,7 @@ interface Props {
 }
 
 const AuthGate: React.FC<Props> = ({ children, msalEnabled, initialError }) => {
+  const { t } = useTranslation();
   // Utan MsalProvider ger hookarna MSAL:s tomma standardkontext (ingen
   // inloggning, inget pågår); instansen anropas bara när msalEnabled är sant.
   const isMsalAuthenticated = useIsAuthenticated();
@@ -74,7 +76,7 @@ const AuthGate: React.FC<Props> = ({ children, msalEnabled, initialError }) => {
           <Box component="img" src={logoSrc} alt={org?.org_name ?? ""} sx={{ maxHeight: 72, maxWidth: 240, objectFit: "contain", mb: 3 }} />
         )}
         <Typography variant="h4" sx={{ mb: 1, fontWeight: 600 }}>
-          EA-portalen
+          {t("app.title")}
         </Typography>
         {org?.org_name && (
           <Typography variant="subtitle1" sx={{ mb: 1 }}>

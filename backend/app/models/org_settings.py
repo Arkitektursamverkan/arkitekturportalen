@@ -29,6 +29,8 @@ class OrgSettingsORM(Base):
     __table_args__ = (CheckConstraint("id = 1", name="ea_org_settings_single_row"),)
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=False, default=1)
+    # What the portal calls itself; NULL = the standard name, set by the web app per language.
+    app_name: Mapped[str | None] = mapped_column(String(100), nullable=True)
     org_name: Mapped[str | None] = mapped_column(String(200), nullable=True)
     org_short_name: Mapped[str | None] = mapped_column(String(50), nullable=True)
     # "#RRGGBB"

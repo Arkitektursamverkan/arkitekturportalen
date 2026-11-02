@@ -20,7 +20,7 @@ from app.config import settings
 from app.models.org_settings import OrgSettingsORM
 
 FIELDS = (
-    "org_name", "org_short_name", "brand_color", "allowed_email_domains", "change_log_departments",
+    "app_name", "org_name", "org_short_name", "brand_color", "allowed_email_domains", "change_log_departments",
     "anonymous_read", "modules",
 )
 
@@ -28,6 +28,7 @@ FIELDS = (
 Value = str | bool | list[str] | None
 
 LOGO_MAX_BYTES = 512 * 1024
+APP_NAME_MAX = 100
 
 _COLOR_RE = re.compile(r"^#[0-9A-Fa-f]{6}$")
 _DOMAIN_RE = re.compile(r"^(?=.{1,253}$)([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$")
@@ -46,6 +47,7 @@ def _split(value: str) -> list[str]:
 def defaults() -> dict[str, Value]:
     """What each setting is when the row leaves it unset."""
     return {
+        "app_name": None,
         "org_name": settings.PDF_ORG_NAME or None,
         "org_short_name": settings.PDF_ORG_NAME or None,
         "brand_color": None,
@@ -68,6 +70,7 @@ def _effective(field: str) -> Any:
 
 @dataclass(frozen=True)
 class OrgSettings:
+    app_name: str | None
     org_name: str | None
     org_short_name: str | None
     brand_color: str | None
@@ -84,6 +87,7 @@ class OrgSettings:
 
 def current() -> OrgSettings:
     return OrgSettings(
+        app_name=_effective("app_name"),
         org_name=_effective("org_name"),
         org_short_name=_effective("org_short_name"),
         brand_color=_effective("brand_color"),
@@ -140,6 +144,8 @@ def _clean(field: str, value: Value) -> Value:
     value = (value or "").strip()
     if not value:
         return None
+    if field == "app_name" and len(value) > APP_NAME_MAX:
+        raise OrgSettingsError(f"Portalens namn får vara högst {APP_NAME_MAX} tecken")
     if field == "brand_color":
         if not _COLOR_RE.match(value):
             raise OrgSettingsError("Profilfärgen ska anges som #RRGGBB")
