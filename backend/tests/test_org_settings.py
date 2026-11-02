@@ -117,7 +117,7 @@ async def test_ogiltiga_varden_avvisas(client, api_headers, falt):
     resp = await client.put("/api/v1/org-settings", json=falt, headers=api_headers)
     assert resp.status_code == 422
     assert (await client.get("/api/v1/org-settings", headers=api_headers)).json()["values"] == {
-        "org_name": None, "org_short_name": None, "brand_color": None,
+        "app_name": None, "org_name": None, "org_short_name": None, "brand_color": None,
         "allowed_email_domains": None, "change_log_departments": None, "anonymous_read": None, "modules": None,
     }
 
