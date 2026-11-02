@@ -1,6 +1,7 @@
 """Neo4j implementation of GraphRepository using the official async driver."""
 from __future__ import annotations
 
+import json
 import uuid
 from datetime import UTC, datetime
 from typing import Any
@@ -29,6 +30,17 @@ def _now_iso() -> str:
     return datetime.now(UTC).isoformat()
 
 
+def _dump_attrs(attrs: dict[str, Any] | None) -> str:
+    # Neo4j properties cannot hold maps, so attributes are stored as a JSON string.
+    return json.dumps(attrs or {})
+
+
+def _load_attrs(raw: Any) -> dict[str, Any]:
+    if isinstance(raw, str):
+        return json.loads(raw) if raw else {}
+    return dict(raw) if raw else {}
+
+
 def _record_to_node_read(r: dict) -> NodeRead:
     return NodeRead(
         id=UUID(r["id"]),
@@ -38,7 +50,7 @@ def _record_to_node_read(r: dict) -> NodeRead:
         external_source=ExternalSource(r.get("external_source", "NONE")),
         external_id=r.get("external_id"),
         archived=bool(r.get("archived", False)),
-        attributes=r.get("attributes", {}),
+        attributes=_load_attrs(r.get("attributes")),
         last_synced_at=r.get("last_synced_at"),
         created_at=r.get("created_at", datetime.now(UTC)),
         updated_at=r.get("updated_at", datetime.now(UTC)),
@@ -51,7 +63,7 @@ def _record_to_edge_read(r: dict) -> EdgeRead:
         source_id=UUID(r["source_id"]),
         target_id=UUID(r["target_id"]),
         type=EdgeType(r["type"]),
-        attributes=r.get("attributes", {}),
+        attributes=_load_attrs(r.get("attributes")),
         created_at=r.get("created_at", datetime.now(UTC)),
         updated_at=r.get("updated_at", datetime.now(UTC)),
     )
@@ -129,7 +141,7 @@ class Neo4jRepository(GraphRepository):
                 """,
                 id=node_id, type=data.type.value, name=data.name, desc=data.description,
                 es=data.external_source.value, ei=data.external_id,
-                attrs=data.attributes, now=now,
+                attrs=_dump_attrs(data.attributes), now=now,
             )
             record = await result.single()
             assert record is not None
@@ -137,6 +149,8 @@ class Neo4jRepository(GraphRepository):
 
     async def update_node(self, node_id: UUID, data: NodeUpdate, user_name: str | None = None) -> NodeRead | None:
         updates = data.model_dump(exclude_none=True)
+        if "attributes" in updates:
+            updates["attributes"] = _dump_attrs(updates["attributes"])
         updates["updated_at"] = _now_iso()
         async with self._driver.session() as s:
             result = await s.run(
@@ -175,7 +189,7 @@ class Neo4jRepository(GraphRepository):
                 es=external_source, ei=external_id,
                 new_id=str(uuid.uuid4()), type=data.type.value,
                 name=data.name, desc=data.description,
-                attrs=data.attributes, now=now,
+                attrs=_dump_attrs(data.attributes), now=now,
             )
             record = await result.single()
             assert record is not None
@@ -230,7 +244,7 @@ class Neo4jRepository(GraphRepository):
                 RETURN properties(r) AS p
                 """,
                 src_id=str(data.source_id), tgt_id=str(data.target_id),
-                id=edge_id, type=data.type.value, attrs=data.attributes, now=now,
+                id=edge_id, type=data.type.value, attrs=_dump_attrs(data.attributes), now=now,
             )
             record = await result.single()
             assert record is not None
@@ -290,7 +304,7 @@ class Neo4jRepository(GraphRepository):
                     id=p["id"], type=NodeType(p["type"]), name=p.get("name", ""),
                     description=p.get("description"),
                     external_source=ExternalSource(p.get("external_source", "NONE")),
-                    attributes=p.get("attributes", {}),
+                    attributes=_load_attrs(p.get("attributes")),
                 )
 
             def to_ge(p: dict) -> GraphEdgeOut | None:
@@ -298,7 +312,7 @@ class Neo4jRepository(GraphRepository):
                     return None
                 return GraphEdgeOut(
                     id=p["id"], source=p["source_id"], target=p["target_id"],
-                    type=EdgeType(p["type"]), attributes=p.get("attributes", {}),
+                    type=EdgeType(p["type"]), attributes=_load_attrs(p.get("attributes")),
                 )
 
             all_node_props = (
@@ -347,7 +361,7 @@ class Neo4jRepository(GraphRepository):
                     id=p["id"], type=NodeType(p["type"]), name=p.get("name", ""),
                     description=p.get("description"),
                     external_source=ExternalSource(p.get("external_source", "NONE")),
-                    attributes=p.get("attributes", {}),
+                    attributes=_load_attrs(p.get("attributes")),
                 )
 
             def to_ge(p: dict) -> GraphEdgeOut | None:
@@ -355,7 +369,7 @@ class Neo4jRepository(GraphRepository):
                     return None
                 return GraphEdgeOut(
                     id=p["id"], source=p["source_id"], target=p["target_id"],
-                    type=EdgeType(p["type"]), attributes=p.get("attributes", {}),
+                    type=EdgeType(p["type"]), attributes=_load_attrs(p.get("attributes")),
                 )
 
             all_node_props = [record["app_props"]] + record["out_nodes"] + record["in_nodes"]
@@ -387,14 +401,14 @@ class Neo4jRepository(GraphRepository):
                     id=p["id"], type=NodeType(p["type"]), name=p.get("name", ""),
                     description=p.get("description"),
                     external_source=ExternalSource(p.get("external_source", "NONE")),
-                    attributes=p.get("attributes", {}),
+                    attributes=_load_attrs(p.get("attributes")),
                 )
                 for p in record["apps"] if p and p.get("id")
             ]
             edges = [
                 GraphEdgeOut(
                     id=p["id"], source=p["source_id"], target=p["target_id"],
-                    type=EdgeType(p["type"]), attributes=p.get("attributes", {}),
+                    type=EdgeType(p["type"]), attributes=_load_attrs(p.get("attributes")),
                 )
                 for p in record["rels"] if p and p.get("id")
             ]
