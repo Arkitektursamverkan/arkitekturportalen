@@ -6,7 +6,7 @@ A clickable, visual EA tool integrating external sources (SharePoint systems, 2C
 
 | Layer | Choice |
 |---|---|
-| Backend | Python 3.11 + FastAPI 0.115 + SQLAlchemy 2.0 async |
+| Backend | Python 3.14 + FastAPI 0.115 + SQLAlchemy 2.0 async |
 | Database | PostgreSQL 16 (default) · Neo4j 5 (opt-in) |
 | Frontend | React 18 + TypeScript 5 + Vite 5 + MUI v5 + Cytoscape.js |
 | Container | Docker + docker-compose |

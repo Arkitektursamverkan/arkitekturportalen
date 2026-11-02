@@ -1,4 +1,4 @@
-target-version = "py311"
+target-version = "py314"
 
 [lint]
 # Broad excepts here are deliberate boundaries: an import reports each failing
