@@ -110,7 +110,7 @@
       "description": "Fyll databasen med exempeldata (SharePoint + 2C8 + relationer)",
       "success": "Demodata inläst!",
       "loading": "Laddar demodata...",
-      "available": "Portalen har inga objekt än. Demodata fyller den med fiktiva applikationer, processer och kopplingar att prova på. De kan tas bort under Datahantering.",
+      "available": "Portalen har inga objekt än. Demodata fyller den med fiktiva objekt och kopplingar att prova på. Under Datahantering tar Ta bort demodata bort applikationerna och processerna. Informationsobjekt, informationskällor och teknikkomponenter tas bort under Ta bort alla poster, som tar alla objekt av vald typ.",
       "unavailable": "Inte tillgängligt: portalen innehåller redan objekt. Demodata går bara att ladda i en portal utan objekt, så att fiktiva objekt inte blandas med riktiga.",
       "error": "Demodata gick inte att ladda."
     },
