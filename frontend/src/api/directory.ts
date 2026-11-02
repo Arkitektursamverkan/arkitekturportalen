@@ -1,8 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { InteractionRequiredAuthError } from "@azure/msal-browser";
 import { apiClient } from "./client";
 import { directoryRequest } from "@/auth/msalConfig";
-import { getMsal } from "@/auth/msal";
+import { acquireGraphToken } from "@/auth/graphToken";
 
 /**
  * Personer och avdelningar ur Entra ID.
@@ -68,28 +67,15 @@ export function useDirectoryStatus() {
   });
 }
 
-/** Graph-biljett för den inloggade administratören; frågar i ett fönster om det behövs. */
-async function acquireGraphToken(): Promise<string> {
-  const msal = await getMsal();
-  const account = msal ? msal.getActiveAccount() ?? msal.getAllAccounts()[0] : null;
-  if (!msal || !account) {
-    throw new Error("Katalogen kan bara hämtas av en administratör som är inloggad med Microsoft-konto.");
-  }
-  try {
-    return (await msal.acquireTokenSilent({ ...directoryRequest, account })).accessToken;
-  } catch (err) {
-    if (err instanceof InteractionRequiredAuthError) {
-      return (await msal.acquireTokenPopup({ ...directoryRequest, account })).accessToken;
-    }
-    throw err;
-  }
-}
 
 export function useSyncDirectory() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async () => {
-      const graph_token = await acquireGraphToken();
+      const graph_token = await acquireGraphToken(
+        directoryRequest,
+        "Katalogen kan bara hämtas av en administratör som är inloggad med Microsoft-konto.",
+      );
       const { data } = await apiClient.post<DirectoryStatus>("/directory/sync", { graph_token });
       return data;
     },

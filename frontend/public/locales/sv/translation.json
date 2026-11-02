@@ -1142,7 +1142,7 @@
       "maxSize": "Max {{mb}} MB. Tillåtet: Office, PDF, text, bilder, Visio och e-post.",
       "tooLarge": "Filen är för stor (max {{mb}} MB).",
       "download": "Ladda ner",
-      "openPdf": "Öppna",
+      "viewPdf": "Visa PDF",
       "openLink": "Öppna länk",
       "edit": "Ändra",
       "delete": "Ta bort",
@@ -1308,5 +1308,11 @@
     "noServers": "Tjänsten är inte kopplad till någon server ännu. Kopplingen görs från servern.",
     "edit": "Redigera servertjänsten",
     "noAccess": "Du har inte behörighet till Servrar. Be en administratör om åtkomst."
+  },
+  "pdfViewer": {
+    "download": "Ladda ner",
+    "openSource": "Öppna där filen finns",
+    "maximize": "Förstora",
+    "restore": "Återställ storlek"
   }
 }
