@@ -11,6 +11,7 @@ export const NODE_TYPE_LABEL: Record<NodeType, string> = {
   TechnologyComponent: "Teknikkomponenter",
   Server: "Servrar",
   ServerService: "Servertjänster",
+  CustomObject: "Egna listor",
 };
 
 export const NODE_TYPES: NodeType[] = ["Application", "Process", "InformationObject", "InformationSource", "TechnologyComponent"];

@@ -23,6 +23,8 @@ export interface NodeTypeField {
 
 export interface NodeTypeInfo {
   type: string;
+  /** The name of an own list; the others are shown by their type. */
+  label?: string;
   core_fields: NodeTypeField[];
   suggested_attributes: NodeTypeField[];
 }

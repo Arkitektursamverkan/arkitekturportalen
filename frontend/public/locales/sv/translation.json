@@ -71,7 +71,8 @@
     "accessManagement": "Behörigheter",
     "serverServices": "Servertjänster",
     "architectureJourney": "Arkitekturresan",
-    "navigationSettings": "Meny"
+    "navigationSettings": "Meny",
+    "domainLists": "Listor"
   },
   "home": {
     "welcome": "Välkommen till EA-portalen",
@@ -1219,7 +1220,8 @@
       "TechnologyComponent": "Teknikkomponenter",
       "Server": "Servrar och servertjänster",
       "ArchitecturePrinciple": "Arkitekturprinciper",
-      "ServerService": "Servertjänster"
+      "ServerService": "Servertjänster",
+      "CustomObject": "Egna listor"
     },
     "globalRoles": {
       "user": "Användare",
@@ -1317,5 +1319,49 @@
     "openSource": "Öppna där filen finns",
     "maximize": "Förstora",
     "restore": "Återställ storlek"
+  },
+  "domainLists": {
+    "title": "Listor",
+    "intro": "Vilka listor installationen har under arkitekturdomänerna. Inställningarna sparas i installationens databas och ändras inte vid uppgradering.",
+    "builtin": "Inbyggda listor",
+    "builtinHint": "En avstängd lista döljs för alla, i menyer, sökning och grafer. Inget raderas: objekten kommer tillbaka när listan slås på, och synk till listan fortsätter under tiden. Applikationer, processer och informationsobjekt går inte att stänga av, eftersom rapporterna bygger på dem.",
+    "own": "Egna listor",
+    "ownHint": "Egna listor har ett namn, en domän och egna fält. Objekten kan kopplas till andra objekt och syns i sökning och grafer.",
+    "noOwn": "Inga egna listor än.",
+    "newList": "Ny lista",
+    "editList": "Ändra lista",
+    "listName": "Listans namn",
+    "domain": "Domän",
+    "fields": "Fält",
+    "fieldsHint": "Namn och beskrivning finns alltid.",
+    "fieldLabel": "Fältets namn",
+    "fieldType": "Typ",
+    "fieldOptions": "Val, kommaseparerade",
+    "addField": "Lägg till fält",
+    "removeField": "Ta bort fält",
+    "removeList": "Ta bort lista",
+    "removeHasObjects": "Listan har objekt. Stäng av den, eller ta bort objekten först.",
+    "saveError": "Det gick inte att spara.",
+    "syncHint": "Ska listan fyllas från till exempel SharePoint? Välj den som mål under Importera från plattformen eller Synkprofiler. Listans fält föreslås när du mappar.",
+    "fieldTypes": {
+      "text": "Text",
+      "number": "Tal",
+      "date": "Datum",
+      "choice": "Val",
+      "link": "Länk"
+    }
+  },
+  "customList": {
+    "newObject": "Nytt objekt",
+    "editObject": "Ändra objekt",
+    "name": "Namn",
+    "description": "Beskrivning",
+    "saveError": "Det gick inte att spara.",
+    "notFound": "Listan finns inte eller är avstängd.",
+    "empty": "Inga objekt än.",
+    "noSelection": "Välj ett objekt i listan.",
+    "connections": "Kopplingar",
+    "connect": "Hantera kopplingar",
+    "noConnections": "Inga kopplingar än."
   }
 }

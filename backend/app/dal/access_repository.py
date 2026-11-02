@@ -48,7 +48,7 @@ DEFAULT_ROLES: list[dict[str, Any]] = [
 # superusers — what the portal did before grants existed.
 OPEN_TYPES = [
     "Process", "Application", "InformationObject", "InformationSource",
-    "TechnologyComponent", "ArchitecturePrinciple",
+    "TechnologyComponent", "ArchitecturePrinciple", "CustomObject",
 ]
 
 

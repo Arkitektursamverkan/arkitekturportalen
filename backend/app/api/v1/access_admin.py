@@ -45,6 +45,7 @@ _TYPE_NAMES = {
     "Process": "Processer", "Application": "Applikationer", "InformationObject": "Informationsobjekt",
     "InformationSource": "Informationskällor", "TechnologyComponent": "Teknikkomponenter",
     "Server": "Servrar och servertjänster", "ArchitecturePrinciple": "Arkitekturprinciper",
+    "CustomObject": "Egna listor",
 }
 
 

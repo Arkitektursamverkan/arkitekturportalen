@@ -45,7 +45,7 @@ const SERVER_TYPES: NodeType[] = ["Server", "ServerService"];
 const Home: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { enabled: moduleOn } = useModules();
+  const { enabled: moduleOn, pathEnabled } = useModules();
 
   const { data: allNodes, isLoading: statsLoading } = useNodes();
   // Grouping pages in the process hierarchy are not objects in their own
@@ -68,7 +68,7 @@ const Home: React.FC = () => {
 
       {/* Stats */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
-        {STAT_TYPES.filter((s) => !SERVER_TYPES.includes(s.type) || serverAccess !== "none").map(({ type, labelKey, defKey, path }) => {
+        {STAT_TYPES.filter((s) => pathEnabled(s.path) && (!SERVER_TYPES.includes(s.type) || serverAccess !== "none")).map(({ type, labelKey, defKey, path }) => {
           const count = statsLoading
             ? null
             : (allNodes ?? []).filter((n) =>

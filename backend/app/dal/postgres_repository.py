@@ -85,13 +85,22 @@ COUNTED_PROCESS = """
 """
 
 
+def _source(value: str) -> ExternalSource:
+    """A sync stores its flow's own source label ("REST", "PLATFORM" ...), which the
+    enum doesn't list. One such row must not break every read of the nodes."""
+    try:
+        return ExternalSource(value)
+    except ValueError:
+        return ExternalSource.NONE
+
+
 def _node_to_read(n: NodeORM) -> NodeRead:
     return NodeRead(
         id=n.id,
         type=NodeType(n.type),
         name=n.name,
         description=n.description,
-        external_source=ExternalSource(n.external_source),
+        external_source=_source(n.external_source),
         external_id=n.external_id,
         archived=n.archived,
         admin_hidden=getattr(n, "admin_hidden", False),
@@ -109,7 +118,7 @@ def _node_to_graph(n: NodeORM) -> GraphNodeOut:
         type=NodeType(n.type),
         name=n.name,
         description=n.description,
-        external_source=ExternalSource(n.external_source),
+        external_source=_source(n.external_source),
         archived=n.archived,
         attributes=n.attributes or {},
     )

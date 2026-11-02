@@ -27,6 +27,8 @@ const ImportCSV = lazy(() => import("@/pages/ImportCSV"));
 const Connections = lazy(() => import("@/pages/Connections"));
 const DataManagement = lazy(() => import("@/pages/DataManagement"));
 const NavigationSettings = lazy(() => import("@/pages/NavigationSettings"));
+const DomainListsSettings = lazy(() => import("@/pages/DomainListsSettings"));
+const CustomListView = lazy(() => import("@/pages/CustomListView"));
 const CreateNode = lazy(() => import("@/pages/CreateNode"));
 const PlatformImport = lazy(() => import("@/pages/PlatformImport"));
 const AuditLog = lazy(() => import("@/pages/AuditLog"));
@@ -101,8 +103,8 @@ const ModuleGate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <Box sx={{ p: 3 }}>
       <Alert severity="info">
-        Modulen är inte aktiverad i den här installationen. En administratör kan slå på den under
-        Administration → Organisation.
+        Den här delen är inte aktiverad i den här installationen. En administratör kan slå på den
+        under Administration.
       </Alert>
     </Box>
   );
@@ -121,6 +123,7 @@ const AppRouter: React.FC = () => (
         <Route path="/tech-components" element={<TechComponentExplorer />} />
         <Route path="/servers" element={<ServerView />} />
         <Route path="/server-services" element={<ServerServiceView />} />
+        <Route path="/lists/:listKey" element={<CustomListView />} />
         <Route path="/landscape" element={<Landscape />} />
         <Route path="/architecture-principles" element={<ArchitecturePrinciples />} />
         {/* Svensk länkadress till principerna. En OMDIRIGERING och inte en andra
@@ -150,6 +153,7 @@ const AppRouter: React.FC = () => (
         <Route path="/platform-import" element={<AdminRoute><PlatformImport /></AdminRoute>} />
         <Route path="/data-management" element={<AdminRoute><DataManagement /></AdminRoute>} />
         <Route path="/navigation-settings" element={<AdminRoute><NavigationSettings /></AdminRoute>} />
+        <Route path="/domain-lists" element={<AdminRoute><DomainListsSettings /></AdminRoute>} />
         <Route path="/audit-log" element={<AdminRoute><AuditLog /></AdminRoute>} />
         <Route path="/sync-profiles" element={<AdminRoute><SyncProfiles /></AdminRoute>} />
         <Route path="/org-settings" element={<AdminRoute><OrgSettings /></AdminRoute>} />

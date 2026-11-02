@@ -7,7 +7,7 @@ import { NODE_COLORS, EDGE_STYLES, DIRECTION_GLYPHS, INTEGRATION_DIRECTIONS } fr
 import type { NodeType, EdgeType } from "@/types/graph";
 
 const NODE_TYPES: NodeType[] = [
-  "Process", "Application", "InformationObject", "InformationSource", "TechnologyComponent", "Server", "ServerService",
+  "Process", "Application", "InformationObject", "InformationSource", "TechnologyComponent", "Server", "ServerService", "CustomObject",
 ];
 const EDGE_TYPES: EdgeType[] = [
   "USES", "SUPPORTS", "HANDLES", "REALIZES", "CONTAINS", "RUNS_ON", "INTEGRATES_WITH",

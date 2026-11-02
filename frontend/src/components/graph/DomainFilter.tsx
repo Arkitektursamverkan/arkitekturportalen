@@ -6,7 +6,7 @@ import type { GraphData, NodeType } from "@/types/graph";
 
 /** Domain order in the filter bar — matches the legend. */
 const TYPE_ORDER: NodeType[] = [
-  "Process", "Application", "InformationObject", "InformationSource", "TechnologyComponent", "Server", "ServerService",
+  "Process", "Application", "InformationObject", "InformationSource", "TechnologyComponent", "Server", "ServerService", "CustomObject",
 ];
 
 export interface DomainFilter {

@@ -21,8 +21,11 @@ from app.config import settings
 from app.dal.graph_repository import GraphRepository
 from app.dal.postgres_repository import SYNC_AUDIT_USER
 from app.dependencies import get_repository, require_admin
+from app.domain_lists import LIST_KEY, sync_target
+from app.domain_lists import parse as parse_lists
 from app.schemas.common import ExternalSource, NodeType
 from app.schemas.node import NodeCreate, NodeUpdate
+from app.services import org_settings
 
 log = structlog.get_logger(__name__)
 
@@ -119,7 +122,9 @@ async def _run_sync(profile: SyncProfile, repo: GraphRepository) -> dict[str, An
             page += 1
 
     # Validate node type
-    node_type = NodeType(profile.node_type)
+    node_type, list_key = sync_target(profile.node_type)
+    if list_key and not any(c.key == list_key for c in parse_lists(org_settings.domain_lists()).custom):
+        raise ValueError(f"Listan {list_key} finns inte längre")
     source_map = {"sharepoint": ExternalSource.SHAREPOINT, "2c8": ExternalSource.TWO_C8}
     external_source = source_map.get(profile.external_source_label.lower(), ExternalSource.NONE)
     external_source_str = profile.external_source_label.upper()
@@ -183,6 +188,9 @@ async def _run_sync(profile: SyncProfile, repo: GraphRepository) -> dict[str, An
                     parent_id = container_id
                 if parent_id:
                     attributes = _with_parent(attributes, parent_id)
+
+            if list_key:
+                attributes[LIST_KEY] = list_key
 
             node_data = NodeCreate(
                 type=node_type,
@@ -275,11 +283,14 @@ async def _run_sync(profile: SyncProfile, repo: GraphRepository) -> dict[str, An
     archived_count = 0
     if synced_external_ids:
         existing_nodes = await repo.list_nodes(
-            node_type=profile.node_type,
+            node_type=node_type.value,
             external_source=external_source_str,
             limit=10000,
         )
         for node in existing_nodes:
+            # Own lists share a type: another list's objects aren't this flow's to prune.
+            if list_key and (node.attributes or {}).get(LIST_KEY) != list_key:
+                continue
             # Only prune nodes that have last_synced_at set (meaning they were created via
             # upsert_node_by_external, not via seed or manual creation)
             if (node.external_id

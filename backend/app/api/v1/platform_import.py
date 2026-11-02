@@ -11,8 +11,11 @@ from pydantic import BaseModel, Field, field_validator
 
 from app.dal.graph_repository import GraphRepository
 from app.dependencies import get_repository, require_admin
+from app.domain_lists import CUSTOM_TYPE, LIST_KEY, sync_target
+from app.domain_lists import parse as parse_lists
 from app.schemas.common import ExternalSource, NodeType
 from app.schemas.node import NodeCreate
+from app.services import org_settings
 
 log = structlog.get_logger(__name__)
 
@@ -177,8 +180,20 @@ async def get_source_fields(body: PlatformFieldsRequest):
 @router.get("/node-types")
 async def get_node_types():
     """List available EA node types with their core and suggested attribute fields."""
+    own_lists = [
+        {
+            "type": f"{CUSTOM_TYPE}:{c.key}",
+            "label": c.name,
+            "core_fields": [
+                {"target": "name", "label": "Name", "required": True},
+                {"target": "description", "label": "Description"},
+            ],
+            "suggested_attributes": [{"target": f"attr:{f.key}", "label": f.label} for f in c.fields],
+        }
+        for c in parse_lists(org_settings.domain_lists()).custom
+    ]
     return {
-        "node_types": [
+        "node_types": [*own_lists,
             {
                 "type": "Application",
                 "core_fields": [
@@ -260,9 +275,11 @@ async def execute_platform_import(
     """Import records from the Integration Platform into EA nodes."""
     # Validate node type
     try:
-        node_type = NodeType(body.node_type)
+        node_type, list_key = sync_target(body.node_type)
     except ValueError:
         raise HTTPException(status_code=400, detail=f"Invalid node_type: {body.node_type}")
+    if list_key and not any(c.key == list_key for c in parse_lists(org_settings.domain_lists()).custom):
+        raise HTTPException(status_code=400, detail=f"Listan {list_key} finns inte")
 
     # Check that 'name' mapping exists
     has_name = any(m.target == "name" for m in body.mappings)
@@ -325,7 +342,7 @@ async def execute_platform_import(
                 description=mapped["description"],
                 external_source=external_source,
                 external_id=namespaced_id,
-                attributes=mapped["attributes"],
+                attributes={**mapped["attributes"], **({LIST_KEY: list_key} if list_key else {})},
             )
 
             _, was_created = await repo.upsert_node_by_external(

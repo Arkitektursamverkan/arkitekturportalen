@@ -199,7 +199,7 @@ const SyncProfiles: React.FC = () => {
                     <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                       <Box sx={{
                         width: 10, height: 10, borderRadius: "50%",
-                        bgcolor: NODE_COLORS[p.node_type as NodeType] ?? "#999",
+                        bgcolor: NODE_COLORS[p.node_type.split(":")[0] as NodeType] ?? "#999",
                       }} />
                       <Typography variant="body2">{p.node_type}</Typography>
                     </Stack>

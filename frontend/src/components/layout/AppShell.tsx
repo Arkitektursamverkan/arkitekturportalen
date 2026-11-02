@@ -16,6 +16,8 @@ import SyncAltIcon from "@mui/icons-material/SyncAlt";
 import BuildIcon from "@mui/icons-material/Build";
 import HistoryIcon from "@mui/icons-material/History";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
+import ListAltIcon from "@mui/icons-material/ListAlt";
+import { listPath, type DomainKey } from "@/config/domainLists";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import DeviceHubIcon from "@mui/icons-material/DeviceHub";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutlineOutlined";
@@ -86,6 +88,8 @@ interface NavItem {
   path: string;
   icon: React.ReactNode;
   key: string;
+  /** The name as it stands, for what an admin named: not a translation key. */
+  label?: string;
   adminOnly: boolean;
   editorOnly?: boolean;
   /** Shown only to users with at least read access to Servrar. */
@@ -94,6 +98,7 @@ interface NavItem {
 
 // TOGAF domain groups
 interface DomainGroup {
+  domain: DomainKey;
   key: string;           // translation key for group label
   icon: React.ReactNode;
   color: string;
@@ -102,6 +107,7 @@ interface DomainGroup {
 
 const DOMAIN_GROUPS: DomainGroup[] = [
   {
+    domain: "business",
     key: "nav.domain.business",
     icon: <BusinessIcon />,
     color: "#4CAF50",
@@ -110,6 +116,7 @@ const DOMAIN_GROUPS: DomainGroup[] = [
     ],
   },
   {
+    domain: "application",
     key: "nav.domain.application",
     icon: <AppsIcon />,
     color: "#2196F3",
@@ -119,6 +126,7 @@ const DOMAIN_GROUPS: DomainGroup[] = [
     ],
   },
   {
+    domain: "information",
     key: "nav.domain.information",
     icon: <FolderOpenIcon />,
     color: "#FF9800",
@@ -128,6 +136,7 @@ const DOMAIN_GROUPS: DomainGroup[] = [
     ],
   },
   {
+    domain: "technology",
     key: "nav.domain.technology",
     icon: <DnsIcon />,
     color: "#9C27B0",
@@ -158,6 +167,7 @@ const ADMIN_GROUP_ITEMS: NavItem[] = [
   { path: "/connections", icon: <DeviceHubIcon />, key: "nav.connections", adminOnly: false, editorOnly: true },
   { path: "/org-settings", icon: <BusinessIcon />, key: "nav.orgSettings", adminOnly: true },
   { path: "/navigation-settings", icon: <MenuOpenIcon />, key: "nav.navigationSettings", adminOnly: true },
+  { path: "/domain-lists", icon: <ListAltIcon />, key: "nav.domainLists", adminOnly: true },
   { path: "/users", icon: <GroupIcon />, key: "nav.userManagement", adminOnly: true },
   { path: "/access", icon: <AdminPanelSettingsIcon />, key: "nav.accessManagement", adminOnly: true },
   { path: "/data-management", icon: <DeleteSweepIcon />, key: "nav.adminFunctions", adminOnly: true },
@@ -209,7 +219,7 @@ const AppShell: React.FC<Props> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const isDomainActive = ALL_DOMAIN_PATHS.has(location.pathname);
+  const isDomainActive = ALL_DOMAIN_PATHS.has(location.pathname) || location.pathname.startsWith("/lists/");
   const [domainOpen, setDomainOpen] = useState(isDomainActive);
   // Clicking "Domän" itself opens the full-screen BDAT summary; the chevron
   // is what folds the sub-menu away. The dialog is only mounted once it has
@@ -311,6 +321,8 @@ const AppShell: React.FC<Props> = ({ children }) => {
   React.useEffect(() => {
     if (isWorkspaceActive) setWorkspacesOpen(true);
   }, [isWorkspaceActive]);
+
+  const customLists = (publicSettings?.domain_lists?.custom ?? []).filter((c) => c.active);
 
   const filterAdmin = (items: NavItem[]) =>
     items.filter((i) => {
@@ -433,7 +445,12 @@ const AppShell: React.FC<Props> = ({ children }) => {
             <Collapse in={domainOpen} timeout="auto" unmountOnExit>
               <List dense disablePadding>
                 {DOMAIN_GROUPS.map((group) => {
-                  const visibleItems = filterAdmin(group.items);
+                  const visibleItems = [
+                    ...filterAdmin(group.items),
+                    ...customLists.filter((c) => c.domain === group.domain).map((c): NavItem => ({
+                      path: listPath(c.key), icon: <ListAltIcon />, key: c.key, label: c.name, adminOnly: false,
+                    })),
+                  ];
                   if (visibleItems.length === 0) return null;
                   const groupActive = visibleItems.some((i) => location.pathname === i.path);
                   return (
@@ -466,7 +483,7 @@ const AppShell: React.FC<Props> = ({ children }) => {
                           sx={{ borderRadius: 1, mx: 0.5, my: 0.15, pl: 5 }}
                         >
                           <ListItemIcon sx={{ minWidth: 30, color: group.color }}>{item.icon}</ListItemIcon>
-                          <ListItemText primary={t(item.key)} slotProps={{ primary: { sx: { fontSize: 12 } } }} />
+                          <ListItemText primary={item.label ?? t(item.key)} slotProps={{ primary: { sx: { fontSize: 12 } } }} />
                         </ListItemButton>
                       ))}
                     </React.Fragment>
