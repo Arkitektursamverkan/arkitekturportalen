@@ -196,7 +196,7 @@ class Policy:
 
     # ── Filtering ───────────────────────────────────────────────────────────
 
-    def filter_nodes(self, nodes: Iterable[T], type_of=lambda n: n.type, id_of=lambda n: n.id) -> list[T]:  # type: ignore[no-untyped-def]
+    def filter_nodes[T](self, nodes: Iterable[T], type_of=lambda n: n.type, id_of=lambda n: n.id) -> list[T]:  # type: ignore[no-untyped-def]
         if self.full:
             return list(nodes)
         return [n for n in nodes if self.can_see(id_of(n), type_of(n))]
