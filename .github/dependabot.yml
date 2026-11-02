@@ -25,6 +25,9 @@ updates:
       # typescript-eslint 8 (peer: typescript <6.1). Remove when it is.
       - dependency-name: "typescript"
         versions: [">= 7.0.0"]
+      # The types follow the Node version in the image (24, LTS), not the latest.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: "docker"
     directory: "/backend"
     schedule:

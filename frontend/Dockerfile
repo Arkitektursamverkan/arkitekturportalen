@@ -12,7 +12,7 @@ COPY . .
 RUN npm run build
 
 # ── Runtime (nginx) ────────────────────────────────────────────────────────────
-FROM nginx:1.29-alpine AS runtime
+FROM nginx:1.31-alpine AS runtime
 
 ARG APP_VERSION=dev
 LABEL org.opencontainers.image.title="Arkitekturportalen web" \
