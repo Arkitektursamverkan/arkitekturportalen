@@ -27,6 +27,12 @@ router = APIRouter(prefix="/seed", tags=["seed"])
 SEED_EXTRA_PATH = Path(__file__).parent.parent.parent.parent / "seed" / "seed_extra.json"
 
 
+@router.get("/status", dependencies=[Depends(require_admin)])
+async def seed_status() -> dict:
+    """Whether the demo data can be loaded: only while there are no nodes."""
+    return {"available": not await get_repository().list_nodes(limit=1)}
+
+
 @router.post("", dependencies=[Depends(require_admin)])
 async def seed_database() -> dict:
     """Idempotent full-dataset seed for the PoC demo.

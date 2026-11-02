@@ -29,6 +29,7 @@ import SeedingIcon from "@mui/icons-material/Yard";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import { useTranslation } from "react-i18next";
+import DemoDataSection from "@/components/DemoDataSection";
 import UsageStatistics from "@/components/UsageStatistics";
 import { useNavigate } from "react-router-dom";
 import { useThemeStore } from "@/store/themeStore";
@@ -203,17 +204,9 @@ const Settings: React.FC = () => {
             )}
           </Section>}
 
-          {/* Demo data — editor. The endpoint imports fictional mock nodes
-              that would mix with real data, so the backend refuses to run it
-              as long as any node exists. */}
-          {isEditor && <Section icon={<SeedingIcon />} title={t("home.seed.button")}>
-            <Alert severity="warning" sx={{ mb: 2 }}>
-              Inaktiverad — databasen innehåller redan skarp data. Att ladda demodata skulle blanda in
-              fiktiva testobjekt bland riktiga applikationer och processer.
-            </Alert>
-            <Button variant="outlined" startIcon={<DownloadIcon />} disabled>
-              {t("home.seed.button")}
-            </Button>
+          {/* Demo data — admin, as the endpoint requires. */}
+          {isAdmin && <Section icon={<SeedingIcon />} title={t("home.seed.button")}>
+            <DemoDataSection />
           </Section>}
 
           {/* Users — admin only */}

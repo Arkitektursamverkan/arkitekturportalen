@@ -109,7 +109,10 @@
       "button": "Load demo data",
       "description": "Populate the database with sample data (SharePoint + 2C8 + relationships)",
       "success": "Demo data loaded!",
-      "loading": "Loading demo data..."
+      "loading": "Loading demo data...",
+      "available": "The portal has no objects yet. Demo data fills it with fictional applications, processes and relations to try out. They can be removed under Data management.",
+      "unavailable": "Not available: the portal already has objects. Demo data can only be loaded into a portal without objects, so that fictional objects do not mix with real ones.",
+      "error": "The demo data could not be loaded."
     },
     "shortcuts": {
       "editStart": "Customise shortcuts",
