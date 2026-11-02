@@ -7,6 +7,10 @@ funktioner, en ny korrigering för rättelser.
 
 ## Ej släppt
 
+- (inget än)
+
+## 0.5.1 – 2026-11-02
+
 - Backend på Python 3.14 och webbens bygge på Node 26 (LTS). Testverktygen: Vitest 5 och jsdom 30.
 
 ## 0.5.0 – 2026-11-02
