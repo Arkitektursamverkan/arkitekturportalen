@@ -1684,6 +1684,7 @@ class PostgresRepository(GraphRepository):
         allow_multiple_responses: bool = False,
         due_date: date | None = None,
         include_decommissioned: bool = False,
+        answer_url: str | None = None,
         created_by: str | None,
     ) -> SurveyORM:
         async with self._session_factory() as s:
@@ -1700,6 +1701,7 @@ class PostgresRepository(GraphRepository):
                 allow_multiple_responses=allow_multiple_responses,
                 due_date=due_date,
                 include_decommissioned=include_decommissioned,
+                answer_url=answer_url,
                 created_by=created_by,
                 updated_by=created_by,
             )
@@ -1723,6 +1725,8 @@ class PostgresRepository(GraphRepository):
         due_date: date | None = None,
         set_due_date: bool = False,
         include_decommissioned: bool | None = None,
+        answer_url: str | None = None,
+        set_answer_url: bool = False,
         updated_by: str | None,
     ) -> SurveyORM | None:
         async with self._session_factory() as s:
@@ -1749,6 +1753,8 @@ class PostgresRepository(GraphRepository):
                 row.due_date = due_date
             if include_decommissioned is not None:
                 row.include_decommissioned = include_decommissioned
+            if set_answer_url:
+                row.answer_url = answer_url
             row.updated_at = datetime.now(UTC)
             row.updated_by = updated_by
             await s.commit()
@@ -2133,6 +2139,7 @@ class PostgresRepository(GraphRepository):
             "survey_status": survey.status if survey else "closed",
             "survey_kind": survey.kind if survey else "standard",
             "survey_due_date": survey.due_date if survey else None,
+            "survey_answer_url": survey.answer_url if survey else None,
             "allow_multiple_responses": survey.allow_multiple_responses if survey else False,
             "node_id": r.node_id,
             "node_name": node.name if node else None,
@@ -2165,6 +2172,7 @@ class PostgresRepository(GraphRepository):
             "survey_status": survey.status,
             "survey_kind": survey.kind,
             "survey_due_date": survey.due_date,
+            "survey_answer_url": survey.answer_url,
             "allow_multiple_responses": survey.allow_multiple_responses,
             "questions": survey.questions or [],
             "node_id": r.node_id,

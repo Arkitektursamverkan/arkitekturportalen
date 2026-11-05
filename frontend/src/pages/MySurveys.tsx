@@ -69,7 +69,7 @@ const DueDateCell: React.FC<{ r: SurveyResponseSummary }> = ({ r }) => {
 const SurveyTable: React.FC<{
   rows: SurveyResponseSummary[];
   emptyMessage: string;
-  onOpen: (id: string) => void;
+  onOpen: (r: SurveyResponseSummary) => void;
 }> = ({ rows, emptyMessage, onOpen }) => (
   <TableContainer component={Paper} variant="outlined">
     <Table size="small">
@@ -83,7 +83,7 @@ const SurveyTable: React.FC<{
       </TableHead>
       <TableBody>
         {rows.map((r) => (
-          <TableRow key={r.id} hover sx={{ cursor: "pointer" }} onClick={() => onOpen(r.id)}>
+          <TableRow key={r.id} hover sx={{ cursor: "pointer" }} onClick={() => onOpen(r)}>
             {/* Slumpenkäter never reach this list — the API filters them out. */}
             <TableCell>{r.survey_title}</TableCell>
             <TableCell>{r.node_name ?? "—"}</TableCell>
@@ -149,6 +149,12 @@ const MySurveys: React.FC = () => {
   const current = (data ?? []).filter((r) => r.survey_status !== "closed");
   const closed = (data ?? []).filter((r) => r.survey_status === "closed");
   const waiting = current.filter((r) => r.status === "pending");
+  // A survey answered in another app opens that app (a full page load: it is
+  // not part of this one) instead of the built-in form.
+  const open = (r: SurveyResponseSummary) => {
+    if (r.survey_answer_url && r.survey_status !== "closed") window.location.assign(r.survey_answer_url);
+    else navigate(`/my-surveys/${r.id}`);
+  };
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
@@ -181,13 +187,13 @@ const MySurveys: React.FC = () => {
         <SurveyTable
           rows={current}
           emptyMessage="Du har inga enkäter att besvara just nu. När en enkät ställs till dig dyker den upp här."
-          onOpen={(id) => navigate(`/my-surveys/${id}`)}
+          onOpen={open}
         />
       ) : (
         <SurveyTable
           rows={closed}
           emptyMessage="Inga avslutade enkäter ännu."
-          onOpen={(id) => navigate(`/my-surveys/${id}`)}
+          onOpen={open}
         />
       )}
     </Container>

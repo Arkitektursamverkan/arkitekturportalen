@@ -25,6 +25,8 @@ const SurveyRespond: React.FC = () => {
   // thank-you screen.
   const [submittedId, setSubmittedId] = useState<string | null>(null);
   const submitted = submittedId !== null && submittedId === responseId;
+  // A survey answered in another app shows a way there; the form stays reachable.
+  const [useForm, setUseForm] = useState(false);
 
   // Answering one survey chains straight into the next unanswered one, so the
   // user works through the whole pile in one sitting instead of going back to
@@ -143,6 +145,25 @@ const SurveyRespond: React.FC = () => {
       setError(e instanceof Error ? e.message : "Något gick fel");
     }
   };
+
+  if (response.survey_answer_url && !surveyClosed && !useForm) {
+    return (
+      <Container maxWidth="md" sx={{ py: 4 }}>
+        <Typography variant="h4" gutterBottom sx={{ fontWeight: 700 }}>{response.survey_title}</Typography>
+        <Typography variant="body2" sx={{ color: "text.secondary", mb: 2, whiteSpace: "pre-line" }}>{response.survey_description}</Typography>
+        <Paper variant="outlined" sx={{ p: 3 }}>
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            Den här enkäten besvaras i en egen app. Dina svar kommer hit automatiskt när du skickar in dem där.
+          </Typography>
+          <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
+            <Button variant="contained" href={response.survey_answer_url}>Öppna enkäten</Button>
+            <Button onClick={() => setUseForm(true)}>Svara i formuläret här i stället</Button>
+            <Button onClick={() => navigate("/my-surveys")}>Tillbaka till Mina enkäter</Button>
+          </Stack>
+        </Paper>
+      </Container>
+    );
+  }
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>

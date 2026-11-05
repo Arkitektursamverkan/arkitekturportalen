@@ -14,6 +14,14 @@ MAX_LINKS = 12
 _URL_RE = re.compile(r"^(https?://[^\s/$.?#][^\s]*|/(?!/)[^\s]*)$", re.IGNORECASE)
 
 
+def check_link_url(v: str) -> str:
+    """A web address (http/https) or a path on this server (/…); raises ValueError otherwise."""
+    v = v.strip()
+    if not _URL_RE.match(v):
+        raise ValueError("Adressen ska börja med https://, http:// eller / (en sida på samma server)")
+    return v
+
+
 class SharedLink(BaseModel):
     title: str = Field(..., min_length=1, max_length=60)
     url: str = Field(..., min_length=1, max_length=500)
@@ -32,10 +40,7 @@ class SharedLink(BaseModel):
     @field_validator("url")
     @classmethod
     def _url(cls, v: str) -> str:
-        v = v.strip()
-        if not _URL_RE.match(v):
-            raise ValueError("Adressen ska börja med https://, http:// eller / (en sida på samma server)")
-        return v
+        return check_link_url(v)
 
     @field_validator("description")
     @classmethod

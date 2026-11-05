@@ -5,7 +5,9 @@ from datetime import date, datetime
 from typing import Any, Literal
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
+
+from app.schemas.shared_links import check_link_url
 
 SurveyStatus = Literal["draft", "open", "paused", "closed"]
 # standard: resolved recipients + launch. random_system: logged-in users are
@@ -86,6 +88,12 @@ class Question(BaseModel):
     reports: list[int] | None = None
 
 
+def _answer_url(v: str | None) -> str | None:
+    """Blank = the built-in form; otherwise a web address or a path on this server."""
+    v = (v or "").strip()
+    return check_link_url(v) if v else None
+
+
 class SurveyCreate(BaseModel):
     title: str = Field(..., min_length=1, max_length=255)
     description: str = ""
@@ -97,6 +105,13 @@ class SurveyCreate(BaseModel):
     allow_multiple_responses: bool = False
     due_date: date | None = None
     include_decommissioned: bool = False
+    # Answered in another app instead of the built-in form (None = the form).
+    answer_url: str | None = Field(None, max_length=500)
+
+    @field_validator("answer_url")
+    @classmethod
+    def _check_answer_url(cls, v: str | None) -> str | None:
+        return _answer_url(v)
 
 
 class SurveyUpdate(BaseModel):
@@ -112,6 +127,13 @@ class SurveyUpdate(BaseModel):
     # to tell an explicit null apart from the field being omitted.
     due_date: date | None = None
     include_decommissioned: bool | None = None
+    # Like due_date: an explicit null (or "") clears it, an omitted field leaves it.
+    answer_url: str | None = Field(None, max_length=500)
+
+    @field_validator("answer_url")
+    @classmethod
+    def _check_answer_url(cls, v: str | None) -> str | None:
+        return _answer_url(v)
 
 
 class SurveyRead(BaseModel):
@@ -127,6 +149,7 @@ class SurveyRead(BaseModel):
     allow_multiple_responses: bool
     due_date: date | None
     include_decommissioned: bool
+    answer_url: str | None = None
     created_at: datetime
     created_by: str | None
     updated_at: datetime

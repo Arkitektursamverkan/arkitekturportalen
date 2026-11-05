@@ -35,6 +35,8 @@ class SurveyResponseSummary(BaseModel):
     survey_status: SurveyStatus
     survey_kind: SurveyKind
     survey_due_date: date | None
+    # Set when the survey is answered in another app instead of the form.
+    survey_answer_url: str | None = None
     allow_multiple_responses: bool
     node_id: UUID | None
     node_name: str | None
@@ -68,6 +70,7 @@ class SurveyResponseRead(BaseModel):
     survey_status: SurveyStatus
     survey_kind: SurveyKind
     survey_due_date: date | None
+    survey_answer_url: str | None = None
     allow_multiple_responses: bool
     questions: list[Question]
     node_id: UUID | None
