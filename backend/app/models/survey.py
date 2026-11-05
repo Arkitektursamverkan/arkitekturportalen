@@ -51,6 +51,10 @@ class SurveyORM(Base):
     # Optional "bäst före": the date recipients are asked to answer by.
     # Informational only — the survey does not close automatically.
     due_date: Mapped[date | None] = mapped_column(Date, nullable=True)
+    # Optional: the survey is answered in another app (a web address or a
+    # path on this server) that submits through the API. "Mina enkäter"
+    # opens it instead of the built-in form. NULL = the built-in form.
+    answer_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
     # When false (default), recipient resolution skips nodes whose status
     # attribute is "Avvecklat" (decommissioned systems).
     include_decommissioned: Mapped[bool] = mapped_column(

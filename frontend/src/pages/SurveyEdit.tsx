@@ -23,6 +23,7 @@ import {
   type SurveyResponseSummary,
 } from "@/api/surveys";
 import { useUsers, type AppUser } from "@/api/users";
+import { isValidLinkUrl } from "@/api/sharedLinks";
 import { useNodes } from "@/api/nodes";
 import type { NodeRead } from "@/types/graph";
 import { useRoleStore } from "@/store/roleStore";
@@ -108,6 +109,7 @@ const SurveyEdit: React.FC = () => {
   const [allowMultipleResponses, setAllowMultipleResponses] = useState(false);
   const [dueDate, setDueDate] = useState(""); // "" = inget bäst före-datum
   const [includeDecommissioned, setIncludeDecommissioned] = useState(false);
+  const [answerUrl, setAnswerUrl] = useState(""); // "" = portalens formulär
   const [launchResult, setLaunchResult] = useState<{ launched: number; skipped_unassigned: number } | null>(null);
   const [manualDialogOpen, setManualDialogOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -139,6 +141,7 @@ const SurveyEdit: React.FC = () => {
       setAllowMultipleResponses(survey.allow_multiple_responses);
       setDueDate(survey.due_date ?? "");
       setIncludeDecommissioned(survey.include_decommissioned);
+      setAnswerUrl(survey.answer_url ?? "");
       setLoadedSurveyId(survey.id);
     }
   }, [survey, loadedSurveyId]);
@@ -212,7 +215,9 @@ const SurveyEdit: React.FC = () => {
     targetAttributeKey !== survey.target_attribute_key ||
     allowMultipleResponses !== survey.allow_multiple_responses ||
     dueDate !== (survey.due_date ?? "") ||
+    answerUrl.trim() !== (survey.answer_url ?? "") ||
     includeDecommissioned !== survey.include_decommissioned;
+  const answerUrlInvalid = answerUrl.trim() !== "" && !isValidLinkUrl(answerUrl);
 
   const saveMeta = async () => {
     setSaveError(null);
@@ -223,6 +228,7 @@ const SurveyEdit: React.FC = () => {
         description,
         allow_multiple_responses: allowMultipleResponses,
         due_date: dueDate || null,
+        answer_url: answerUrl.trim() || null,
         include_decommissioned: includeDecommissioned,
         ...(isDraft ? { target_node_type: targetNodeType, target_attribute_key: targetAttributeKey } : {}),
       });
@@ -447,6 +453,18 @@ const SurveyEdit: React.FC = () => {
             sx={{ maxWidth: 300 }}
             slotProps={{ inputLabel: { shrink: true } }}
           />
+          <TextField
+            label="Besvaras i en annan app (valfritt)"
+            value={answerUrl}
+            onChange={(e) => setAnswerUrl(e.target.value)}
+            placeholder="https://… eller /…"
+            error={answerUrlInvalid}
+            helperText={answerUrlInvalid
+              ? "Börja med https://, http:// eller / (en sida på samma server)"
+              : "Adressen till en app som visar enkäten och skickar in svaren via portalens API. Mina enkäter öppnar den i stället för formuläret, som finns kvar som reserv. Tomt = formuläret."}
+            fullWidth
+            slotProps={{ htmlInput: { maxLength: 500 } }}
+          />
           {isRandom ? (
             <Typography variant="body2" sx={{ color: "text.secondary" }}>
               Slumpenkät: när enkäten är öppen erbjuds inloggade användare (i snitt var 3:e inloggning) att svara
@@ -491,7 +509,7 @@ const SurveyEdit: React.FC = () => {
             label="Tillåt flera svar per mottagare (kan svara om så länge enkäten är öppen, även efter granskning)"
           />
           {metaChanged && (
-            <Box><Button variant="contained" onClick={saveMeta} disabled={!title.trim() || !targetAttributeKey.trim()}>Spara ändringar</Button></Box>
+            <Box><Button variant="contained" onClick={saveMeta} disabled={!title.trim() || !targetAttributeKey.trim() || answerUrlInvalid}>Spara ändringar</Button></Box>
           )}
         </Stack>
       </Paper>

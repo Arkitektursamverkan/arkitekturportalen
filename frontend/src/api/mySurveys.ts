@@ -13,6 +13,8 @@ export interface SurveyResponseRead {
   survey_status: SurveyStatus;
   survey_kind: SurveyKind;
   survey_due_date: string | null;
+  /** Set when the survey is answered in another app instead of the form. */
+  survey_answer_url?: string | null;
   allow_multiple_responses: boolean;
   questions: Question[];
   node_id: string | null;

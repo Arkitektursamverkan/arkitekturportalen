@@ -106,6 +106,7 @@ async def create_survey(
         allow_multiple_responses=data.allow_multiple_responses,
         due_date=data.due_date,
         include_decommissioned=data.include_decommissioned,
+        answer_url=data.answer_url,
         created_by=user.email or user.name or None,
     )
     return SurveyRead.model_validate(row)
@@ -192,6 +193,8 @@ async def update_survey(
         due_date=data.due_date,
         set_due_date="due_date" in data.model_fields_set,
         include_decommissioned=data.include_decommissioned,
+        answer_url=data.answer_url,
+        set_answer_url="answer_url" in data.model_fields_set,
         updated_by=user.email or user.name or None,
     )
     if row is None:

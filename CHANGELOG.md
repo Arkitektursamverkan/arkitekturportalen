@@ -9,6 +9,10 @@ funktioner, en ny korrigering för rättelser.
 
 - (inget än)
 
+## 0.8.0 – 2026-11-05
+
+- **Enkät som besvaras i en annan app**: en enkät kan få en adress under *Besvaras i en annan app* (en webbadress eller en sida på samma server). Mina enkäter öppnar då den appen i stället för portalens formulär, och svarssidan visar en knapp dit. Formuläret finns kvar som reserv. Appen skickar in svaren via det vanliga API:t (`POST /api/v1/my-surveys/{id}/answers`). Utan adress fungerar enkäten som förut. Ny kolumn `ea_surveys.answer_url` (migrering 0070).
+
 ## 0.7.0 – 2026-11-05
 
 - **Gemensamma snabblänkar**: under Administration → Organisation lägger en administratör upp länkar som alla inloggade ser först under Snabblänkar på startsidan, före sina egna genvägar. En länk har titel, adress och valfri beskrivning och kan öppnas i en ny flik. Adressen är en webbadress (https://…) eller en sida på samma server (/…), till exempel en tjänst som ligger bredvid portalen. Högst 12 länkar. Utan inställning syns inga gemensamma länkar (`GET`/`PUT /api/v1/org-settings/shared-links`).

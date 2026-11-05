@@ -118,6 +118,8 @@ export interface SurveyRead extends SurveySummary {
   reports: ReportDefinition[];
   allow_multiple_responses: boolean;
   include_decommissioned: boolean;
+  /** Answered in another app instead of the built-in form; null = the form. */
+  answer_url: string | null;
   created_at: string;
 }
 
@@ -128,6 +130,8 @@ export interface SurveyResponseSummary {
   survey_status: SurveyStatus;
   survey_kind: SurveyKind;
   survey_due_date: string | null;
+  /** Set when the survey is answered in another app instead of the form. */
+  survey_answer_url?: string | null;
   allow_multiple_responses: boolean;
   node_id: string | null;
   node_name: string | null;
@@ -190,6 +194,7 @@ export function useCreateSurvey() {
       allow_multiple_responses?: boolean;
       due_date?: string | null;
       include_decommissioned?: boolean;
+      answer_url?: string | null;
     }) => {
       const { data } = await apiClient.post<SurveyRead>("/surveys", input);
       return data;
@@ -217,6 +222,7 @@ export function useDuplicateSurvey() {
         allow_multiple_responses: source.allow_multiple_responses,
         due_date: source.due_date,
         include_decommissioned: source.include_decommissioned,
+        answer_url: source.answer_url,
       });
       return data;
     },
@@ -230,7 +236,7 @@ export function useUpdateSurvey() {
     mutationFn: async ({
       id,
       ...patch
-    }: { id: string } & Partial<Pick<SurveyRead, "title" | "description" | "questions" | "reports" | "status" | "target_node_type" | "target_attribute_key" | "allow_multiple_responses" | "due_date" | "include_decommissioned">>) => {
+    }: { id: string } & Partial<Pick<SurveyRead, "title" | "description" | "questions" | "reports" | "status" | "target_node_type" | "target_attribute_key" | "allow_multiple_responses" | "due_date" | "include_decommissioned" | "answer_url">>) => {
       const { data } = await apiClient.patch<SurveyRead>(`/surveys/${id}`, patch);
       return data;
     },
