@@ -125,7 +125,9 @@
       "emptyReadOnly": "Inga genvägar än. Klicka på pennan för att anpassa.",
       "hint": "Dra menyalternativ från sidomenyn hit för att lägga till. Dra korten för att sortera. Anpassningsläget stängs av efter 60 sekunder utan aktivitet.",
       "pickerTitle": "Lägg till genväg",
-      "noCandidates": "Inga fler sidor att lägga till."
+      "noCandidates": "Inga fler sidor att lägga till.",
+      "sharedHint": "De första länkarna är gemensamma för alla och kan inte tas bort här.",
+      "manageShared": "Ändra gemensamma snabblänkar"
     }
   },
   "targetArchitecture": {

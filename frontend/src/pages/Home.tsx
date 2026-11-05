@@ -11,12 +11,15 @@ import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import DeviceHubIcon from "@mui/icons-material/DeviceHub";
 import EditIcon from "@mui/icons-material/Edit";
+import LinkIcon from "@mui/icons-material/Link";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import RouteIcon from "@mui/icons-material/Route";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useNodes } from "@/api/nodes";
 import { useEdges } from "@/api/edges";
 import { useShortcuts, useUpdateShortcuts } from "@/api/shortcuts";
+import { linkAnchorProps, useSharedLinks } from "@/api/sharedLinks";
 import { useModules } from "@/api/orgSettings";
 import { useVisibleJourney } from "@/api/architectureJourney";
 import { NODE_COLORS } from "@/config/graphConfig";
@@ -158,6 +161,8 @@ const ShortcutsSection: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { data: savedPaths = [] } = useShortcuts();
+  const { data: sharedLinks = [] } = useSharedLinks();
+  const { isAdmin } = useRoleStore();
   const update = useUpdateShortcuts();
   const { pathEnabled } = useModules();
   // Shortcuts to a switched-off module stay saved but are not shown, so they
@@ -282,7 +287,32 @@ const ShortcutsSection: React.FC = () => {
           transition: "border-color 0.15s, background-color 0.15s",
         }}
       >
-        {items.length === 0 ? (
+        {sharedLinks.length > 0 && (
+          <Grid container spacing={2} sx={{ mb: items.length > 0 || editing ? 2 : 0 }}>
+            {sharedLinks.map((link, idx) => (
+              <Grid key={`shared-${idx}`} size={{ xs: 12, sm: 6, md: 3 }}>
+                <Card>
+                  <CardActionArea component="a" {...linkAnchorProps(link)} sx={{ p: 2, height: "100%" }}>
+                    <Stack spacing={1} sx={{ alignItems: "center", py: 2 }}>
+                      <Box sx={{ color: "primary.main", "& svg": { fontSize: 48 } }}>
+                        {link.new_tab ? <OpenInNewIcon /> : <LinkIcon />}
+                      </Box>
+                      <Typography variant="subtitle1" sx={{ fontWeight: 600, textAlign: "center" }}>
+                        {link.title}
+                      </Typography>
+                      {link.description && (
+                        <Typography variant="caption" sx={{ color: "text.secondary", textAlign: "center" }}>
+                          {link.description}
+                        </Typography>
+                      )}
+                    </Stack>
+                  </CardActionArea>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        )}
+        {items.length === 0 && sharedLinks.length > 0 && !editing ? null : items.length === 0 ? (
           <Box sx={{ py: 4, textAlign: "center", color: "text.secondary" }}>
             <Typography variant="body2">
               {editing
@@ -343,6 +373,21 @@ const ShortcutsSection: React.FC = () => {
         )}
       </Box>
 
+      {editing && sharedLinks.length > 0 && (
+        <Typography variant="caption" sx={{ color: "text.secondary", mt: 1, display: "block" }}>
+          {t("home.shortcuts.sharedHint", {
+            defaultValue: "De första länkarna är gemensamma för alla och kan inte tas bort här.",
+          })}
+          {isAdmin && (
+            <>
+              {" "}
+              <Button size="small" onClick={() => navigate("/org-settings")} sx={{ p: 0, minWidth: 0, verticalAlign: "baseline" }}>
+                {t("home.shortcuts.manageShared", { defaultValue: "Ändra gemensamma snabblänkar" })}
+              </Button>
+            </>
+          )}
+        </Typography>
+      )}
       {editing && (
         <Typography variant="caption" sx={{ color: "text.secondary", mt: 1, display: "block" }}>
           {t("home.shortcuts.hint", {

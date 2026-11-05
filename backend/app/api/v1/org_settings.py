@@ -1,7 +1,8 @@
 """Organisation settings, edited under Administration.
 
 The public part (name, short name, brand colour, logo, switched-on modules)
-is readable without signing in, since the login page shows it. The rest is admin only."""
+is readable without signing in, since the login page shows it. The shared
+quick links are read by everyone signed in. The rest is admin only."""
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
@@ -11,11 +12,12 @@ from pydantic import BaseModel
 from app import modules as module_catalog
 from app.auth import CurrentUser
 from app.dal.postgres_repository import PostgresRepository
-from app.dependencies import get_repository, require_admin
+from app.dependencies import get_repository, require_admin, require_user
 from app.domain_lists import CUSTOM_TYPE, LIST_KEY, DomainLists
 from app.domain_lists import parse as parse_lists
 from app.models.org_settings import OrgSettingsORM
 from app.schemas.navigation import Navigation
+from app.schemas.shared_links import SharedLinks
 from app.services import org_settings
 from app.services.org_settings import OrgSettingsError
 
@@ -186,6 +188,21 @@ async def update_domain_lists(data: DomainLists, admin: CurrentUser = Depends(re
                     )
     await org_settings.set_domain_lists(repo._session_factory, data.model_dump(mode="json"), _who(admin))
     return _public()
+
+
+@router.get("/shared-links", response_model=SharedLinks)
+async def get_shared_links(_user: CurrentUser = Depends(require_user)) -> SharedLinks:
+    """The quick links everyone sees first on the start page."""
+    return SharedLinks.model_validate(org_settings.shared_links() or {"links": []})
+
+
+@router.put("/shared-links", response_model=SharedLinks)
+async def update_shared_links(data: SharedLinks, admin: CurrentUser = Depends(require_admin)) -> SharedLinks:
+    """Replace the quick links for everyone; an empty list removes them."""
+    repo = _get_pg_repo()
+    value = data.model_dump(mode="json") if data.links else None
+    await org_settings.set_shared_links(repo._session_factory, value, _who(admin))
+    return SharedLinks.model_validate(org_settings.shared_links() or {"links": []})
 
 
 @router.put("/logo", response_model=OrgSettingsAdminRead)
