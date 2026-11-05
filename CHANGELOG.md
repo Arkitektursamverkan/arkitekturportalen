@@ -9,6 +9,10 @@ funktioner, en ny korrigering för rättelser.
 
 - (inget än)
 
+## 0.7.0 – 2026-11-05
+
+- **Gemensamma snabblänkar**: under Administration → Organisation lägger en administratör upp länkar som alla inloggade ser först under Snabblänkar på startsidan, före sina egna genvägar. En länk har titel, adress och valfri beskrivning och kan öppnas i en ny flik. Adressen är en webbadress (https://…) eller en sida på samma server (/…), till exempel en tjänst som ligger bredvid portalen. Högst 12 länkar. Utan inställning syns inga gemensamma länkar (`GET`/`PUT /api/v1/org-settings/shared-links`).
+
 ## 0.6.0 – 2026-11-02
 
 - **Portalens namn** går att ändra under Administration → Organisation. Namnet visas i stället för EA-portalen i sidhuvudet, på inloggningssidan, i webbläsarens flik och i texterna, på alla språk. Tomt fält ger standardnamnet.

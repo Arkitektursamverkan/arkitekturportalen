@@ -125,7 +125,9 @@
       "emptyReadOnly": "No shortcuts yet. Click the pencil to customise.",
       "hint": "Drag menu items from the sidebar here to add. Drag cards to reorder. Edit mode turns off automatically after 60 seconds of inactivity.",
       "pickerTitle": "Add shortcut",
-      "noCandidates": "No more pages to add."
+      "noCandidates": "No more pages to add.",
+      "sharedHint": "The first links are shared with everyone and cannot be removed here.",
+      "manageShared": "Edit shared quick links"
     }
   },
   "targetArchitecture": {

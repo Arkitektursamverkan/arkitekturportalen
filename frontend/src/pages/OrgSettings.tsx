@@ -1,8 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
-  Alert, Box, Button, Card, CardContent, Checkbox, CircularProgress, Container, FormControlLabel, MenuItem, Radio,
-  RadioGroup, Stack, TextField, Typography,
+  Alert, Box, Button, Card, CardContent, Checkbox, CircularProgress, Container, FormControlLabel, IconButton, MenuItem,
+  Radio, RadioGroup, Stack, TextField, Tooltip, Typography,
 } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import BusinessIcon from "@mui/icons-material/Business";
 import ImageIcon from "@mui/icons-material/Image";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -11,6 +14,9 @@ import {
   orgLogoUrl, useAppVersion, useDeleteOrgLogo, useOrgSettings, usePublicOrgSettings, useUpdateOrgSettings, useUploadOrgLogo,
   type OrgSettingsAdmin, type OrgSettingsValues,
 } from "@/api/orgSettings";
+import {
+  SHARED_LINKS_MAX, isValidLinkUrl, useSharedLinks, useUpdateSharedLinks, type SharedLink,
+} from "@/api/sharedLinks";
 
 const FIELDS: { key: TextKey; label: string; help: string }[] = [
   { key: "app_name", label: "Portalens namn", help: "Visas i stället för standardnamnet: i sidhuvudet, på inloggningssidan, i webbläsarens flik och i texterna. Tomt = standardnamnet." },
@@ -169,6 +175,8 @@ const OrgSettings: React.FC = () => {
 
       <ModulesCard data={data} />
 
+      <SharedLinksCard />
+
       <Card>
         <CardContent>
           <Typography variant="h6" gutterBottom>Logotyp</Typography>
@@ -292,6 +300,112 @@ const ModulesCard: React.FC<{ data: OrgSettingsAdmin }> = ({ data }) => {
         <Stack direction="row" sx={{ justifyContent: "flex-end", mt: 2 }}>
           <Button variant="contained" startIcon={<SaveIcon />} onClick={handleSave} disabled={update.isPending}>
             Spara moduler
+          </Button>
+        </Stack>
+      </CardContent>
+    </Card>
+  );
+};
+
+/**
+ * Quick links for everyone: shown first under Snabblänkar on the start page,
+ * before each person's own shortcuts. An address is a web address or a path on
+ * this server (e.g. a service beside the portal).
+ */
+const SharedLinksCard: React.FC = () => {
+  const { data: stored, isLoading } = useSharedLinks();
+  const update = useUpdateSharedLinks();
+  const [links, setLinks] = useState<SharedLink[]>([]);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => { if (stored) setLinks(stored); }, [stored]);
+
+  const change = (i: number, patch: Partial<SharedLink>) => {
+    setSaved(false);
+    setLinks((ls) => ls.map((l, k) => (k === i ? { ...l, ...patch } : l)));
+  };
+  const move = (i: number, d: -1 | 1) => {
+    setSaved(false);
+    setLinks((ls) => {
+      const next = [...ls];
+      [next[i], next[i + d]] = [next[i + d], next[i]];
+      return next;
+    });
+  };
+  const remove = (i: number) => { setSaved(false); setLinks((ls) => ls.filter((_, k) => k !== i)); };
+  const add = () => { setSaved(false); setLinks((ls) => [...ls, { title: "", url: "", description: "", new_tab: false }]); };
+
+  const problems = links.map((l) => ({
+    title: !l.title.trim() ? "Ange en titel" : "",
+    url: !l.url.trim() ? "Ange en adress" : !isValidLinkUrl(l.url) ? "Börja med https://, http:// eller /" : "",
+  }));
+  const invalid = problems.some((p) => p.title || p.url);
+
+  return (
+    <Card sx={{ mb: 3 }}>
+      <CardContent>
+        <Typography variant="h6" gutterBottom>Gemensamma snabblänkar</Typography>
+        <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
+          Visas för alla inloggade, först under Snabblänkar på startsidan och före var och ens egna genvägar.
+          Adressen kan vara en webbadress (https://…) eller en sida på samma server (/…). Högst {SHARED_LINKS_MAX} länkar.
+        </Typography>
+        {isLoading ? (
+          <CircularProgress size={24} />
+        ) : (
+          <Stack spacing={2}>
+            {links.length === 0 && (
+              <Typography variant="body2" sx={{ color: "text.secondary" }}>Inga gemensamma länkar.</Typography>
+            )}
+            {links.map((l, i) => (
+              <Box key={i} sx={{ border: "1px solid", borderColor: "divider", borderRadius: 1, p: 2 }}>
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                  <TextField
+                    label="Titel" size="small" value={l.title} slotProps={{ htmlInput: { maxLength: 60 } }} sx={{ flex: 1 }}
+                    onChange={(e) => change(i, { title: e.target.value })}
+                    error={Boolean(problems[i].title) && l.title !== ""} helperText={l.title !== "" ? problems[i].title : ""}
+                  />
+                  <TextField
+                    label="Adress" size="small" value={l.url} slotProps={{ htmlInput: { maxLength: 500 } }} sx={{ flex: 2 }}
+                    placeholder="https://… eller /…"
+                    onChange={(e) => change(i, { url: e.target.value })}
+                    error={Boolean(problems[i].url) && l.url !== ""} helperText={l.url !== "" ? problems[i].url : ""}
+                  />
+                </Stack>
+                <TextField
+                  label="Beskrivning (valfri)" size="small" fullWidth value={l.description ?? ""} slotProps={{ htmlInput: { maxLength: 140 } }}
+                  sx={{ mt: 2 }} onChange={(e) => change(i, { description: e.target.value })}
+                />
+                <Stack direction="row" sx={{ alignItems: "center", mt: 1 }}>
+                  <FormControlLabel
+                    control={<Checkbox checked={Boolean(l.new_tab)} onChange={(e) => change(i, { new_tab: e.target.checked })} />}
+                    label="Öppna i ny flik"
+                  />
+                  <Box sx={{ flex: 1 }} />
+                  <Tooltip title="Flytta upp"><span>
+                    <IconButton size="small" disabled={i === 0} onClick={() => move(i, -1)}><ArrowUpwardIcon fontSize="small" /></IconButton>
+                  </span></Tooltip>
+                  <Tooltip title="Flytta ned"><span>
+                    <IconButton size="small" disabled={i === links.length - 1} onClick={() => move(i, 1)}><ArrowDownwardIcon fontSize="small" /></IconButton>
+                  </span></Tooltip>
+                  <Tooltip title="Ta bort länken">
+                    <IconButton size="small" color="error" onClick={() => remove(i)}><DeleteIcon fontSize="small" /></IconButton>
+                  </Tooltip>
+                </Stack>
+              </Box>
+            ))}
+            <Box>
+              <Button startIcon={<AddIcon />} onClick={add} disabled={links.length >= SHARED_LINKS_MAX}>Lägg till länk</Button>
+            </Box>
+          </Stack>
+        )}
+        {update.isError && <Alert severity="error" sx={{ mt: 2 }}>{errorText(update.error)}</Alert>}
+        {saved && <Alert severity="success" sx={{ mt: 2 }}>Sparat. Länkarna syns nu för alla.</Alert>}
+        <Stack direction="row" sx={{ justifyContent: "flex-end", mt: 2 }}>
+          <Button
+            variant="contained" startIcon={<SaveIcon />} disabled={update.isPending || invalid}
+            onClick={() => update.mutate(links.map((l) => ({ ...l, description: l.description?.trim() || null })), { onSuccess: () => setSaved(true) })}
+          >
+            Spara länkar
           </Button>
         </Stack>
       </CardContent>

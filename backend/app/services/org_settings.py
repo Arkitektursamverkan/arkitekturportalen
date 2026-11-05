@@ -115,6 +115,7 @@ def _remember(row: OrgSettingsORM | None) -> None:
         _stored["modules"] = [k for k in module_catalog.KEYS if k in row.modules.split(",")]
     _stored["navigation"] = row.navigation
     _stored["domain_lists"] = row.domain_lists
+    _stored["shared_links"] = row.shared_links
     _stored["logo"] = (row.logo, row.logo_content_type) if row.logo is not None else None
     _stored["updated_at"] = row.updated_at
 
@@ -255,6 +256,27 @@ async def set_domain_lists(
             row = OrgSettingsORM(id=1)
             s.add(row)
         row.domain_lists = value
+        row.updated_by = updated_by
+        await s.commit()
+        await s.refresh(row)
+        _remember(row)
+
+
+def shared_links() -> dict[str, Any] | None:
+    """The quick links an admin put up for everyone (app.schemas.shared_links), or None."""
+    return _stored.get("shared_links")
+
+
+async def set_shared_links(
+    session_factory: async_sessionmaker[AsyncSession], value: dict[str, Any] | None, updated_by: str | None
+) -> None:
+    """Store the links (validated by the caller), or remove them all with None."""
+    async with session_factory() as s:
+        row = await s.get(OrgSettingsORM, 1)
+        if row is None:
+            row = OrgSettingsORM(id=1)
+            s.add(row)
+        row.shared_links = value
         row.updated_by = updated_by
         await s.commit()
         await s.refresh(row)
