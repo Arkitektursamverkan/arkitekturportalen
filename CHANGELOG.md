@@ -7,7 +7,8 @@ funktioner, en ny korrigering för rättelser.
 
 ## Ej släppt
 
-- (inget än)
+- **Säkerhet: första administratören kräver engångskoden `SETUP_CODE`** i produktion – utan den går inget första konto att skapa, så den som först hittar en ny installation kan inte ta den. Med Entra är formuläret stängt (administratörerna kommer från `BOOTSTRAP_ADMIN_EMAILS`).
+- **Säkerhet: `APP_ENV` är `production` som standard**, så svaga eller exempelhemligheter stoppar starten även när `APP_ENV` inte är satt. Utveckling sätter `APP_ENV=development` själv.
 
 ## 0.10.0 – 2026-11-09
 

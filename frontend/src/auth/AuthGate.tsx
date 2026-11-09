@@ -55,7 +55,7 @@ const AuthGate: React.FC<Props> = ({ children, msalEnabled, initialError }) => {
   // A new installation has no accounts: the first visit creates the administrator.
   const { data: setup } = useQuery({
     queryKey: ["auth-setup"],
-    queryFn: () => apiClient.get<{ needed: boolean }>("/auth/setup").then((r) => r.data),
+    queryFn: () => apiClient.get<{ needed: boolean; code_required?: boolean }>("/auth/setup").then((r) => r.data),
     enabled: !isAuthenticated,
     retry: false,
   });
@@ -113,7 +113,11 @@ const AuthGate: React.FC<Props> = ({ children, msalEnabled, initialError }) => {
         )}
 
         {setup?.needed ? (
-          <FirstAdminForm onSuccess={() => setHasLocal(true)} onError={(e) => setError(e || null)} />
+          <FirstAdminForm
+            codeRequired={!!setup.code_required}
+            onSuccess={() => setHasLocal(true)}
+            onError={(e) => setError(e || null)}
+          />
         ) : (
           <LocalLoginForm onSuccess={() => setHasLocal(true)} onError={(e) => setError(e || null)} />
         )}
@@ -195,7 +199,8 @@ const LocalLoginForm: React.FC<LocalLoginFormProps> = ({ onSuccess, onError }) =
   );
 };
 
-const FirstAdminForm: React.FC<LocalLoginFormProps> = ({ onSuccess, onError }) => {
+const FirstAdminForm: React.FC<LocalLoginFormProps & { codeRequired: boolean }> = ({ codeRequired, onSuccess, onError }) => {
+  const [code, setCode] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -207,7 +212,9 @@ const FirstAdminForm: React.FC<LocalLoginFormProps> = ({ onSuccess, onError }) =
     setSubmitting(true);
     onError("");
     try {
-      const { data } = await apiClient.post<{ token: string }>("/auth/setup", { name, email, password });
+      const { data } = await apiClient.post<{ token: string }>("/auth/setup", {
+        name, email, password, setup_code: code.trim() || undefined,
+      });
       setLocalToken(data.token);
       qc.invalidateQueries();
       onSuccess();
@@ -226,6 +233,17 @@ const FirstAdminForm: React.FC<LocalLoginFormProps> = ({ onSuccess, onError }) =
       <Typography variant="body2" sx={{ color: "text.secondary" }}>
         Portalen har inga konton än. Skapa administratörskontot – du loggar sedan in med e-posten.
       </Typography>
+      {codeRequired && (
+        <TextField
+          label="Engångskod"
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
+          size="small"
+          required
+          autoComplete="off"
+          helperText="SETUP_CODE från installationen"
+        />
+      )}
       <TextField label="Namn" value={name} onChange={(e) => setName(e.target.value)} size="small" required autoComplete="name" />
       <TextField label="E-post" type="email" value={email} onChange={(e) => setEmail(e.target.value)} size="small" required autoComplete="email" />
       <TextField
@@ -238,7 +256,7 @@ const FirstAdminForm: React.FC<LocalLoginFormProps> = ({ onSuccess, onError }) =
         autoComplete="new-password"
         helperText="Minst 8 tecken"
       />
-      <Button type="submit" variant="contained" disabled={submitting || !name || !email || password.length < 8}>
+      <Button type="submit" variant="contained" disabled={submitting || !name || !email || password.length < 8 || (codeRequired && !code.trim())}>
         {submitting ? "Skapar kontot…" : "Skapa administratörskontot"}
       </Button>
     </Box>
