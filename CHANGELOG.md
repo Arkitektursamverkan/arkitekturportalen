@@ -9,6 +9,14 @@ funktioner, en ny korrigering för rättelser.
 
 - (inget än)
 
+## 0.9.0 – 2026-11-09
+
+- **Går att köra på Render och liknande plattformar.** Webbens nginx-konfiguration skrivs vid start ur en mall: `PORT` (förval 80) och `API_UPSTREAM` (förval `api:8000`) styr den, och api-adressen slås upp på nytt var tionde sekund. Förut låg adressen fast från starten, så ett api som startats om med ny adress nåddes inte förrän webben också startats om. En installation som monterar en egen `conf.d/default.conf` behåller den – mallen används då inte.
+- `DATABASE_URL` tas emot i den form en hanterad databas ger den (`postgres://…`, `postgresql://…`, `sslmode=`).
+- `INTEGRATION_PLATFORM_URL` kan vara en intern `host:port` och blir då `http://host:port/api/v1`.
+- Api:ts kataloger för ögonblicksbilder och synkprofiler (`SNAPSHOT_DIR`, `SYNC_PROFILES_PATH`) får ägare vid start även när de ligger på en annan disk än förut, så båda kan dela en enda disk.
+
+
 ## 0.8.0 – 2026-11-05
 
 - **Enkät som besvaras i en annan app**: en enkät kan få en adress under *Besvaras i en annan app* (en webbadress eller en sida på samma server). Mina enkäter öppnar då den appen i stället för portalens formulär, och svarssidan visar en knapp dit. Formuläret finns kvar som reserv. Appen skickar in svaren via det vanliga API:t (`POST /api/v1/my-surveys/{id}/answers`). Utan adress fungerar enkäten som förut. Ny kolumn `ea_surveys.answer_url` (migrering 0070).

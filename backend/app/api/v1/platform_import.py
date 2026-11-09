@@ -13,6 +13,7 @@ from app.dal.graph_repository import GraphRepository
 from app.dependencies import get_repository, require_admin
 from app.domain_lists import CUSTOM_TYPE, LIST_KEY, sync_target
 from app.domain_lists import parse as parse_lists
+from app.internal_url import api_base
 from app.schemas.common import ExternalSource, NodeType
 from app.schemas.node import NodeCreate
 from app.services import org_settings
@@ -21,7 +22,8 @@ log = structlog.get_logger(__name__)
 
 router = APIRouter(prefix="/import/platform", tags=["platform-import"])
 
-PLATFORM_URL = os.environ.get("INTEGRATION_PLATFORM_URL", "").rstrip("/")
+# A full URL, or the internal host:port a platform such as Render gives.
+PLATFORM_URL = api_base(os.environ.get("INTEGRATION_PLATFORM_URL"))
 
 
 class _PlatformTarget(BaseModel):

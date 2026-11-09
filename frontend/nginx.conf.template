@@ -1,10 +1,16 @@
-# Arkitekturportalen – generic nginx config (plain HTTP on port 80).
+# Arkitekturportalen – generic nginx config (plain HTTP).
 #
-# TLS is expected in front of this (a reverse proxy or load balancer), or in
-# an installation's own overlay that mounts its own config and certificates.
+# A template: docker/30-ea-nginx.sh writes it to conf.d/default.conf when the
+# container starts, filling in ${PORT} (default 80), ${API_UPSTREAM} (default
+# api:8000) and ${NGINX_RESOLVER} (the container's own DNS). An installation
+# that mounts its own conf.d/default.conf keeps it – the template is skipped.
+#
+# TLS is expected in front of this (a reverse proxy, load balancer or a
+# platform such as Render), or in an installation's own overlay that mounts
+# its own config and certificates.
 
 server {
-    listen 80 default_server;
+    listen ${PORT} default_server;
     server_name _;
     root /usr/share/nginx/html;
     index index.html;
@@ -19,8 +25,14 @@ server {
         add_header Cache-Control "no-store";
     }
 
+    # The API's address is looked up again every 10 s, not once at start: on a
+    # platform such as Render a redeployed API gets a new address, and nginx
+    # would otherwise keep sending to the old one until it restarts.
+    resolver ${NGINX_RESOLVER} valid=10s ipv6=off;
+
     location /api {
-        proxy_pass http://api:8000;
+        set $api_upstream http://${API_UPSTREAM};
+        proxy_pass $api_upstream;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
