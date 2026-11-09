@@ -58,7 +58,7 @@ async def check_url(url: str) -> None:
         infos = await asyncio.get_running_loop().getaddrinfo(host, port, type=socket.SOCK_STREAM)
     except socket.gaierror as e:
         raise BlockedUrl("Värden kunde inte slås upp") from e
-    addrs = {info[4][0] for info in infos}
+    addrs = {str(info[4][0]) for info in infos}
     if not addrs or not all(_is_public(a) for a in addrs):
         raise BlockedUrl("Adressen pekar inte på en publik server")
 
