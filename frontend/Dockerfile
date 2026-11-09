@@ -28,6 +28,7 @@ ENV PORT=80 \
     API_UPSTREAM=api:8000 \
     NGINX_ENTRYPOINT_LOCAL_RESOLVERS=1
 COPY nginx.conf.template /etc/nginx/ea/default.conf.template
+COPY docker/18-api-upstream.envsh /docker-entrypoint.d/18-api-upstream.envsh
 COPY docker/30-ea-nginx.sh /docker-entrypoint.d/30-ea-nginx.sh
 COPY docker/40-ea-config.sh /docker-entrypoint.d/40-ea-config.sh
 
