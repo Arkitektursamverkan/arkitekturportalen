@@ -9,6 +9,10 @@ funktioner, en ny korrigering för rättelser.
 
 - (inget än)
 
+## 0.9.1 – 2026-11-09
+
+- **Render**: webben når api:t. Render ger api:t ett kort internt namn som bara går att slå upp med en sökdomän, och nginx egen uppslagning använder inte sökdomäner – webben svarade 502 på allt under `/api`. Namnet byggs nu ut med sökdomänen när containern startar (`18-api-upstream.envsh`). Med docker compose är allt som förut.
+
 ## 0.9.0 – 2026-11-09
 
 - **Går att köra på Render och liknande plattformar.** Webbens nginx-konfiguration skrivs vid start ur en mall: `PORT` (förval 80) och `API_UPSTREAM` (förval `api:8000`) styr den, och api-adressen slås upp på nytt var tionde sekund. Förut låg adressen fast från starten, så ett api som startats om med ny adress nåddes inte förrän webben också startats om. En installation som monterar en egen `conf.d/default.conf` behåller den – mallen används då inte.
