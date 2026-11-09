@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 
 # Force postgres engine in tests
 os.environ.setdefault("EA_DB_ENGINE", "postgres")
+os.environ.setdefault("APP_ENV", "test")
 os.environ.setdefault("API_KEY", "test-key")
 # The suite exercises every module; tests of the switch itself set it per test.
 os.environ.setdefault("MODULES", "all")

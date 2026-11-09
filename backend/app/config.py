@@ -36,6 +36,10 @@ class Settings(BaseSettings):
     # settings (Administration), which override it once set there.
     ALLOWED_EMAIL_DOMAINS: str = ""
     BOOTSTRAP_ADMIN_EMAILS: str = ""
+    # One-time code for creating the first administrator on the login page.
+    # Required in production – otherwise whoever reached a new installation
+    # first would become its admin.
+    SETUP_CODE: str = ""
 
     # ── Local accounts (alternative login for users without Entra) ───────────
     LOCAL_AUTH_SECRET: str = "change-me-in-production"
@@ -92,7 +96,9 @@ class Settings(BaseSettings):
         return [o.strip() for o in self.CORS_ORIGINS.split(",") if o.strip()]
 
     # ── App ──────────────────────────────────────────────────────────────────
-    APP_ENV: str = "development"
+    # Production unless said otherwise: then weak or placeholder secrets stop
+    # the start. Development and tests set APP_ENV themselves.
+    APP_ENV: str = "production"
     LOG_LEVEL: str = "info"
     # Set in the image at release (Dockerfile ARG); "dev" when built locally.
     APP_VERSION: str = "dev"
