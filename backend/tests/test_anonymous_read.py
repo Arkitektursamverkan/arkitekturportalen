@@ -88,3 +88,9 @@ async def test_hamtning_och_import_kraver_alltid_inloggning(client, api_headers)
     for url, kwargs in anrop:
         assert (await client.post(url, **kwargs)).status_code == 401, url
     assert (await client.get("/api/v1/whoami")).status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_platformens_nodtyper_kraver_inloggning(client, api_headers):
+    assert (await client.get("/api/v1/import/platform/node-types")).status_code == 401
+    assert (await client.get("/api/v1/import/platform/node-types", headers=api_headers)).status_code == 200

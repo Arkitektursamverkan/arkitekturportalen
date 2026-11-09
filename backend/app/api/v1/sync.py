@@ -66,6 +66,24 @@ def _load_profiles() -> dict[str, SyncProfile]:
     return {}
 
 
+# The stored platform key never leaves the API in clear: responses carry only
+# its last four characters, and a save that sends that back (or nothing)
+# keeps the stored key.
+KEY_MASK = "••••"
+
+
+def mask_key(key: str) -> str:
+    return f"{KEY_MASK}{key[-4:]}" if key else ""
+
+
+def is_masked(key: str) -> bool:
+    return key.startswith(KEY_MASK)
+
+
+def stored_profile(flow_id: str) -> SyncProfile | None:
+    return _load_profiles().get(flow_id)
+
+
 def _save_profiles(profiles: dict[str, SyncProfile]) -> None:
     SYNC_PROFILES_PATH.parent.mkdir(parents=True, exist_ok=True)
     SYNC_PROFILES_PATH.write_text(
@@ -374,13 +392,21 @@ async def receive_sync_webhook(
 async def list_profiles():
     """List all sync profiles."""
     profiles = _load_profiles()
-    return [{"flow_id": k, **v.model_dump()} for k, v in profiles.items()]
+    return [
+        {"flow_id": k, **v.model_dump(), "platform_api_key": mask_key(v.platform_api_key)}
+        for k, v in profiles.items()
+    ]
 
 
 @router.post("/profiles", dependencies=[Depends(require_admin)])
 async def create_or_update_profile(profile: SyncProfile):
     """Create or update a sync profile for a flow."""
     profiles = _load_profiles()
+    existing = profiles.get(profile.flow_id)
+    if existing and (not profile.platform_api_key or is_masked(profile.platform_api_key)):
+        profile = profile.model_copy(update={"platform_api_key": existing.platform_api_key})
+    elif is_masked(profile.platform_api_key):
+        raise HTTPException(status_code=422, detail="Ange plattformens API-nyckel")
     profiles[profile.flow_id] = profile
     _save_profiles(profiles)
     return {"status": "ok", "flow_id": profile.flow_id}
