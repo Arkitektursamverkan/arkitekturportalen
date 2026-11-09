@@ -7,6 +7,10 @@ funktioner, en ny korrigering för rättelser.
 
 ## Ej släppt
 
+- (inget än)
+
+## 0.12.0 – 2026-11-09
+
 - **Säkerhet: flödesscenerna från Arkitekten renas** innan de visas (DOMPurify med SVG-profil): skript, händelseattribut, `foreignObject` och `javascript:`-länkar tas bort, `<use>` får bara peka inom sidan. Tidigare kunde en scen köra skript i portalen.
 - **Säkerhet: webbens nginx-mall skickar Content-Security-Policy**, `X-Content-Type-Options: nosniff` och `Referrer-Policy: strict-origin-when-cross-origin` (ny fil `security-headers.conf`, som en egen nginx-konfiguration också kan inkludera med `include /etc/nginx/ea/security-headers.conf;`). En installation som monterar egen `default.conf` påverkas inte.
 - **Säkerhet: inloggning och första administratören begränsas** till 10 försök i minuten per klientadress (skurar om 5, sedan 429) för `POST` under `/api/v1/auth/` i nginx-mallen. Bakom en proxy (Render, lastbalanserare) anges proxyns adress eller nät i nya `TRUSTED_PROXY`, så att klientens adress tas från `X-Forwarded-For`.
