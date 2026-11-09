@@ -1058,6 +1058,10 @@ class PostgresRepository(GraphRepository):
             row.last_login_at = datetime.now(UTC)
             await s.commit()
 
+    async def has_users(self) -> bool:
+        async with self._session_factory() as s:
+            return (await s.execute(select(UserORM.id).limit(1))).first() is not None
+
     async def list_users(self) -> list[UserORM]:
         async with self._session_factory() as s:
             rows = (await s.execute(select(UserORM).order_by(UserORM.name))).scalars().all()

@@ -48,7 +48,13 @@ router = APIRouter(prefix="/arkflows", tags=["arkflows"])
 # the endpoints answer 503 and say what to configure.
 # A full URL, or the internal host:port a platform such as Render gives.
 PLATFORM_URL = api_base(os.environ.get("INTEGRATION_PLATFORM_URL"))
-PLATFORM_API_KEY = os.environ.get("INTEGRATION_PLATFORM_API_KEY", "")
+# Without a separate read key the admin key reads too: it may everything the
+# read key may, and is already on the api service – so an installation (Render)
+# needs no step after the start to create one.
+PLATFORM_API_KEY = (
+    os.environ.get("INTEGRATION_PLATFORM_API_KEY")
+    or os.environ.get("INTEGRATION_PLATFORM_ADMIN_KEY", "")
+)
 
 # Running a pipeline is a WRITE on the platform, and its consumer key cannot do
 # that — `require_admin_key` there accepts only the admin key or an admin JWT.
@@ -97,8 +103,9 @@ def _require_key() -> str:
     if not PLATFORM_API_KEY:
         raise HTTPException(
             503,
-            "INTEGRATION_PLATFORM_API_KEY is not configured — the portal cannot "
-            "read flowcharts from the Integration Platform.",
+            "Neither INTEGRATION_PLATFORM_API_KEY nor INTEGRATION_PLATFORM_ADMIN_KEY "
+            "is configured — the portal cannot read flowcharts from the "
+            "Integration Platform.",
         )
     return PLATFORM_API_KEY
 

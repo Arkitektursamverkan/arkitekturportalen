@@ -36,7 +36,11 @@ SYNC_PROFILES_PATH = Path(os.environ.get("SYNC_PROFILES_PATH", "/app/sync_data/s
 
 # A full URL, or the internal host:port a platform such as Render gives.
 PLATFORM_URL = api_base(os.environ.get("INTEGRATION_PLATFORM_URL"))
-PLATFORM_API_KEY = os.environ.get("INTEGRATION_PLATFORM_API_KEY", "")
+# The admin key reads too, when no separate read key is set (as in arkflows).
+PLATFORM_API_KEY = (
+    os.environ.get("INTEGRATION_PLATFORM_API_KEY")
+    or os.environ.get("INTEGRATION_PLATFORM_ADMIN_KEY", "")
+)
 
 
 # ── Sync profile persistence ────────────────────────────────────────────────

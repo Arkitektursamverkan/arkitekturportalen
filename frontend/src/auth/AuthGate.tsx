@@ -14,7 +14,7 @@ import {
 import LoginIcon from "@mui/icons-material/Login";
 import { useTranslation } from "react-i18next";
 import MicrosoftIcon from "@mui/icons-material/Microsoft";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { loginRequest } from "./msalConfig";
 import { describeAuthError } from "./msal";
 import { hasValidLocalToken, setLocalToken } from "./localSession";
@@ -52,6 +52,13 @@ const AuthGate: React.FC<Props> = ({ children, msalEnabled, initialError }) => {
 
   const isAuthenticated = (msalEnabled && isMsalAuthenticated) || hasLocal;
   const { data: org } = usePublicOrgSettings();
+  // A new installation has no accounts: the first visit creates the administrator.
+  const { data: setup } = useQuery({
+    queryKey: ["auth-setup"],
+    queryFn: () => apiClient.get<{ needed: boolean }>("/auth/setup").then((r) => r.data),
+    enabled: !isAuthenticated,
+    retry: false,
+  });
   const logoSrc = orgLogoUrl(org?.logo_version ?? null);
   // The organisation's colour on the sign-in button; the app keeps its theme.
   const brandSx = org?.brand_color
@@ -105,7 +112,11 @@ const AuthGate: React.FC<Props> = ({ children, msalEnabled, initialError }) => {
           </>
         )}
 
-        <LocalLoginForm onSuccess={() => setHasLocal(true)} onError={(e) => setError(e || null)} />
+        {setup?.needed ? (
+          <FirstAdminForm onSuccess={() => setHasLocal(true)} onError={(e) => setError(e || null)} />
+        ) : (
+          <LocalLoginForm onSuccess={() => setHasLocal(true)} onError={(e) => setError(e || null)} />
+        )}
 
         {error && (
           <Alert severity="error" sx={{ mt: 2, maxWidth: 400 }}>
@@ -179,6 +190,56 @@ const LocalLoginForm: React.FC<LocalLoginFormProps> = ({ onSuccess, onError }) =
         disabled={submitting || !email || !password}
       >
         {submitting ? "Loggar in…" : "Logga in"}
+      </Button>
+    </Box>
+  );
+};
+
+const FirstAdminForm: React.FC<LocalLoginFormProps> = ({ onSuccess, onError }) => {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const qc = useQueryClient();
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    onError("");
+    try {
+      const { data } = await apiClient.post<{ token: string }>("/auth/setup", { name, email, password });
+      setLocalToken(data.token);
+      qc.invalidateQueries();
+      onSuccess();
+    } catch (err) {
+      onError(err instanceof Error ? err.message : "Kontot kunde inte skapas");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <Box component="form" onSubmit={submit} sx={{ display: "flex", flexDirection: "column", gap: 1.5, width: 280 }}>
+      <Typography variant="overline" sx={{ color: "text.secondary", textAlign: "center" }}>
+        Första administratören
+      </Typography>
+      <Typography variant="body2" sx={{ color: "text.secondary" }}>
+        Portalen har inga konton än. Skapa administratörskontot – du loggar sedan in med e-posten.
+      </Typography>
+      <TextField label="Namn" value={name} onChange={(e) => setName(e.target.value)} size="small" required autoComplete="name" />
+      <TextField label="E-post" type="email" value={email} onChange={(e) => setEmail(e.target.value)} size="small" required autoComplete="email" />
+      <TextField
+        label="Lösenord"
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        size="small"
+        required
+        autoComplete="new-password"
+        helperText="Minst 8 tecken"
+      />
+      <Button type="submit" variant="contained" disabled={submitting || !name || !email || password.length < 8}>
+        {submitting ? "Skapar kontot…" : "Skapa administratörskontot"}
       </Button>
     </Box>
   );
