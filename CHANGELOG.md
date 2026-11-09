@@ -7,6 +7,10 @@ funktioner, en ny korrigering för rättelser.
 
 ## Ej släppt
 
+- (inget än)
+
+## 0.10.0 – 2026-11-09
+
 - **Första administratören skapas vid första besöket**: utan några konton visar inloggningssidan ett formulär för administratörskontot (ny publik `GET`/`POST /api/v1/auth/setup`). Med `BOOTSTRAP_ADMIN_EMAILS` satt får bara de adresserna skapa det.
 - **Ingen separat läsnyckel till plattformen behövs**: utan `INTEGRATION_PLATFORM_API_KEY` läser portalen med `INTEGRATION_PLATFORM_ADMIN_KEY`.
 
