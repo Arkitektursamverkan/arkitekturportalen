@@ -51,5 +51,7 @@ RUN useradd -m -u 1001 appuser \
 
 EXPOSE 8000
 
-# Fix volume ownership then drop to appuser, run migrations and start server
-CMD ["sh", "-c", "chown -R appuser /app/snapshots /app/sync_data && exec su -s /bin/sh appuser -c 'alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000'"]
+# Fix volume ownership then drop to appuser, run migrations and start server.
+# SNAPSHOT_DIR and SYNC_PROFILES_PATH may point elsewhere – on Render both live
+# on the service's one disk – so their directories are the ones prepared.
+CMD ["sh", "-c", "snap=${SNAPSHOT_DIR:-/app/snapshots}; sync=$(dirname \"${SYNC_PROFILES_PATH:-/app/sync_data/sync_profiles.json}\"); mkdir -p \"$snap\" \"$sync\" && chown -R appuser \"$snap\" \"$sync\" && exec su -s /bin/sh appuser -c 'alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000'"]

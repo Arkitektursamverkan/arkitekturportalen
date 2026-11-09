@@ -4,6 +4,8 @@ from __future__ import annotations
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from app.internal_url import asyncpg_url
+
 # Values that have shipped as defaults in this repository at some point.
 _PLACEHOLDER_SECRETS = {
     "",
@@ -115,6 +117,12 @@ class Settings(BaseSettings):
     # Default organisation name for the organisation settings.
     PDF_ORG_NAME: str = ""
     PDF_APP_BASE_URL: str = ""
+
+    @field_validator("DATABASE_URL")
+    @classmethod
+    def normalise_database_url(cls, v: str) -> str:
+        # A managed database's own connection string works as it is given.
+        return asyncpg_url(v)
 
     @field_validator("EA_DB_ENGINE")
     @classmethod

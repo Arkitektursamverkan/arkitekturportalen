@@ -20,7 +20,15 @@ LABEL org.opencontainers.image.title="Arkitekturportalen web" \
       org.opencontainers.image.version="${APP_VERSION}"
 
 COPY --from=builder /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# The site config is written from the template when the container starts
+# (docker/30-ea-nginx.sh): PORT, API_UPSTREAM and the container's own DNS.
+# Defaults fit docker compose; a platform such as Render sets PORT and
+# API_UPSTREAM to the API's internal host:port.
+ENV PORT=80 \
+    API_UPSTREAM=api:8000 \
+    NGINX_ENTRYPOINT_LOCAL_RESOLVERS=1
+COPY nginx.conf.template /etc/nginx/ea/default.conf.template
+COPY docker/30-ea-nginx.sh /docker-entrypoint.d/30-ea-nginx.sh
 COPY docker/40-ea-config.sh /docker-entrypoint.d/40-ea-config.sh
 
 EXPOSE 80

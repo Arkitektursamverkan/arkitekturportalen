@@ -23,6 +23,7 @@ from app.dal.postgres_repository import SYNC_AUDIT_USER
 from app.dependencies import get_repository, require_admin
 from app.domain_lists import LIST_KEY, sync_target
 from app.domain_lists import parse as parse_lists
+from app.internal_url import api_base
 from app.schemas.common import ExternalSource, NodeType
 from app.schemas.node import NodeCreate, NodeUpdate
 from app.services import org_settings
@@ -33,7 +34,8 @@ router = APIRouter(prefix="/sync", tags=["sync"])
 
 SYNC_PROFILES_PATH = Path(os.environ.get("SYNC_PROFILES_PATH", "/app/sync_data/sync_profiles.json"))
 
-PLATFORM_URL = os.environ.get("INTEGRATION_PLATFORM_URL", "").rstrip("/")
+# A full URL, or the internal host:port a platform such as Render gives.
+PLATFORM_URL = api_base(os.environ.get("INTEGRATION_PLATFORM_URL"))
 PLATFORM_API_KEY = os.environ.get("INTEGRATION_PLATFORM_API_KEY", "")
 
 

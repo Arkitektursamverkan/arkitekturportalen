@@ -35,6 +35,7 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from app.access import get_optional_user
 from app.dependencies import require_admin
+from app.internal_url import api_base
 
 logger = structlog.get_logger()
 
@@ -45,7 +46,8 @@ router = APIRouter(prefix="/arkflows", tags=["arkflows"])
 #
 # No default: where the platform lives depends on the installation. Empty =
 # the endpoints answer 503 and say what to configure.
-PLATFORM_URL = os.environ.get("INTEGRATION_PLATFORM_URL", "").rstrip("/")
+# A full URL, or the internal host:port a platform such as Render gives.
+PLATFORM_URL = api_base(os.environ.get("INTEGRATION_PLATFORM_URL"))
 PLATFORM_API_KEY = os.environ.get("INTEGRATION_PLATFORM_API_KEY", "")
 
 # Running a pipeline is a WRITE on the platform, and its consumer key cannot do
