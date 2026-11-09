@@ -7,6 +7,7 @@ import LegendToggleIcon from "@mui/icons-material/LegendToggle";
 import CloseIcon from "@mui/icons-material/Close";
 import { useTranslation } from "react-i18next";
 import type { Scen, ScenFigur } from "@/api/arkflows";
+import { sanitizeSvg } from "@/utils/sanitizeSvg";
 
 /**
  * Draws a flowchart scene from Arkitekten.
@@ -28,7 +29,8 @@ import type { Scen, ScenFigur } from "@/api/arkflows";
 /**
  * One legend row: the symbol as Arkitekten drew it, its name and its meaning.
  *
- * The symbol is injected as Arkitekten's own markup, exactly as the nodes are.
+ * The symbol is injected as Arkitekten's own markup, exactly as the nodes are
+ * – through sanitizeSvg, like every piece of scene markup here.
  * Rebuilding it here from the key would put the same drawing rule in two
  * places — the one thing this whole scene contract exists to avoid.
  */
@@ -39,7 +41,7 @@ function Figur({ figur }: { figur: ScenFigur }) {
         component="svg"
         viewBox={`0 0 ${figur.w} ${figur.h}`}
         preserveAspectRatio="xMidYMid meet"
-        dangerouslySetInnerHTML={{ __html: figur.svg }}
+        dangerouslySetInnerHTML={{ __html: sanitizeSvg(figur.svg) }}
         sx={{ width: 30, height: 22, flexShrink: 0, mt: 0.25, overflow: "visible" }} />
       <Box sx={{ minWidth: 0 }}>
         <Typography variant="body2" sx={{ fontWeight: 600, lineHeight: 1.3 }}>
@@ -199,10 +201,10 @@ export default function FlowSceneView({ scen, caption, beskrivning }: Props) {
       >
         <svg width="100%" height="100%" role="img" aria-label={scen.flöde.namn}>
           {/* Arrowhead markers the edge paths reference. */}
-          <defs dangerouslySetInnerHTML={{ __html: scen.defs }} />
+          <defs dangerouslySetInnerHTML={{ __html: sanitizeSvg(scen.defs) }} />
           <g transform={`translate(${vy.x},${vy.y}) scale(${vy.k})`}>
             {/* Swimlanes and pools, drawn by Arkitekten (Systemprocess only). */}
-            {scen.bakgrund && <g dangerouslySetInnerHTML={{ __html: scen.bakgrund }} />}
+            {scen.bakgrund && <g dangerouslySetInnerHTML={{ __html: sanitizeSvg(scen.bakgrund) }} />}
             {scen.kanter.map((k) => (
               <path
                 key={k.id}
@@ -223,7 +225,7 @@ export default function FlowSceneView({ scen, caption, beskrivning }: Props) {
             ))}
             {/* Data stores, message flows, page references – after the edges and
                 before the nodes, the order Arkitekten's export draws them in. */}
-            {scen.artefakter && <g dangerouslySetInnerHTML={{ __html: scen.artefakter }} />}
+            {scen.artefakter && <g dangerouslySetInnerHTML={{ __html: sanitizeSvg(scen.artefakter) }} />}
             {scen.kanter.map((k) =>
               // A label drawn by Arkitekten is placed after the nodes below.
               !k.etikettSvg && k.etikett && k.ankare ? (
@@ -258,14 +260,14 @@ export default function FlowSceneView({ scen, caption, beskrivning }: Props) {
                 >
                   {not && <title>{`${n.etikett}\n\n${not}`}</title>}
                   {/* The exporter's own markup — same picture as the file. */}
-                  <g dangerouslySetInnerHTML={{ __html: n.svg }} />
+                  <g dangerouslySetInnerHTML={{ __html: sanitizeSvg(n.svg) }} />
                 </g>
               );
             })}
             {/* Labels Arkitekten drew itself go on top, so no node hides a Ja/Nej. */}
             {scen.kanter.map((k) =>
               k.etikettSvg ? (
-                <g key={`${k.id}-etikettSvg`} pointerEvents="none" dangerouslySetInnerHTML={{ __html: k.etikettSvg }} />
+                <g key={`${k.id}-etikettSvg`} pointerEvents="none" dangerouslySetInnerHTML={{ __html: sanitizeSvg(k.etikettSvg) }} />
               ) : null,
             )}
             {valdNod && (

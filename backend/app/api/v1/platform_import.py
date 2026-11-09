@@ -9,8 +9,9 @@ import structlog
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field, field_validator
 
+from app.api.v1.sync import is_masked, stored_profile
 from app.dal.graph_repository import GraphRepository
-from app.dependencies import get_repository, require_admin
+from app.dependencies import get_repository, require_admin, require_user
 from app.domain_lists import CUSTOM_TYPE, LIST_KEY, sync_target
 from app.domain_lists import parse as parse_lists
 from app.internal_url import api_base
@@ -149,6 +150,15 @@ class PlatformFieldsRequest(_PlatformTarget):
 @router.post("/sources/fields", dependencies=[Depends(require_admin)])
 async def get_source_fields(body: PlatformFieldsRequest):
     """Get the available fields from a platform data source (samples the first page)."""
+    # A sync profile's key reaches the browser masked: use the stored profile
+    # (its key and address) instead, so the key is never sent anywhere else.
+    if is_masked(body.platform_api_key):
+        profile = stored_profile(body.flow_id)
+        if not profile or not profile.platform_api_key:
+            raise HTTPException(status_code=404, detail="Ingen sparad nyckel för flödet")
+        body = PlatformFieldsRequest(
+            platform_url=profile.platform_url, platform_api_key=profile.platform_api_key, flow_id=body.flow_id,
+        )
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
             resp = await client.get(
@@ -179,7 +189,7 @@ async def get_source_fields(body: PlatformFieldsRequest):
         raise HTTPException(status_code=502, detail=f"Cannot connect to Integration Platform at {body.platform_url}")
 
 
-@router.get("/node-types")
+@router.get("/node-types", dependencies=[Depends(require_user)])
 async def get_node_types():
     """List available EA node types with their core and suggested attribute fields."""
     own_lists = [

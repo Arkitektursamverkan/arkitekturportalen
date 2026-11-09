@@ -20,8 +20,20 @@ fi
 NGINX_RESOLVER=${NGINX_LOCAL_RESOLVERS:-127.0.0.11}
 PORT=${PORT:-80}
 API_UPSTREAM=${API_UPSTREAM:-api:8000}
-export NGINX_RESOLVER PORT API_UPSTREAM
+# Behind a proxy: trust X-Forwarded-For from TRUSTED_PROXY only, so the login
+# limit counts each client rather than the proxy.
+REAL_IP_CONFIG=""
+for ea_proxy in $(printf '%s' "${TRUSTED_PROXY:-}" | tr ',' ' '); do
+    REAL_IP_CONFIG="$REAL_IP_CONFIG    set_real_ip_from $ea_proxy;
+"
+done
+if [ -n "$REAL_IP_CONFIG" ]; then
+    REAL_IP_CONFIG="$REAL_IP_CONFIG    real_ip_header X-Forwarded-For;
+    real_ip_recursive on;
+"
+fi
+export NGINX_RESOLVER PORT API_UPSTREAM REAL_IP_CONFIG
 
-# Only these three: nginx's own $variables in the template stay as they are.
-envsubst '${PORT} ${API_UPSTREAM} ${NGINX_RESOLVER}' < "$mall" > "$conf"
-echo "$ME: info: listening on :$PORT, /api → $API_UPSTREAM (DNS $NGINX_RESOLVER)"
+# Only these: nginx's own $variables in the template stay as they are.
+envsubst '${PORT} ${API_UPSTREAM} ${NGINX_RESOLVER} ${REAL_IP_CONFIG}' < "$mall" > "$conf"
+echo "$ME: info: listening on :$PORT, /api → $API_UPSTREAM (DNS $NGINX_RESOLVER)${TRUSTED_PROXY:+, trusted proxy $TRUSTED_PROXY}"

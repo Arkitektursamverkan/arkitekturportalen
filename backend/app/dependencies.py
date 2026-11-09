@@ -1,6 +1,7 @@
 """FastAPI dependency injection: repository selection, auth, current user."""
 from __future__ import annotations
 
+import hmac
 from typing import Annotated
 
 import structlog
@@ -73,7 +74,7 @@ async def get_current_user(
             role=user.role,
         )
 
-    if x_api_key and x_api_key == settings.API_KEY:
+    if x_api_key and settings.API_KEY and hmac.compare_digest(x_api_key.encode(), settings.API_KEY.encode()):
         return CurrentUser(
             id="system",
             entra_oid="",

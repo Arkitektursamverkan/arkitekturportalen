@@ -4,11 +4,11 @@ from __future__ import annotations
 import re
 from collections import Counter
 
-import httpx
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
 from app.dependencies import require_editor
+from app.public_fetch import fetch_public
 
 router = APIRouter(prefix="/theme", tags=["theme"])
 
@@ -38,12 +38,9 @@ def _is_interesting(hex6: str) -> bool:
 async def extract_theme(req: ThemeExtractRequest) -> ThemeExtractResponse:
     """Fetch a public URL and return the most prominent colors and fonts."""
     try:
-        async with httpx.AsyncClient(timeout=10, follow_redirects=True) as client:
-            resp = await client.get(
-                req.url,
-                headers={"User-Agent": "Mozilla/5.0 (compatible; EA-Tool/1.0)"},
-            )
-            html = resp.text
+        # Only public addresses: the URL comes from the request (SSRF).
+        resp = await fetch_public(req.url, headers={"User-Agent": "Mozilla/5.0 (compatible; EA-Tool/1.0)"})
+        html = resp.text
     except Exception:
         return ThemeExtractResponse(colors=[], fonts=[])
 

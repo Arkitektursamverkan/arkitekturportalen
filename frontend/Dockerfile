@@ -4,7 +4,7 @@ FROM node:26-alpine AS builder
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
 COPY . .
 # Nothing installation-specific is baked in: Entra settings reach the browser
@@ -23,11 +23,13 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 # The site config is written from the template when the container starts
 # (docker/30-ea-nginx.sh): PORT, API_UPSTREAM and the container's own DNS.
 # Defaults fit docker compose; a platform such as Render sets PORT and
-# API_UPSTREAM to the API's internal host:port.
+# API_UPSTREAM to the API's internal host:port. TRUSTED_PROXY (unset) names
+# the proxy in front whose X-Forwarded-For is believed – see the template.
 ENV PORT=80 \
     API_UPSTREAM=api:8000 \
     NGINX_ENTRYPOINT_LOCAL_RESOLVERS=1
 COPY nginx.conf.template /etc/nginx/ea/default.conf.template
+COPY security-headers.conf /etc/nginx/ea/security-headers.conf
 COPY docker/18-api-upstream.envsh /docker-entrypoint.d/18-api-upstream.envsh
 COPY docker/30-ea-nginx.sh /docker-entrypoint.d/30-ea-nginx.sh
 COPY docker/40-ea-config.sh /docker-entrypoint.d/40-ea-config.sh
