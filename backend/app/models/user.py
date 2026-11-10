@@ -4,7 +4,7 @@ from __future__ import annotations
 from datetime import datetime
 from uuid import UUID, uuid4
 
-from sqlalchemy import CheckConstraint, DateTime, Index, String, func
+from sqlalchemy import Boolean, CheckConstraint, DateTime, Index, Integer, String, func
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column
@@ -21,6 +21,15 @@ class UserORM(Base):
     email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     role: Mapped[str] = mapped_column(String(20), nullable=False, default="user")
     password_hash: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    # Bäddas in i lokala token ("tv") och jämförs vid varje begäran: höjs den
+    # (lösenordsbyte, spärr) slutar alla tidigare utfärdade token att gälla.
+    token_version: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=0, server_default="0"
+    )
+    # Spärrat konto: kan inte logga in, och befintliga token avvisas.
+    is_active: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=True, server_default="true"
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

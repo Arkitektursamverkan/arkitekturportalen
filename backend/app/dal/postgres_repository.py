@@ -252,6 +252,15 @@ class PostgresRepository(GraphRepository):
             rows = (await s.execute(q)).scalars().all()
             return [_node_to_read(r) for r in rows]
 
+    async def list_node_refs(self, node_types: list[str]) -> list[tuple[str, str]]:
+        if not node_types:
+            return []
+        async with self._session_factory() as s:
+            rows = (await s.execute(
+                select(NodeORM.id, NodeORM.type).where(NodeORM.type.in_(node_types))
+            )).all()
+            return [(str(i), str(t)) for i, t in rows]
+
     async def create_node(self, data: NodeCreate, user_name: str | None = None) -> NodeRead:
         async with self._session_factory() as s:
             orm = NodeORM(
@@ -998,6 +1007,10 @@ class PostgresRepository(GraphRepository):
             await s.refresh(user)
             return user
 
+    async def get_user(self, user_id: UUID) -> UserORM | None:
+        async with self._session_factory() as s:
+            return await s.get(UserORM, user_id)
+
     async def get_user_by_email(self, email: str) -> UserORM | None:
         async with self._session_factory() as s:
             row = (
@@ -1027,6 +1040,37 @@ class PostgresRepository(GraphRepository):
             if row is None:
                 return None
             row.password_hash = password_hash
+            # Lösenordsbyte: tidigare utfärdade token slutar gälla.
+            row.token_version = (row.token_version or 0) + 1
+            await s.commit()
+            await s.refresh(row)
+            return row
+
+    async def set_user_active(
+        self, user_id: UUID, active: bool, *, acting_user_id: UUID | None
+    ) -> UserORM | None:
+        """Block or unblock an account. Blocking also invalidates every token
+        issued to it. Raises ValueError for the acting admin's own account and
+        for the last active admin."""
+        async with self._session_factory() as s:
+            row = await s.get(UserORM, user_id)
+            if row is None:
+                return None
+            if row.is_active == active:
+                return row
+            if not active:
+                if acting_user_id == user_id:
+                    raise ValueError("Du kan inte spärra ditt eget konto")
+                if row.role == "admin":
+                    active_admins = (await s.execute(
+                        select(func.count(UserORM.id)).where(
+                            UserORM.role == "admin", UserORM.is_active.is_(True)
+                        )
+                    )).scalar() or 0
+                    if active_admins <= 1:
+                        raise ValueError("Den sista administratören kan inte spärras")
+            row.is_active = active
+            row.token_version = (row.token_version or 0) + 1
             await s.commit()
             await s.refresh(row)
             return row

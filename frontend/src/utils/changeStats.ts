@@ -263,7 +263,11 @@ export function perObject(events: ChangeEvent[]): ObjectRow[] {
   return [...m.values()];
 }
 
-/** Text for a CSV cell: quoted, with quotes doubled. */
+/** Text for a CSV cell: quoted, with quotes doubled. Text that a spreadsheet
+ *  would read as a formula (= + - @, tab, CR first) gets an apostrophe in
+ *  front, so that opening the file runs nothing. Numbers stay numbers. */
 export function csvCell(v: unknown): string {
-  return `"${String(v ?? "").replace(/"/g, '""')}"`;
+  let s = String(v ?? "");
+  if (typeof v !== "number" && /^[=+\-@\t\r]/.test(s)) s = "'" + s;
+  return `"${s.replace(/"/g, '""')}"`;
 }

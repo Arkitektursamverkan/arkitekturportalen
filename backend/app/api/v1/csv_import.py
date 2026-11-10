@@ -12,6 +12,7 @@ from fastapi.responses import StreamingResponse
 
 from app.access import filter_nodes, get_optional_user
 from app.auth import CurrentUser
+from app.csv_safety import safe_writer, unescape_cell
 from app.dal.graph_repository import GraphRepository
 from app.dependencies import get_repository, require_admin
 from app.schemas.common import EdgeType, ExternalSource, NodeType
@@ -124,7 +125,7 @@ def _parse_csv(content: bytes, cfg: EntityConfig) -> tuple[list[dict], list[str]
     errors: list[str] = []
 
     for i, raw_row in enumerate(reader, start=2):
-        row = {k.strip().lower(): (v or "").strip() for k, v in raw_row.items() if k}
+        row = {k.strip().lower(): unescape_cell((v or "").strip()).strip() for k, v in raw_row.items() if k}
 
         name = row.get("name", "")
         if not name:
@@ -178,7 +179,7 @@ async def download_unified_template() -> StreamingResponse:
     buf.write("# EA-applikation — Komplett import\n")
     buf.write("# Alla objekttyper och kopplingar i en fil\n\n")
     buf.write("[NODES]\n")
-    writer = csv.writer(buf)
+    writer = safe_writer(buf)
     writer.writerow(header)
 
     # Write example rows from each entity config
@@ -233,7 +234,7 @@ async def export_csv(user: CurrentUser | None = Depends(get_optional_user)) -> S
 
     buf = io.StringIO()
     buf.write("[NODES]\n")
-    writer = csv.writer(buf)
+    writer = safe_writer(buf)
     writer.writerow(header)
 
     for n in nodes:
@@ -249,7 +250,8 @@ async def export_csv(user: CurrentUser | None = Depends(get_optional_user)) -> S
             col = _ATTR_TO_COL.get(attr_key, attr_key)
             col_vals[col] = str(attr_val)
 
-        csv_row = [n.type, n.name, n.description or ""]
+        node_type = n.type.value if hasattr(n.type, "value") else str(n.type)
+        csv_row = [node_type, n.name, n.description or ""]
         for ac in attr_cols:
             csv_row.append(col_vals.get(ac, ""))
         writer.writerow(csv_row)
@@ -260,7 +262,8 @@ async def export_csv(user: CurrentUser | None = Depends(get_optional_user)) -> S
         source_name = id_to_name.get(str(e.source_id))
         target_name = id_to_name.get(str(e.target_id))
         if source_name and target_name:
-            writer.writerow([source_name, target_name, e.type])
+            edge_type = e.type.value if hasattr(e.type, "value") else str(e.type)
+            writer.writerow([source_name, target_name, edge_type])
 
     buf.seek(0)
     return StreamingResponse(
@@ -386,7 +389,7 @@ async def download_template(entity: str) -> StreamingResponse:
     """Return a CSV template for the given entity type."""
     cfg = _get_config(entity)
     buf = io.StringIO()
-    writer = csv.writer(buf)
+    writer = safe_writer(buf)
     writer.writerow(cfg.columns)
     for row in cfg.template_rows:
         writer.writerow(row)
@@ -585,7 +588,7 @@ def _parse_unified_csv(content: bytes) -> tuple[list[dict], list[dict], list[str
                 errors.append(f"Node header must include 'type' and 'name'. Got: {', '.join(fieldnames)}")
                 return [], [], errors
             for row_num, raw_row in enumerate(reader, start=2):
-                row = {k.strip().lower() if k else "": (v or "").strip() for k, v in raw_row.items() if k}
+                row = {k.strip().lower() if k else "": unescape_cell((v or "").strip()).strip() for k, v in raw_row.items() if k}
                 name = row.get("name", "")
                 node_type_raw = row.get("type", "")
                 if not name:
@@ -613,7 +616,7 @@ def _parse_unified_csv(content: bytes) -> tuple[list[dict], list[dict], list[str
         if reader.fieldnames:
             reader.fieldnames = [f.strip().lower() for f in reader.fieldnames]
             for row_num, raw_row in enumerate(reader, start=2):
-                row = {k.strip().lower() if k else "": (v or "").strip() for k, v in raw_row.items() if k}
+                row = {k.strip().lower() if k else "": unescape_cell((v or "").strip()).strip() for k, v in raw_row.items() if k}
                 source = row.get("source", "")
                 target = row.get("target", "")
                 edge_type = row.get("type", "").upper().replace(" ", "_")

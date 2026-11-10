@@ -26,3 +26,41 @@ def test_nod_lases_med_json_attribut():
         "attributes": '{"x": 1}',
     })
     assert node.attributes == {"x": 1}
+
+
+async def test_sokning_skickar_sokordet_som_text_inte_som_regex():
+    """Sökordet går som parameter till CONTAINS – aldrig in i ett =~-uttryck."""
+    from app.dal.neo4j_repository import SEARCH_NODES_CYPHER, Neo4jRepository
+
+    calls: list[tuple[str, dict]] = []
+
+    class _Result:
+        def __aiter__(self):
+            return self
+
+        async def __anext__(self):
+            raise StopAsyncIteration
+
+    class _Session:
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *a):
+            return False
+
+        async def run(self, cypher, **params):
+            calls.append((cypher, params))
+            return _Result()
+
+    class _Driver:
+        def session(self):
+            return _Session()
+
+    repo = Neo4jRepository.__new__(Neo4jRepository)
+    repo._driver = _Driver()  # type: ignore[assignment]
+    farligt = "(a+)+$.*"
+    assert await repo.search_nodes(farligt, limit=5) == []
+    cypher, params = calls[0]
+    assert cypher == SEARCH_NODES_CYPHER
+    assert "=~" not in cypher and "CONTAINS toLower($q)" in cypher
+    assert params == {"q": farligt, "limit": 5}

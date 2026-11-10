@@ -35,7 +35,10 @@ export function useUpdateSharedLinks() {
 
 /** The same check as the API: http(s), or a path on this server — never javascript:, data: or //host. */
 export function isValidLinkUrl(url: string): boolean {
-  return /^(https?:\/\/[^\s/$.?#][^\s]*|\/(?!\/)[^\s]*)$/i.test(url.trim());
+  const v = url.trim();
+  // eslint-disable-next-line no-control-regex -- styrtecken ska just hittas
+  if (/[\u0000-\u001f\u007f-\u009f]/.test(v)) return false;
+  return /^(https?:\/\/[^\s/\\$.?#][^\s]*|\/(?![/\\])[^\s]*)$/i.test(v);
 }
 
 /**

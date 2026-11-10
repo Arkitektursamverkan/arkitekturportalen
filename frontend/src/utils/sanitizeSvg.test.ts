@@ -46,6 +46,20 @@ describe("sanitizeSvg", () => {
     expect(uses[1]?.getAttribute("href") ?? null).toBeNull();
   });
 
+  it("drops <style> elements but keeps inline style attributes", () => {
+    const out = inSvg(
+      sanitizeSvg(
+        "<style>body { display: none } * { background: url(https://evil.example/x) }</style>" +
+          '<rect width="10" height="10" style="fill: #fff; stroke: #333"/>' +
+          '<g><style>.a{}</style><text style="font-weight: 600">t</text></g>',
+      ),
+    );
+    expect(out.querySelector("style")).toBeNull();
+    expect(out.innerHTML).not.toMatch(/display: none|evil\.example/);
+    expect(out.querySelector("rect")?.getAttribute("style")).toContain("fill");
+    expect(out.querySelector("text")?.getAttribute("style")).toContain("font-weight");
+  });
+
   it("returns an empty string for nothing", () => {
     expect(sanitizeSvg("")).toBe("");
     expect(sanitizeSvg(undefined)).toBe("");

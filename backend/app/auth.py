@@ -8,7 +8,13 @@ Two token formats are accepted:
     are issued by /auth/login when a user signs in with email + password
     against an entry an admin created in ea_users.
 
-Bootstrap admins (BOOTSTRAP_ADMIN_EMAILS) become admin on first Entra login.
+Bootstrap admins (BOOTSTRAP_ADMIN_EMAILS) become admin on first Entra login –
+only while the installation has no admin yet.
+
+Local tokens carry the user's token_version ("tv"); raising it (password
+change, blocking the account) invalidates every token issued before. A token
+without the claim counts as version 0, so tokens issued before the claim
+existed stay valid until they expire.
 """
 from __future__ import annotations
 
@@ -86,6 +92,12 @@ def verify_password(plain: str, hashed: str) -> bool:
         return False
 
 
+# Attrapp att jämföra mot när e-postadressen är okänd, så att svaret tar lika
+# lång tid som för ett befintligt konto och inte avslöjar vilka adresser som
+# finns. Samma kostnad som hash_password ger.
+DUMMY_PASSWORD_HASH = bcrypt.hashpw(b"ingen-anvandare-har-detta-losenord", bcrypt.gensalt()).decode()
+
+
 # ── Local JWT issue/verify ──────────────────────────────────────────────────
 
 def issue_local_token(user: UserORM) -> str:
@@ -99,6 +111,7 @@ def issue_local_token(user: UserORM) -> str:
         "iat": int(now.timestamp()),
         "exp": int((now + timedelta(hours=settings.LOCAL_TOKEN_TTL_HOURS)).timestamp()),
         "jti": str(uuid.uuid4()),
+        "tv": user.token_version or 0,
     }
     return jwt.encode(payload, settings.LOCAL_AUTH_SECRET, algorithm="HS256")
 
@@ -134,12 +147,42 @@ def _verify_entra(token: str) -> dict[str, Any]:
     if iss not in settings.entra_issuers:
         raise AuthError(f"Invalid Entra token: unexpected issuer {iss!r}")
 
+    if is_guest_account(claims):
+        raise AuthError("Gästkonton (B2B) kan inte logga in – använd ett konto i organisationens egen katalog")
+
     upn = (claims.get("preferred_username") or claims.get("upn") or "").lower()
     if not upn:
         raise AuthError("Token missing preferred_username/upn claim")
     if not org_settings.email_domain_allowed(upn):
         raise AuthError(f"Email domain not allowed: {upn}")
     return claims
+
+
+def is_guest_account(claims: dict[str, Any]) -> bool:
+    """Is the Entra token for a B2B guest rather than a member of the tenant?
+
+    `iss` and `tid` name the resource tenant also for a guest, so they cannot
+    tell the two apart. What can:
+      - `idp` (identity provider): Entra sets it only when the user was
+        authenticated by someone other than the tenant itself – another
+        tenant (`https://sts.windows.net/<their tid>/`), a Microsoft account
+        (`live.com`), Google and so on. A member has no `idp`, or one naming
+        the home tenant.
+      - `acct` (optional claim, if the app registration emits it): 1 = guest.
+    `tid`, when present, must also be the home tenant (it always is for a
+    token that passed the issuer check, but a mismatch is never a member).
+    """
+    home = (settings.ENTRA_TENANT_ID or "").lower()
+    acct = claims.get("acct")
+    if acct is not None and str(acct) != "0":
+        return True
+    tid = claims.get("tid")
+    if tid and home and str(tid).lower() != home:
+        return True
+    idp = claims.get("idp")
+    if idp:
+        return not (home and home in str(idp).lower())
+    return False
 
 
 def verify_token(token: str) -> tuple[Literal["entra", "local"], dict[str, Any]]:
@@ -183,18 +226,33 @@ async def find_or_create_user(
             or ""
         ).lower()
         if row is None and email:
-            # Pre-provisioned (or local) account with the same email: link the
-            # Entra identity to it instead of creating a duplicate row.
+            # Pre-provisioned account (no password) with the same
+            # email: link the Entra identity to it instead of creating a
+            # duplicate row. A local account (with a password) is never taken
+            # over this way – the email in the token is not proof enough that
+            # it is the same person; an admin has to link it.
             row = (
                 await session.execute(select(UserORM).where(UserORM.email == email))
             ).scalar_one_or_none()
             if row is not None:
+                if row.password_hash is not None:
+                    log.warning("user.link_refused_local", oid=oid, email=email, user_id=str(row.id))
+                    raise AuthError(
+                        "Det finns redan ett lokalt konto med den e-postadressen. "
+                        "En administratör måste koppla det till Microsoft-inloggningen "
+                        "(Användare → Koppla till Microsoft)."
+                    )
+                if not row.is_active:
+                    raise AuthError("Kontot är spärrat")
+                old_oid = row.entra_oid
                 row.entra_oid = oid
-                if email in settings.bootstrap_admin_emails_list and row.role != "admin":
+                log.info("user.linked", old_oid=old_oid, oid=oid, email=email, user_id=str(row.id), role=row.role)
+                if await _bootstrap_admin_allowed(session, email) and row.role != "admin":
+                    log.warning("user.role_raised", user_id=str(row.id), email=email,
+                                old_role=row.role, new_role="admin", reason="bootstrap_admin")
                     row.role = "admin"
-                log.info("user.linked", oid=oid, email=email, role=row.role)
         if row is None:
-            is_bootstrap_admin = email in settings.bootstrap_admin_emails_list
+            is_bootstrap_admin = await _bootstrap_admin_allowed(session, email)
             row = UserORM(
                 entra_oid=oid,
                 name=name,
@@ -205,7 +263,12 @@ async def find_or_create_user(
             session.add(row)
             await session.flush()
             log.info("user.created", oid=oid, email=email, role=row.role)
+            if is_bootstrap_admin:
+                log.warning("user.role_raised", user_id=str(row.id), email=email,
+                            old_role=None, new_role="admin", reason="bootstrap_admin")
         else:
+            if not row.is_active:
+                raise AuthError("Kontot är spärrat")
             if name and row.name != name:
                 row.name = name
             if email and row.email != email:
@@ -223,8 +286,29 @@ async def find_or_create_user(
         raise AuthError("Local token has invalid sub claim")
     if row is None or row.password_hash is None:
         raise AuthError("Local user no longer exists")
+    if not row.is_active:
+        raise AuthError("Kontot är spärrat")
+    # Saknat fält = version 0: token från före tokenversionen gäller tills de går ut.
+    try:
+        token_version = int(claims.get("tv", 0))
+    except (TypeError, ValueError):
+        raise AuthError("Local token has invalid token version")
+    if token_version != (row.token_version or 0):
+        raise AuthError("Token har återkallats – logga in igen")
     row.last_login_at = now
     return row
+
+
+async def _bootstrap_admin_allowed(session: Any, email: str) -> bool:
+    """BOOTSTRAP_ADMIN_EMAILS only seeds the first admin: once the
+    installation has an admin, the list grants nothing – roles are then
+    handed out in the user administration."""
+    if not email or email not in settings.bootstrap_admin_emails_list:
+        return False
+    has_admin = (
+        await session.execute(select(UserORM.id).where(UserORM.role == "admin").limit(1))
+    ).first()
+    return has_admin is None
 
 
 async def fetch_jwks_health() -> bool:

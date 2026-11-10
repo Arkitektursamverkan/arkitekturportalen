@@ -1,6 +1,8 @@
 /* Document template — WeasyPrint-rendered PDF. */
 
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Lora:wght@400;500;600&family=Playfair+Display:wght@800;900&display=swap');
+/* No web fonts: the PDF rendering fetches nothing from the network (see
+   renderer.url_allowed). Open Sans and Lora are used when installed on the
+   server; otherwise the fallbacks after them in each font-family. */
 
 :root {
     /* Overridden per installation by the templates (organisation settings). */

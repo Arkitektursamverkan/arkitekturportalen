@@ -54,4 +54,12 @@ EXPOSE 8000
 # Fix volume ownership then drop to appuser, run migrations and start server.
 # SNAPSHOT_DIR and SYNC_PROFILES_PATH may point elsewhere – on Render both live
 # on the service's one disk – so their directories are the ones prepared.
+#
+# Why the container starts as root and not with USER appuser: the only thing
+# done as root is the mkdir/chown of those two directories. Volumes made by
+# older versions of the image, and disks a platform mounts (Render), can be
+# owned by root; started as appuser, the API could then not write snapshots or
+# sync profiles, and an existing installation would break on upgrade. Right
+# after that the process switches to appuser (su), and everything else – the
+# migrations (alembic) and uvicorn – runs as appuser, never as root.
 CMD ["sh", "-c", "snap=${SNAPSHOT_DIR:-/app/snapshots}; sync=$(dirname \"${SYNC_PROFILES_PATH:-/app/sync_data/sync_profiles.json}\"); mkdir -p \"$snap\" \"$sync\" && chown -R appuser \"$snap\" \"$sync\" && exec su -s /bin/sh appuser -c 'alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000'"]

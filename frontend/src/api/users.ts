@@ -11,6 +11,7 @@ export interface AppUser {
   role: UserRole | "system";
   is_local: boolean;
   is_provisioned: boolean;
+  is_active: boolean;
   created_at: string;
   last_login_at: string | null;
 }
@@ -110,5 +111,24 @@ export function useResetUserPassword() {
   return useMutation({
     mutationFn: ({ id, password }: { id: string; password: string }) =>
       apiClient.post<AppUser>(`/users/${id}/password`, { password }).then((r) => r.data),
+  });
+}
+
+export function useSetUserActive() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, active }: { id: string; active: boolean }) =>
+      apiClient.put<AppUser>(`/users/${id}/active`, { active }).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: userKeys.all }),
+  });
+}
+
+/** Tar bort ett lokalt kontos lösenord så att nästa Microsoft-inloggning med
+ *  samma e-postadress kopplas till kontot. */
+export function useLinkUserToEntra() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => apiClient.delete<AppUser>(`/users/${id}/password`).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: userKeys.all }),
   });
 }

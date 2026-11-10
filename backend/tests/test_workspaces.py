@@ -189,6 +189,34 @@ async def test_file_upload_download_and_listing_excludes_payload(client, api_hea
 
 
 @pytest.mark.asyncio
+async def test_file_types_are_whitelisted_and_served_as_the_server_decides(client, api_headers):
+    owner = await _local_user(client, api_headers, "Ägare Filtyp", role="superuser")
+    ws = await _workspace(client, owner)
+
+    for name, ctype in (("sida.html", "text/html"), ("bild.svg", "image/svg+xml"), ("utan-andelse", "text/plain")):
+        bad = await client.post(
+            f"/api/v1/workspaces/{ws['id']}/files",
+            files={"file": (name, b"<script>alert(1)</script>", ctype)},
+            headers=owner["headers"],
+        )
+        assert bad.status_code == 415, name
+
+    # The browser's claim is ignored: a .txt is served as text/plain.
+    up = await client.post(
+        f"/api/v1/workspaces/{ws['id']}/files",
+        files={"file": ("anteckning.txt", b"<script>alert(1)</script>", "text/html")},
+        headers=owner["headers"],
+    )
+    assert up.status_code == 201, up.text
+    dl = await client.get(
+        f"/api/v1/workspaces/{ws['id']}/files/{up.json()['id']}/download", headers=owner["headers"]
+    )
+    assert dl.headers["content-type"].startswith("text/plain")
+    assert dl.headers["x-content-type-options"] == "nosniff"
+    assert dl.headers["content-disposition"].startswith("attachment;")
+
+
+@pytest.mark.asyncio
 async def test_links_are_listed_and_only_web_urls_are_accepted(client, api_headers):
     owner = await _local_user(client, api_headers, "Ägare Länk", role="superuser")
     ws = await _workspace(client, owner)
