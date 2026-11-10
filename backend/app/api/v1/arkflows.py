@@ -26,15 +26,18 @@ tax nobody needs.
 from __future__ import annotations
 
 import os
+import re
 import time
 from typing import Any
+from urllib.parse import quote
 
 import httpx
 import structlog
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.access import get_optional_user
-from app.dependencies import require_admin
+from app.access import get_optional_user, hidden_node_ids, load_policy
+from app.auth import CurrentUser
+from app.dependencies import get_repository, require_admin
 from app.internal_url import api_base
 
 logger = structlog.get_logger()
@@ -67,6 +70,10 @@ PLATFORM_ADMIN_KEY = os.environ.get("INTEGRATION_PLATFORM_ADMIN_KEY", "")
 # Scenes change when someone edits a flowchart — rarely, and never urgently.
 # A short cache keeps a page of thumbnails from becoming a burst of calls.
 _CACHE_TTL = 120.0
+
+# A flowchart's id as Arkitekten writes it (lower case, digits and dashes) –
+# with some room, but never anything that could change the platform path.
+_FLOW_ID = re.compile(r"^[A-Za-z0-9._-]{1,200}$")
 _cache: dict[str, tuple[float, Any]] = {}
 
 
@@ -119,10 +126,9 @@ async def _platform_get(client: httpx.AsyncClient, path: str, **params: Any) -> 
     if resp.status_code == 404:
         return None
     if resp.status_code != 200:
-        logger.warning("arkflows.platform_error", path=path, status=resp.status_code)
-        raise HTTPException(
-            502, f"Integration Platform error ({resp.status_code}): {resp.text[:200]}"
-        )
+        # The platform's own error text stays in the log.
+        logger.warning("arkflows.platform_error", path=path, status=resp.status_code, body=resp.text[:500])
+        raise HTTPException(502, f"Integrationsplattformen svarade med fel ({resp.status_code})")
     return resp.json()
 
 
@@ -184,9 +190,43 @@ def _summary(data: dict) -> dict:
     }
 
 
-@router.get("", dependencies=[Depends(get_optional_user)])
-async def list_arkflows() -> dict:
-    """Every flowchart available to the portal, without the scenes."""
+async def _hidden_flow_filter(user: CurrentUser | None):  # type: ignore[no-untyped-def]
+    """A test for "may this user not see this flowchart?" – by the object it
+    is published onto (`ea_nod_id`), or, for one mirrored before publishing
+    existed, by the Process its `prefix` names. A flowchart that points at
+    nothing the portal knows is shown, as before."""
+    policy = await load_policy(user)
+    if policy.sees_everything:
+        return lambda _flow: False
+    hidden = await hidden_node_ids(user, policy)
+    hidden_prefixes: set[str] = set()
+    visible_prefixes: set[str] = set()
+    for archived in (False, True):
+        for p in await get_repository().list_nodes(node_type="Process", archived=archived, limit=100_000):
+            prefix = (p.attributes or {}).get("prefix")
+            if isinstance(prefix, str) and prefix:
+                (hidden_prefixes if str(p.id) in hidden else visible_prefixes).add(prefix)
+
+    def is_hidden(flow: dict) -> bool:
+        if flow.get("ea_nod_id"):
+            return str(flow["ea_nod_id"]) in hidden
+        prefix = flow.get("prefix")
+        return bool(prefix) and prefix in hidden_prefixes and prefix not in visible_prefixes
+
+    return is_hidden
+
+
+@router.get("")
+async def list_arkflows(user: CurrentUser | None = Depends(get_optional_user)) -> dict:
+    """Every flowchart available to the portal, without the scenes – those
+    whose process (or application) the user may see."""
+    index = await _index()
+    is_hidden = await _hidden_flow_filter(user)
+    return {"flows": [f for f in index["flows"] if not is_hidden(f)]}
+
+
+async def _index() -> dict:
+    # The cache holds everything; what a user may see is decided per request.
     cached = _cached("index")
     if cached is not None:
         return cached
@@ -197,7 +237,7 @@ async def list_arkflows() -> dict:
             page = 1
             while True:
                 data = await _platform_get(
-                    client, f"/data/{flow_id}/records", page=page, page_size=200
+                    client, f"/data/{quote(flow_id, safe='')}/records", page=page, page_size=200
                 )
                 if not data:
                     break
@@ -210,9 +250,19 @@ async def list_arkflows() -> dict:
     return _store("index", {"flows": out})
 
 
-@router.get("/{ark_flow_id}", dependencies=[Depends(get_optional_user)])
-async def get_arkflow(ark_flow_id: str) -> dict:
-    """One flowchart, scene included — what the canvas draws."""
+@router.get("/{ark_flow_id}")
+async def get_arkflow(ark_flow_id: str, user: CurrentUser | None = Depends(get_optional_user)) -> dict:
+    """One flowchart, scene included — what the canvas draws. 404, as if it
+    did not exist, when the user may not see its process."""
+    if not _FLOW_ID.fullmatch(ark_flow_id):
+        raise HTTPException(404, "No such flowchart")
+    flow = await _flow(ark_flow_id)
+    if flow is None or (await _hidden_flow_filter(user))(flow):
+        raise HTTPException(404, "No such flowchart")
+    return flow
+
+
+async def _flow(ark_flow_id: str) -> dict | None:
     cached = _cached(f"flow:{ark_flow_id}")
     if cached is not None:
         return cached
@@ -220,15 +270,15 @@ async def get_arkflow(ark_flow_id: str) -> dict:
     async with httpx.AsyncClient(timeout=30.0) as client:
         for flow_id in await _arkitekten_flow_ids(client):
             rec = await _platform_get(
-                client, f"/data/{flow_id}/records/by-external/{ark_flow_id}"
+                client,
+                f"/data/{quote(flow_id, safe='')}/records/by-external/{quote(ark_flow_id, safe='')}",
             )
             if rec:
                 data = rec.get("data") or {}
                 return _store(
                     f"flow:{ark_flow_id}", {**_summary(data), "scen": data.get("scen")}
                 )
-
-    raise HTTPException(404, f"No flowchart named {ark_flow_id!r}")
+    return None
 
 
 @router.post("/sync", dependencies=[Depends(require_admin)])
@@ -262,16 +312,16 @@ async def sync_arkflows() -> dict:
             )
         for flow_id in flow_ids:
             resp = await client.post(
-                f"{PLATFORM_URL}/flows/{flow_id}/execute",
+                f"{PLATFORM_URL}/flows/{quote(flow_id, safe='')}/execute",
                 headers={"X-Api-Key": _require_admin_key()},
             )
             if resp.status_code >= 400:
                 logger.warning(
-                    "arkflows.sync_failed", flow_id=flow_id, status=resp.status_code
+                    "arkflows.sync_failed", flow_id=flow_id, status=resp.status_code,
+                    body=resp.text[:500],
                 )
                 raise HTTPException(
-                    502,
-                    f"Integration Platform error ({resp.status_code}): {resp.text[:200]}",
+                    502, f"Integrationsplattformen svarade med fel ({resp.status_code})"
                 )
             körning = resp.json()
             körningar.append(
