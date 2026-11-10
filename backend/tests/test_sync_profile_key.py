@@ -9,6 +9,7 @@ PROFIL = {"flow_id": "flode-1", "node_type": "Application", "platform_api_key": 
 @pytest.fixture(autouse=True)
 def _egen_fil(tmp_path, monkeypatch):
     monkeypatch.setattr(sync_module, "SYNC_PROFILES_PATH", tmp_path / "profiles.json")
+    monkeypatch.setenv("INTEGRATION_PLATFORM_URL", "http://example.org")
 
 
 async def _lagrad() -> str:
