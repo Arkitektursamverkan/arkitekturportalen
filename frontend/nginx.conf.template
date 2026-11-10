@@ -16,6 +16,10 @@
 # (e.g. 10.0.0.0/8, several separated by spaces or commas) and the client's
 # address is taken from X-Forwarded-For instead. Leave it unset when nginx
 # faces the clients directly: the header could then be forged.
+#
+# The API gets only the one address nginx settled on ($remote_addr, after the
+# real-ip step) in X-Forwarded-For – never the chain as the client sent it, so
+# nothing behind nginx can be fooled by addresses a client wrote itself.
 
 map $request_method $ea_login_limit_key {
     POST    $binary_remote_addr;
@@ -52,7 +56,7 @@ ${REAL_IP_CONFIG}
         proxy_pass $api_upstream;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-For $remote_addr;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_read_timeout 60s;
     }
@@ -65,7 +69,7 @@ ${REAL_IP_CONFIG}
         proxy_pass $api_upstream;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-For $remote_addr;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_read_timeout 60s;
     }
