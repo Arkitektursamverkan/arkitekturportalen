@@ -169,3 +169,18 @@ async def test_http_does_not_replace_https_for_same_host():
     await installation.learn_portal_url("portal.example.org", "https")
     await installation.learn_portal_url("portal.example.org", None)
     assert installation.portal_url() == "https://portal.example.org"
+
+
+async def test_platform_probe_is_not_learned(client):
+    # REGRESSION: Render checks a new private service with HEAD / and its own
+    # name; the portal learned http://portal-api-….onrender.com from it.
+    await client.head("/", headers={"Host": "portal-api-6zy0.onrender.com"})
+    await client.get("/api/v1/client-config", headers={"Host": "portal-api-6zy0.onrender.com"})
+    assert installation.portal_url() is None
+
+
+async def test_failed_request_is_not_learned(client):
+    await client.get(
+        "/api/v1/finns-inte", headers={"Host": "portal.example.org", "X-Forwarded-Proto": "https"}
+    )
+    assert installation.portal_url() is None

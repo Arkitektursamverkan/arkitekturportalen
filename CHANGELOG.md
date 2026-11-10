@@ -9,6 +9,10 @@ funktioner, en ny korrigering för rättelser.
 
 - (inget än)
 
+## 0.15.1 – 2026-11-10
+
+- Portalen lär sig sin adress bara ur API-förfrågningar som kommit genom webben (`X-Forwarded-Proto`) och lyckats. På Render lärde den sig annars den privata tjänstens eget namn (`portal-api-….onrender.com`) ur Renders kontroll av en ny tjänst.
+
 ## 0.15.0 – 2026-11-10
 
 - **Installationen konfigurerar sig själv** – för Render, där inget ska behöva skrivas in efter starten:

@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import ipaddress
 import re
+from collections.abc import Mapping
 from typing import Any
 from urllib.parse import urlsplit
 
@@ -132,6 +133,17 @@ def address_from_request(host: str | None, forwarded_proto: str | None) -> str |
 def _is_platform_address(url: str) -> bool:
     host = (urlsplit(url).hostname or "").lower()
     return host.endswith(_PLATFORM_SUFFIXES)
+
+
+def came_through_web(path: str, headers: Mapping[str, str], status: int) -> bool:
+    """Was this a request the portal's web (nginx) passed on from a browser?
+
+    The web sets X-Forwarded-Proto on everything it sends to /api. A platform's
+    own probes reach the API directly – Render checks a new service with
+    "HEAD /" and the service's own name (portal-api-….onrender.com) – and
+    carry no such header. Only successful API requests count.
+    REGRESSION: Render's probe taught the portal the private service's name."""
+    return bool(headers.get("x-forwarded-proto")) and path.startswith("/api/") and status < 400
 
 
 async def learn_portal_url(host: str | None, forwarded_proto: str | None) -> None:
