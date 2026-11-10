@@ -76,12 +76,10 @@ async def update_sketch(
     user: CurrentUser = Depends(require_user),
 ) -> SketchRead:
     repo = _get_pg_repo()
-    # Approving / archiving requires admin; everyone else can edit drafts
-    if data.status in ("approved", "archived") and user.role not in ("admin", "system"):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Endast admin kan godkänna eller arkivera",
-        )
+    existing = await repo.get_solution_sketch(sketch_id)
+    if existing is None:
+        raise HTTPException(status_code=404, detail="Sketch not found")
+    _require_sketch_write(user, existing, data)
     row = await repo.update_solution_sketch(
         sketch_id,
         title=data.title,
@@ -93,6 +91,34 @@ async def update_sketch(
     if row is None:
         raise HTTPException(status_code=404, detail="Sketch not found")
     return _row_to_read(row)
+
+
+_ADMIN_ROLES = ("admin", "system")
+_EDITOR_ROLES = ("superuser", "admin", "system")
+_LOCKED = ("approved", "archived")
+
+
+def _require_sketch_write(user: CurrentUser, sketch, data: SketchUpdate) -> None:  # type: ignore[no-untyped-def]
+    """Who may change a sketch:
+
+    - its author, or an editor (superuser/admin), while it is a draft or under
+      review;
+    - only an admin once it is approved or archived – also to move it back;
+    - only an admin approves or archives.
+    """
+    is_admin = user.role in _ADMIN_ROLES
+    if (data.status in _LOCKED or sketch.status in _LOCKED) and not is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Endast admin kan godkänna, arkivera eller ändra en godkänd eller arkiverad skiss",
+        )
+    author = sketch.created_by
+    is_author = bool(author) and author in {v for v in (user.email, user.name) if v}
+    if not (is_author or user.role in _EDITOR_ROLES):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Bara den som skapade skissen eller en redaktör får ändra den",
+        )
 
 
 @router.delete("/{sketch_id}")

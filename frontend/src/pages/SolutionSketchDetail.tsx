@@ -89,9 +89,15 @@ const SolutionSketchDetail: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const wide = useMediaQuery(theme.breakpoints.up("lg"));
-  const { isEditor: isAdmin } = useRoleStore();
+  const { isAdmin, isEditor, email, name } = useRoleStore();
   const { data: sketch, isLoading, error } = useSolutionSketch(id);
   const update = useUpdateSketch();
+
+  // The same rule as the API: the author or an editor while the sketch is a
+  // draft or under review; once approved or archived, only an admin.
+  const isAuthor = !!sketch?.created_by && (sketch.created_by === email || sketch.created_by === name);
+  const locked = sketch?.status === "approved" || sketch?.status === "archived";
+  const canEdit = !!sketch && (locked ? isAdmin : isAdmin || isEditor || isAuthor);
 
   // Local editable state, debounced save back to server
   const [title, setTitle] = useState("");
@@ -112,7 +118,7 @@ const SolutionSketchDetail: React.FC = () => {
   // Debounced auto-save
   const saveTimer = useRef<number | null>(null);
   useEffect(() => {
-    if (!sketch || !initialised.current) return;
+    if (!sketch || !initialised.current || !canEdit) return;
     if (saveTimer.current) window.clearTimeout(saveTimer.current);
     saveTimer.current = window.setTimeout(async () => {
       const next = await update.mutateAsync({ id: sketch.id, title, description, answers });
@@ -155,7 +161,7 @@ const SolutionSketchDetail: React.FC = () => {
     setSavedAt(updated.updated_at);
   };
 
-  const canEditMeta = sketch.status === "draft" || sketch.status === "in_review" || isAdmin;
+  const canEditMeta = canEdit;
 
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
@@ -184,6 +190,7 @@ const SolutionSketchDetail: React.FC = () => {
           <Select
             value={sketch.status}
             label="Status"
+            disabled={!canEdit}
             onChange={(e) => changeStatus(e.target.value as SketchStatus)}
           >
             <MenuItem value="draft">Utkast</MenuItem>
@@ -426,7 +433,7 @@ const SolutionSketchDetail: React.FC = () => {
 
           <Box sx={{ mt: 4, pt: 3, borderTop: 1, borderColor: "divider" }}>
             <Stack direction="row" spacing={2} useFlexGap sx={{ alignItems: "center", flexWrap: "wrap" }}>
-              {sketch.status === "draft" && (
+              {canEdit && sketch.status === "draft" && (
                 <Button
                   variant="contained"
                   color="primary"
@@ -437,7 +444,7 @@ const SolutionSketchDetail: React.FC = () => {
                   Skicka för granskning
                 </Button>
               )}
-              {sketch.status === "in_review" && (
+              {canEdit && sketch.status === "in_review" && (
                 <Button
                   variant="outlined"
                   color="inherit"
