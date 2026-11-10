@@ -9,6 +9,17 @@ funktioner, en ny korrigering för rättelser.
 
 - (inget än)
 
+## 0.14.0 – 2026-11-10
+
+- **Säkerhet: inloggningar kan återkallas.** Lokala token bär kontots tokenversion (migrering 0071); ett nytt lösenord eller ett spärrat konto gör alla tidigare utfärdade token ogiltiga. Token från äldre versioner gäller tills de går ut.
+- **Konton kan spärras** (Användare → Spärra, `PUT /api/v1/users/{id}/active`). Ett spärrat konto kan inte logga in, och dess token avvisas.
+- **Säkerhet: Entra** – ett lokalt konto (med lösenord) tas aldrig över av en Microsoft-inloggning med samma e-post; en administratör kopplar det (Användare → Koppla till Microsoft, `DELETE /api/v1/users/{id}/password`). Gästkonton (B2B) nekas. `BOOTSTRAP_ADMIN_EMAILS` ger administratörsroll bara så länge installationen saknar administratör. Koppling och rollbyten loggas.
+- **Säkerhet: inloggningen avslöjar inte vilka konton som finns** – en okänd adress tar lika lång tid som ett fel lösenord; bcrypt körs utanför event-loopen.
+- **Säkerhet: inga standardlösenord för databaserna.** docker compose kräver `POSTGRES_PASSWORD` (och `NEO4J_PASSWORD` med neo4j), och API:t vägrar starta i produktion med de lösenord som förr var förval (`ea_pass`, `ea_password`). **Uppgradering: en installation som kör med `ea_pass` byter först lösenordet** – `ALTER USER ea_user WITH PASSWORD '…'` i databasen och samma värde som `POSTGRES_PASSWORD` i `.env`.
+- **Säkerhet: arbetsytornas filer** tar bara emot samma filtyper som dokumenten på objekten, och typen vid nedladdning bestäms av filändelsen (`nosniff`, `no-store`) – aldrig av vad webbläsaren påstod.
+- **Säkerhet: PDF-renderingen hämtar bara portalens egna mallar och `data:`** – text i ett dokument kan inte få den att hämta adresser eller läsa filer.
+- Webben skickar `Strict-Transport-Security`, men bara när begäran kom över https (direkt eller enligt proxyns `X-Forwarded-Proto`). Webbavbilden har `NOTICE` och GPL-3.0-texten för cytoscape-svg under `/licenses/`.
+
 ## 0.13.0 – 2026-11-10
 
 - **Säkerhet: synkprofiler och plattformsimport når bara tillåtna plattformsadresser** – `INTEGRATION_PLATFORM_URL` och, om satt, nya `INTEGRATION_PLATFORM_ALLOWED_URLS` (kommaseparerad). Installationens nyckel skickas bara till `INTEGRATION_PLATFORM_URL`:s origin, och en sparad profilnyckel behålls bara när adressen är oförändrad (annars 422 "Ange plattformens API-nyckel"). Plattformens felkroppar skickas inte längre vidare till klienten.
