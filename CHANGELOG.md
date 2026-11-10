@@ -7,6 +7,10 @@ funktioner, en ny korrigering för rättelser.
 
 ## Ej släppt
 
+- (inget än)
+
+## 0.15.0 – 2026-11-10
+
 - **Installationen konfigurerar sig själv** – för Render, där inget ska behöva skrivas in efter starten:
   - Portalen lär sig sin publika adress ur förfrågningarna genom webben (Host och proxyns `X-Forwarded-Proto`) när `PDF_APP_BASE_URL` inte är satt – PDF-länkarna och Arkitektens länk tillbaka. Interna namn (utan punkt, IP-adresser, localhost) lärs aldrig, och en egen domän ersätts inte av `*.onrender.com`. Ny tabell `ea_installation` (migrering 0072).
   - Arkitekten anmäler sin adress (`PUT /api/v1/installation/arkitekten`, API-nyckeln), och webben länkar dit när `ARKITEKTEN_URL` inte är satt på webben.
