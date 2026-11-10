@@ -359,3 +359,9 @@ Import `docs/ea-poc.postman.json` into Postman. Set the `baseUrl` variable to `h
 Arkitekturportalen is free software under the [EUPL-1.2](LICENSE) (European
 Union Public Licence), which is available in all official EU languages,
 including Swedish.
+
+The built frontend (the `arkitekturportalen-web` image) bundles
+`cytoscape-svg`, which is under GPL-3.0, and is therefore distributed as a
+whole under GPL-3.0 – which the EUPL-1.2's list of compatible licences allows.
+The source code in this repository stays under EUPL-1.2. See [NOTICE](NOTICE),
+which also lists the other dependencies under copyleft licences.
