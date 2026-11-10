@@ -111,8 +111,8 @@ def create_app() -> FastAPI:
         # The portal's own address, for PDF links and Arkitekten – only when
         # PDF_APP_BASE_URL is not set (app.services.installation).
         response = await call_next(request)
-        if response.status_code < 500:
-            from app.services import installation
+        from app.services import installation
+        if installation.came_through_web(request.url.path, request.headers, response.status_code):
             await installation.learn_portal_url(
                 request.headers.get("host"), request.headers.get("x-forwarded-proto")
             )
