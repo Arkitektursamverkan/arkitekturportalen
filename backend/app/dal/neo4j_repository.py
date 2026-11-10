@@ -69,6 +69,16 @@ def _record_to_edge_read(r: dict) -> EdgeRead:
     )
 
 
+
+# Sökordet jämförs som text (CONTAINS), inte som reguljärt uttryck: ett
+# uttryck från användaren kunde annars ge en katastrofal backtracking.
+SEARCH_NODES_CYPHER = (
+    "MATCH (n:EANode) WHERE n.archived = false "
+    "AND (toLower(coalesce(n.name, '')) CONTAINS toLower($q) "
+    "OR toLower(coalesce(n.description, '')) CONTAINS toLower($q)) "
+    "RETURN properties(n) AS p LIMIT $limit"
+)
+
 class Neo4jRepository(GraphRepository):
     def __init__(self, uri: str, user: str, password: str) -> None:
         self._driver = AsyncGraphDatabase.driver(uri, auth=(user, password))
@@ -477,11 +487,5 @@ class Neo4jRepository(GraphRepository):
 
     async def search_nodes(self, query: str, limit: int = 20) -> list[NodeRead]:
         async with self._driver.session() as s:
-            pattern = f"(?i).*{query}.*"
-            result = await s.run(
-                "MATCH (n:EANode) WHERE n.archived = false "
-                "AND (n.name =~ $pat OR n.description =~ $pat) "
-                "RETURN properties(n) AS p LIMIT $limit",
-                pat=pattern, limit=limit,
-            )
+            result = await s.run(SEARCH_NODES_CYPHER, q=query, limit=limit)
             return [_record_to_node_read(r["p"]) async for r in result]

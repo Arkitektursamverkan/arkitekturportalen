@@ -44,6 +44,18 @@ class GraphRepository(ABC):
     ) -> list[NodeRead]:
         """Return nodes, optionally filtered by type / external source."""
 
+    async def list_node_refs(self, node_types: list[str]) -> list[tuple[str, str]]:
+        """(id, type) for every object of the given types, archived too.
+
+        What the access checks need – nothing more. Adapters that can fetch
+        just the two columns override this; the default goes via list_nodes."""
+        out: list[tuple[str, str]] = []
+        for t in node_types:
+            for archived in (False, True):
+                for n in await self.list_nodes(node_type=t, archived=archived, limit=100_000):
+                    out.append((str(n.id), n.type.value if hasattr(n.type, "value") else str(n.type)))
+        return out
+
     @abstractmethod
     async def create_node(self, data: NodeCreate, user_name: str | None = None) -> NodeRead:
         """Persist a new node and return it with server-generated fields.

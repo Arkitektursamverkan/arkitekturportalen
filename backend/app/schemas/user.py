@@ -19,6 +19,7 @@ class UserRead(BaseModel):
     role: str
     is_local: bool
     is_provisioned: bool
+    is_active: bool = True
     created_at: datetime
     last_login_at: datetime | None
 
@@ -47,6 +48,10 @@ class LocalUserCreate(BaseModel):
     email: str = Field(..., min_length=3, max_length=255)
     password: str = Field(..., min_length=8, max_length=128)
     role: Role = "user"
+
+
+class UserActiveUpdate(BaseModel):
+    active: bool
 
 
 class PasswordReset(BaseModel):

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { ChangeEvent } from "@/api/changeStatistics";
 import {
-  ALL_TYPES, LAYERS, autoGrain, bucketStart, buckets, perBucket, perField, perObject, perType, stockPerBucket,
+  ALL_TYPES, LAYERS, autoGrain, csvCell, bucketStart, buckets, perBucket, perField, perObject, perType, stockPerBucket,
 } from "./changeStats";
 
 const ev = (at: string, kind: ChangeEvent["kind"], type: string, node_id = "n1", fields: string[] = []): ChangeEvent => ({
@@ -68,5 +68,15 @@ describe("fördelningen", () => {
     expect(perField(events).map((f) => f.field)).toEqual(["name", "owner"]);
     const a = perObject(events).find((o) => o.node_id === "a")!;
     expect([a.added, a.updated, a.removed, a.gone]).toEqual([1, 1, 1, true]);
+  });
+});
+
+describe("csvCell", () => {
+  it("neutraliserar formler men lämnar vanlig text och tal", () => {
+    expect(csvCell("=HYPERLINK(\"x\")")).toBe('"\'=HYPERLINK(""x"")"');
+    for (const v of ["+1", "-2+3", "@SUM(A1)", "\tx", "\rx"]) expect(csvCell(v).startsWith(`"'`)).toBe(true);
+    expect(csvCell("Faktura")).toBe('"Faktura"');
+    expect(csvCell(-3)).toBe('"-3"');
+    expect(csvCell(null)).toBe('""');
   });
 });

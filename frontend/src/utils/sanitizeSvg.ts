@@ -42,6 +42,9 @@ export function sanitizeSvg(fragment: string | null | undefined): string {
   const body = purify.sanitize(`<svg xmlns="${SVG_NS}">${fragment}</svg>`, {
     USE_PROFILES: { svg: true, svgFilters: true },
     ADD_TAGS: ["use"],
+    // A <style> element would apply to the whole page, not just the scene.
+    // Inline style attributes on the shapes stay.
+    FORBID_TAGS: ["style"],
     RETURN_DOM: true,
   });
   const svg = (body as Element).firstElementChild;

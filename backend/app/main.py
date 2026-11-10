@@ -43,8 +43,9 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     if weak and settings.APP_ENV not in ("development", "test"):
         raise RuntimeError(
             f"Refusing to start with APP_ENV={settings.APP_ENV}: {', '.join(weak)} "
-            "is empty, a placeholder or shorter than 32 characters. "
-            "Generate one with: openssl rand -hex 32"
+            "is empty, a placeholder, a known default password (ea_pass, ea_password) "
+            "or shorter than 32 characters. Generate one with: openssl rand -hex 32 "
+            "(a database password is changed with ALTER USER in the database too)"
         )
     if weak:
         log.warning("app.weak_secrets", settings=weak, note="only acceptable in development and test")

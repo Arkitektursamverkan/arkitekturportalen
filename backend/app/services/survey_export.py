@@ -5,7 +5,6 @@ with a UTF-8 BOM so that åäö survive a double-click open.
 """
 from __future__ import annotations
 
-import csv
 import io
 import re
 import unicodedata
@@ -13,6 +12,8 @@ from collections.abc import Callable
 from datetime import UTC, datetime
 from typing import Any
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+
+from app.csv_safety import safe_writer
 
 CSV_DELIMITER = ";"
 
@@ -154,7 +155,7 @@ def build_responses_csv(
         columns.append((f"Borttagen fråga: {qid}", answer(qid, None)))
 
     buf = io.StringIO()
-    writer = csv.writer(buf, delimiter=CSV_DELIMITER, lineterminator="\r\n")
+    writer = safe_writer(buf, delimiter=CSV_DELIMITER, lineterminator="\r\n")
     writer.writerow([header for header, _ in columns])
     for response in responses:
         writer.writerow([extract(response) for _, extract in columns])
@@ -176,7 +177,7 @@ def build_report_csv(report: dict[str, Any]) -> str:
     columns += [str(q.get("label") or q.get("id") or "") for q in questions]
 
     buf = io.StringIO()
-    writer = csv.writer(buf, delimiter=CSV_DELIMITER, lineterminator="\r\n")
+    writer = safe_writer(buf, delimiter=CSV_DELIMITER, lineterminator="\r\n")
     writer.writerow(columns)
     for row in report.get("rows") or []:
         answers = row.get("answers") or {}

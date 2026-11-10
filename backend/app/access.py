@@ -93,6 +93,8 @@ class Policy:
         # from everyone, admins too, whatever the grants say.
         self.hidden_types = frozenset(hidden_types)
         self.hidden_ids = frozenset(hidden_ids)
+        # hidden_node_ids() remembers its answer here for the request.
+        self._hidden_node_ids: frozenset[str] | None = None
         self._all: set[str] = set()
         self._by_type: dict[str, set[str]] = {}
         self._by_node: dict[str, set[str]] = {}
@@ -319,16 +321,18 @@ async def hidden_node_ids(user: CurrentUser | None, policy: Policy | None = None
         return set()
     from app.dependencies import get_repository
     repo = get_repository()
+    if policy._hidden_node_ids is not None:
+        return set(policy._hidden_node_ids)
     hidden: set[str] = set(policy.hidden_ids)
     # Objects of a type the user sees in full need no look; the rest are
-    # checked one by one, since a grant may reach a single object.
-    for t in ALL_TYPES:
-        if "object.read" in policy.type_perms(t):
-            continue
-        for archived in (False, True):
-            for n in await repo.list_nodes(node_type=t, archived=archived, limit=100_000):
-                if not policy.can_see(n.id, n.type):
-                    hidden.add(str(n.id))
+    # checked one by one, since a grant may reach a single object. Only id
+    # and type are fetched – in one query – not the whole objects.
+    types = [t for t in ALL_TYPES if "object.read" not in policy.type_perms(t)]
+    for node_id, node_type in await repo.list_node_refs(types):
+        if not policy.can_see(node_id, node_type):
+            hidden.add(node_id)
+    # Within one request the same policy gives the same answer.
+    policy._hidden_node_ids = frozenset(hidden)
     return hidden
 
 

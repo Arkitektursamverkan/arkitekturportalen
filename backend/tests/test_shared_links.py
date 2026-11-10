@@ -83,6 +83,9 @@ async def test_kraver_inloggning(client):
 @pytest.mark.parametrize("url", [
     "javascript:alert(1)", "data:text/html,hej", "//evil.example.org/", "ftp://example.org/", "intra.example.org",
     "https://", "/med mellanslag",
+    # REGRESSION: /\värd och styrtecken läses av webbläsaren som en annan värd.
+    "/\\evil.example.org/", "/\\/evil.example.org", "https://\\evil.example.org",
+    "/sida\x00", "/sida\x7f", "https://example.org/\x85x", "/\x09/evil.example.org",
 ])
 async def test_ogiltiga_adresser(client, api_headers, url):
     r = await client.put(URL, json={"links": [{"title": "X", "url": url}]}, headers=api_headers)
@@ -106,3 +109,13 @@ async def test_tom_lista_tar_bort(client, repo, api_headers):
     assert org_settings.shared_links() is None
     async with repo._session_factory() as s:
         assert (await s.get(OrgSettingsORM, 1)).shared_links is None
+
+
+def test_check_link_url_direkt():
+    from app.schemas.shared_links import check_link_url
+
+    for ok in ("/", "/rundvisning/", "/a\\b", "https://example.org/x?y=1#z", "HTTP://example.org"):
+        assert check_link_url(ok) == ok
+    for bad in ("/\\x", "//x", "\\\\x", "/x\ty", "/x\ny"):
+        with pytest.raises(ValueError):
+            check_link_url(bad)

@@ -9,9 +9,15 @@ import hmac
 from datetime import UTC, datetime
 
 from fastapi import APIRouter, HTTPException, status
+from fastapi.concurrency import run_in_threadpool
 from pydantic import BaseModel, EmailStr, Field
 
-from app.auth import hash_password, issue_local_token, verify_password
+from app.auth import (
+    DUMMY_PASSWORD_HASH,
+    hash_password,
+    issue_local_token,
+    verify_password,
+)
 from app.dal.postgres_repository import PostgresRepository
 from app.dependencies import get_repository
 
@@ -42,15 +48,20 @@ def _get_pg_repo() -> PostgresRepository:
 async def login_local(data: LocalLoginRequest) -> LocalLoginResponse:
     repo = _get_pg_repo()
     user = await repo.get_user_by_email(str(data.email))
-    if user is None or user.password_hash is None:
+    # Okänd adress (eller ett konto utan lösenord) jämförs mot en attrapp, så
+    # att svaret tar lika lång tid och inte avslöjar vilka konton som finns.
+    # bcrypt körs i en tråd för att inte blockera händelseloopen.
+    hashed = user.password_hash if user is not None and user.password_hash else DUMMY_PASSWORD_HASH
+    password_ok = await run_in_threadpool(verify_password, data.password, hashed)
+    if user is None or user.password_hash is None or not password_ok:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Felaktig e-post eller lösenord",
         )
-    if not verify_password(data.password, user.password_hash):
+    if not user.is_active:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Felaktig e-post eller lösenord",
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Kontot är spärrat – kontakta en administratör",
         )
 
     user.last_login_at = datetime.now(UTC)
@@ -138,7 +149,7 @@ async def create_first_admin(data: FirstAdminCreate) -> LocalLoginResponse:
         )
     user = await repo.create_local_user(
         name=data.name.strip(), email=email,
-        password_hash=hash_password(data.password), role="admin",
+        password_hash=await run_in_threadpool(hash_password, data.password), role="admin",
     )
     await repo.touch_user_login(user.id)
     return LocalLoginResponse(token=issue_local_token(user), expires_in_hours=cfg.LOCAL_TOKEN_TTL_HOURS)

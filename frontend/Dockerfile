@@ -7,6 +7,12 @@ COPY package*.json ./
 RUN npm ci
 
 COPY . .
+# The licence texts go with the build (served under /licenses/): NOTICE says
+# why the built frontend as a whole is GPL-3.0 (cytoscape-svg), and the GPL
+# text comes from the package itself. public/licenses/NOTICE.txt is a copy of
+# the repository's NOTICE (src/licenses.test.ts keeps them equal).
+RUN cp node_modules/cytoscape-svg/LICENSE public/licenses/cytoscape-svg-GPL-3.0.txt \
+    && test -s public/licenses/NOTICE.txt
 # Nothing installation-specific is baked in: Entra settings reach the browser
 # through /config.js, written by docker/40-ea-config.sh when nginx starts.
 RUN npm run build
@@ -30,6 +36,7 @@ ENV PORT=80 \
     NGINX_ENTRYPOINT_LOCAL_RESOLVERS=1
 COPY nginx.conf.template /etc/nginx/ea/default.conf.template
 COPY security-headers.conf /etc/nginx/ea/security-headers.conf
+COPY hsts-map.conf /etc/nginx/conf.d/00-ea-hsts.conf
 COPY docker/18-api-upstream.envsh /docker-entrypoint.d/18-api-upstream.envsh
 COPY docker/30-ea-nginx.sh /docker-entrypoint.d/30-ea-nginx.sh
 COPY docker/40-ea-config.sh /docker-entrypoint.d/40-ea-config.sh

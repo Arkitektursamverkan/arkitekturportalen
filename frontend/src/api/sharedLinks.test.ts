@@ -13,6 +13,13 @@ describe("isValidLinkUrl", () => {
       expect(isValidLinkUrl(url)).toBe(false);
     }
   });
+
+  it("refuses /\\host and control characters, which browsers read as another host", () => {
+    for (const url of ["/\\evil.example.org", "https://\\evil.example.org", "/sida\u0000", "/\t/evil.example.org", "/x\u0085"]) {
+      expect(isValidLinkUrl(url)).toBe(false);
+    }
+    expect(isValidLinkUrl("/a\\b")).toBe(true);
+  });
 });
 
 describe("linkAnchorProps", () => {

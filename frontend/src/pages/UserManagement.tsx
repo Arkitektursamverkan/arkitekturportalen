@@ -28,13 +28,18 @@ import {
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
 import KeyIcon from "@mui/icons-material/Key";
+import BlockIcon from "@mui/icons-material/Block";
+import LockOpenIcon from "@mui/icons-material/LockOpen";
+import LinkIcon from "@mui/icons-material/Link";
 import { useCurrentUser } from "@/api/me";
 import { useGroups } from "@/api/access";
 import { useNavigate } from "react-router-dom";
 import ProvisionUsersDialog from "@/components/users/ProvisionUsersDialog";
 import {
   useCreateLocalUser,
+  useLinkUserToEntra,
   useResetUserPassword,
+  useSetUserActive,
   useUpdateUserRole,
   useUsers,
   type AppUser,
@@ -50,6 +55,8 @@ const UserManagement: React.FC = () => {
   const navigate = useNavigate();
   const createLocal = useCreateLocalUser();
   const resetPwd = useResetUserPassword();
+  const setActive = useSetUserActive();
+  const linkEntra = useLinkUserToEntra();
   const [error, setError] = useState<string | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
   const [provisionOpen, setProvisionOpen] = useState(false);
@@ -64,6 +71,33 @@ const UserManagement: React.FC = () => {
       await updateRole.mutateAsync({ id: u.id, role: newRole });
     } catch (e) {
       setError(e instanceof Error ? e.message : "Kunde inte ändra roll");
+    }
+  };
+
+  const toggleActive = async (u: AppUser) => {
+    const blocking = u.is_active !== false;
+    if (blocking && !window.confirm(`Spärra ${u.name}? Kontot loggas ut direkt och kan inte logga in förrän spärren hävs.`)) return;
+    setError(null);
+    try {
+      await setActive.mutateAsync({ id: u.id, active: !blocking });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Kunde inte ändra spärren");
+    }
+  };
+
+  const linkToEntra = async (u: AppUser) => {
+    if (
+      !window.confirm(
+        `Koppla ${u.name} till Microsoft-inloggningen? Lösenordet tas bort, och nästa gång ${u.email} ` +
+          "loggar in med Microsoft kopplas kontot – med roll och grupper – till den identiteten.",
+      )
+    )
+      return;
+    setError(null);
+    try {
+      await linkEntra.mutateAsync(u.id);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Kunde inte koppla kontot");
     }
   };
 
@@ -158,6 +192,9 @@ const UserManagement: React.FC = () => {
                         {isMe && (
                           <Chip label="Du" size="small" variant="outlined" sx={{ height: 18, fontSize: 10 }} />
                         )}
+                        {u.is_active === false && (
+                          <Chip label="Spärrad" size="small" color="error" sx={{ height: 18, fontSize: 10 }} />
+                        )}
                       </Stack>
                     </TableCell>
                     <TableCell>
@@ -222,6 +259,27 @@ const UserManagement: React.FC = () => {
                           <IconButton size="small" onClick={() => setPwdResetUser(u)}>
                             <KeyIcon fontSize="small" />
                           </IconButton>
+                        </Tooltip>
+                      )}
+                      {u.is_local && (
+                        <Tooltip title="Koppla till Microsoft (tar bort lösenordet)">
+                          <IconButton size="small" onClick={() => linkToEntra(u)} disabled={linkEntra.isPending}>
+                            <LinkIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                      {!isMe && (
+                        <Tooltip title={u.is_active === false ? "Häv spärren" : "Spärra kontot"}>
+                          <span>
+                            <IconButton
+                              size="small"
+                              onClick={() => toggleActive(u)}
+                              disabled={setActive.isPending || (u.is_active !== false && isLastAdmin)}
+                              aria-label={u.is_active === false ? "Häv spärren" : "Spärra kontot"}
+                            >
+                              {u.is_active === false ? <LockOpenIcon fontSize="small" /> : <BlockIcon fontSize="small" />}
+                            </IconButton>
+                          </span>
                         </Tooltip>
                       )}
                     </TableCell>

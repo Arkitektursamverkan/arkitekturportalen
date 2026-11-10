@@ -15,6 +15,21 @@ _PLACEHOLDER_SECRETS = {
     "dev-local-secret-change-me",
 }
 
+# Database passwords that have shipped as defaults (docker-compose.yml, the
+# settings below). A database reachable with one is open to anyone who knows
+# this repository.
+_DEFAULT_DB_PASSWORDS = {"ea_pass", "ea_password"}
+
+
+def _url_password(url: str) -> str | None:
+    from urllib.parse import unquote, urlsplit
+
+    try:
+        password = urlsplit(url).password
+    except ValueError:
+        return None
+    return unquote(password) if password is not None else None
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
@@ -107,13 +122,20 @@ class Settings(BaseSettings):
         """Secrets that are empty, a known placeholder or too short to guess-proof.
 
         LOCAL_AUTH_SECRET signs login tokens and API_KEY acts as an admin, so a
-        known value lets anyone sign in as anyone. Anything but development/test
-        refuses to start with them (see main.lifespan)."""
+        known value lets anyone sign in as anyone. The database passwords are
+        checked against the defaults this repository once shipped (ea_pass,
+        ea_password). Anything but development/test refuses to start with them
+        (see main.lifespan)."""
         weak = []
         for name in ("API_KEY", "LOCAL_AUTH_SECRET"):
             value = getattr(self, name)
             if value in _PLACEHOLDER_SECRETS or len(value) < 32:
                 weak.append(name)
+        # The database passwords that docker-compose.yml used to default to.
+        if _url_password(self.DATABASE_URL) in _DEFAULT_DB_PASSWORDS:
+            weak.append("DATABASE_URL")
+        if self.EA_DB_ENGINE == "neo4j" and self.NEO4J_PASSWORD in _DEFAULT_DB_PASSWORDS | {""}:
+            weak.append("NEO4J_PASSWORD")
         return weak
 
     # ── PDF export (document footer constants) ───────────────────────────────

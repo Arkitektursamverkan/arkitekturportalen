@@ -10,6 +10,7 @@ isn't leaked.
 """
 from __future__ import annotations
 
+import os
 from typing import cast
 from urllib.parse import quote
 from uuid import UUID
@@ -27,6 +28,7 @@ from fastapi import (
     status,
 )
 
+from app.api.v1.node_content import ALLOWED_TYPES
 from app.auth import CurrentUser
 from app.dal.postgres_repository import PostgresRepository
 from app.dependencies import get_repository, require_editor, require_user
@@ -625,6 +627,16 @@ async def upload_file(
 ) -> FileRead:
     await _require_write(workspace_id, user)
 
+    # Samma vitlista som dokumenten på objekten: vad filen lämnas ut som avgörs
+    # här av filändelsen, aldrig av vad webbläsaren påstod vid uppladdningen.
+    filename = os.path.basename(file.filename or "").strip()[:255]
+    ext = os.path.splitext(filename)[1].lower()
+    if not filename or ext not in ALLOWED_TYPES:
+        raise HTTPException(
+            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            detail="Filtypen är inte tillåten. Tillåtna: " + ", ".join(sorted(ALLOWED_TYPES)),
+        )
+
     chunks: list[bytes] = []
     total = 0
     while chunk := await file.read(1024 * 1024):
@@ -641,8 +653,8 @@ async def upload_file(
     repo = _get_pg_repo()
     meta = await repo.workspaces.create_file(
         workspace_id,
-        filename=(file.filename or "fil")[:255],
-        content_type=(file.content_type or "application/octet-stream")[:150],
+        filename=filename,
+        content_type=ALLOWED_TYPES[ext],
         description=description,
         data=b"".join(chunks),
         uploaded_by=_actor(user),
@@ -683,14 +695,19 @@ async def download_file(
         raise HTTPException(status_code=404, detail="Filen finns inte")
     # RFC 5987 filename* keeps å/ä/ö intact; the plain filename is the fallback.
     ascii_name = row.filename.encode("ascii", "replace").decode("ascii").replace('"', "_")
+    # Typen tas från vitlistan, inte från den lagrade: filer som laddades upp
+    # före vitlistan kan ha sparats med vad webbläsaren påstod (t.ex. text/html).
+    ext = os.path.splitext(row.filename)[1].lower()
     return Response(
         content=row.data,
-        media_type=row.content_type or "application/octet-stream",
+        media_type=ALLOWED_TYPES.get(ext, "application/octet-stream"),
         headers={
             "Content-Disposition": (
                 f'attachment; filename="{ascii_name}"; '
                 f"filename*=UTF-8''{quote(row.filename)}"
-            )
+            ),
+            "X-Content-Type-Options": "nosniff",
+            "Cache-Control": "private, no-store",
         },
     )
 

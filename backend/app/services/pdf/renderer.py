@@ -2,8 +2,11 @@
 from __future__ import annotations
 
 from datetime import datetime
+from functools import cache
 from pathlib import Path
 from typing import Any
+from urllib.parse import unquote, urlsplit
+from urllib.request import url2pathname
 
 import structlog
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -80,6 +83,47 @@ def source_url_for_document(document_type: str) -> str | None:
     if path is None:
         return None
     return f"{settings.PDF_APP_BASE_URL}{path}"
+
+def url_allowed(url: str) -> bool:
+    """May WeasyPrint fetch this resource?
+
+    Only data: URIs (the logo) and files under this package's own templates
+    and static files. Everything else – http(s), other files on the server –
+    is refused, so that text in a document (a title, a principle) can never
+    make the PDF rendering fetch an address or read a file."""
+    parts = urlsplit(url)
+    scheme = parts.scheme.lower()
+    if scheme == "data":
+        return True
+    if scheme != "file" or parts.netloc not in ("", "localhost"):
+        return False
+    try:
+        path = Path(url2pathname(unquote(parts.path))).resolve()
+    except (OSError, ValueError):
+        return False
+    return path.is_relative_to(_PDF_DIR.resolve())
+
+
+@cache
+def _fetcher_class() -> Any:
+    from weasyprint.urls import URLFetcher  # local import — heavy native deps
+
+    class LocalOnlyURLFetcher(URLFetcher):  # type: ignore[misc]
+        """URLFetcher that refuses what url_allowed refuses. WeasyPrint
+        catches the error, logs it and leaves the resource out."""
+
+        def fetch(self, url: str, headers: Any = None) -> Any:
+            if not url_allowed(url):
+                raise ValueError(f"Resursen får inte hämtas vid PDF-rendering: {url[:200]}")
+            return super().fetch(url, headers)
+
+    return LocalOnlyURLFetcher
+
+
+def _url_fetcher() -> Any:
+    # A fresh fetcher per document: it keeps state between requests.
+    return _fetcher_class()(allowed_protocols=("data", "file"), allow_redirects=False)
+
 
 _jinja_env = Environment(
     loader=FileSystemLoader(_TEMPLATE_DIR),
@@ -254,7 +298,7 @@ def render_version_to_pdf(
     template = _jinja_env.get_template(template_file)
     html_str = template.render(**context)
 
-    pdf_bytes = HTML(string=html_str, base_url=str(_PDF_DIR)).write_pdf()
+    pdf_bytes = HTML(string=html_str, base_url=str(_PDF_DIR), url_fetcher=_url_fetcher()).write_pdf()
     log.info(
         "pdf.rendered",
         document_type=document_type,
@@ -275,7 +319,7 @@ def render_survey_report_pdf(report: dict[str, Any]) -> bytes:
         "css_url": (_STATIC_DIR / "style.css").as_uri(),
     }
     html_str = _jinja_env.get_template("survey_report.html").render(**context)
-    pdf_bytes = HTML(string=html_str, base_url=str(_PDF_DIR)).write_pdf()
+    pdf_bytes = HTML(string=html_str, base_url=str(_PDF_DIR), url_fetcher=_url_fetcher()).write_pdf()
     log.info(
         "pdf.survey_report_rendered",
         survey_id=report.get("survey_id"),

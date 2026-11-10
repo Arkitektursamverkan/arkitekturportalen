@@ -22,6 +22,10 @@ The portal's own source code, as published in this repository, remains under
 EUPL-1.2. Anyone who wants a frontend build that is EUPL-1.2 throughout can
 remove cytoscape-svg and the SVG export that depends on it.
 
+The arkitekturportalen-web image carries this notice and the GPL-3.0 text of
+cytoscape-svg with the build, served at /licenses/NOTICE.txt and
+/licenses/cytoscape-svg-GPL-3.0.txt.
+
 The backend and the arkitekturportalen-api image do not include cytoscape-svg.
 
 Other dependencies under copyleft licences

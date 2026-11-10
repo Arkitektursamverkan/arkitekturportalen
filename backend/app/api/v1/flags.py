@@ -93,6 +93,14 @@ async def respond_to_flag(
     user: CurrentUser = Depends(require_editor),
 ) -> NodeFlagRead:
     repo = _get_pg_repo()
+    # Flaggan måste höra till just den noden, och noden måste synas för
+    # användaren – annars 404, som om den inte fanns.
+    node = await get_repository().get_node(node_id)
+    if node is None:
+        raise HTTPException(status_code=404, detail="Flag not found")
+    await ensure_visible(user, node)
+    if not any(r.id == flag_id for r in await repo.list_node_flags(node_id)):
+        raise HTTPException(status_code=404, detail="Flag not found")
     row = await repo.respond_to_flag(flag_id=flag_id, response=data.response, responded_by=_identity(user))
     if row is None:
         raise HTTPException(status_code=404, detail="Flag not found")
