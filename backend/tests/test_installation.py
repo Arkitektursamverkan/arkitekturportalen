@@ -184,3 +184,71 @@ async def test_failed_request_is_not_learned(client):
         "/api/v1/finns-inte", headers={"Host": "portal.example.org", "X-Forwarded-Proto": "https"}
     )
     assert installation.portal_url() is None
+
+
+# ── The platform registers ──────────────────────────────────────────────────
+# REGRESSION: on Render the portal's service referred to the platform's and the
+# platform's to the portal's – every Blueprint sync ended in error. Now the
+# platform tells the portal where it is, and the portal refers to no one.
+
+async def test_platform_registers_with_webhook_secret(client, monkeypatch):
+    from app import modules
+    from app.platform_access import configured_url, key_for
+
+    monkeypatch.delenv("INTEGRATION_PLATFORM_URL", raising=False)
+    monkeypatch.setenv("INTEGRATION_PLATFORM_ADMIN_KEY", "plattformens-nyckel")
+    monkeypatch.delenv("INTEGRATION_PLATFORM_API_KEY", raising=False)
+    assert not modules.platform_configured()
+    r = await client.put(
+        "/api/v1/installation/plattform",
+        json={"url": "http://10.0.3.4:8000/api/v1"},
+        headers={"X-Installation-Secret": settings.SYNC_WEBHOOK_SECRET},
+    )
+    assert r.status_code == 200
+    assert r.json() == {"platform_url": "http://10.0.3.4:8000/api/v1", "in_use": True}
+    assert configured_url() == "http://10.0.3.4:8000/api/v1"
+    assert modules.platform_configured()
+    assert key_for("http://10.0.3.4:8000/api/v1", "") == "plattformens-nyckel"
+
+
+async def test_platform_registration_needs_credentials(client, monkeypatch):
+    monkeypatch.delenv("INTEGRATION_PLATFORM_URL", raising=False)
+    r = await client.put("/api/v1/installation/plattform", json={"url": "http://10.0.3.4:8000/api/v1"})
+    assert r.status_code == 401
+    r = await client.put(
+        "/api/v1/installation/plattform", json={"url": "http://10.0.3.4:8000/api/v1"},
+        headers={"X-Installation-Secret": "fel"},
+    )
+    assert r.status_code == 401
+    assert installation.platform_url() is None
+
+
+async def test_configured_platform_wins_over_registration(client, monkeypatch):
+    from app.platform_access import configured_url
+
+    monkeypatch.setenv("INTEGRATION_PLATFORM_URL", "http://plattform-api:8000/api/v1")
+    r = await client.put(
+        "/api/v1/installation/plattform", json={"url": "http://10.0.3.4:8000/api/v1"},
+        headers={"X-Installation-Secret": settings.SYNC_WEBHOOK_SECRET},
+    )
+    assert r.json()["in_use"] is False
+    assert configured_url() == "http://plattform-api:8000/api/v1"
+
+
+async def test_platform_registration_rejects_bad_url(client):
+    r = await client.put(
+        "/api/v1/installation/plattform", json={"url": "file:///etc/passwd"},
+        headers={"X-Installation-Secret": settings.SYNC_WEBHOOK_SECRET},
+    )
+    assert r.status_code == 422
+
+
+async def test_platform_registration_is_stored(repo, client):
+    await installation.load(repo._session_factory)
+    await client.put(
+        "/api/v1/installation/plattform", json={"url": "http://10.0.3.5:8000/api/v1"},
+        headers={"X-Installation-Secret": settings.SYNC_WEBHOOK_SECRET},
+    )
+    installation.reset()
+    await installation.load(repo._session_factory)
+    assert installation.platform_url() == "http://10.0.3.5:8000/api/v1"

@@ -155,7 +155,7 @@ async def test_plattformens_felkropp_visas_inte(monkeypatch):
         async def get(self, *_a, **_k):
             return Svar()
 
-    monkeypatch.setattr(arkflows, "PLATFORM_URL", "http://plattform.test/api/v1")
+    monkeypatch.setenv("INTEGRATION_PLATFORM_URL", "http://plattform.test/api/v1")
     monkeypatch.setattr(arkflows, "PLATFORM_API_KEY", "k")
     with pytest.raises(HTTPException) as fel:
         await arkflows._platform_get(Klient(), "/data/sources")

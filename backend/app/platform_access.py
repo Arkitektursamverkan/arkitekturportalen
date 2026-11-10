@@ -5,7 +5,8 @@ profiles). Left open, that is a way to make the server call any address – and
 to hand the installation's own platform key to it. So:
 
   * Only allowed addresses are called: the installation's own
-    INTEGRATION_PLATFORM_URL and, for an installation that really has more than
+    INTEGRATION_PLATFORM_URL (or, when it is not set, the address the platform
+    registered – app.services.installation) and, for an installation that really has more than
     one platform, the addresses in INTEGRATION_PLATFORM_ALLOWED_URLS (separated
     by commas). Anything else is refused before a request is made.
   * The installation's key (INTEGRATION_PLATFORM_API_KEY, or the admin key) goes
@@ -24,6 +25,7 @@ import os
 from urllib.parse import urlsplit
 
 from app.internal_url import api_base
+from app.services import installation
 
 
 class PlatformAddressError(ValueError):
@@ -31,8 +33,9 @@ class PlatformAddressError(ValueError):
 
 
 def configured_url() -> str:
-    """The installation's own platform, as an API base URL ("" when unset)."""
-    return api_base(os.environ.get("INTEGRATION_PLATFORM_URL"))
+    """The installation's own platform, as an API base URL ("" when unknown).
+    The environment wins; otherwise the address the platform registered."""
+    return api_base(os.environ.get("INTEGRATION_PLATFORM_URL")) or api_base(installation.platform_url())
 
 
 def installation_key() -> str:

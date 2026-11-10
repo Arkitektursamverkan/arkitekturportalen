@@ -8,7 +8,9 @@ the platform calls with the webhook secret it already shares with the portal
 (SYNC_WEBHOOK_SECRET) and gets everything but the secret.
 
 PUT /api/v1/installation/arkitekten is where Arkitekten registers its own
-address at startup.
+address at startup, PUT /api/v1/installation/plattform where the platform
+registers its internal API address (with the webhook secret it already has) –
+so that the portal's service needs no reference to the platform's.
 
 GET /api/v1/client-config is public: what the portal's web app needs before
 sign-in (the Entra ids are public in any SPA) when its /config.js leaves them
@@ -68,6 +70,29 @@ async def register_arkitekten(
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(e))
     response.headers["Cache-Control"] = "no-store"
     return installation.snapshot(include_secret=True)
+
+
+class PlatformRegistration(BaseModel):
+    url: str
+
+
+@router.put("/installation/plattform")
+async def register_platform(
+    data: PlatformRegistration,
+    response: Response,
+    x_api_key: Annotated[str | None, Header()] = None,
+    x_installation_secret: Annotated[str | None, Header()] = None,
+) -> dict[str, Any]:
+    _caller(x_api_key, x_installation_secret)
+    try:
+        url = await installation.register_platform(data.url)
+    except installation.InstallationError as e:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(e))
+    response.headers["Cache-Control"] = "no-store"
+    # Whether the portal uses it: INTEGRATION_PLATFORM_URL wins when it is set.
+    from app.platform_access import configured_url
+
+    return {"platform_url": url, "in_use": configured_url() == url}
 
 
 @router.get("/client-config")
