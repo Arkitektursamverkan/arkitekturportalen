@@ -9,6 +9,10 @@ funktioner, en ny korrigering för rättelser.
 
 - (inget än)
 
+## 0.16.0 – 2026-11-10
+
+- **Plattformen anmäler sin adress till portalen** (`PUT /api/v1/installation/plattform`, med `X-Installation-Secret` = `SYNC_WEBHOOK_SECRET` eller API-nyckeln). Portalen använder den när `INTEGRATION_PLATFORM_URL` inte är satt – modulen Arkitekten, processbilderna, import och synkprofiler. Satt `INTEGRATION_PLATFORM_URL` vinner alltid, så compose-installationer påverkas inte. På Render behöver portal-api därmed ingen referens till plattform-api: med referenser åt båda hållen slutade varje Blueprint-synk med fel.
+
 ## 0.15.1 – 2026-11-10
 
 - Portalen lär sig sin adress bara ur API-förfrågningar som kommit genom webben (`X-Forwarded-Proto`) och lyckats. På Render lärde den sig annars den privata tjänstens eget namn (`portal-api-….onrender.com`) ur Renders kontroll av en ny tjänst.

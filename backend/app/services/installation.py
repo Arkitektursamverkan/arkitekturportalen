@@ -15,6 +15,11 @@ process per installation, like the organisation settings):
 - **arkitekten_url** – Arkitekten's public address, registered by Arkitekten at
   startup (PUT /api/v1/installation/arkitekten). The portal's web links to it
   when ARKITEKTEN_URL is not set on the web.
+- **platform_url** – the Integration Platform's internal API address,
+  registered by the platform at startup (PUT /api/v1/installation/plattform).
+  Used when INTEGRATION_PLATFORM_URL is not set (app.platform_access). This way
+  the portal's service needs no reference to the platform's: on Render a
+  reference in each direction made every Blueprint sync end in error.
 
 Without PostgreSQL (the neo4j engine) the values live in the process only and
 are learned again after a restart."""
@@ -36,7 +41,8 @@ log = structlog.get_logger(__name__)
 
 PORTAL_URL = "portal_url"
 ARKITEKTEN_URL = "arkitekten_url"
-_KEYS = (PORTAL_URL, ARKITEKTEN_URL)
+PLATFORM_URL = "platform_url"
+_KEYS = (PORTAL_URL, ARKITEKTEN_URL, PLATFORM_URL)
 
 # Addresses the hosting platform gives every service; a custom domain is preferred.
 _PLATFORM_SUFFIXES = (".onrender.com",)
@@ -93,6 +99,11 @@ def portal_url() -> str | None:
 
 def arkitekten_url() -> str | None:
     return _values.get(ARKITEKTEN_URL) or None
+
+
+def platform_url() -> str | None:
+    """The address the platform registered (an API base URL), or None."""
+    return _values.get(PLATFORM_URL) or None
 
 
 # ── Learning the portal's own address ───────────────────────────────────────
@@ -194,6 +205,22 @@ async def register_arkitekten(value: Any) -> str:
     if previous != url:
         await _store(ARKITEKTEN_URL, url)
         log.info("installation.arkitekten_registered", url=url, previous=previous)
+    return url
+
+
+# ── The platform's registration ─────────────────────────────────────────────
+
+async def register_platform(value: Any) -> str:
+    """The platform's internal address, e.g. http://10.0.3.4:8000/api/v1.
+
+    Only the platform holds the shared secret this is guarded by, and the
+    address only receives the platform's own admin key – so a registration
+    cannot send the key anywhere the platform could not already read it."""
+    url = clean_url(value)
+    previous = _values.get(PLATFORM_URL)
+    if previous != url:
+        await _store(PLATFORM_URL, url)
+        log.info("installation.platform_registered", url=url, previous=previous)
     return url
 
 

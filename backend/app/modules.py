@@ -13,7 +13,6 @@ switched on.
 """
 from __future__ import annotations
 
-import os
 from dataclasses import dataclass
 
 from fastapi import HTTPException, status
@@ -53,7 +52,10 @@ _BY_KEY = {m.key: m for m in MODULES}
 
 
 def platform_configured() -> bool:
-    return bool(os.environ.get("INTEGRATION_PLATFORM_URL", "").strip())
+    """INTEGRATION_PLATFORM_URL is set, or the platform has registered itself."""
+    from app.platform_access import configured_url
+
+    return bool(configured_url())
 
 
 def unavailable_reason(key: str) -> str | None:

@@ -38,7 +38,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.access import get_optional_user, hidden_node_ids, load_policy
 from app.auth import CurrentUser
 from app.dependencies import get_repository, require_admin
-from app.internal_url import api_base
+from app.platform_access import configured_url
 
 logger = structlog.get_logger()
 
@@ -47,10 +47,12 @@ router = APIRouter(prefix="/arkflows", tags=["arkflows"])
 # Same environment variables as the existing platform integration (sync.py) —
 # one place to configure, not two.
 #
-# No default: where the platform lives depends on the installation. Empty =
-# the endpoints answer 503 and say what to configure.
-# A full URL, or the internal host:port a platform such as Render gives.
-PLATFORM_URL = api_base(os.environ.get("INTEGRATION_PLATFORM_URL"))
+# Where the platform is: INTEGRATION_PLATFORM_URL, or the address the platform
+# registered (Render) – read on every call, since a registration can come after
+# the start. Unknown = the endpoints answer 503 and say what to configure.
+def _platform_url() -> str:
+    return configured_url()
+
 # Without a separate read key the admin key reads too: it may everything the
 # read key may, and is already on the api service – so an installation (Render)
 # needs no step after the start to create one.
@@ -101,7 +103,7 @@ def _require_admin_key() -> str:
 
 
 def _require_key() -> str:
-    if not PLATFORM_URL:
+    if not _platform_url():
         raise HTTPException(
             503,
             "INTEGRATION_PLATFORM_URL is not configured — the portal does not "
@@ -119,7 +121,7 @@ def _require_key() -> str:
 
 async def _platform_get(client: httpx.AsyncClient, path: str, **params: Any) -> Any:
     resp = await client.get(
-        f"{PLATFORM_URL}{path}",
+        f"{_platform_url()}{path}",
         headers={"X-Api-Key": _require_key()},
         params=params or None,
     )
@@ -312,7 +314,7 @@ async def sync_arkflows() -> dict:
             )
         for flow_id in flow_ids:
             resp = await client.post(
-                f"{PLATFORM_URL}/flows/{quote(flow_id, safe='')}/execute",
+                f"{_platform_url()}/flows/{quote(flow_id, safe='')}/execute",
                 headers={"X-Api-Key": _require_admin_key()},
             )
             if resp.status_code >= 400:
