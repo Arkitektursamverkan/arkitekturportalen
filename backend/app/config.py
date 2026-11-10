@@ -47,6 +47,10 @@ class Settings(BaseSettings):
     # ── Entra ID auth ────────────────────────────────────────────────────────
     ENTRA_TENANT_ID: str = ""
     ENTRA_CLIENT_ID: str = ""
+    # Not used by the portal itself: Arkitekten (a confidential client of the
+    # same app registration) fetches it from GET /api/v1/installation, so that
+    # the installation's Entra settings are typed in at one place only.
+    ENTRA_CLIENT_SECRET: str = ""
     # Empty = anyone the Entra tenant signs in. Default for the organisation
     # settings (Administration), which override it once set there.
     ALLOWED_EMAIL_DOMAINS: str = ""
@@ -144,6 +148,8 @@ class Settings(BaseSettings):
     PDF_DOCUMENT_CATEGORY: str = "Rutiner"
     # Default organisation name for the organisation settings.
     PDF_ORG_NAME: str = ""
+    # The portal's public address (links in PDFs, Arkitekten's link back).
+    # Empty = learned from the requests (app.services.installation).
     PDF_APP_BASE_URL: str = ""
 
     @field_validator("DATABASE_URL")

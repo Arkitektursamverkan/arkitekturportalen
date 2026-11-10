@@ -7,7 +7,12 @@ funktioner, en ny korrigering för rättelser.
 
 ## Ej släppt
 
-- (inget än)
+- **Installationen konfigurerar sig själv** – för Render, där inget ska behöva skrivas in efter starten:
+  - Portalen lär sig sin publika adress ur förfrågningarna genom webben (Host och proxyns `X-Forwarded-Proto`) när `PDF_APP_BASE_URL` inte är satt – PDF-länkarna och Arkitektens länk tillbaka. Interna namn (utan punkt, IP-adresser, localhost) lärs aldrig, och en egen domän ersätts inte av `*.onrender.com`. Ny tabell `ea_installation` (migrering 0072).
+  - Arkitekten anmäler sin adress (`PUT /api/v1/installation/arkitekten`, API-nyckeln), och webben länkar dit när `ARKITEKTEN_URL` inte är satt på webben.
+  - `GET /api/v1/installation` ger installationens andra tjänster portalens och Arkitektens adresser och Entra-uppgifterna – med API-nyckeln (Arkitekten) även nya `ENTRA_CLIENT_SECRET`, med `X-Installation-Secret` = `SYNC_WEBHOOK_SECRET` (plattformen) allt utom den. Entra skrivs därmed in på portal-api och ingen annanstans.
+  - Webben hämtar Entra-uppgifterna och Arkitektens adress från nya publika `GET /api/v1/client-config` när `/config.js` lämnar dem tomma. Webbens egna värden vinner.
+  - Webbens nginx skickar proxyns `X-Forwarded-Proto` vidare till API:t i stället för sitt eget `http`.
 
 ## 0.14.0 – 2026-11-10
 

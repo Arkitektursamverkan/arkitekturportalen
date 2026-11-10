@@ -30,6 +30,7 @@ from app.api.v1 import (
     home_banners,
     home_blocks,
     import_,
+    installation,
     my_surveys,
     node_content,
     nodes,
@@ -77,6 +78,7 @@ api_router.include_router(search.router)
 api_router.include_router(seed.router)
 api_router.include_router(theme.router)
 api_router.include_router(org_settings.router)
+api_router.include_router(installation.router)
 api_router.include_router(csv_import.router)
 api_router.include_router(audit.router)
 api_router.include_router(backup.router)

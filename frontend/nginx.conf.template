@@ -27,6 +27,14 @@ map $request_method $ea_login_limit_key {
 }
 limit_req_zone $ea_login_limit_key zone=ea_login:10m rate=10r/m;
 
+# The scheme the browser used: the proxy in front (TLS at Render, Caddy) says
+# it in X-Forwarded-Proto, nginx itself only sees http. The API learns the
+# portal's own address from it and from Host (app.services.installation).
+map $http_x_forwarded_proto $ea_forwarded_proto {
+    "~*^\s*(?<ea_xfp>https?)\b"  $ea_xfp;
+    default                       $scheme;
+}
+
 server {
     listen ${PORT} default_server;
     server_name _;
@@ -57,7 +65,7 @@ ${REAL_IP_CONFIG}
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $remote_addr;
-        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Proto $ea_forwarded_proto;
         proxy_read_timeout 60s;
     }
 
@@ -70,7 +78,7 @@ ${REAL_IP_CONFIG}
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $remote_addr;
-        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Proto $ea_forwarded_proto;
         proxy_read_timeout 60s;
     }
 

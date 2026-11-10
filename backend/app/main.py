@@ -5,7 +5,7 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
 import structlog
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.router import api_router
@@ -76,6 +76,9 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         from app.services import org_settings
         if isinstance(repo, PostgresRepository):
             await org_settings.load(repo._session_factory)
+    from app.dal.postgres_repository import PostgresRepository as _Pg
+    from app.services import installation
+    await installation.load(repo._session_factory if isinstance(repo, _Pg) else None)
     log.info("app.started", db_engine=settings.EA_DB_ENGINE)
 
     yield
@@ -102,6 +105,18 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    @app.middleware("http")
+    async def learn_public_address(request: Request, call_next):  # type: ignore[no-untyped-def]
+        # The portal's own address, for PDF links and Arkitekten – only when
+        # PDF_APP_BASE_URL is not set (app.services.installation).
+        response = await call_next(request)
+        if response.status_code < 500:
+            from app.services import installation
+            await installation.learn_portal_url(
+                request.headers.get("host"), request.headers.get("x-forwarded-proto")
+            )
+        return response
 
     app.include_router(api_router)
     return app
