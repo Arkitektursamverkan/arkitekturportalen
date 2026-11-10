@@ -221,6 +221,7 @@ async def test_synk_skriver_till_avstangd_lista_och_ror_inte_andra_listor(client
             return Svar()
 
     monkeypatch.setattr(sync_api.httpx, "AsyncClient", Klient)
+    monkeypatch.setenv("INTEGRATION_PLATFORM_URL", "http://x")
     profil = sync_api.SyncProfile(
         flow_id="f1", node_type="CustomObject:leverantorer", external_source_label="REST",
         platform_url="http://x", platform_api_key="k", mappings=[{"source_field": "n", "target": "name"}],

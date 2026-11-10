@@ -1,0 +1,43 @@
+Arkitekturportalen
+Copyright the contributors to Arkitekturportalen (Arkitektursamverkan)
+
+The source code in this repository is licensed under the European Union
+Public Licence, version 1.2 (EUPL-1.2) – see LICENSE.
+
+Licensing of the built frontend
+-------------------------------
+
+The frontend uses cytoscape-svg (SVG export of the graph,
+frontend/src/components/graph/GraphControls.tsx), which is licensed under the
+GNU General Public License, version 3 (GPL-3.0). The production build of the
+frontend (frontend/dist, and the arkitekturportalen-web container image that
+contains it) bundles cytoscape-svg together with the portal's own code.
+
+That combined work is therefore distributed as a whole under GPL-3.0. This is
+permitted by the EUPL-1.2: its Article 5 and Appendix ("Compatible Licences")
+allow a work that combines EUPL-1.2 code with code under a compatible licence –
+GPL-3.0 is among them – to be distributed under that compatible licence.
+
+The portal's own source code, as published in this repository, remains under
+EUPL-1.2. Anyone who wants a frontend build that is EUPL-1.2 throughout can
+remove cytoscape-svg and the SVG export that depends on it.
+
+The backend and the arkitekturportalen-api image do not include cytoscape-svg.
+
+Other dependencies under copyleft licences
+------------------------------------------
+
+None of these change the licence of the portal or its builds; they are listed
+so that the obligations are known:
+
+  frontend  dompurify      MPL-2.0 OR Apache-2.0 (used under Apache-2.0)
+  backend   certifi        MPL-2.0 (file-level copyleft; used unmodified)
+  backend   pyphen         GPL-2.0+ OR LGPL-2.1+ OR MPL-1.1 (used under
+                           LGPL-2.1+ / MPL-1.1, unmodified; via WeasyPrint)
+
+The container images also contain system libraries from their Debian and
+Alpine base images (for example cairo and pango, LGPL-2.1, used by WeasyPrint
+for the PDF export), under their own licences.
+
+All other runtime dependencies are under permissive licences (MIT, BSD,
+Apache-2.0, ISC and similar).

@@ -3,15 +3,15 @@ import { fetchSharePointPdf, isSharePointUrl, shareId } from "./sharepoint";
 
 vi.mock("@/auth/graphToken", () => ({ acquireGraphToken: vi.fn().mockResolvedValue("biljett") }));
 
-const LANK = "https://hfab.sharepoint.com/:b:/s/arkitektur/EabcDEF?e=x1";
+const LANK = "https://contoso.sharepoint.com/:b:/s/arkitektur/EabcDEF?e=x1";
 
 describe("SharePoint-länkar", () => {
   it("känner igen SharePoint och OneDrive för företag", () => {
     expect(isSharePointUrl(LANK)).toBe(true);
-    expect(isSharePointUrl("https://hfab-my.sharepoint.com/personal/a/Documents/x.pdf")).toBe(true);
+    expect(isSharePointUrl("https://contoso-my.sharepoint.com/personal/a/Documents/x.pdf")).toBe(true);
     expect(isSharePointUrl("https://example.com/x.pdf")).toBe(false);
     expect(isSharePointUrl("https://sharepoint.com.example.com/x.pdf")).toBe(false);
-    expect(isSharePointUrl("http://hfab.sharepoint.com/x.pdf")).toBe(false);
+    expect(isSharePointUrl("http://contoso.sharepoint.com/x.pdf")).toBe(false);
     expect(isSharePointUrl("inte en adress")).toBe(false);
     expect(isSharePointUrl(null)).toBe(false);
   });
@@ -21,7 +21,7 @@ describe("SharePoint-länkar", () => {
     expect(shareId("https://onedrive.live.com/redir?resid=1231244193912!12&authKey=1201919!12921!1")).toBe(
       "u!aHR0cHM6Ly9vbmVkcml2ZS5saXZlLmNvbS9yZWRpcj9yZXNpZD0xMjMxMjQ0MTkzOTEyITEyJmF1dGhLZXk9MTIwMTkxOSExMjkyMSEx",
     );
-    expect(shareId("https://hfab.sharepoint.com/Delade dokument/Å.pdf")).toMatch(/^u![A-Za-z0-9_-]+$/);
+    expect(shareId("https://contoso.sharepoint.com/Delade dokument/Å.pdf")).toMatch(/^u![A-Za-z0-9_-]+$/);
   });
 });
 

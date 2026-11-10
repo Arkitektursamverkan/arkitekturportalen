@@ -6,11 +6,14 @@ Each profile maps an Integration Platform flow to EA node type + field mappings.
 """
 from __future__ import annotations
 
+import hashlib
 import hmac
 import json
 import os
+import time
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote
 
 import httpx
 import structlog
@@ -23,7 +26,7 @@ from app.dal.postgres_repository import SYNC_AUDIT_USER
 from app.dependencies import get_repository, require_admin
 from app.domain_lists import LIST_KEY, sync_target
 from app.domain_lists import parse as parse_lists
-from app.internal_url import api_base
+from app.platform_access import PlatformAddressError, key_for, resolve
 from app.schemas.common import ExternalSource, NodeType
 from app.schemas.node import NodeCreate, NodeUpdate
 from app.services import org_settings
@@ -34,16 +37,18 @@ router = APIRouter(prefix="/sync", tags=["sync"])
 
 SYNC_PROFILES_PATH = Path(os.environ.get("SYNC_PROFILES_PATH", "/app/sync_data/sync_profiles.json"))
 
-# A full URL, or the internal host:port a platform such as Render gives.
-PLATFORM_URL = api_base(os.environ.get("INTEGRATION_PLATFORM_URL"))
-# The admin key reads too, when no separate read key is set (as in arkflows).
-PLATFORM_API_KEY = (
-    os.environ.get("INTEGRATION_PLATFORM_API_KEY")
-    or os.environ.get("INTEGRATION_PLATFORM_ADMIN_KEY", "")
-)
+# Where a profile may point and which key goes there: app.platform_access.
+
+# How far a signed webhook's timestamp may be from the portal's clock, either
+# way – a captured call cannot be replayed later than this.
+WEBHOOK_MAX_SKEW_SECONDS = 300
 
 
 # ── Sync profile persistence ────────────────────────────────────────────────
+
+class SyncError(Exception):
+    """A sync that could not run; the message is safe to show the caller."""
+
 
 class SyncProfile(BaseModel):
     flow_id: str
@@ -119,13 +124,15 @@ def _with_parent(attributes: dict[str, Any], parent_id: str) -> dict[str, Any]:
 
 async def _run_sync(profile: SyncProfile, repo: GraphRepository) -> dict[str, Any]:
     """Pull data from Integration Platform and upsert into EA."""
-    url = profile.platform_url or PLATFORM_URL
-    api_key = profile.platform_api_key or PLATFORM_API_KEY
-
-    if not url:
-        raise ValueError("No URL configured for Integration Platform (INTEGRATION_PLATFORM_URL)")
+    # A profile saved before the address check (or an allow-list that has
+    # since shrunk) must not reach anywhere else either.
+    try:
+        url = resolve(profile.platform_url)
+    except PlatformAddressError as exc:
+        raise SyncError(str(exc)) from exc
+    api_key = key_for(url, profile.platform_api_key)
     if not api_key:
-        raise ValueError("No API key configured for Integration Platform")
+        raise SyncError("Ingen API-nyckel för Integrationsplattformen")
 
     # Fetch all records
     all_records: list[dict] = []
@@ -133,12 +140,16 @@ async def _run_sync(profile: SyncProfile, repo: GraphRepository) -> dict[str, An
     async with httpx.AsyncClient(timeout=30.0) as client:
         while True:
             resp = await client.get(
-                f"{url}/data/{profile.flow_id}/records",
+                f"{url}/data/{quote(profile.flow_id, safe='')}/records",
                 headers={"X-Api-Key": api_key},
                 params={"page": page, "page_size": 500},
             )
             if resp.status_code != 200:
-                raise ValueError(f"Platform API error ({resp.status_code}): {resp.text[:300]}")
+                # The platform's own error text stays in the log: it may
+                # describe the platform's inside.
+                log.warning("sync.platform_error", flow_id=profile.flow_id,
+                            status=resp.status_code, body=resp.text[:500])
+                raise SyncError(f"Integrationsplattformen svarade med fel ({resp.status_code})")
             data = resp.json()
             all_records.extend(data.get("records", []))
             if page * data.get("page_size", 500) >= data.get("total", 0):
@@ -351,13 +362,14 @@ async def receive_sync_webhook(
     secret = settings.SYNC_WEBHOOK_SECRET
     if not secret:
         raise HTTPException(status_code=503, detail="Webhooken är avstängd: SYNC_WEBHOOK_SECRET är inte satt")
-    sent = request.headers.get("X-Webhook-Secret", "")
-    if not hmac.compare_digest(sent.encode(), secret.encode()):
-        raise HTTPException(status_code=401, detail="Fel eller saknad webhook-hemlighet")
+    body = await request.body()
+    _verify_webhook(request, body, secret)
 
     try:
-        payload = await request.json()
+        payload = json.loads(body)
     except Exception:
+        raise HTTPException(status_code=400, detail="Invalid JSON payload")
+    if not isinstance(payload, dict):
         raise HTTPException(status_code=400, detail="Invalid JSON payload")
 
     flow_id = payload.get("flow_id")
@@ -381,9 +393,47 @@ async def receive_sync_webhook(
     try:
         result = await _run_sync(profile, repo)
         return {"status": "synced", **result}
+    except SyncError as exc:
+        log.error("sync.error", flow_id=flow_id, error=str(exc))
+        raise HTTPException(status_code=502, detail=f"Synkningen misslyckades: {exc}")
     except Exception as exc:
         log.error("sync.error", flow_id=flow_id, error=str(exc))
-        raise HTTPException(status_code=500, detail=f"Sync failed: {exc}")
+        raise HTTPException(status_code=500, detail="Synkningen misslyckades")
+
+
+def _verify_webhook(request: Request, body: bytes, secret: str) -> None:
+    """The platform signs each call: X-Webhook-Signature is
+    sha256=HMAC-SHA256(secret, f"{timestamp}." + body) and X-Webhook-Timestamp
+    the unix time it was signed at. The secret itself never travels, and a
+    captured call goes stale within WEBHOOK_MAX_SKEW_SECONDS.
+
+    A platform from before signing sends the secret in X-Webhook-Secret. That
+    is still let in, so the two can be upgraded in either order, but logged: a
+    current platform never sends the secret, so seeing it means an old one."""
+    signature = request.headers.get("X-Webhook-Signature")
+    if signature is not None:
+        timestamp = request.headers.get("X-Webhook-Timestamp", "")
+        try:
+            signed_at = int(timestamp)
+        except ValueError:
+            raise HTTPException(status_code=401, detail="Fel eller saknad webhook-signatur")
+        if abs(time.time() - signed_at) > WEBHOOK_MAX_SKEW_SECONDS:
+            raise HTTPException(status_code=401, detail="Webhook-anropet är för gammalt")
+        expected = "sha256=" + hmac.new(
+            secret.encode(), f"{signed_at}.".encode() + body, hashlib.sha256,
+        ).hexdigest()
+        if not hmac.compare_digest(signature.encode(), expected.encode()):
+            raise HTTPException(status_code=401, detail="Fel eller saknad webhook-signatur")
+        return
+
+    sent = request.headers.get("X-Webhook-Secret")
+    if sent is None or not hmac.compare_digest(sent.encode(), secret.encode()):
+        raise HTTPException(status_code=401, detail="Fel eller saknad webhook-hemlighet")
+    log.warning(
+        "sync.webhook_static_secret",
+        message="Webhooken kom med det statiska X-Webhook-Secret – föråldrat. "
+        "Uppgradera Integrationsplattformen så att den signerar anropen.",
+    )
 
 
 # ── Profile CRUD ─────────────────────────────────────────────────────────────
@@ -401,15 +451,33 @@ async def list_profiles():
 @router.post("/profiles", dependencies=[Depends(require_admin)])
 async def create_or_update_profile(profile: SyncProfile):
     """Create or update a sync profile for a flow."""
+    try:
+        url = resolve(profile.platform_url)
+    except PlatformAddressError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
     profiles = _load_profiles()
     existing = profiles.get(profile.flow_id)
-    if existing and (not profile.platform_api_key or is_masked(profile.platform_api_key)):
-        profile = profile.model_copy(update={"platform_api_key": existing.platform_api_key})
-    elif is_masked(profile.platform_api_key):
-        raise HTTPException(status_code=422, detail="Ange plattformens API-nyckel")
+    if not profile.platform_api_key or is_masked(profile.platform_api_key):
+        # Keeping the stored key is only for the address it was given for:
+        # pointing a profile elsewhere must not carry the key along.
+        if existing and _same_address(existing.platform_url, url):
+            profile = profile.model_copy(update={"platform_api_key": existing.platform_api_key})
+        elif is_masked(profile.platform_api_key):
+            raise HTTPException(status_code=422, detail="Ange plattformens API-nyckel")
+        else:
+            profile = profile.model_copy(update={"platform_api_key": ""})
+        if not key_for(url, profile.platform_api_key):
+            raise HTTPException(status_code=422, detail="Ange plattformens API-nyckel")
     profiles[profile.flow_id] = profile
     _save_profiles(profiles)
     return {"status": "ok", "flow_id": profile.flow_id}
+
+
+def _same_address(stored: str, url: str) -> bool:
+    try:
+        return resolve(stored) == url
+    except PlatformAddressError:
+        return False
 
 
 @router.delete("/profiles/{flow_id}", dependencies=[Depends(require_admin)])
@@ -430,5 +498,7 @@ async def manual_sync(flow_id: str, repo: GraphRepository = Depends(get_reposito
     profile = profiles.get(flow_id)
     if not profile:
         raise HTTPException(status_code=404, detail="Profile not found")
-    result = await _run_sync(profile, repo)
-    return result
+    try:
+        return await _run_sync(profile, repo)
+    except SyncError as exc:
+        raise HTTPException(status_code=502, detail=str(exc))

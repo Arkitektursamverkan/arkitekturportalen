@@ -420,9 +420,9 @@ class Neo4jRepository(GraphRepository):
                 """
                 MATCH (app:EANode {type:'Application'})-[:EA_REL {type:'SUPPORTS'}]->
                   (p:EANode {type:'Process', archived:false})
-                WITH p, collect(app.name) AS app_names, count(app) AS cnt
+                WITH p, collect(app.name) AS app_names, collect(app.id) AS app_ids, count(app) AS cnt
                 WHERE cnt > 1
-                RETURN p.id AS id, p.name AS name, cnt AS app_count, app_names
+                RETURN p.id AS id, p.name AS name, cnt AS app_count, app_names, app_ids
                 ORDER BY cnt DESC
                 """
             )
@@ -432,9 +432,9 @@ class Neo4jRepository(GraphRepository):
                 """
                 MATCH (app:EANode {type:'Application'})-[:EA_REL {type:'HANDLES'}]->
                   (io:EANode {type:'InformationObject', archived:false})
-                WITH io, collect(app.name) AS app_names, count(app) AS cnt
+                WITH io, collect(app.name) AS app_names, collect(app.id) AS app_ids, count(app) AS cnt
                 WHERE cnt > 1
-                RETURN io.id AS id, io.name AS name, cnt AS app_count, app_names
+                RETURN io.id AS id, io.name AS name, cnt AS app_count, app_names, app_ids
                 ORDER BY cnt DESC
                 """
             )

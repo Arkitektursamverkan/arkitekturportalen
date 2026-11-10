@@ -4,15 +4,15 @@ import type { GraphNode } from "@/types/graph";
  * Structural pages in the process hierarchy.
  *
  * The 2C8 model mixes two things under one node type: pages that group other
- * processes ("2.1 Medborgare", "3.2.1 Förvalta fastighet – förvaltning") and
- * the processes that describe actual work ("2.2.1 Uthyrning ordinarie"). Only
+ * processes ("2 Kärnprocesser", "2.1 Leverera tjänst") and
+ * the processes that describe actual work ("2.1.1 Ta emot beställning"). Only
  * the latter can be supported by an application, so counting the grouping
  * pages as uncovered processes invents gaps that do not exist.
  *
  * A page is structural when either is true:
  *
  *   - `is_structure` is set — the manual mark in Processutforskaren, which is
- *     how a childless page like "0.1 Symbolförklaring" gets flagged;
+ *     how a childless page like "0.1 Läsanvisning" gets flagged;
  *   - it has at least one child. A node with children is a container by
  *     construction, and deriving this beats storing it: importing a new
  *     sub-process turns its parent into a container, and a stored flag would

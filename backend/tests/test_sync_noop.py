@@ -74,7 +74,7 @@ async def test_resync_of_processes_is_quiet(repo, monkeypatch):
     flow_id = f"flow-{uuid.uuid4()}"
     records = [
         {"external_id": "1", "data": {"name": "Förvalta", "prefix": f"{flow_id}-1", "parent_prefix": ""}},
-        {"external_id": "2", "data": {"name": "Felanmälan", "prefix": f"{flow_id}-1.1", "parent_prefix": f"{flow_id}-1"}},
+        {"external_id": "2", "data": {"name": "Ärendemottagning", "prefix": f"{flow_id}-1.1", "parent_prefix": f"{flow_id}-1"}},
         {"external_id": "3", "data": {"name": "Besiktning", "prefix": f"{flow_id}-1.2", "parent_name": "Förvalta"}},
     ]
 
@@ -85,7 +85,7 @@ async def test_resync_of_processes_is_quiet(repo, monkeypatch):
         async def get(self, *a, **kw): return _FakeResponse(records)
 
     monkeypatch.setattr(sync_module.httpx, "AsyncClient", FakeClient)
-    monkeypatch.setattr(sync_module, "PLATFORM_URL", "http://platform.test/api/v1")
+    monkeypatch.setenv("INTEGRATION_PLATFORM_URL", "http://platform.test/api/v1")
     profile = SyncProfile(
         flow_id=flow_id, node_type="Process", external_source_label="SHAREPOINT", platform_api_key="k",
         mappings=[
@@ -100,7 +100,7 @@ async def test_resync_of_processes_is_quiet(repo, monkeypatch):
     procs = {p.name: p for p in await repo.list_nodes(external_source="SHAREPOINT", limit=10000)
              if p.external_id and p.external_id.startswith(f"{flow_id}:")}
     root = str(procs["Förvalta"].id)
-    assert procs["Felanmälan"].attributes.get("parent_id") == root
+    assert procs["Ärendemottagning"].attributes.get("parent_id") == root
     assert procs["Besiktning"].attributes.get("parent_id") == root
     first_run_updates = await _update_rows_for(repo, f"{flow_id}:")
 
@@ -109,7 +109,7 @@ async def test_resync_of_processes_is_quiet(repo, monkeypatch):
     assert await _update_rows_for(repo, f"{flow_id}:") == first_run_updates
     procs = {p.name: p for p in await repo.list_nodes(external_source="SHAREPOINT", limit=10000)
              if p.external_id and p.external_id.startswith(f"{flow_id}:")}
-    assert procs["Felanmälan"].attributes == {"prefix": f"{flow_id}-1.1", "parent_id": root}
+    assert procs["Ärendemottagning"].attributes == {"prefix": f"{flow_id}-1.1", "parent_id": root}
     assert procs["Besiktning"].attributes.get("parent_id") == root
 
 

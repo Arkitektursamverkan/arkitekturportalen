@@ -911,7 +911,8 @@ class PostgresRepository(GraphRepository):
         async with self._session_factory() as s:
             q = text(f"""
                 SELECT n.id::text, n.name, COUNT(e.source_id) AS app_count,
-                       ARRAY_AGG(a.name ORDER BY a.name) AS app_names
+                       ARRAY_AGG(a.name ORDER BY a.name) AS app_names,
+                       ARRAY_AGG(a.id::text ORDER BY a.name) AS app_ids
                 FROM ea_nodes n
                 JOIN ea_edges e ON e.target_id = n.id AND e.type = 'SUPPORTS'
                 JOIN ea_nodes a ON a.id = e.source_id AND a.type = 'Application'
@@ -925,7 +926,8 @@ class PostgresRepository(GraphRepository):
 
             q2 = text("""
                 SELECT n.id::text, n.name, COUNT(e.source_id) AS app_count,
-                       ARRAY_AGG(a.name ORDER BY a.name) AS app_names
+                       ARRAY_AGG(a.name ORDER BY a.name) AS app_names,
+                       ARRAY_AGG(a.id::text ORDER BY a.name) AS app_ids
                 FROM ea_nodes n
                 JOIN ea_edges e ON e.target_id = n.id AND e.type = 'HANDLES'
                 JOIN ea_nodes a ON a.id = e.source_id AND a.type = 'Application'

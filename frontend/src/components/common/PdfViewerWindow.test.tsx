@@ -27,9 +27,9 @@ describe("PDF-fönstret", () => {
 
   it("visar felet och länken till källan", async () => {
     render(
-      <PdfViewerWindow source={source(() => Promise.reject(new Error("Ingen behörighet")), "https://hfab.sharepoint.com/x")} onClose={() => {}} />,
+      <PdfViewerWindow source={source(() => Promise.reject(new Error("Ingen behörighet")), "https://contoso.sharepoint.com/x")} onClose={() => {}} />,
     );
     expect(await screen.findByText("Ingen behörighet")).toBeTruthy();
-    expect(screen.getAllByRole("link").some((a) => a.getAttribute("href") === "https://hfab.sharepoint.com/x")).toBe(true);
+    expect(screen.getAllByRole("link").some((a) => a.getAttribute("href") === "https://contoso.sharepoint.com/x")).toBe(true);
   });
 });

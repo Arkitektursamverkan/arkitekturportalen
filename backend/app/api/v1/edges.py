@@ -61,7 +61,9 @@ async def update_edge_note(
     data: EdgeUpdate,
     user: CurrentUser = Depends(require_user),
 ) -> EdgeRead:
-    await _visible_edge(edge_id, user)
+    # A note is a change to the edge like any other: same right as the rest.
+    existing = await _visible_edge(edge_id, user)
+    await _require_write(user, existing.source_id, existing.target_id)
     repo = get_repository()
     edge = await repo.update_edge_note(edge_id, data.note)
     if not edge:

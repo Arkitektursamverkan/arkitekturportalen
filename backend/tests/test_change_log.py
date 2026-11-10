@@ -106,7 +106,7 @@ async def test_bara_arkitektur_och_admin_skriver(client, api_headers, repo):
 @pytest.mark.asyncio
 async def test_krock_med_verksamhetspost_kraver_aktivt_val(client, api_headers, repo):
     momentum = await _nod(client, api_headers, "Application", "Momentum – krocktest")
-    process = await _nod(client, api_headers, "Process", "Uthyrning – krocktest")
+    process = await _nod(client, api_headers, "Process", "Leverans – krocktest")
     post = {
         "title": "Nyckelutlämning krocktest", "recurrence": "monthly_first_workday", "start_date": "2026-01-01",
         "start_time": "08:00", "end_time": "17:00", "change_freeze": True, "node_ids": [momentum],

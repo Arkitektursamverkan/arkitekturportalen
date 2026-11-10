@@ -60,7 +60,7 @@ function Figur({ figur }: { figur: ScenFigur }) {
 
 interface Props {
   scen: Scen;
-  /** Shown above the canvas, e.g. "2.2.7 Uthyrning · version 1.0". */
+  /** Shown above the canvas, e.g. "2.1.1 Ta emot beställning · version 1.0". */
   caption?: string;
   /** What the process does — published with the flow from Arkitekten. */
   beskrivning?: string;

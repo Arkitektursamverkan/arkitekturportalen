@@ -1,8 +1,8 @@
 """Import from the Integration Platform — fetch data and upsert nodes with field mapping."""
 from __future__ import annotations
 
-import os
 from typing import Any
+from urllib.parse import quote
 
 import httpx
 import structlog
@@ -14,7 +14,7 @@ from app.dal.graph_repository import GraphRepository
 from app.dependencies import get_repository, require_admin, require_user
 from app.domain_lists import CUSTOM_TYPE, LIST_KEY, sync_target
 from app.domain_lists import parse as parse_lists
-from app.internal_url import api_base
+from app.platform_access import PlatformAddressError, key_for, resolve
 from app.schemas.common import ExternalSource, NodeType
 from app.schemas.node import NodeCreate
 from app.services import org_settings
@@ -23,23 +23,38 @@ log = structlog.get_logger(__name__)
 
 router = APIRouter(prefix="/import/platform", tags=["platform-import"])
 
-# A full URL, or the internal host:port a platform such as Render gives.
-PLATFORM_URL = api_base(os.environ.get("INTEGRATION_PLATFORM_URL"))
-
-
 class _PlatformTarget(BaseModel):
     """Base for requests aimed at the platform: an empty URL means the
-    installation's own INTEGRATION_PLATFORM_URL."""
+    installation's own INTEGRATION_PLATFORM_URL. Only allowed platforms are
+    accepted (app.platform_access) – anything else is a 422 before any call."""
 
     platform_url: str = Field(default="", validate_default=True, description="Integration Platform API base URL")
 
     @field_validator("platform_url")
     @classmethod
-    def _installation_default(cls, v: str) -> str:
-        url = (v.strip() or PLATFORM_URL).rstrip("/")
-        if not url:
-            raise ValueError("Ange Integrationsplattformens adress – INTEGRATION_PLATFORM_URL är inte satt")
-        return url
+    def _allowed_platform(cls, v: str) -> str:
+        try:
+            return resolve(v)
+        except PlatformAddressError as exc:
+            raise ValueError(str(exc)) from exc
+
+
+class PlatformCallError(Exception):
+    """The platform could not be reached or answered with an error. The
+    message is generic; the details are in the server log."""
+
+
+def _platform_error(resp: httpx.Response, what: str) -> PlatformCallError:
+    # The platform's error text stays in the log – it may describe its inside.
+    log.warning("platform.import.platform_error", what=what, status=resp.status_code, body=resp.text[:500])
+    return PlatformCallError(f"Integrationsplattformen svarade med fel ({resp.status_code})")
+
+
+def _http_error(exc: PlatformCallError | httpx.HTTPError) -> HTTPException:
+    if isinstance(exc, httpx.HTTPError):
+        log.warning("platform.import.unreachable", error=str(exc))
+        return HTTPException(status_code=502, detail="Kan inte nå Integrationsplattformen")
+    return HTTPException(status_code=502, detail=str(exc))
 
 
 # ── Schemas ───────────────────────────────────────────────────────────────────
@@ -84,12 +99,12 @@ async def _fetch_platform_records(url: str, api_key: str, flow_id: str) -> list[
     async with httpx.AsyncClient(timeout=30.0) as client:
         while True:
             resp = await client.get(
-                f"{url}/data/{flow_id}/records",
+                f"{url}/data/{quote(flow_id, safe='')}/records",
                 headers={"X-Api-Key": api_key},
                 params={"page": page, "page_size": 500},
             )
             if resp.status_code != 200:
-                raise ValueError(f"Platform API error ({resp.status_code}): {resp.text[:300]}")
+                raise _platform_error(resp, "records")
             data = resp.json()
             records = data.get("records", [])
             all_records.extend(records)
@@ -133,13 +148,20 @@ async def list_platform_sources(body: PlatformConnectionInfo):
         async with httpx.AsyncClient(timeout=10.0) as client:
             resp = await client.get(
                 f"{body.platform_url}/data/sources",
-                headers={"X-Api-Key": body.platform_api_key},
+                headers={"X-Api-Key": key_for(body.platform_url, body.platform_api_key)},
             )
             if resp.status_code != 200:
-                raise HTTPException(status_code=resp.status_code, detail=f"Platform API error: {resp.text[:300]}")
-            return resp.json()
-    except httpx.ConnectError:
-        raise HTTPException(status_code=502, detail=f"Cannot connect to Integration Platform at {body.platform_url}")
+                raise _platform_error(resp, "sources")
+            sources = resp.json()
+    except (PlatformCallError, httpx.HTTPError) as exc:
+        raise _http_error(exc)
+    # Only what the import wizard shows, in the form it expects – nothing
+    # else the platform might say is passed on.
+    try:
+        return [PlatformSourceInfo.model_validate(s) for s in sources]
+    except Exception:
+        log.warning("platform.import.bad_sources", body=str(sources)[:500])
+        raise HTTPException(status_code=502, detail="Oväntat svar från Integrationsplattformen")
 
 
 class PlatformFieldsRequest(_PlatformTarget):
@@ -156,18 +178,23 @@ async def get_source_fields(body: PlatformFieldsRequest):
         profile = stored_profile(body.flow_id)
         if not profile or not profile.platform_api_key:
             raise HTTPException(status_code=404, detail="Ingen sparad nyckel för flödet")
-        body = PlatformFieldsRequest(
-            platform_url=profile.platform_url, platform_api_key=profile.platform_api_key, flow_id=body.flow_id,
-        )
+        # The profile's address goes through the same check: one saved before
+        # the check existed may point anywhere.
+        try:
+            body = PlatformFieldsRequest(
+                platform_url=profile.platform_url, platform_api_key=profile.platform_api_key, flow_id=body.flow_id,
+            )
+        except ValueError:
+            raise HTTPException(status_code=422, detail="Profilens adress är inte en tillåten integrationsplattform")
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
             resp = await client.get(
-                f"{body.platform_url}/data/{body.flow_id}/records",
-                headers={"X-Api-Key": body.platform_api_key},
+                f"{body.platform_url}/data/{quote(body.flow_id, safe='')}/records",
+                headers={"X-Api-Key": key_for(body.platform_url, body.platform_api_key)},
                 params={"page": 1, "page_size": 10},
             )
             if resp.status_code != 200:
-                raise HTTPException(status_code=resp.status_code, detail=f"Platform API error: {resp.text[:300]}")
+                raise _platform_error(resp, "fields")
 
             records = resp.json().get("records", [])
             # Collect all unique field names from the data
@@ -185,8 +212,8 @@ async def get_source_fields(body: PlatformFieldsRequest):
                 ],
                 "record_count": resp.json().get("total", 0),
             }
-    except httpx.ConnectError:
-        raise HTTPException(status_code=502, detail=f"Cannot connect to Integration Platform at {body.platform_url}")
+    except (PlatformCallError, httpx.HTTPError) as exc:
+        raise _http_error(exc)
 
 
 @router.get("/node-types", dependencies=[Depends(require_user)])
@@ -308,10 +335,11 @@ async def execute_platform_import(
     external_source_str = body.external_source_label.upper()
 
     # Fetch records from the platform
+    api_key = key_for(body.platform_url, body.platform_api_key)
     try:
-        platform_records = await _fetch_platform_records(body.platform_url, body.platform_api_key, body.flow_id)
-    except Exception as e:
-        raise HTTPException(status_code=502, detail=f"Failed to fetch from Integration Platform: {e}")
+        platform_records = await _fetch_platform_records(body.platform_url, api_key, body.flow_id)
+    except (PlatformCallError, httpx.HTTPError) as exc:
+        raise _http_error(exc)
 
     # Get flow name for the result
     flow_name = body.flow_id
@@ -319,7 +347,7 @@ async def execute_platform_import(
         async with httpx.AsyncClient(timeout=5.0) as client:
             resp = await client.get(
                 f"{body.platform_url}/data/sources",
-                headers={"X-Api-Key": body.platform_api_key},
+                headers={"X-Api-Key": api_key},
             )
             if resp.status_code == 200:
                 for src in resp.json():
