@@ -11,9 +11,8 @@ from urllib.request import url2pathname
 import structlog
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from app.config import settings
 from app.models.document_version import DocumentVersionORM
-from app.services import org_settings
+from app.services import installation, org_settings
 from app.services.document_version import (
     DOCUMENT_GAP_ANALYS,
     DOCUMENT_GLOSSARY,
@@ -82,7 +81,7 @@ def source_url_for_document(document_type: str) -> str | None:
     path = _DOCUMENT_PATHS.get(document_type)
     if path is None:
         return None
-    return f"{settings.PDF_APP_BASE_URL}{path}"
+    return f"{installation.portal_url() or ''}{path}"
 
 def url_allowed(url: str) -> bool:
     """May WeasyPrint fetch this resource?
