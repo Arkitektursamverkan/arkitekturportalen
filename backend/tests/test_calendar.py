@@ -82,7 +82,7 @@ async def _app(client, api_headers, namn: str) -> str:
 
 NYCKELUTLAMNING = {
     "title": "Nyckelutlämning",
-    "description": "Nya hyresgäster hämtar nycklar",
+    "description": "Nya kunder hämtar sina passerkort",
     "recurrence": "monthly_first_workday",
     "start_date": "2026-01-01",
     "start_time": "08:00",

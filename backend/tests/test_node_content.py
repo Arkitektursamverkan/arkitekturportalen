@@ -51,14 +51,14 @@ async def _ladda_upp(client, headers, node_id: str, filnamn: str, innehall: byte
 
 @pytest.mark.asyncio
 async def test_redaktor_laddar_upp_och_lasare_laser(client, api_headers, repo):
-    process = await _nod(client, api_headers, "Process", "4.4.2 Hantering av akut driftstörning – dok")
+    process = await _nod(client, api_headers, "Process", "3.1.2 Hantera inkommande ärende – dok")
     redaktor = await _anvandare(repo, "dok.redaktor@example.org", roll="superuser")
     lasare = await _anvandare(repo, "dok.lasare@example.org")
 
-    up = await _ladda_upp(client, redaktor, process, "Rutin driftstörning.pdf", doc_type="rutin")
+    up = await _ladda_upp(client, redaktor, process, "Rutin ärendehantering.pdf", doc_type="rutin")
     assert up.status_code == 201, up.text
     doc = up.json()
-    assert doc["title"] == "Rutin driftstörning.pdf"
+    assert doc["title"] == "Rutin ärendehantering.pdf"
     assert doc["current_version"]["version_no"] == 1
 
     # En läsare ser dokumentet men får inte ladda upp eller ta bort.
@@ -147,15 +147,15 @@ async def test_ny_version_behaller_den_gamla(client, api_headers, repo):
 
 @pytest.mark.asyncio
 async def test_underprocess_visar_bara_sina_egna_dokument(client, api_headers, repo):
-    rot = await _nod(client, api_headers, "Process", "4.4 Drift – eget")
-    barn = await _nod(client, api_headers, "Process", "4.4.2 Akut driftstörning – eget", parent_id=rot)
+    rot = await _nod(client, api_headers, "Process", "3.1 Leverans – eget")
+    barn = await _nod(client, api_headers, "Process", "3.1.2 Hantera ärende – eget", parent_id=rot)
     redaktor = await _anvandare(repo, "eget.redaktor@example.org", roll="superuser")
 
-    await _ladda_upp(client, redaktor, rot, "Driftpolicy.pdf")
-    await _ladda_upp(client, redaktor, barn, "Rutin akut driftstörning.pdf")
+    await _ladda_upp(client, redaktor, rot, "Leveranspolicy.pdf")
+    await _ladda_upp(client, redaktor, barn, "Rutin ärende.pdf")
 
     titlar = [d["title"] for d in (await client.get(f"/api/v1/nodes/{barn}/documents", headers=redaktor)).json()["documents"]]
-    assert titlar == ["Rutin akut driftstörning.pdf"]
+    assert titlar == ["Rutin ärende.pdf"]
 
 
 @pytest.mark.asyncio

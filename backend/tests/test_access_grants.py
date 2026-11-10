@@ -58,7 +58,7 @@ async def _behorighet(client, headers, node_id: str) -> dict:
 async def test_grupp_forvaltar_processgren_med_underprocesser(client, api_headers, repo):
     roller = await _roller(client, api_headers)
     drift = await _nod(client, api_headers, "Process", "4.4 Drift – gren")
-    akut = await _nod(client, api_headers, "Process", "4.4.2 Akut driftstörning – gren", parent_id=drift)
+    akut = await _nod(client, api_headers, "Process", "3.1.2 Hantera ärende – gren", parent_id=drift)
     annan = await _nod(client, api_headers, "Process", "5 Ekonomi – gren")
     medlem, medlem_h = await _anvandare(repo, "gren.medlem@example.org")
     _, utanfor_h = await _anvandare(repo, "gren.utanfor@example.org")

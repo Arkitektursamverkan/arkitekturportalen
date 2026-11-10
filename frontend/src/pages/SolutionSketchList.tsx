@@ -153,7 +153,7 @@ const NewSketchDialog: React.FC<{
       <DialogTitle>Ny lösningsskiss</DialogTitle>
       <DialogContent>
         <Stack spacing={2} sx={{ mt: 1 }}>
-          <TextField autoFocus required label="Titel" placeholder="t.ex. Bokningssystem för uthyrning" value={title} onChange={(e) => setTitle(e.target.value)} fullWidth />
+          <TextField autoFocus required label="Titel" placeholder="t.ex. Bokningssystem för mötesrum" value={title} onChange={(e) => setTitle(e.target.value)} fullWidth />
           <TextField label="Kort beskrivning (valfri)" value={description} onChange={(e) => setDescription(e.target.value)} fullWidth multiline minRows={2} />
         </Stack>
       </DialogContent>
