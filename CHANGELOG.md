@@ -9,6 +9,14 @@ funktioner, en ny korrigering för rättelser.
 
 - (inget än)
 
+## 0.13.0 – 2026-11-10
+
+- **Säkerhet: synkprofiler och plattformsimport når bara tillåtna plattformsadresser** – `INTEGRATION_PLATFORM_URL` och, om satt, nya `INTEGRATION_PLATFORM_ALLOWED_URLS` (kommaseparerad). Installationens nyckel skickas bara till `INTEGRATION_PLATFORM_URL`:s origin, och en sparad profilnyckel behålls bara när adressen är oförändrad (annars 422 "Ange plattformens API-nyckel"). Plattformens felkroppar skickas inte längre vidare till klienten.
+- **Säkerhet: webhooken från plattformen verifieras med signatur** (`X-Webhook-Timestamp` + `X-Webhook-Signature`, HMAC-SHA256, högst 5 minuter gammal). Det gamla `X-Webhook-Secret` godtas fortfarande från en äldre plattform men loggas som föråldrat.
+- **Säkerhet: behörigheter** – att ändra en kopplings anteckning kräver skrivrätt på kopplingen; `/views/overlap-gaps` visar bara objekt användaren får se; lösningsskisser ändras av skaparen eller en redaktör i utkast/granskning, och bara admin ändrar en godkänd eller arkiverad skiss; flödesscheman från Arkitekten följer processens behörighet och deras id valideras.
+- **Säkerhet: nginx skickar klientens adress som `X-Forwarded-For` i stället för att lägga till den**, så att backend aldrig ser led som klienten själv skrivit.
+- Ny `NOTICE`: webbens bygge innehåller cytoscape-svg (GPL-3.0). CI har bara läsbehörighet och actions är låsta till commit-SHA.
+
 ## 0.12.0 – 2026-11-09
 
 - **Säkerhet: flödesscenerna från Arkitekten renas** innan de visas (DOMPurify med SVG-profil): skript, händelseattribut, `foreignObject` och `javascript:`-länkar tas bort, `<use>` får bara peka inom sidan. Tidigare kunde en scen köra skript i portalen.
