@@ -9,6 +9,11 @@ after. This module turns those rows into events:
 - updated: anything else that changed the object's name, description,
            source or attributes; rows that changed none of those are skipped
 
+System fields are not changes anyone made to the object: the parent links a
+synchronisation resolves (parent_id, parent_name, parent_prefix) and the
+workflow state. They are left out of the changed fields, and an update that
+changed nothing else is not counted at all.
+
 The classification and the changed fields are worked out in SQL, so the
 snapshots themselves never leave the database.
 """
@@ -36,6 +41,10 @@ BDAT_TYPES: tuple[str, ...] = (
 # Top-level snapshot fields worth reporting; the rest (id, type, archived)
 # are either fixed or classified separately.
 _TOP_FIELDS = ("name", "description", "external_source", "external_id")
+
+# Attributes the system keeps up to date. A synchronisation rewrites them on
+# almost every run, so counted as updates they drowned out the real ones.
+SYSTEM_FIELDS: frozenset[str] = frozenset({"parent_id", "parent_name", "parent_prefix", "workflow_state"})
 
 _EVENTS_SQL = text(f"""
 SELECT l.created_at AS at,
@@ -88,16 +97,17 @@ async def events_since(
     """Every change to objects of the given types from `since` until now.
 
     An update that changed nothing reported (e.g. only a visibility flag that
-    is not part of the snapshot) is left out."""
+    is not part of the snapshot, or only system fields) is left out."""
     async with session_factory() as s:
         rows = (await s.execute(_EVENTS_SQL, {"since": since, "types": types})).mappings().all()
     out: list[Event] = []
     for r in rows:
-        if r["kind"] == "updated" and not r["fields"]:
+        fields = [f for f in r["fields"] if f not in SYSTEM_FIELDS]
+        if r["kind"] == "updated" and not fields:
             continue
         out.append(Event(
             at=r["at"], kind=r["kind"], node_id=str(r["node_id"]), name=r["name"],
-            type=r["type"], source=r["source"], by=r["by"], fields=list(r["fields"]),
+            type=r["type"], source=r["source"], by=r["by"], fields=fields,
         ))
     return out
 
