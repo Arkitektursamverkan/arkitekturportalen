@@ -4,6 +4,8 @@ Kontraktet som låses här:
 - Skapat och återställt ur arkivet räknas som tillagt; raderat och arkiverat
   som borttaget; övriga ändringar som uppdaterat, med de fält som ändrats.
 - En sparning som inte ändrar något syns inte.
+- Systemfälten (parent_id, parent_name, parent_prefix, workflow_state) räknas
+  inte som ändringar: en uppdatering av bara dem syns inte.
 - Antalet objekt vid periodens slut räknas fram från dagens antal.
 - Bara objekt användaren får se: utan behörighet till servrar syns inga
   serverhändelser och inga servrar i antalen.
@@ -64,6 +66,27 @@ async def test_handelserna_klassas(client, repo):
     assert all(e["type"] == "Application" and e["source"] == "NONE" for e in handelser)
     assert handelser[1]["name"] == "Statistiksystemet 2"
     assert all(e["by"] == "Statistik admin" and not e["by_sync"] for e in handelser)
+
+
+@pytest.mark.asyncio
+async def test_systemfalten_raknas_inte(client, repo):
+    """REGRESSION: synkningen skriver om parent_id, parent_name och
+    workflow_state nästan varje körning, och varje sådan sparning räknades som
+    en uppdatering – statistiken dominerades av ändringar ingen gjort."""
+    admin = await _anvandare(repo, "admin")
+    start = datetime.now(UTC) - timedelta(minutes=1)
+    nid = (await client.post("/api/v1/nodes", json={"type": "Process", "name": "Systemfältsprocess"}, headers=admin)).json()["id"]
+    await client.patch(f"/api/v1/nodes/{nid}", json={"attributes": {
+        "parent_id": str(uuid4()), "parent_name": "Huvudprocess", "parent_prefix": "HP", "workflow_state": "DRAFT",
+    }}, headers=admin)
+    await client.patch(f"/api/v1/nodes/{nid}", json={"attributes": {
+        "parent_name": "Annan huvudprocess", "workflow_state": "APPROVED", "agare": "Ekonomi",
+    }}, headers=admin)
+    end = datetime.now(UTC) + timedelta(minutes=1)
+
+    handelser = _for(await _hamta(client, admin, start, end), nid)
+    assert [e["kind"] for e in handelser] == ["added", "updated"]
+    assert handelser[1]["fields"] == ["agare"]
 
 
 @pytest.mark.asyncio

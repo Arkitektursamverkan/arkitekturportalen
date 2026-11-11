@@ -7,7 +7,7 @@ funktioner, en ny korrigering för rättelser.
 
 ## Ej släppt
 
-- (inget än)
+- **Förändringsstatistiken räknar inte systemfälten.** `parent_id`, `parent_name`, `parent_prefix` och `workflow_state` hålls uppdaterade av systemet (synkningen skriver om dem nästan varje körning) och fick uppdateringarna att se många gånger fler ut än de var. De visas inte längre bland de ändrade fälten, och en sparning som bara rört dem räknas inte som en uppdatering. Gäller också historiken bakåt.
 
 ## 0.16.1 – 2026-11-11
 
