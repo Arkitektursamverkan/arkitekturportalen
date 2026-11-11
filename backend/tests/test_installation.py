@@ -220,6 +220,48 @@ async def test_platform_registration_needs_credentials(client, monkeypatch):
         headers={"X-Installation-Secret": "fel"},
     )
     assert r.status_code == 401
+    # Not the API key: Arkitekten has it too, and the address gets the platform's admin key.
+    r = await client.put(
+        "/api/v1/installation/plattform", json={"url": "http://10.0.3.4:8000/api/v1"},
+        headers={"X-Api-Key": settings.API_KEY},
+    )
+    assert r.status_code == 401
+    assert installation.platform_url() is None
+
+
+@pytest.mark.parametrize("url", [
+    "http://10.0.3.4:8000/api/v1",
+    "http://172.19.0.5:8000/api/v1",
+    "http://192.168.1.2:8000/api/v1",
+    "http://127.0.0.1:8000/api/v1",
+    "http://[fd00::4]:8000/api/v1",
+    "http://plattform-api:8000/api/v1",
+])
+async def test_platform_registration_accepts_internal(client, monkeypatch, url):
+    monkeypatch.delenv("INTEGRATION_PLATFORM_URL", raising=False)
+    r = await client.put(
+        "/api/v1/installation/plattform", json={"url": url},
+        headers={"X-Installation-Secret": settings.SYNC_WEBHOOK_SECRET},
+    )
+    assert r.status_code == 200
+    assert installation.platform_url() == url
+
+
+@pytest.mark.parametrize("url", [
+    "https://evil.example.org/api/v1",
+    "http://8.8.8.8:8000/api/v1",
+    "http://169.254.169.254/latest",
+    "http://0.0.0.0:8000/api/v1",
+    "http://[2606:4700::1111]:8000/api/v1",
+    "http://plattform-api.example:8000/api/v1",
+])
+async def test_platform_registration_rejects_external(client, monkeypatch, url):
+    monkeypatch.delenv("INTEGRATION_PLATFORM_URL", raising=False)
+    r = await client.put(
+        "/api/v1/installation/plattform", json={"url": url},
+        headers={"X-Installation-Secret": settings.SYNC_WEBHOOK_SECRET},
+    )
+    assert r.status_code == 422
     assert installation.platform_url() is None
 
 

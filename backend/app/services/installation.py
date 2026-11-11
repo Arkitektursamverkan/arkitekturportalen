@@ -47,6 +47,7 @@ _KEYS = (PORTAL_URL, ARKITEKTEN_URL, PLATFORM_URL)
 # Addresses the hosting platform gives every service; a custom domain is preferred.
 _PLATFORM_SUFFIXES = (".onrender.com",)
 _HOST_RE = re.compile(r"^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+$")
+_LABEL_RE = re.compile(r"^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$")
 URL_MAX = 300
 
 _values: dict[str, str] = {}
@@ -210,13 +211,28 @@ async def register_arkitekten(value: Any) -> str:
 
 # ── The platform's registration ─────────────────────────────────────────────
 
+def _is_internal_host(host: str) -> bool:
+    """A private/loopback IP address, or a single-label name (Docker, Render)."""
+    try:
+        ip = ipaddress.ip_address(host)
+    except ValueError:
+        return bool(_LABEL_RE.match(host))
+    return (ip.is_private or ip.is_loopback) and not ip.is_unspecified and not ip.is_link_local
+
 async def register_platform(value: Any) -> str:
     """The platform's internal address, e.g. http://10.0.3.4:8000/api/v1.
 
     Only the platform holds the shared secret this is guarded by, and the
     address only receives the platform's own admin key – so a registration
-    cannot send the key anywhere the platform could not already read it."""
+    cannot send the key anywhere the platform could not already read it.
+    The address must also be internal – a private or loopback IP address or a
+    single-label service name – so that even a leaked secret cannot send the
+    key out on the internet."""
     url = clean_url(value)
+    if not _is_internal_host(urlsplit(url).hostname or ""):
+        raise InstallationError(
+            "Plattformens adress ska vara intern (privat IP-adress eller tjänstnamn utan punkt)"
+        )
     previous = _values.get(PLATFORM_URL)
     if previous != url:
         await _store(PLATFORM_URL, url)
