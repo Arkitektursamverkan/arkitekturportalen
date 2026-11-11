@@ -9,6 +9,10 @@ funktioner, en ny korrigering för rättelser.
 
 - (inget än)
 
+## 0.16.1 – 2026-11-11
+
+- **Säkerhet:** `PUT /api/v1/installation/plattform` godtar nu bara `X-Installation-Secret` (`SYNC_WEBHOOK_SECRET`), inte API-nyckeln. API-nyckeln har även Arkitekten, och den anmälda adressen får plattformens administratörsnyckel. Adressen måste dessutom vara intern – privat IP-adress, loopback eller ett tjänstnamn utan punkt – så att nyckeln aldrig kan skickas ut på internet. Plattformen (0.10.0) anmäler sig redan så, så inget behöver ändras i installationen.
+
 ## 0.16.0 – 2026-11-10
 
 - **Plattformen anmäler sin adress till portalen** (`PUT /api/v1/installation/plattform`, med `X-Installation-Secret` = `SYNC_WEBHOOK_SECRET` eller API-nyckeln). Portalen använder den när `INTEGRATION_PLATFORM_URL` inte är satt – modulen Arkitekten, processbilderna, import och synkprofiler. Satt `INTEGRATION_PLATFORM_URL` vinner alltid, så compose-installationer påverkas inte. På Render behöver portal-api därmed ingen referens till plattform-api: med referenser åt båda hållen slutade varje Blueprint-synk med fel.

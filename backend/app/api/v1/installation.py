@@ -80,10 +80,12 @@ class PlatformRegistration(BaseModel):
 async def register_platform(
     data: PlatformRegistration,
     response: Response,
-    x_api_key: Annotated[str | None, Header()] = None,
     x_installation_secret: Annotated[str | None, Header()] = None,
 ) -> dict[str, Any]:
-    _caller(x_api_key, x_installation_secret)
+    # Only the platform's shared secret – not the API key, which Arkitekten
+    # also holds: the registered address receives the platform's admin key.
+    if not _matches(x_installation_secret, settings.SYNC_WEBHOOK_SECRET):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing or invalid authentication")
     try:
         url = await installation.register_platform(data.url)
     except installation.InstallationError as e:
