@@ -44,6 +44,8 @@ interface EntityConfig {
   labelKey: string;
   columns: string[];   // all columns, in order
   filename: string;
+  /** Re-import updates the object with the same name (servers, server services). */
+  keyedByName?: boolean;
 }
 
 const ENTITY_CONFIGS: EntityConfig[] = [
@@ -77,6 +79,20 @@ const ENTITY_CONFIGS: EntityConfig[] = [
     columns: ["name", "description", "vendor", "component_type", "hosting", "platform", "version", "capacity", "technical_owner", "support_team", "maintenance_schedule", "security_classification"],
     filename: "teknikkomponenter_mall.csv",
   },
+  {
+    slug: "servers",
+    labelKey: "csvImport.entities.servers",
+    columns: ["name", "description", "hostname", "server_type", "operating_system", "environment", "location", "responsible"],
+    filename: "servrar_mall.csv",
+    keyedByName: true,
+  },
+  {
+    slug: "server-services",
+    labelKey: "csvImport.entities.serverServices",
+    columns: ["name", "description", "vendor", "component_type", "hosting_type", "environment", "lifecycle_status", "responsible", "servers"],
+    filename: "servertjanster_mall.csv",
+    keyedByName: true,
+  },
 ];
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -92,7 +108,7 @@ const ImportCSV: React.FC = () => {
   const [previewRows, setPreviewRows] = useState<CsvPreviewRow[] | null>(null);
   const [parseErrors, setParseErrors] = useState<string[]>([]);
   const [importResult, setImportResult] = useState<{
-    created: number; updated: number; errors: string[];
+    created: number; updated: number; connections?: number; errors: string[];
   } | null>(null);
   const [dragOver, setDragOver] = useState(false);
 
@@ -201,6 +217,9 @@ const ImportCSV: React.FC = () => {
         <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
           {t("csvImport.step1.description")}
         </Typography>
+        {entityConfig.keyedByName && (
+          <Alert severity="info" sx={{ mb: 2 }}>{t("csvImport.step1.keyedByName")}</Alert>
+        )}
         <Button
           variant="outlined"
           startIcon={<DownloadIcon />}
@@ -360,6 +379,7 @@ const ImportCSV: React.FC = () => {
               updated: importResult.updated,
               entity: entityLabel,
             })}
+            {importResult.connections ? ` ${t("csvImport.result.connections", { count: importResult.connections })}` : ""}
           </Typography>
           {importResult.errors.map((e, i) => (
             <Typography key={i} variant="body2" sx={{ color: "warning.dark" }}>• {e}</Typography>

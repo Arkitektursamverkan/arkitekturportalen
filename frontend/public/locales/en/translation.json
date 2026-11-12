@@ -442,7 +442,9 @@
       "applications": "Applications",
       "informationObjects": "Information objects",
       "informationSources": "Information sources",
-      "techComponents": "Tech components"
+      "techComponents": "Tech components",
+      "servers": "Servers",
+      "serverServices": "Server services"
     },
     "columns": {
       "id": "ID",
@@ -470,14 +472,24 @@
       "technical_owner": "Technical Owner",
       "support_team": "Support Team",
       "maintenance_schedule": "Maintenance Schedule",
-      "security_classification": "Security Classification"
+      "security_classification": "Security Classification",
+      "hostname": "Host name",
+      "server_type": "Server type",
+      "operating_system": "Operating system",
+      "environment": "Environment",
+      "location": "Location",
+      "responsible": "Responsible",
+      "hosting_type": "Hosting type",
+      "lifecycle_status": "Lifecycle status",
+      "servers": "Servers (names, comma-separated)"
     },
     "step1": {
       "title": "Download template",
       "description": "The template contains the correct column headers and example rows. Open it in Excel or another spreadsheet app, fill in your data, and save as CSV.",
       "download": "Download template ({{entity}})",
       "columns": "Columns in the template",
-      "required": "Required"
+      "required": "Required",
+      "keyedByName": "The name is the key: importing the file again updates the objects with the same name instead of adding new ones."
     },
     "step2": {
       "title": "Select CSV file",
@@ -515,7 +527,8 @@
     "result": {
       "title": "Import result",
       "summary": "{{created}} {{entity}} created, {{updated}} updated.",
-      "importMore": "Import more"
+      "importMore": "Import more",
+      "connections": "{{count}} connections to servers were created."
     }
   },
   "settings": {

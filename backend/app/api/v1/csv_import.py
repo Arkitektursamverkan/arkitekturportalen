@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import csv
 import io
+import re
 import uuid
 from dataclasses import dataclass, field
 
@@ -33,6 +34,11 @@ class EntityConfig:
     attr_map: dict[str, str]     # csv_column → Swedish attribute key
     filename: str                # suggested download filename
     template_rows: list[list[str]] = field(default_factory=list)
+    # Name is the key: a re-import updates the object with the same name instead
+    # of adding a copy (external_id "<prefix>:<name in lower case>").
+    key_prefix: str | None = None
+    # Column with the names of servers the object runs on (RUNS_ON), not an attribute.
+    servers_column: str | None = None
 
 
 ENTITY_CONFIGS: dict[str, EntityConfig] = {
@@ -92,6 +98,31 @@ ENTITY_CONFIGS: dict[str, EntityConfig] = {
             ["Min teknikkomponent", "Beskriv komponenten här", "Leverantör", "Database", "OnPrem", "Linux", "", "", "Ägare", "Team", "", ""],
         ],
     ),
+    "servers": EntityConfig(
+        node_type=NodeType.SERVER,
+        columns=["name", "description", "hostname", "server_type", "operating_system", "environment", "location", "responsible"],
+        attr_map={"hostname": "hostnamn", "server_type": "servertyp", "operating_system": "operativsystem", "environment": "miljö", "location": "placering", "responsible": "ansvarig"},
+        filename="servrar_mall.csv",
+        template_rows=[
+            ["SRV-DB01", "Databasserver för ekonomisystemen", "srv-db01.example.org", "Virtuell", "Windows Server 2022", "Produktion", "Datacenter Nord", "IT-drift"],
+            ["SRV-WEB01", "Webbserver för intranätet", "srv-web01.example.org", "Virtuell", "Ubuntu 24.04", "Produktion", "Azure", "IT-drift"],
+            ["Min server", "Beskriv servern här", "", "Fysisk", "", "Test", "", ""],
+        ],
+        key_prefix="server",
+    ),
+    "server-services": EntityConfig(
+        node_type=NodeType.SERVER_SERVICE,
+        columns=["name", "description", "vendor", "component_type", "hosting_type", "environment", "lifecycle_status", "responsible", "servers"],
+        attr_map={"vendor": "leverantör", "component_type": "komponenttyp", "hosting_type": "driftform", "environment": "miljö", "lifecycle_status": "livscykelstatus", "responsible": "ansvarig"},
+        filename="servertjanster_mall.csv",
+        template_rows=[
+            ["DNS", "Namnuppslagning för det interna nätet", "Microsoft", "Nätverkstjänst", "Egen drift", "Produktion", "I drift", "IT-drift", "SRV-DB01, SRV-WEB01"],
+            ["Säkerhetskopiering", "Nattlig säkerhetskopiering av servrarna", "Veeam", "Backup", "Egen drift", "Produktion", "I drift", "IT-drift", "SRV-DB01"],
+            ["Min servertjänst", "Beskriv tjänsten här", "", "", "", "", "", "", ""],
+        ],
+        key_prefix="serverservice",
+        servers_column="servers",
+    ),
 }
 
 
@@ -133,7 +164,7 @@ def _parse_csv(content: bytes, cfg: EntityConfig) -> tuple[list[dict], list[str]
             continue
 
         parsed: dict = {
-            "id": f"csv-{uuid.uuid4().hex[:8]}",
+            "id": _external_id(cfg, name),
             "name": name,
             "description": row.get("description", ""),
         }
@@ -147,6 +178,64 @@ def _parse_csv(content: bytes, cfg: EntityConfig) -> tuple[list[dict], list[str]
     return rows, errors
 
 
+def _external_id(cfg: EntityConfig | None, name: str) -> str:
+    if cfg and cfg.key_prefix:
+        return f"{cfg.key_prefix}:{name.strip().lower()}"
+    return f"csv-{uuid.uuid4().hex[:8]}"
+
+
+def _server_names(value: str) -> list[str]:
+    """"SRV-1, SRV-2" (or ; or |) → the names, without blanks or repeats."""
+    names: list[str] = []
+    for part in re.split(r"[,;|\n]", value or ""):
+        part = part.strip()
+        if part and part.lower() not in (n.lower() for n in names):
+            names.append(part)
+    return names
+
+
+async def _connect_to_servers(
+    repo: GraphRepository, links: list[tuple[str, str, list[str]]],
+) -> tuple[int, list[str]]:
+    """RUNS_ON from each imported object to the servers named in its row.
+    Servers are found by name (any source, not archived); an existing
+    connection is left alone, so a re-import adds nothing twice."""
+    if not any(names for _, _, names in links):
+        return 0, []
+    servers = await repo.list_nodes(node_type=NodeType.SERVER.value, limit=100_000)
+    by_name: dict[str, list[str]] = {}
+    for n in servers:
+        if not n.archived:
+            by_name.setdefault(n.name.strip().lower(), []).append(str(n.id))
+    existing = {
+        (str(e.source_id), str(e.target_id))
+        for e in await repo.list_edges(edge_type=EdgeType.RUNS_ON.value)
+    }
+    created = 0
+    errors: list[str] = []
+    for node_id, node_name, names in links:
+        for server in names:
+            found = by_name.get(server.lower(), [])
+            if not found:
+                errors.append(f"{node_name}: servern '{server}' finns inte")
+                continue
+            if len(found) > 1:
+                errors.append(f"{node_name}: flera servrar heter '{server}' – kopplingen gjordes inte")
+                continue
+            if (node_id, found[0]) in existing:
+                continue
+            try:
+                await repo.create_edge(EdgeCreate(
+                    source_id=uuid.UUID(node_id), target_id=uuid.UUID(found[0]), type=EdgeType.RUNS_ON,
+                ))
+                existing.add((node_id, found[0]))
+                created += 1
+            except Exception as exc:
+                log.warning("csv.import.runs_on.error", node=node_name, server=server, error=str(exc))
+                errors.append(f"{node_name} → {server}: {exc}")
+    return created, errors
+
+
 # ── Unified CSV endpoints (must be before parameterized routes) ────────────────
 
 def _all_attr_columns() -> list[str]:
@@ -155,7 +244,7 @@ def _all_attr_columns() -> list[str]:
     cols: list[str] = []
     for cfg in ENTITY_CONFIGS.values():
         for col in cfg.columns:
-            if col not in ("name", "description") and col not in seen:
+            if col not in ("name", "description", cfg.servers_column) and col not in seen:
                 seen.add(col)
                 cols.append(col)
     return cols
@@ -430,6 +519,7 @@ async def import_csv(entity: str, file: UploadFile = File(...)) -> dict:
 
     # Map csv-id / name → actual UUID for parent_id resolution
     id_map: dict[str, str] = {}
+    server_links: list[tuple[str, str, list[str]]] = []
 
     for row in rows:
         try:
@@ -458,6 +548,8 @@ async def import_csv(entity: str, file: UploadFile = File(...)) -> dict:
             )
             id_map[row["id"]] = str(result.id)
             id_map[row["name"]] = str(result.id)
+            if cfg.servers_column:
+                server_links.append((str(result.id), row["name"], _server_names(row.get(cfg.servers_column, ""))))
             if was_created:
                 created += 1
             else:
@@ -496,12 +588,17 @@ async def import_csv(entity: str, file: UploadFile = File(...)) -> dict:
         except Exception as exc:
             log.warning("csv.import.parent_resolve.error", node=row.get("name"), error=str(exc))
 
-    log.info("csv.import.done", entity=entity, created=created, updated=updated, errors=len(import_errors))
+    connections, link_errors = await _connect_to_servers(repo, server_links)
+    import_errors.extend(link_errors)
+
+    log.info("csv.import.done", entity=entity, created=created, updated=updated,
+             connections=connections, errors=len(import_errors))
     return {
         "source": "CSV",
         "total": len(rows),
         "created": created,
         "updated": updated,
+        "connections": connections,
         "errors": import_errors,
     }
 
@@ -514,7 +611,13 @@ NODE_TYPE_MAP: dict[str, NodeType] = {
     "informationobject": NodeType.INFORMATION_OBJECT,
     "informationsource": NodeType.INFORMATION_SOURCE,
     "technologycomponent": NodeType.TECHNOLOGY_COMPONENT,
+    "server": NodeType.SERVER,
+    "serverservice": NodeType.SERVER_SERVICE,
 }
+
+# The per-type configuration of each type, for its column → attribute names
+# and its key in the unified file.
+_CONFIG_BY_TYPE: dict[NodeType, EntityConfig] = {c.node_type: c for c in ENTITY_CONFIGS.values()}
 
 EDGE_TYPE_SET = {e.value for e in EdgeType}
 
@@ -599,15 +702,22 @@ def _parse_unified_csv(content: bytes) -> tuple[list[dict], list[dict], list[str
                     continue
                 node_type_key = node_type_raw.lower().replace(" ", "").replace("_", "")
                 if node_type_key not in NODE_TYPE_MAP:
-                    errors.append(f"Node row {row_num}: Unknown type '{node_type_raw}'. Valid: Process, Application, InformationObject, InformationSource, TechnologyComponent")
+                    errors.append(f"Node row {row_num}: Unknown type '{node_type_raw}'. Valid: Process, Application, InformationObject, InformationSource, TechnologyComponent, Server, ServerService")
                     continue
+                node_type = NODE_TYPE_MAP[node_type_key]
+                cfg = _CONFIG_BY_TYPE.get(node_type)
+                attrs = {k: v for k, v in row.items() if k not in ("id", "type", "name", "description") and v}
+                if cfg and cfg.key_prefix:
+                    # The newer types store their attributes under the names
+                    # their pages read (hostnamn, miljö …), not the column names.
+                    attrs = {cfg.attr_map.get(k, k): v for k, v in attrs.items() if k != cfg.servers_column}
                 nodes.append({
                     "line": row_num,
-                    "id": f"csv-{uuid.uuid4().hex[:8]}",
-                    "type": NODE_TYPE_MAP[node_type_key],
+                    "id": _external_id(cfg, name),
+                    "type": node_type,
                     "name": name,
                     "description": row.get("description", "").strip(),
-                    "attributes": {k: v for k, v in row.items() if k not in ("id", "type", "name", "description") and v},
+                    "attributes": attrs,
                 })
 
     # Parse edges section
