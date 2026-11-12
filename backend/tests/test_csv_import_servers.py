@@ -4,10 +4,7 @@ from __future__ import annotations
 
 import uuid
 
-import pytest
-
 from app.api.v1.csv_import import _parse_unified_csv, _server_names
-
 
 
 def _fil(text: str) -> dict:
