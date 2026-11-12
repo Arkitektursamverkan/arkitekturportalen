@@ -442,7 +442,9 @@
       "applications": "Applikationer",
       "informationObjects": "Informationsobjekt",
       "informationSources": "Informationskällor",
-      "techComponents": "Teknikkomponenter"
+      "techComponents": "Teknikkomponenter",
+      "servers": "Servrar",
+      "serverServices": "Servertjänster"
     },
     "columns": {
       "id": "ID",
@@ -470,14 +472,24 @@
       "technical_owner": "Teknisk ägare",
       "support_team": "Supportteam",
       "maintenance_schedule": "Underhållsschema",
-      "security_classification": "Säkerhetsklassificering"
+      "security_classification": "Säkerhetsklassificering",
+      "hostname": "Hostnamn",
+      "server_type": "Servertyp",
+      "operating_system": "Operativsystem",
+      "environment": "Miljö",
+      "location": "Placering",
+      "responsible": "Ansvarig",
+      "hosting_type": "Driftform",
+      "lifecycle_status": "Livscykelstatus",
+      "servers": "Servrar (namn, kommaseparerade)"
     },
     "step1": {
       "title": "Ladda ner mall",
       "description": "Mallen innehåller rätt kolumnrubriker och exempelrader. Öppna den i Excel eller annat kalkylprogram, fyll i dina poster och spara som CSV.",
       "download": "Ladda ner mall ({{entity}})",
       "columns": "Kolumner i mallen",
-      "required": "Obligatorisk"
+      "required": "Obligatorisk",
+      "keyedByName": "Namnet är nyckeln: importerar du filen igen uppdateras objekten med samma namn i stället för att nya läggs till."
     },
     "step2": {
       "title": "Välj CSV-fil",
@@ -515,7 +527,8 @@
     "result": {
       "title": "Importresultat",
       "summary": "{{created}} {{entity}} skapades, {{updated}} uppdaterades.",
-      "importMore": "Importera fler"
+      "importMore": "Importera fler",
+      "connections": "{{count}} kopplingar till servrar skapades."
     }
   },
   "settings": {

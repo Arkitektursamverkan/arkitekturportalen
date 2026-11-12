@@ -9,6 +9,10 @@ funktioner, en ny korrigering för rättelser.
 
 - (inget än)
 
+## 0.17.0 – 2026-11-12
+
+- **CSV-import av servrar och servertjänster.** Två nya typer under *Import → CSV → Per typ*, med mallar: **Servrar** (hostnamn, servertyp, operativsystem, miljö, placering, ansvarig) och **Servertjänster** (leverantör, komponenttyp, driftform, miljö, livscykelstatus, ansvarig). Kolumnen `servers` i servertjänstfilen tar servrarnas namn, kommaseparerade, och ger kopplingarna *körs på* (RUNS_ON); en server som inte finns, eller flera med samma namn, rapporteras utan att stoppa importen. För de här två typerna är **namnet nyckeln**: importeras filen igen uppdateras objekten med samma namn (oavsett skiftläge), och befintliga kopplingar läggs inte till igen. Den samlade filen (*Allt i en fil*) tar också typerna `Server` och `ServerService`, och deras kolumner sparas under samma fältnamn som sidorna Servrar och Servertjänster visar.
+
 ## 0.16.2 – 2026-11-11
 
 - **Förändringsstatistiken räknar inte systemfälten.** `parent_id`, `parent_name`, `parent_prefix` och `workflow_state` hålls uppdaterade av systemet (synkningen skriver om dem nästan varje körning) och fick uppdateringarna att se många gånger fler ut än de var. De visas inte längre bland de ändrade fälten, och en sparning som bara rört dem räknas inte som en uppdatering. Gäller också historiken bakåt.
