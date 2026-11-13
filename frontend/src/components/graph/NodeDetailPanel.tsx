@@ -1143,6 +1143,11 @@ const EdgeDetail: React.FC<EdgeDetailProps> = ({ edge, t, isAdmin, isEditor, onR
   };
 
   const isPending = createEdge.isPending || delEdge.isPending;
+  // What has its own control is not listed once more as a raw key and value:
+  // the direction showed up as "direction BIDIRECTIONAL" under its own buttons.
+  const otherAttributes = Object.entries(edge.attributes ?? {}).filter(
+    ([k]) => k !== "note" && k !== "direction" && !isOwnField(k),
+  );
 
   return (
     <Box>
@@ -1342,11 +1347,11 @@ const EdgeDetail: React.FC<EdgeDetailProps> = ({ edge, t, isAdmin, isEditor, onR
         )}
       </Box>
 
-      {/* Extra attributes (excluding note which has its own UI) */}
-      {Object.keys(edge.attributes ?? {}).filter((k) => k !== "note").length > 0 && (
+      {/* Extra attributes – the note, the direction and the own fields have their own UI above */}
+      {otherAttributes.length > 0 && (
         <Table size="small" sx={{ mt: 1 }}>
           <TableBody>
-            {Object.entries(edge.attributes ?? {}).filter(([k]) => k !== "note").map(([k, v]) => (
+            {otherAttributes.map(([k, v]) => (
               <TableRow key={k}>
                 <TableCell sx={{ border: 0, pl: 0, py: 0.5, color: "text.secondary", fontSize: 12 }}>{k}</TableCell>
                 <TableCell sx={{ border: 0, py: 0.5, fontSize: 12 }}>{String(v)}</TableCell>
