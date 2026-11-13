@@ -1365,6 +1365,18 @@
       "date": "Datum",
       "choice": "Val",
       "link": "Länk"
+    },
+    "ownFields": "Egna fält",
+    "ownFieldsHint": "Lägg egna fält på de inbyggda objekttyperna och på kopplingarna, till exempel Integrationstyp på Integrerar med. Fälten fylls i på objektet eller kopplingen av den som får ändra det, och en synk skriver inte över dem. Tas ett fält bort ligger värdena kvar och kommer tillbaka om fältet läggs till igen med samma namn.",
+    "ownFieldsObjects": "Objekt",
+    "ownFieldsConnections": "Kopplingar",
+    "ownFieldsEdit": "Ändra fälten",
+    "ownFieldsFor": "Egna fält på {{type}}",
+    "ownFieldsNone": "Inga egna fält",
+    "ownFieldsOptionsHint": "Valen, med kommatecken emellan",
+    "ownFieldTypes": {
+      "text": "Kort text",
+      "choice": "Val"
     }
   },
   "customList": {
@@ -1379,5 +1391,11 @@
     "connections": "Kopplingar",
     "connect": "Hantera kopplingar",
     "noConnections": "Inga kopplingar än."
+  },
+  "ownFields": {
+    "none": "Inget valt",
+    "saveError": "Fältet gick inte att spara.",
+    "manage": "Hantera egna fält",
+    "add": "Lägg till egna fält"
   }
 }

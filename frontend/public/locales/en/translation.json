@@ -1356,6 +1356,18 @@
       "date": "Date",
       "choice": "Choice",
       "link": "Link"
+    },
+    "ownFields": "Own fields",
+    "ownFieldsHint": "Add fields of your own to the built-in object types and to the connections, for example Integration type on Integrates with. The fields are filled in on the object or connection by whoever may change it, and a synchronisation does not overwrite them. If a field is removed its values stay, and come back if the field is added again with the same name.",
+    "ownFieldsObjects": "Objects",
+    "ownFieldsConnections": "Connections",
+    "ownFieldsEdit": "Change the fields",
+    "ownFieldsFor": "Own fields on {{type}}",
+    "ownFieldsNone": "No own fields",
+    "ownFieldsOptionsHint": "The choices, separated by commas",
+    "ownFieldTypes": {
+      "text": "Short text",
+      "choice": "Choice"
     }
   },
   "customList": {
@@ -1370,5 +1382,11 @@
     "connections": "Connections",
     "connect": "Manage connections",
     "noConnections": "No connections yet."
+  },
+  "ownFields": {
+    "none": "None chosen",
+    "saveError": "The field could not be saved.",
+    "manage": "Manage own fields",
+    "add": "Add own fields"
   }
 }

@@ -19,6 +19,12 @@ class NodeCreate(BaseModel):
     attributes: dict[str, Any] = {}
 
 
+class OwnFieldValues(BaseModel):
+    """Values for the fields an admin added (app.domain_lists); None clears one."""
+
+    values: dict[str, str | None] = Field(default_factory=dict, max_length=60)
+
+
 class NodeUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=255)
     description: str | None = None

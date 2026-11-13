@@ -69,7 +69,9 @@ async def test_systemanvandaren_ser_avstangda_listor(client, repo, api_headers):
 async def test_utan_installning_ar_allt_som_forut(client):
     assert org_settings.domain_lists() is None
     resp = await client.get("/api/v1/org-settings/public")
-    assert resp.json()["domain_lists"] == {"disabled": [], "custom": []}
+    assert resp.json()["domain_lists"] == {
+        "disabled": [], "custom": [], "extra_fields": {"nodes": {}, "edges": {}},
+    }
 
 
 @pytest.mark.asyncio

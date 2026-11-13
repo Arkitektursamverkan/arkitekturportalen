@@ -7,7 +7,7 @@ funktioner, en ny korrigering för rättelser.
 
 ## Ej släppt
 
-- (inget än)
+- **Egna fält på objekt och kopplingar.** Under *Administration → Listor → Egna fält* lägger en administratör fält på de inbyggda objekttyperna och på kopplingstyperna – en kort text eller ett av några val, till exempel *Integrationstyp* på *Integrerar med*. Fälten fylls i i panelen som öppnas när man klickar på ett objekt eller en koppling, av den som får ändra det. En synk skriver inte över värdena, och i förändringsstatistiken visas fälten med sina namn. Nya ändpunkter: `PATCH /api/v1/nodes/{id}/fields` och `PATCH /api/v1/edges/{id}/fields`. Ingen databasändring.
 
 ## 0.17.0 – 2026-11-12
 

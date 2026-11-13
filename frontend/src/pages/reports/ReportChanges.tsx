@@ -14,6 +14,8 @@ import {
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useChangeStatistics, type ChangeEvent, type ChangeKind } from "@/api/changeStatistics";
+import { usePublicOrgSettings } from "@/api/orgSettings";
+import { ownFieldLabel } from "@/config/domainLists";
 import ReportTitle from "@/components/reports/ReportTitle";
 import {
   ALL_TYPES, GRAIN_LABEL, KIND_LABEL, KINDS, LAYERS, addDays, autoGrain, countKinds, csvCell, isoDate,
@@ -172,9 +174,12 @@ const ReportChanges: React.FC = () => {
   const [tab, setTab] = useState<"objects" | "events">("objects");
 
   const { data, isFetching, isError } = useChangeStatistics(period.from, period.to, types);
+  const { data: org } = usePublicOrgSettings();
 
   const typeName = (type: string) => t(`nodeTypes.${type}`, { defaultValue: type });
-  const fieldName = (f: string) => FIELD_LABEL[f] ?? t(`attributes.${f}`, { defaultValue: f });
+  // An own field (Administration → Listor) goes by the name the admin gave it.
+  const fieldName = (f: string) =>
+    FIELD_LABEL[f] ?? ownFieldLabel(org?.domain_lists, f) ?? t(`attributes.${f}`, { defaultValue: f });
   const sourceName = (s: string) => (s === "NONE" ? "Portalen" : t(`externalSource.${s}`, { defaultValue: s }));
 
   // Where the charts start: not before the oldest change on record.

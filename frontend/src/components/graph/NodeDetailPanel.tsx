@@ -19,13 +19,14 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useSnackbar } from "notistack";
 import type { FlagType, GraphNode, NodeRead as NodeReadType } from "@/types/graph";
-import { LIST_KEY, listPath } from "@/config/domainLists";
+import { LIST_KEY, isOwnField, listPath } from "@/config/domainLists";
+import OwnFields from "@/components/common/OwnFields";
 import { NODE_COLORS, ATTR_FIELDS, getValidEdgeTypes, getIntegrationDirection } from "@/config/graphConfig";
 import IntegrationDirectionSelect from "./IntegrationDirectionSelect";
 import { useGraphStore } from "@/store/graphStore";
 import { useRoleStore } from "@/store/roleStore";
-import { useUpdateNode, useDeleteNode, useNodes as useAllNodes } from "@/api/nodes";
-import { useDeleteEdge, useEdges, useUpdateEdgeNote, useUpdateEdgeDirection } from "@/api/edges";
+import { useUpdateNode, useUpdateNodeFields, useDeleteNode, useNodes as useAllNodes } from "@/api/nodes";
+import { useDeleteEdge, useEdges, useUpdateEdgeFields, useUpdateEdgeNote, useUpdateEdgeDirection } from "@/api/edges";
 import { useNodeFlags, useCreateFlag, useDeleteFlag, useRespondToFlag } from "@/api/flags";
 import {
   attrField, proposalFieldLabel, useCreateChangeProposals, useNodeChangeProposals,
@@ -236,6 +237,8 @@ interface NodeDetailProps {
 
 const NodeDetail: React.FC<NodeDetailProps> = ({ node, navigate, t, isAdmin, isEditor, editing, setEditing, onUpdated, onRequestDelete }) => {
   const updateNode = useUpdateNode();
+  const updateNodeFields = useUpdateNodeFields();
+  const isSystemAdmin = useRoleStore((s) => s.isAdmin);
   const { data: allEdges = [] } = useEdges();
   const { data: allProcesses = [] } = useAllNodes({ node_type: "Process" });
   const connectionCount = allEdges.filter((e) => e.source_id === node.id || e.target_id === node.id).length;
@@ -277,7 +280,10 @@ const NodeDetail: React.FC<NodeDetailProps> = ({ node, navigate, t, isAdmin, isE
   }, [node]);
 
   const handleSave = () => {
-    const updatedAttrs: Record<string, unknown> = { ...attrs };
+    // The own fields save themselves (OwnFields); the form leaves them alone.
+    const updatedAttrs: Record<string, unknown> = Object.fromEntries(
+      Object.entries(attrs).filter(([k]) => !isOwnField(k)),
+    );
     if (node.type === "Process") {
       if (parentId) {
         updatedAttrs.parent_id = parentId;
@@ -439,7 +445,9 @@ const NodeDetail: React.FC<NodeDetailProps> = ({ node, navigate, t, isAdmin, isE
             const definedFields = ATTR_FIELDS[node.type as keyof typeof ATTR_FIELDS] ?? [];
             const definedKeys = new Set(definedFields.map((f) => f.key));
             // Show defined fields first (always), then any extra stored attrs
-            const extraKeys = Object.keys(attrs).filter((k) => k !== "parent_id" && k !== LIST_KEY && !definedKeys.has(k));
+            const extraKeys = Object.keys(attrs).filter(
+              (k) => k !== "parent_id" && k !== LIST_KEY && !definedKeys.has(k) && !isOwnField(k),
+            );
             // Ett förslag på ett fält objektet ännu saknar ska också synas.
             for (const f of pendingByField.keys()) {
               const k = f.startsWith("attributes.") ? f.slice("attributes.".length) : null;
@@ -474,6 +482,13 @@ const NodeDetail: React.FC<NodeDetailProps> = ({ node, navigate, t, isAdmin, isE
           })()}
         </TableBody>
       </Table>
+      {node.type !== "CustomObject" && (
+        <OwnFields
+          kind="nodes" type={node.type} ownerId={node.id} attributes={node.attributes}
+          canEdit={isEditor} isAdmin={isSystemAdmin}
+          onSave={(values) => updateNodeFields.mutateAsync({ id: node.id, values })}
+        />
+      )}
       {proposing && (
         <Box sx={{ mt: 1.5 }}>
           <TextField
@@ -1061,6 +1076,12 @@ const EdgeDetail: React.FC<EdgeDetailProps> = ({ edge, t, isAdmin, isEditor, onR
   const delEdge = useDeleteEdgeHook();
   const updateNote = useUpdateEdgeNote();
   const updateDirection = useUpdateEdgeDirection();
+  const updateFields = useUpdateEdgeFields();
+  const isSystemAdmin = useRoleStore((s) => s.isAdmin);
+  // The panel shows the edge as it was when it was clicked; what is saved
+  // since then is kept here so the fields show it.
+  const [savedFields, setSavedFields] = useState<Record<string, unknown>>({});
+  useEffect(() => setSavedFields({}), [edge.id]);
   const clearSelection = useGraphStore((s) => s.clearSelection);
   const { enqueueSnackbar } = useSnackbar();
   const [replacing, setReplacing] = useState<"source" | "target" | null>(null);
@@ -1105,6 +1126,10 @@ const EdgeDetail: React.FC<EdgeDetailProps> = ({ edge, t, isAdmin, isEditor, onR
         target_id: newTarget,
         type: edge.type,
         ...(direction ? { direction } : {}),
+        // The own fields follow the connection to its new end.
+        attributes: Object.fromEntries(
+          Object.entries({ ...edge.attributes, ...savedFields }).filter(([k, v]) => isOwnField(k) && v != null),
+        ),
       });
       await delEdge.mutateAsync(edge.id);
       enqueueSnackbar(t("nodeDetail.replaceSuccess"), { variant: "success" });
@@ -1198,6 +1223,15 @@ const EdgeDetail: React.FC<EdgeDetailProps> = ({ edge, t, isAdmin, isEditor, onR
           )}
         </Stack>
       )}
+
+      <OwnFields
+        kind="edges" type={edge.type} ownerId={edge.id} attributes={{ ...edge.attributes, ...savedFields }}
+        canEdit={isEditor} isAdmin={isSystemAdmin}
+        onSave={async (values) => {
+          await updateFields.mutateAsync({ id: edge.id, values });
+          setSavedFields((s) => ({ ...s, ...values }));
+        }}
+      />
 
       {/* Replace picker */}
       {replacing && (

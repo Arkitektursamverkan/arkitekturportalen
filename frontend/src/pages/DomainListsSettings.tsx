@@ -11,8 +11,8 @@ import { isAxiosError } from "axios";
 import { useNodes } from "@/api/nodes";
 import { usePublicOrgSettings, useSaveDomainLists } from "@/api/orgSettings";
 import {
-  DOMAINS, LIST_KEY, OPTIONAL_LISTS, slug,
-  type CustomList, type DomainKey, type DomainLists, type ListFieldType,
+  DOMAINS, LIST_KEY, OPTIONAL_LISTS, ownFieldKey, ownFieldsFor, slug,
+  type CustomList, type DomainKey, type DomainLists, type ExtraField, type ListFieldType, type OwnFieldKind,
 } from "@/config/domainLists";
 
 /**
@@ -110,6 +110,93 @@ const ListDialog: React.FC<{
   );
 };
 
+/** The types own fields can sit on. An own list has its fields in its own definition. */
+const OWN_FIELD_TARGETS: { kind: OwnFieldKind; titleKey: string; labelPrefix: string; types: string[] }[] = [
+  {
+    kind: "nodes", titleKey: "domainLists.ownFieldsObjects", labelPrefix: "nodeTypes",
+    types: ["Process", "InformationObject", "InformationSource", "Application", "TechnologyComponent", "Server", "ServerService", "ArchitecturePrinciple"],
+  },
+  {
+    kind: "edges", titleKey: "domainLists.ownFieldsConnections", labelPrefix: "edgeTypes",
+    types: ["INTEGRATES_WITH", "USES", "SUPPORTS", "HANDLES", "REALIZES", "CONTAINS", "RUNS_ON"],
+  },
+];
+
+const OwnFieldsDialog: React.FC<{
+  typeLabel: string;
+  fields: ExtraField[];
+  onClose: () => void;
+  onSave: (fields: ExtraField[]) => void;
+}> = ({ typeLabel, fields, onClose, onSave }) => {
+  const { t } = useTranslation();
+  const [draft, setDraft] = useState<ExtraField[]>(fields);
+  const setField = (i: number, patch: Partial<ExtraField>) =>
+    setDraft((d) => d.map((f, k) => (k === i ? { ...f, ...patch } : f)));
+  const named = draft.filter((f) => f.label.trim());
+  // A choice needs something to choose between, and two fields cannot share a name.
+  const incomplete = named.some((f) => f.type === "choice" && f.options.length === 0)
+    || new Set(named.map((f) => f.label.trim().toLowerCase())).size !== named.length;
+
+  const save = () => {
+    const keys = named.map((f) => f.key).filter(Boolean);
+    onSave(named.map((f) => {
+      // A field keeps its key when it is renamed: the values lie under it.
+      const key = f.key || ownFieldKey(f.label, keys);
+      if (!f.key) keys.push(key);
+      return { key, label: f.label.trim(), type: f.type, options: f.type === "choice" ? f.options : [] };
+    }));
+  };
+
+  return (
+    <Dialog open onClose={onClose} maxWidth="md" fullWidth>
+      <DialogTitle>{t("domainLists.ownFieldsFor", { type: typeLabel })}</DialogTitle>
+      <DialogContent>
+        <Stack spacing={2} sx={{ mt: 1 }}>
+          {draft.map((f, i) => (
+            <Stack key={i} direction={{ xs: "column", sm: "row" }} spacing={1} sx={{ alignItems: { sm: "flex-start" } }}>
+              <TextField
+                size="small" label={t("domainLists.fieldLabel")} value={f.label} sx={{ flexGrow: 1 }} autoFocus={!f.key && !f.label}
+                onChange={(e) => setField(i, { label: e.target.value })}
+              />
+              <TextField
+                size="small" select label={t("domainLists.fieldType")} value={f.type} sx={{ minWidth: 130 }}
+                onChange={(e) => setField(i, { type: e.target.value as ExtraField["type"] })}
+              >
+                {(["text", "choice"] as const).map((ft) => <MenuItem key={ft} value={ft}>{t(`domainLists.ownFieldTypes.${ft}`)}</MenuItem>)}
+              </TextField>
+              {f.type === "choice" && (
+                <TextField
+                  size="small" label={t("domainLists.fieldOptions")} sx={{ flexGrow: 1 }}
+                  helperText={t("domainLists.ownFieldsOptionsHint")}
+                  defaultValue={f.options.join(", ")}
+                  onChange={(e) => setField(i, {
+                    options: [...new Set(e.target.value.split(",").map((o) => o.trim()).filter(Boolean))],
+                  })}
+                />
+              )}
+              <IconButton aria-label={t("domainLists.removeField")} onClick={() => setDraft((d) => d.filter((_, k) => k !== i))}>
+                <DeleteIcon fontSize="small" />
+              </IconButton>
+            </Stack>
+          ))}
+          <Box>
+            <Button
+              size="small" startIcon={<AddIcon />}
+              onClick={() => setDraft((d) => [...d, { key: "", label: "", type: "text", options: [] }])}
+            >
+              {t("domainLists.addField")}
+            </Button>
+          </Box>
+        </Stack>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>{t("common.cancel")}</Button>
+        <Button variant="contained" disabled={incomplete} onClick={save}>{t("common.save")}</Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
 const DomainListsSettings: React.FC = () => {
   const { t } = useTranslation();
   const { data: org } = usePublicOrgSettings();
@@ -117,6 +204,7 @@ const DomainListsSettings: React.FC = () => {
   const saveLists = useSaveDomainLists();
   const [lists, setLists] = useState<DomainLists>({ disabled: [], custom: [] });
   const [editing, setEditing] = useState<CustomList | "new" | null>(null);
+  const [editingFields, setEditingFields] = useState<{ kind: OwnFieldKind; type: string; label: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -138,6 +226,11 @@ const DomainListsSettings: React.FC = () => {
     setEditing(null);
     const exists = lists.custom.some((c) => c.key === list.key);
     save({ ...lists, custom: exists ? lists.custom.map((c) => (c.key === list.key ? list : c)) : [...lists.custom, list] });
+  };
+  const putOwnFields = (kind: OwnFieldKind, type: string, fields: ExtraField[]) => {
+    setEditingFields(null);
+    const extra = lists.extra_fields ?? { nodes: {}, edges: {} };
+    save({ ...lists, extra_fields: { ...extra, [kind]: { ...extra[kind], [type]: fields } } });
   };
   const countIn = (key: string) => nodes.filter((n) => n.type === "CustomObject" && n.attributes?.[LIST_KEY] === key).length;
 
@@ -206,6 +299,58 @@ const DomainListsSettings: React.FC = () => {
           <Alert severity="info" sx={{ mt: 2 }}>{t("domainLists.syncHint")}</Alert>
         </CardContent>
       </Card>
+
+      <Card variant="outlined" sx={{ mt: 3 }}>
+        <CardContent>
+          <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>{t("domainLists.ownFields")}</Typography>
+          <Typography variant="body2" sx={{ color: "text.secondary", mb: 1 }}>{t("domainLists.ownFieldsHint")}</Typography>
+          {OWN_FIELD_TARGETS.map((group) => (
+            <Box key={group.kind} sx={{ mt: 1.5 }}>
+              <Typography variant="subtitle2" sx={{ mb: 0.5 }}>{t(group.titleKey)}</Typography>
+              <Stack spacing={0.5}>
+                {group.types.filter((type) => !lists.disabled.includes(type)).map((type) => {
+                  const label = t(`${group.labelPrefix}.${type}`);
+                  const fields = ownFieldsFor(lists, group.kind, type);
+                  return (
+                    <Stack key={type} direction="row" spacing={1} sx={{ alignItems: "center", minHeight: 34 }}>
+                      <Typography variant="body2" sx={{ width: 190, flexShrink: 0 }}>{label}</Typography>
+                      <Stack direction="row" spacing={0.5} useFlexGap sx={{ flexGrow: 1, flexWrap: "wrap", minWidth: 0 }}>
+                        {fields.length === 0 && (
+                          <Typography variant="body2" sx={{ color: "text.disabled" }}>{t("domainLists.ownFieldsNone")}</Typography>
+                        )}
+                        {fields.map((f) => (
+                          <Chip
+                            key={f.key} size="small" variant="outlined"
+                            label={f.type === "choice" ? `${f.label}: ${f.options.join(", ")}` : f.label}
+                            sx={{ maxWidth: "100%" }}
+                          />
+                        ))}
+                      </Stack>
+                      <Tooltip title={t("domainLists.ownFieldsEdit")}>
+                        <IconButton
+                          size="small" aria-label={`${t("domainLists.ownFieldsEdit")}: ${label}`} disabled={saveLists.isPending}
+                          onClick={() => setEditingFields({ kind: group.kind, type, label })}
+                        >
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </Stack>
+                  );
+                })}
+              </Stack>
+            </Box>
+          ))}
+        </CardContent>
+      </Card>
+
+      {editingFields && (
+        <OwnFieldsDialog
+          typeLabel={editingFields.label}
+          fields={ownFieldsFor(lists, editingFields.kind, editingFields.type)}
+          onClose={() => setEditingFields(null)}
+          onSave={(fields) => putOwnFields(editingFields.kind, editingFields.type, fields)}
+        />
+      )}
 
       {editing && (
         <ListDialog

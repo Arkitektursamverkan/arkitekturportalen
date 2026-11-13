@@ -26,6 +26,7 @@ from app.dal.node_content_repository import (
 from app.dal.workspace_repository import (
     WorkspaceRepository,  # also registers the workspace models
 )
+from app.domain_lists import keep_own, with_own_values
 from app.models.audit import AuditLogORM
 from app.models.base import Base
 from app.models.comment import CommentORM
@@ -290,9 +291,34 @@ class PostgresRepository(GraphRepository):
                 return None
             before = _node_snapshot(row)
             for field, val in data.model_dump(exclude_none=True).items():
+                # A form sends the attributes it knows; the own fields stay.
+                if field == "attributes":
+                    val = keep_own(row.attributes, val)
                 setattr(row, field, val)
             after = _node_snapshot(row)
             # A save that changes nothing is not a change: no audit row.
+            if after != before:
+                row.updated_at = datetime.now(UTC)
+                await self._audit(
+                    s, "UPDATE", "node", node_id,
+                    entity_name=row.name, entity_subtype=row.type,
+                    snapshot_before=before, snapshot_after=after, user_name=user_name,
+                )
+            await s.commit()
+            await s.refresh(row)
+            return _node_to_read(row)
+
+    async def update_node_fields(
+        self, node_id: UUID, values: dict[str, str | None], user_name: str | None = None
+    ) -> NodeRead | None:
+        """Write own field values (app.domain_lists) on a node; None clears one."""
+        async with self._session_factory() as s:
+            row = await s.get(NodeORM, node_id)
+            if not row:
+                return None
+            before = _node_snapshot(row)
+            row.attributes = with_own_values(row.attributes, values)
+            after = _node_snapshot(row)
             if after != before:
                 row.updated_at = datetime.now(UTC)
                 await self._audit(
@@ -348,7 +374,8 @@ class PostgresRepository(GraphRepository):
                 before = _node_snapshot(row)
                 row.name = data.name
                 row.description = data.description
-                row.attributes = data.attributes
+                # The source owns its attributes; what people filled in stays.
+                row.attributes = keep_own(row.attributes, data.attributes)
                 # A node reappearing in a sync means the source has it again —
                 # un-prune it, since the source pruning step (sync.py) archives
                 # nodes that drop out of a batch and relies on this to reverse it.
@@ -490,6 +517,27 @@ class PostgresRepository(GraphRepository):
             await s.commit()
             await s.refresh(row)
             log.info("edge.direction_changed", id=str(edge_id), direction=direction.value)
+            return _edge_to_read(row)
+
+    async def update_edge_fields(self, edge_id: UUID, values: dict[str, str | None]) -> EdgeRead | None:
+        """Write own field values (app.domain_lists) on an edge; None clears one."""
+        async with self._session_factory() as s:
+            row = await s.get(EdgeORM, edge_id)
+            if not row:
+                return None
+            before = _edge_snapshot(row)
+            row.attributes = with_own_values(row.attributes, values)
+            after = _edge_snapshot(row)
+            if after != before:
+                row.updated_at = datetime.now(UTC)
+                await self._audit(
+                    s, "UPDATE", "edge", edge_id,
+                    entity_name=f"{row.source_id} → {row.target_id}",
+                    entity_subtype=row.type,
+                    snapshot_before=before, snapshot_after=after,
+                )
+            await s.commit()
+            await s.refresh(row)
             return _edge_to_read(row)
 
     async def delete_edge(self, edge_id: UUID) -> bool:

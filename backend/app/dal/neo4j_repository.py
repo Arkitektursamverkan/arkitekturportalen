@@ -279,6 +279,14 @@ class Neo4jRepository(GraphRepository):
             "update_edge_direction is not supported by the Neo4j backend"
         )
 
+    async def update_edge_fields(self, edge_id: UUID, values: dict[str, str | None]) -> EdgeRead | None:
+        raise NotImplementedError("update_edge_fields is not supported by the Neo4j backend")
+
+    async def update_node_fields(
+        self, node_id: UUID, values: dict[str, str | None], user_name: str | None = None
+    ) -> NodeRead | None:
+        raise NotImplementedError("update_node_fields is not supported by the Neo4j backend")
+
     # ── Graph views ───────────────────────────────────────────────────────────
 
     async def get_process_e2e(self, process_id: UUID) -> GraphData:

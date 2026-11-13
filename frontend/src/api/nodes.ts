@@ -47,6 +47,16 @@ export function useUpdateNode() {
   });
 }
 
+/** Fill in the fields an admin added to the object type; null clears one. */
+export function useUpdateNodeFields() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, values }: { id: string; values: Record<string, string | null> }) =>
+      apiClient.patch<NodeRead>(`/nodes/${id}/fields`, { values }).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: nodeKeys.all }),
+  });
+}
+
 export function useDeleteNode() {
   const qc = useQueryClient();
   return useMutation({
