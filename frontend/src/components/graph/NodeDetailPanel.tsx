@@ -24,6 +24,7 @@ import OwnFields from "@/components/common/OwnFields";
 import { NODE_COLORS, ATTR_FIELDS, getValidEdgeTypes, getIntegrationDirection } from "@/config/graphConfig";
 import IntegrationDirectionSelect from "./IntegrationDirectionSelect";
 import { useGraphStore } from "@/store/graphStore";
+import { useClearSelectionOnNavigate } from "@/store/useClearSelectionOnNavigate";
 import { useRoleStore } from "@/store/roleStore";
 import { useUpdateNode, useUpdateNodeFields, useDeleteNode, useNodes as useAllNodes } from "@/api/nodes";
 import { useDeleteEdge, useEdges, useUpdateEdgeFields, useUpdateEdgeNote, useUpdateEdgeDirection } from "@/api/edges";
@@ -60,6 +61,8 @@ const NodeDetailPanel: React.FC = () => {
   const [, setSearchParams] = useSearchParams();
   const { selectedNode, selectedEdge, clearSelection, selectNode } = useGraphStore();
   const { isAdmin } = useRoleStore();
+  // Going to another page closes the panel.
+  useClearSelectionOnNavigate();
   // Whoever a grant lets edit the object — a förvaltare of one application
   // or process branch as much as a superuser — gets the edit and delete buttons.
   const { data: nodePerms } = useNodePermissions(selectedNode?.id);
