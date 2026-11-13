@@ -24,6 +24,7 @@ import OwnFields from "@/components/common/OwnFields";
 import { NODE_COLORS, ATTR_FIELDS, getValidEdgeTypes, getIntegrationDirection } from "@/config/graphConfig";
 import IntegrationDirectionSelect from "./IntegrationDirectionSelect";
 import { useGraphStore } from "@/store/graphStore";
+import { useClearSelectionOnNavigate } from "@/store/useClearSelectionOnNavigate";
 import { useRoleStore } from "@/store/roleStore";
 import { useUpdateNode, useUpdateNodeFields, useDeleteNode, useNodes as useAllNodes } from "@/api/nodes";
 import { useDeleteEdge, useEdges, useUpdateEdgeFields, useUpdateEdgeNote, useUpdateEdgeDirection } from "@/api/edges";
@@ -60,6 +61,8 @@ const NodeDetailPanel: React.FC = () => {
   const [, setSearchParams] = useSearchParams();
   const { selectedNode, selectedEdge, clearSelection, selectNode } = useGraphStore();
   const { isAdmin } = useRoleStore();
+  // Going to another page closes the panel.
+  useClearSelectionOnNavigate();
   // Whoever a grant lets edit the object — a förvaltare of one application
   // or process branch as much as a superuser — gets the edit and delete buttons.
   const { data: nodePerms } = useNodePermissions(selectedNode?.id);
@@ -1140,6 +1143,11 @@ const EdgeDetail: React.FC<EdgeDetailProps> = ({ edge, t, isAdmin, isEditor, onR
   };
 
   const isPending = createEdge.isPending || delEdge.isPending;
+  // What has its own control is not listed once more as a raw key and value:
+  // the direction showed up as "direction BIDIRECTIONAL" under its own buttons.
+  const otherAttributes = Object.entries(edge.attributes ?? {}).filter(
+    ([k]) => k !== "note" && k !== "direction" && !isOwnField(k),
+  );
 
   return (
     <Box>
@@ -1339,11 +1347,11 @@ const EdgeDetail: React.FC<EdgeDetailProps> = ({ edge, t, isAdmin, isEditor, onR
         )}
       </Box>
 
-      {/* Extra attributes (excluding note which has its own UI) */}
-      {Object.keys(edge.attributes ?? {}).filter((k) => k !== "note").length > 0 && (
+      {/* Extra attributes – the note, the direction and the own fields have their own UI above */}
+      {otherAttributes.length > 0 && (
         <Table size="small" sx={{ mt: 1 }}>
           <TableBody>
-            {Object.entries(edge.attributes ?? {}).filter(([k]) => k !== "note").map(([k, v]) => (
+            {otherAttributes.map(([k, v]) => (
               <TableRow key={k}>
                 <TableCell sx={{ border: 0, pl: 0, py: 0.5, color: "text.secondary", fontSize: 12 }}>{k}</TableCell>
                 <TableCell sx={{ border: 0, py: 0.5, fontSize: 12 }}>{String(v)}</TableCell>
