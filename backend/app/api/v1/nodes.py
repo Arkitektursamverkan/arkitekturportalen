@@ -11,11 +11,11 @@ from app.access import ensure_visible, filter_nodes, get_optional_user, load_pol
 from app.auth import CurrentUser
 from app.dal.postgres_repository import PostgresRepository
 from app.dependencies import get_repository, require_admin, require_user
-from app.domain_lists import LIST_KEY
+from app.domain_lists import LIST_KEY, clean_own_values
 from app.domain_lists import parse as parse_lists
 from app.models.node_deletion_log import NodeDeletionLogORM
 from app.schemas.common import NodeType
-from app.schemas.node import NodeCreate, NodeRead, NodeUpdate
+from app.schemas.node import NodeCreate, NodeRead, NodeUpdate, OwnFieldValues
 from app.services import org_settings
 
 router = APIRouter(prefix="/nodes", tags=["nodes"])
@@ -90,6 +90,28 @@ async def update_node(node_id: UUID, data: NodeUpdate, user: CurrentUser = Depen
         if new_parent != (existing.attributes.get("parent_id") or None):
             policy.require_create(existing.type, new_parent)
     node = await repo.update_node(node_id, data, user_name=_who(user))
+    if not node:
+        raise HTTPException(status_code=404, detail="Node not found")
+    return node
+
+
+@router.patch("/{node_id}/fields", response_model=NodeRead)
+async def update_node_fields(
+    node_id: UUID, data: OwnFieldValues, user: CurrentUser = Depends(require_user),
+) -> NodeRead:
+    """Fill in the fields an admin added to this object type."""
+    repo = get_repository()
+    existing = await repo.get_node(node_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="Node not found")
+    await ensure_visible(user, existing)
+    (await load_policy(user)).require_edit(existing)
+    fields = parse_lists(org_settings.domain_lists()).extra_fields.nodes.get(existing.type, [])
+    try:
+        values = clean_own_values(fields, data.values)
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e)) from e
+    node = await repo.update_node_fields(node_id, values, user_name=_who(user))
     if not node:
         raise HTTPException(status_code=404, detail="Node not found")
     return node

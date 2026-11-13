@@ -66,6 +66,12 @@ class GraphRepository(ABC):
         """Partial-update a node; return None if not found."""
 
     @abstractmethod
+    async def update_node_fields(
+        self, node_id: UUID, values: dict[str, str | None], user_name: str | None = None
+    ) -> NodeRead | None:
+        """Write own field values on a node (None clears one); None if not found."""
+
+    @abstractmethod
     async def delete_node(self, node_id: UUID, user_name: str | None = None) -> bool:
         """Delete a node (cascades to its edges); return True if deleted."""
 
@@ -115,6 +121,10 @@ class GraphRepository(ABC):
         self, edge_id: UUID, direction: IntegrationDirection
     ) -> EdgeRead | None:
         """Set which way an integration flows; None if the edge is not found."""
+
+    @abstractmethod
+    async def update_edge_fields(self, edge_id: UUID, values: dict[str, str | None]) -> EdgeRead | None:
+        """Write own field values on an edge (None clears one); None if not found."""
 
     # ── Graph views ───────────────────────────────────────────────────────────
 

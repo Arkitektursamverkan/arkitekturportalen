@@ -52,6 +52,19 @@ export function useUpdateEdgeDirection() {
   });
 }
 
+/** Fill in the fields an admin added to the connection type; null clears one. */
+export function useUpdateEdgeFields() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, values }: { id: string; values: Record<string, string | null> }) =>
+      apiClient.patch<EdgeRead>(`/edges/${id}/fields`, { values }).then((r) => r.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: edgeKeys.all });
+      qc.invalidateQueries({ queryKey: ["views"] });
+    },
+  });
+}
+
 export function useDeleteEdge() {
   const qc = useQueryClient();
   return useMutation({

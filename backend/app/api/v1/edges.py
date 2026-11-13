@@ -8,7 +8,11 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from app.access import filter_edges, get_optional_user, hidden_node_ids, load_policy
 from app.auth import CurrentUser
 from app.dependencies import get_repository, require_user
+from app.domain_lists import clean_own_values
+from app.domain_lists import parse as parse_lists
 from app.schemas.edge import EdgeCreate, EdgeDirectionUpdate, EdgeRead, EdgeUpdate
+from app.schemas.node import OwnFieldValues
+from app.services import org_settings
 
 router = APIRouter(prefix="/edges", tags=["edges"])
 
@@ -80,6 +84,25 @@ async def update_edge_direction(
     await _require_write(user, existing.source_id, existing.target_id)
     repo = get_repository()
     edge = await repo.update_edge_direction(edge_id, data.direction)
+    if not edge:
+        raise HTTPException(status_code=404, detail="Edge not found")
+    return edge
+
+
+@router.patch("/{edge_id}/fields", response_model=EdgeRead)
+async def update_edge_fields(
+    edge_id: UUID, data: OwnFieldValues, user: CurrentUser = Depends(require_user),
+) -> EdgeRead:
+    """Fill in the fields an admin added to this connection type."""
+    existing = await _visible_edge(edge_id, user)
+    await _require_write(user, existing.source_id, existing.target_id)
+    fields = parse_lists(org_settings.domain_lists()).extra_fields.edges.get(existing.type, [])
+    try:
+        values = clean_own_values(fields, data.values)
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e)) from e
+    repo = get_repository()
+    edge = await repo.update_edge_fields(edge_id, values)
     if not edge:
         raise HTTPException(status_code=404, detail="Edge not found")
     return edge
