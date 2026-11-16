@@ -7,6 +7,10 @@ funktioner, en ny korrigering för rättelser.
 
 ## Ej släppt
 
+- (inget än)
+
+## 0.19.0 – 2026-11-16
+
 - **Enkäter: lista över dem som inte svarat.** Under *Mottagare* på en enkät finns knappen **Inte svarat**. Den visar vilka som fått enkäten men inte svarat – en rad per person med namn och e-post, och hur många av personens objekt som är obesvarade när enkäten går ut per objekt. Adresserna kan kopieras till Outlooks Till-fält, och listan kan laddas ner som CSV för Excel. Den som inte fått enkäten utskickad är inte med. Ingen databasändring.
 
 ## 0.18.0 – 2026-11-13
