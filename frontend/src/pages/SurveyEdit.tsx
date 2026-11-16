@@ -30,6 +30,8 @@ import { useRoleStore } from "@/store/roleStore";
 import TargetTypePicker, { NODE_TYPES, NODE_TYPE_LABEL } from "@/components/surveys/TargetTypePicker";
 import SurveyPreviewDialog from "@/components/surveys/SurveyPreviewDialog";
 import VariableTextField from "@/components/surveys/VariableTextField";
+import NonRespondentsDialog from "@/components/surveys/NonRespondentsDialog";
+import { nonRespondents, sentRecipientCount } from "@/utils/surveyNonRespondents";
 import { END_SURVEY } from "@/utils/surveyFlow";
 
 const QUESTION_TYPE_LABEL: Record<QuestionType, string> = {
@@ -117,6 +119,7 @@ const SurveyEdit: React.FC = () => {
   const [manualNode, setManualNode] = useState<NodeRead | null>(null);
   const [confirmDeleteResponse, setConfirmDeleteResponse] = useState<{ id: string; label: string } | null>(null);
   const [emailListOpen, setEmailListOpen] = useState(false);
+  const [nonRespondentsOpen, setNonRespondentsOpen] = useState(false);
   const [emailCopyState, setEmailCopyState] = useState<"idle" | "copied" | "failed">("idle");
   // Nothing pre-checked: after resolving recipients, the admin explicitly
   // picks who to launch to (one, a few, or "Välj alla" for everyone) rather
@@ -170,6 +173,9 @@ const SurveyEdit: React.FC = () => {
     () => uniqueRecipientEmails(responses ?? []).length - emailList.length,
     [responses, emailList],
   );
+  // "Inte svarat": the people who were sent the survey and still have rows to answer.
+  const notAnswered = useMemo(() => nonRespondents(responses ?? []), [responses]);
+  const sentCount = useMemo(() => sentRecipientCount(responses ?? []), [responses]);
   // Semicolon-separated: what Outlook's To field expects.
   const emailListText = emailList.join("; ");
 
@@ -561,7 +567,12 @@ const SurveyEdit: React.FC = () => {
       <Paper variant="outlined" sx={{ p: 3, mb: 3 }}>
         <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center", mb: 1 }}>
           <Typography variant="h6">{isRandom ? "Slumpade svar" : "Mottagare"}</Typography>
-          <Stack direction="row" spacing={1}>
+          <Stack
+            direction="row"
+            spacing={1}
+            useFlexGap
+            sx={{ flexWrap: "wrap", justifyContent: "flex-end", "& .MuiButton-root": { whiteSpace: "nowrap" } }}
+          >
             {!isRandom && (
               <>
                 <Button onClick={() => resolveRecipients.mutateAsync()} disabled={resolveRecipients.isPending}>
@@ -579,6 +590,9 @@ const SurveyEdit: React.FC = () => {
                   }}
                 >
                   Kopiera e-postlista
+                </Button>
+                <Button disabled={sentCount === 0} onClick={() => setNonRespondentsOpen(true)}>
+                  Inte svarat{sentCount > 0 ? ` (${notAnswered.length})` : ""}
                 </Button>
               </>
             )}
@@ -896,6 +910,14 @@ const SurveyEdit: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <NonRespondentsDialog
+        open={nonRespondentsOpen}
+        onClose={() => setNonRespondentsOpen(false)}
+        surveyTitle={survey.title}
+        people={notAnswered}
+        sentCount={sentCount}
+      />
     </Container>
   );
 };
