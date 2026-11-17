@@ -7,6 +7,10 @@ funktioner, en ny korrigering för rättelser.
 
 ## Ej släppt
 
+- (inget än)
+
+## 0.20.0 – 2026-11-17
+
 - **Förändringsstatistiken räknar netto per objekt.** Ett objekt som lagts till och tagits bort igen under perioden – eller tagits bort och kommit tillbaka, hur många gånger som helst – är ingen förändring av landskapet, men varje vändning räknades som en tillagd och en borttagen. Nu räknas varje objekt en gång, efter hur perioden slutade för det: nytt, borttaget eller oförändrat. Rutan **Fram och tillbaka** visar hur många objekt som saknar nettoeffekt och hur många händelser som därför inte räknas. Växeln **Netto per objekt / Alla händelser** bredvid filtren ger det gamla sättet att räkna tillbaka; den styr rutorna, graferna, tabellerna och CSV-exporten. Nettoförändringen är densamma i båda lägena. Gäller också historiken bakåt. Ingen databasändring.
 - **Rättat: synkningen arkiverade och återställde "Processer utan prefix" varannan körning.** Behållaren för processer utan prefix hölls bara vid liv de körningar då en process saknade förälder; körningen efter arkiverades den, och nästa körning tömde processernas förälder och skapade om den. I statistiken blev det en tillagd och en borttagen process för varje par av körningar. Behållaren ligger nu kvar så länge källan har någon process som hör hemma i den, och arkiveras först när den är tom.
 
