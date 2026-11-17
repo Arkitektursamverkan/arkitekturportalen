@@ -7,6 +7,10 @@ funktioner, en ny korrigering för rättelser.
 
 ## Ej släppt
 
+- (inget än)
+
+## 0.22.0 – 2026-11-17
+
 - **Verksamhetskalendern kan fyllas från Integrationsplattformen.** I importguiden och i synkprofilerna finns ett nytt mål, **Verksamhetskalender**, bredvid objekttyperna. Varje post i flödet blir en fastställd heldagshändelse på sitt datum. Mappa namn och datum (ÅÅÅÅ-MM-DD), och om du vill beskrivning, antal dagar, ansvarig och avdelningar. Med en synkprofil hålls kalendern efter: ändrat datum flyttar händelsen, och en post som försvinner i källan tas bort ur kalendern. Det en redaktör lägger till i portalen – kopplade objekt, ändringsstopp, övriga beroenden – ligger kvar, medan fälten från källan skrivs över vid nästa körning. Händelsen visar att den hämtas från en integration. En omkörning utan ändringar skriver ingenting i ändringsloggen, och en källa som svarar tomt tömmer inte kalendern. **Kräver databasmigrering** (0073: två nya kolumner på kalenderhändelserna), som körs automatiskt vid start.
 
 ## 0.21.0 – 2026-11-17
