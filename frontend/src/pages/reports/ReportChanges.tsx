@@ -19,7 +19,7 @@ import { ownFieldLabel } from "@/config/domainLists";
 import ReportTitle from "@/components/reports/ReportTitle";
 import {
   ALL_TYPES, GRAIN_LABEL, KIND_LABEL, KINDS, LAYERS, addDays, autoGrain, countKinds, csvCell, isoDate,
-  kindColor, layerColor, layerLabel, layerOf, perBucket, perField, perObject, perType, startOfDay,
+  kindColor, layerColor, layerLabel, layerOf, netEvents, perBucket, perField, perObject, perType, startOfDay,
   stockPerBucket, typeColor, type Grain, type LayerKey, type Mode, type ObjectRow, type SplitBy,
 } from "@/utils/changeStats";
 
@@ -172,6 +172,8 @@ const ReportChanges: React.FC = () => {
   const [grainChoice, setGrainChoice] = useState<Grain | "auto">("auto");
   const [split, setSplit] = useState<SplitBy>("kind");
   const [tab, setTab] = useState<"objects" | "events">("objects");
+  // Net: every object counts once, by where it ended up. All: every event.
+  const [counting, setCounting] = useState<"net" | "all">("net");
 
   const { data, isFetching, isError } = useChangeStatistics(period.from, period.to, types);
   const { data: org } = usePublicOrgSettings();
@@ -193,7 +195,7 @@ const ReportChanges: React.FC = () => {
   const sources = useMemo(() => [...new Set(allEvents.map((e) => e.source))].sort(), [allEvents]);
   const showsWho = allEvents.some((e) => e.by !== null);
 
-  const events = useMemo(() => {
+  const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return allEvents.filter((e) =>
       kinds.includes(e.kind)
@@ -203,6 +205,8 @@ const ReportChanges: React.FC = () => {
       && (!q || (e.name ?? "").toLowerCase().includes(q)),
     );
   }, [allEvents, kinds, who, source, field, search]);
+  const net = useMemo(() => netEvents(filtered), [filtered]);
+  const events = counting === "net" ? net.events : filtered;
 
   const seriesKeys: string[] = split === "kind" ? KINDS : split === "layer"
     ? LAYERS.filter((l) => l.types.some((x) => types.includes(x))).map((l) => l.key)
@@ -318,8 +322,10 @@ const ReportChanges: React.FC = () => {
         <ReportTitle fallback={t("nav.reportChanges", "Förändringsstatistik")} />
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        Tillagda, uppdaterade och borttagna objekt per BDAT-lager och objekttyp. Klicka i graferna för att borra
-        ned: en stapel öppnar perioden, en objekttyp eller ett fält filtrerar allt på sidan.
+        Tillagda, uppdaterade och borttagna objekt per BDAT-lager och objekttyp. Med <em>Netto per objekt</em> räknas
+        varje objekt en gång, efter hur perioden slutade för det; <em>Alla händelser</em> räknar varje vändning.
+        Klicka i graferna för att borra ned: en stapel öppnar perioden, en objekttyp eller ett fält filtrerar allt
+        på sidan.
       </Typography>
 
       {/* ── Filters: one row, above everything they scope ── */}
@@ -387,6 +393,17 @@ const ReportChanges: React.FC = () => {
             <MenuItem value="all">Alla</MenuItem>
             {sources.map((s) => <MenuItem key={s} value={s}>{sourceName(s)}</MenuItem>)}
           </TextField>
+          <ToggleButtonGroup size="small" exclusive value={counting}
+            onChange={(_, v: "net" | "all" | null) => { if (v) { setCounting(v); setPage(0); } }}>
+            <ToggleButton value="net"
+              title="Varje objekt räknas en gång. Det som lagts till och tagits bort igen, eller tvärtom, räknas inte.">
+              Netto per objekt
+            </ToggleButton>
+            <ToggleButton value="all"
+              title="Varje händelse räknas, också när samma objekt tas bort och läggs tillbaka flera gånger.">
+              Alla händelser
+            </ToggleButton>
+          </ToggleButtonGroup>
           <TextField size="small" label="Sök objekt" value={search} sx={{ width: 200 }}
             onChange={(e) => { setSearch(e.target.value); setPage(0); }} />
           {activeFilters.map((f) => <Chip key={f.label} label={f.label} size="small" onDelete={f.clear} />)}
@@ -418,6 +435,12 @@ const ReportChanges: React.FC = () => {
           <StatTile label="Uppdaterade" value={nf.format(totals.updated)} />
           <StatTile label="Borttagna" value={nf.format(totals.removed)} />
           <StatTile label="Nettoförändring" value={(totals.added - totals.removed > 0 ? "+" : "") + nf.format(totals.added - totals.removed)} />
+          {counting === "net" && (
+            <StatTile label="Fram och tillbaka" value={nf.format(net.roundTrips)}
+              hint={net.roundTrips
+                ? `objekt utan nettoeffekt · ${nf.format(net.dropped)} händelser räknas inte`
+                : "objekt utan nettoeffekt"} />
+          )}
           <StatTile label="Objekt vid periodens slut" value={nf.format(atEnd)} hint={periodText} />
         </Stack>
 

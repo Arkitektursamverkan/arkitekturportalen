@@ -253,6 +253,12 @@ async def _run_sync(profile: SyncProfile, repo: GraphRepository) -> dict[str, An
     # This runs BEFORE pruning so the no-prefix container can be added to the
     # synced set and not get immediately archived.
     container_ext_id: str | None = None
+    # What the source holds this run, under the ids the objects are stored by.
+    sent_ids: set[str] = set()
+    for rec in all_records:
+        ext_id = rec.get("external_id", rec.get("data", {}).get("external_id", ""))
+        if ext_id:
+            sent_ids.add(f"{profile.flow_id}:{ext_id}")
     if node_type == NodeType.PROCESS:
         try:
             all_processes = await repo.list_nodes(node_type="Process", limit=10000)
@@ -281,6 +287,7 @@ async def _run_sync(profile: SyncProfile, repo: GraphRepository) -> dict[str, An
                     and p.external_id.startswith(f"{profile.flow_id}:")
                     and p.external_id != no_prefix_container
                 ]
+                container = next((p for p in all_processes if p.external_id == no_prefix_container), None)
                 if orphaned:
                     container_ext_id = no_prefix_container
                     container_node, _ = await repo.upsert_node_by_external(
@@ -298,6 +305,14 @@ async def _run_sync(profile: SyncProfile, repo: GraphRepository) -> dict[str, An
                     for proc in orphaned:
                         await repo.update_node(proc.id, NodeUpdate(attributes=_with_parent(proc.attributes, cid)), user_name=SYNC_AUDIT_USER)
                     log.info("sync.no_prefix_container", flow_id=profile.flow_id, count=len(orphaned))
+                elif container and any(
+                    p.attributes.get("parent_id") == str(container.id) and p.external_id in sent_ids
+                    for p in all_processes
+                ):
+                    # Nothing new to put in it, but processes of this run still
+                    # sit in it. Without this the container was archived every
+                    # run that found no orphan and restored by the next one.
+                    container_ext_id = no_prefix_container
         except Exception as exc:
             log.warning("sync.parent_resolve_error", error=str(exc))
 
@@ -305,12 +320,7 @@ async def _run_sync(profile: SyncProfile, repo: GraphRepository) -> dict[str, An
     # We track which external_ids we touched in this run. For nodes NOT in the current batch,
     # we only archive if their external_id is in the set of IDs the platform has ever sent
     # (approximated by: the node was last_synced, meaning it was created/updated by upsert).
-    synced_external_ids = set()
-    for rec in all_records:
-        record_data = rec.get("data", {})
-        ext_id = rec.get("external_id", record_data.get("external_id", ""))
-        if ext_id:
-            synced_external_ids.add(f"{profile.flow_id}:{ext_id}")
+    synced_external_ids = set(sent_ids)
     # Keep the container alive as long as it was needed this run.
     if container_ext_id:
         synced_external_ids.add(container_ext_id)

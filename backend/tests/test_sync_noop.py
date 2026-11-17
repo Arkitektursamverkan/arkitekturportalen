@@ -114,6 +114,52 @@ async def test_resync_of_processes_is_quiet(repo, monkeypatch):
 
 
 @pytest.mark.asyncio
+async def test_container_for_prefixless_processes_stays(repo, monkeypatch):
+    """The container was archived every run that found no new orphan and
+    restored by the next – one "removed" and one "added" per pair of runs."""
+    flow_id = f"flow-{uuid.uuid4()}"
+    records = [
+        {"external_id": "1", "data": {"name": f"Utan prefix A {flow_id}", "prefix": ""}},
+        {"external_id": "2", "data": {"name": f"Utan prefix B {flow_id}", "prefix": ""}},
+    ]
+
+    class FakeClient:
+        def __init__(self, *a, **kw) -> None: ...
+        async def __aenter__(self): return self
+        async def __aexit__(self, *a): return False
+        async def get(self, *a, **kw): return _FakeResponse(records)
+
+    monkeypatch.setattr(sync_module.httpx, "AsyncClient", FakeClient)
+    monkeypatch.setenv("INTEGRATION_PLATFORM_URL", "http://platform.test/api/v1")
+    profile = SyncProfile(
+        flow_id=flow_id, node_type="Process", external_source_label="2C8", platform_api_key="k",
+        mappings=[{"source_field": "name", "target": "name"}, {"source_field": "prefix", "target": "attr:prefix"}],
+    )
+    container_ext = f"{flow_id}:__no_prefix__"
+
+    async def container(archived: bool):
+        nodes = await repo.list_nodes(node_type="Process", external_source="2C8", archived=archived, limit=10000)
+        return next((n for n in nodes if n.external_id == container_ext), None)
+
+    await _run_sync(profile, repo)
+    node = await container(archived=False)
+    assert node is not None
+    for _ in range(3):
+        await _run_sync(profile, repo)
+        assert await container(archived=False) is not None
+    # Created once, never archived or restored after that.
+    assert [r.action for r in await _audit_rows(repo, node.id)] == ["CREATE"]
+    assert await _update_rows_for(repo, f"{flow_id}:") == 2  # the two processes got their parent, once
+
+    # When the source no longer holds any process for it, the container goes.
+    records.clear()
+    records.append({"external_id": "3", "data": {"name": f"Med prefix {flow_id}", "prefix": f"{flow_id}-1"}})
+    await _run_sync(profile, repo)
+    assert await container(archived=False) is None
+    assert await container(archived=True) is not None
+
+
+@pytest.mark.asyncio
 async def test_usage_statistics_leave_out_sync(repo):
     before = await repo.get_usage_statistics(period_days=7)
     ext_id = f"test:{uuid.uuid4()}"

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { ChangeEvent } from "@/api/changeStatistics";
 import {
-  ALL_TYPES, LAYERS, autoGrain, csvCell, bucketStart, buckets, perBucket, perField, perObject, perType, stockPerBucket,
+  ALL_TYPES, LAYERS, autoGrain, csvCell, bucketStart, buckets, countKinds, netEvents, perBucket, perField, perObject, perType, stockPerBucket,
 } from "./changeStats";
 
 const ev = (at: string, kind: ChangeEvent["kind"], type: string, node_id = "n1", fields: string[] = []): ChangeEvent => ({
@@ -68,6 +68,51 @@ describe("fördelningen", () => {
     expect(perField(events).map((f) => f.field)).toEqual(["name", "owner"]);
     const a = perObject(events).find((o) => o.node_id === "a")!;
     expect([a.added, a.updated, a.removed, a.gone]).toEqual([1, 1, 1, true]);
+  });
+});
+
+describe("netto per objekt", () => {
+  const t = (n: number) => new Date(2026, 9, 1, n).toISOString();
+
+  it("räknar ett objekt som pendlar som ingen förändring", () => {
+    // Fanns från början, arkiveras och återställs gång på gång.
+    const pendlar = [ev(t(1), "removed", "Process", "p"), ev(t(2), "added", "Process", "p"),
+      ev(t(3), "removed", "Process", "p"), ev(t(4), "added", "Process", "p")];
+    const net = netEvents(pendlar);
+    expect(net.events).toEqual([]);
+    expect([net.roundTrips, net.dropped]).toEqual([1, 4]);
+  });
+
+  it("räknar inte det som kom och försvann, inte heller dess uppdateringar", () => {
+    const net = netEvents([ev(t(1), "added", "Server", "s"), ev(t(2), "updated", "Server", "s", ["name"]),
+      ev(t(3), "removed", "Server", "s")]);
+    expect(net.events).toEqual([]);
+    expect(net.roundTrips).toBe(1);
+  });
+
+  it("räknar nya och borttagna objekt en gång, vid sista vändningen", () => {
+    const events = [
+      ev(t(1), "added", "Server", "ny"), ev(t(2), "removed", "Server", "ny"), ev(t(3), "added", "Server", "ny"),
+      ev(t(4), "updated", "Server", "ny", ["name"]),
+      ev(t(5), "removed", "Application", "bort"), ev(t(6), "added", "Application", "bort"), ev(t(7), "removed", "Application", "bort"),
+      ev(t(8), "updated", "Process", "orörd", ["name"]),
+    ];
+    const net = netEvents(events);
+    expect(net.events.map((e) => [e.node_id, e.kind, e.at])).toEqual([
+      ["ny", "added", t(3)], ["ny", "updated", t(4)], ["bort", "removed", t(7)], ["orörd", "updated", t(8)],
+    ]);
+    expect(countKinds(net.events)).toEqual({ added: 1, updated: 2, removed: 1 });
+    expect([net.roundTrips, net.dropped]).toEqual([0, 4]);
+  });
+
+  it("ger samma netto som händelserna", () => {
+    const events = [ev(t(1), "added", "Server", "a"), ev(t(2), "removed", "Server", "a"), ev(t(3), "added", "Server", "b"),
+      ev(t(4), "removed", "Server", "c"), ev(t(5), "added", "Server", "c"), ev(t(6), "removed", "Server", "d")];
+    const all = countKinds(events);
+    const net = countKinds(netEvents(events).events);
+    expect([all.added, all.removed]).toEqual([3, 3]);
+    expect([net.added, net.removed]).toEqual([1, 1]);
+    expect(net.added - net.removed).toBe(all.added - all.removed);
   });
 });
 
