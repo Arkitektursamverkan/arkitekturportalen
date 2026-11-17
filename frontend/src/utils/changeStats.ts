@@ -216,6 +216,54 @@ export function countKinds(events: ChangeEvent[]): KindCounts {
   return c;
 }
 
+export interface NetEvents {
+  /** The events left when every object counts once, by where it ended up. */
+  events: ChangeEvent[];
+  /** Objects whose additions and removals cancel out over the period. */
+  roundTrips: number;
+  /** Events left out. */
+  dropped: number;
+}
+
+/**
+ * The net of the period, object by object. An object that was added and
+ * removed again – or removed and brought back, any number of times – is no
+ * change to the landscape, yet every turn is an event: one object a
+ * synchronisation archives and restores each run looks like hundreds added and
+ * hundreds removed.
+ *
+ * Whether the object existed when the period began shows in its first
+ * addition or removal, whether it exists at the end in its last:
+ *
+ * - new (not before, there after): its last addition counts
+ * - gone (there before, not after): its last removal counts
+ * - there and back (before and after): no addition or removal counts
+ * - passing (neither before nor after): nothing counts, its updates included
+ *
+ * Updates of the other three count as they are. `events` in time order.
+ */
+export function netEvents(events: ChangeEvent[]): NetEvents {
+  const ends = new Map<string, { first: number; last: number }>();
+  events.forEach((e, i) => {
+    if (e.kind === "updated") return;
+    const x = ends.get(e.node_id);
+    if (x) x.last = i;
+    else ends.set(e.node_id, { first: i, last: i });
+  });
+  const cancelled = new Set<string>();
+  const out = events.filter((e, i) => {
+    const x = ends.get(e.node_id);
+    if (!x) return true;
+    const before = events[x.first].kind === "removed";
+    const after = events[x.last].kind === "added";
+    if (before === after) cancelled.add(e.node_id);
+    if (!before && !after) return false;
+    if (e.kind === "updated") return true;
+    return before !== after && i === x.last;
+  });
+  return { events: out, roundTrips: cancelled.size, dropped: events.length - out.length };
+}
+
 /** Changes per object type, split by kind. */
 export function perType(events: ChangeEvent[]): ({ type: string } & KindCounts)[] {
   const m = new Map<string, KindCounts>();
