@@ -112,6 +112,7 @@ def _to_read(
         resolved_by=e.resolved_by,
         resolved_at=e.resolved_at,
         resolution_note=e.resolution_note,
+        external_source=e.external_source,
         occurrences=(
             # Reach back far enough to catch an occurrence that began before
             # the period and is still on in it.

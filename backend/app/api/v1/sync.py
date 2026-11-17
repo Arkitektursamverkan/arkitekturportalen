@@ -29,7 +29,7 @@ from app.domain_lists import parse as parse_lists
 from app.platform_access import PlatformAddressError, key_for, resolve
 from app.schemas.common import ExternalSource, NodeType
 from app.schemas.node import NodeCreate, NodeUpdate
-from app.services import org_settings
+from app.services import calendar_sync, org_settings
 
 log = structlog.get_logger(__name__)
 
@@ -155,6 +155,24 @@ async def _run_sync(profile: SyncProfile, repo: GraphRepository) -> dict[str, An
             if page * data.get("page_size", 500) >= data.get("total", 0):
                 break
             page += 1
+
+    if profile.node_type == calendar_sync.TARGET:
+        result = await calendar_sync.sync_events(
+            repo, flow_id=profile.flow_id, external_source=profile.external_source_label.upper(),
+            mappings=profile.mappings, records=all_records, prune=True,
+        )
+        log.info("sync.done", flow_id=profile.flow_id, node_type=profile.node_type,
+                 created=result["created"], updated=result["updated"],
+                 archived=result["removed"], errors=len(result["errors"]))
+        return {
+            "flow_id": profile.flow_id,
+            "node_type": profile.node_type,
+            "total": len(all_records),
+            "created": result["created"],
+            "updated": result["updated"],
+            "archived": result["removed"],
+            "errors": result["errors"][:10],
+        }
 
     # Validate node type
     node_type, list_key = sync_target(profile.node_type)
