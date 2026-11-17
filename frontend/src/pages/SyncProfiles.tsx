@@ -201,7 +201,9 @@ const SyncProfiles: React.FC = () => {
                         width: 10, height: 10, borderRadius: "50%",
                         bgcolor: NODE_COLORS[p.node_type.split(":")[0] as NodeType] ?? "#999",
                       }} />
-                      <Typography variant="body2">{p.node_type}</Typography>
+                      <Typography variant="body2">
+                        {p.node_type === "CalendarEvent" ? "Verksamhetskalender" : p.node_type}
+                      </Typography>
                     </Stack>
                   </TableCell>
                   <TableCell>

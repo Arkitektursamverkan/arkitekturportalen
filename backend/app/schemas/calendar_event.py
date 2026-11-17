@@ -117,6 +117,9 @@ class CalendarEventRead(BaseModel):
     resolved_by: str | None
     resolved_at: datetime | None
     resolution_note: str | None
+    # The source's label on an event a synchronisation keeps, else None. What
+    # the source sends is written again on every run.
+    external_source: str | None = None
     # The dates the event starts on, for every occurrence that touches the
     # period asked for – so one that began before the period may be included.
     occurrences: list[date] = []

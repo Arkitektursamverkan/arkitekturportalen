@@ -573,6 +573,12 @@ const EventDetailDialog: React.FC<{
             {proposed ? "Föreslagen" : "Upplagd"} av {event.proposed_by ?? "okänd"} {new Date(event.created_at).toLocaleDateString("sv-SE")}
             {!proposed && event.resolved_by && event.resolved_by !== event.proposed_by && ` · fastställd av ${event.resolved_by}`}
           </Typography>
+          {event.external_source && (
+            <Alert severity="info" sx={{ py: 0 }}>
+              Posten hämtas från en integration. Namn, datum och övrigt som källan skickar skrivs över vid nästa
+              synkronisering, och posten tas bort här när den försvinner i källan.
+            </Alert>
+          )}
           {failure && <Alert severity="error">{errorText(failure, "Kunde inte uppdatera posten")}</Alert>}
           {confirmRemove && (
             <Alert

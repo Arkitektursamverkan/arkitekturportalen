@@ -54,6 +54,8 @@ export interface CalendarEvent {
   resolved_by: string | null;
   resolved_at: string | null;
   resolution_note: string | null;
+  /** Källans etikett när en synkronisering håller efter posten, annars null. */
+  external_source?: string | null;
   /** Datumen posten infaller på inom den efterfrågade perioden. */
   occurrences: string[];
 }

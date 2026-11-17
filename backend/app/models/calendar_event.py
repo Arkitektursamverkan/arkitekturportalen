@@ -8,7 +8,9 @@ change freeze: no changes that affect those who work with it, for as long as
 the event's own times say.
 
 The event is not an architecture object and stays out of ea_nodes: it has no
-place in the graph, the sync or the CSV import. It only points at nodes.
+place in the graph or the CSV import. It only points at nodes. A flow in the
+Integration Platform may fill the calendar (app/services/calendar_sync.py);
+such an event carries the source it came from.
 """
 from __future__ import annotations
 
@@ -26,6 +28,7 @@ from sqlalchemy import (
     Text,
     Time,
     func,
+    text,
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
@@ -75,8 +78,18 @@ class CalendarEventORM(Base):
     resolved_by: Mapped[str | None] = mapped_column(String(255), nullable=True)
     resolved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     resolution_note: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # Set on an event a synchronisation keeps: the source's label and
+    # "<flow id>:<the record's id>". Null on an event made in the portal.
+    external_source: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    external_id: Mapped[str | None] = mapped_column(String(400), nullable=True)
 
-    __table_args__ = (Index("ix_ea_calendar_events_status", "status"),)
+    __table_args__ = (
+        Index("ix_ea_calendar_events_status", "status"),
+        Index(
+            "uq_ea_calendar_events_external", "external_source", "external_id",
+            unique=True, postgresql_where=text("external_id IS NOT NULL"),
+        ),
+    )
 
 
 class CalendarEventNodeORM(Base):

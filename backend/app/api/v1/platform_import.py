@@ -17,7 +17,7 @@ from app.domain_lists import parse as parse_lists
 from app.platform_access import PlatformAddressError, key_for, resolve
 from app.schemas.common import ExternalSource, NodeType
 from app.schemas.node import NodeCreate
-from app.services import org_settings
+from app.services import calendar_sync, org_settings
 
 log = structlog.get_logger(__name__)
 
@@ -234,6 +234,15 @@ async def get_node_types():
     return {
         "node_types": [*own_lists,
             {
+                "type": calendar_sync.TARGET,
+                "label": "Verksamhetskalender",
+                "core_fields": [
+                    {"target": "name", "label": "Name", "required": True},
+                    {"target": "description", "label": "Description"},
+                ],
+                "suggested_attributes": calendar_sync.FIELDS,
+            },
+            {
                 "type": "Application",
                 "core_fields": [
                     {"target": "name", "label": "Name", "required": True},
@@ -306,12 +315,39 @@ async def get_node_types():
     }
 
 
+async def _import_calendar(body: PlatformImportRequest, repo: GraphRepository) -> PlatformImportResult:
+    """One import into the business calendar. Nothing is removed: that is for
+    the sync profile, which knows the flow is the calendar's source from then on."""
+    if not any(m.target == "name" for m in body.mappings):
+        raise HTTPException(status_code=400, detail="At least one mapping must target 'name'")
+    if not any(m.target == "attr:start_date" for m in body.mappings):
+        raise HTTPException(status_code=400, detail="Verksamhetskalendern behöver ett fält för datum")
+    api_key = key_for(body.platform_url, body.platform_api_key)
+    try:
+        records = await _fetch_platform_records(body.platform_url, api_key, body.flow_id)
+    except (PlatformCallError, httpx.HTTPError) as exc:
+        raise _http_error(exc)
+    source = body.external_source_label.upper()
+    result = await calendar_sync.sync_events(
+        repo, flow_id=body.flow_id, external_source=source,
+        mappings=[m.model_dump() for m in body.mappings], records=records, prune=False,
+    )
+    log.info("platform.import.done", flow=body.flow_id, node_type=body.node_type,
+             created=result["created"], updated=result["updated"], errors=len(result["errors"]))
+    return PlatformImportResult(
+        source=source, flow_name=body.flow_id, total=len(records),
+        created=result["created"], updated=result["updated"], errors=result["errors"],
+    )
+
+
 @router.post("/execute", response_model=PlatformImportResult, dependencies=[Depends(require_admin)])
 async def execute_platform_import(
     body: PlatformImportRequest,
     repo: GraphRepository = Depends(get_repository),
 ):
     """Import records from the Integration Platform into EA nodes."""
+    if body.node_type == calendar_sync.TARGET:
+        return await _import_calendar(body, repo)
     # Validate node type
     try:
         node_type, list_key = sync_target(body.node_type)
