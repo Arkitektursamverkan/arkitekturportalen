@@ -201,8 +201,8 @@ async def sync_events(
         # An empty answer is more likely a source that is down than a calendar
         # that should be emptied – the object sync holds back the same way.
         if prune and sent:
-            for key, e in existing.items():
-                if key in sent:
+            for stored_id, e in existing.items():
+                if stored_id in sent:
                     continue
                 await repo._audit(
                     s, "DELETE", "calendar_event", e.id, entity_name=e.title,
