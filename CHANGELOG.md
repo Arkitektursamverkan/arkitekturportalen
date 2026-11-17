@@ -7,7 +7,7 @@ funktioner, en ny korrigering för rättelser.
 
 ## Ej släppt
 
-- (inget än)
+- **Ägaröversikten: sök per person.** Överst i rapporten finns fältet **Sök person**. Välj en person och rapporten visar alla roller personen har: ett objekt per rad med typ och roller, och en summering per roll. Sökningen går över alla objekttyper och alla rollfält – systemägare, systemförvaltare, systemadministratör, ägare, dataägare, teknisk ägare, ansvarig med flera – och ett fält med flera namn (åtskilda med komma, semikolon eller snedstreck) räknas för var och en. Arkiverade objekt är inte med. Översikten kan också grupperas efter **Systemadministratör**. Bara webbdelen är ändrad; ingen databasändring.
 
 ## 0.20.0 – 2026-11-17
 

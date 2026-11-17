@@ -835,7 +835,14 @@
       "systemManager": "Systemförvaltare",
       "department": "Avdelning",
       "unassigned": "Ej tilldelad",
-      "unassignedDesc": "inte satt"
+      "unassignedDesc": "inte satt",
+      "systemAdmin": "Systemadministratör",
+      "searchPerson": "Sök person",
+      "searchPersonHint": "Visar alla roller personen har, på alla objekttyper",
+      "noPerson": "Ingen person med det namnet har en roll",
+      "object": "Objekt",
+      "type": "Typ",
+      "roles": "Roller"
     },
     "integrations": {
       "title": "Integrationsanalys",

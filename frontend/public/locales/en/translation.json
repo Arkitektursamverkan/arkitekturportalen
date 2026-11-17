@@ -835,7 +835,14 @@
       "systemManager": "System Manager (Systemförvaltare)",
       "department": "Department (Avdelning)",
       "unassigned": "Unassigned",
-      "unassignedDesc": "not set"
+      "unassignedDesc": "not set",
+      "systemAdmin": "System Administrator (Systemadministratör)",
+      "searchPerson": "Search person",
+      "searchPersonHint": "Shows every role the person holds, on all object types",
+      "noPerson": "No person by that name holds a role",
+      "object": "Object",
+      "type": "Type",
+      "roles": "Roles"
     },
     "integrations": {
       "title": "Integration Analysis",
