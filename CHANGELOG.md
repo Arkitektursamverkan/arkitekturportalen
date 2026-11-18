@@ -7,6 +7,10 @@ funktioner, en ny korrigering för rättelser.
 
 ## Ej släppt
 
+- (inget än)
+
+## 0.23.0 – 2026-11-18
+
 - **Verksamhetskalendern: filtrera på ansvarig och se vilka poster som hör ihop.** Ovanför kalendern finns ett nytt filter, **Ansvarig / kontakt**, där du väljer en eller flera ansvariga; då visas bara deras poster, både i månadsvyn och i Kommande 30 dagar. Filtret står kvar när du bläddrar mellan månader. Varje ansvarig har dessutom en egen färgad prick som står först i posten, så att man ser vilka poster som har samma ansvarig. Pricken finns också i filtret, i listan över kommande händelser (tillsammans med namnet) och i postens detaljruta, och namnet står i rutan som visas när man håller pekaren över en post. Stor och liten bokstav spelar ingen roll: ”Ekonomi” och ”ekonomi” räknas som samma. Poster utan ansvarig har ingen prick, och filtret visas först när någon post har en ansvarig. Förändringarna i IT-miljön påverkas inte av filtret.
 
 ## 0.22.0 – 2026-11-17
