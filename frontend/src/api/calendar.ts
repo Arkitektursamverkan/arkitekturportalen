@@ -81,6 +81,40 @@ export const calendarKeys = {
   range: (from: string, to: string) => [...calendarKeys.all, "range", from, to] as const,
 };
 
+// ── Ansvarig / kontakt: filter och färgmarkering ────────────────────────────
+
+/** Samma ansvarig oavsett skiftläge och mellanslag runt om; "" = ingen angiven. */
+export const responsibleKey = (responsible: string | null | undefined): string =>
+  (responsible ?? "").trim().toLocaleLowerCase("sv");
+
+/** Skilda från kalenderns egna färger (rött, grönt, blått), så att pricken syns på en fylld post. */
+export const RESPONSIBLE_COLORS = [
+  "#FFD600", "#6A1B9A", "#00E5FF", "#FF6F00", "#F48FB1",
+  "#283593", "#212121", "#B0BEC5", "#8D6E63", "#C6FF00",
+] as const;
+
+/**
+ * Färgen som märker var och en av kalenderns ansvariga. Varje ansvarig får
+ * helst färgen som räknas ur namnet, så att den sällan byts när andra kommer
+ * till; är den upptagen tas nästa lediga. Först när de ansvariga är fler än
+ * färgerna delar två färg – namnet står alltid i posten.
+ */
+export const responsibleColors = (responsibles: Iterable<string | null | undefined>): Map<string, string> => {
+  const n = RESPONSIBLE_COLORS.length;
+  const keys = [...new Set([...responsibles].map(responsibleKey))].filter(Boolean).sort();
+  const colors = new Map<string, string>();
+  const taken = new Set<number>();
+  for (const key of keys) {
+    let hash = 0;
+    for (let i = 0; i < key.length; i++) hash = (hash * 31 + key.charCodeAt(i)) >>> 0;
+    let slot = hash % n;
+    if (taken.size < n) while (taken.has(slot)) slot = (slot + 1) % n;
+    taken.add(slot);
+    colors.set(key, RESPONSIBLE_COLORS[slot]);
+  }
+  return colors;
+};
+
 // ── Datum utan tidszon: "YYYY-MM-DD" hela vägen ─────────────────────────────
 
 export const toIsoDate = (d: Date): string =>

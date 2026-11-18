@@ -17,7 +17,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   addDays, CALENDAR_NODE_ROUTES, compactDate, daysBetween, fromIsoDate, MAX_DURATION_DAYS, monthName,
-  occurrenceEnd, RECURRENCES, recurrenceLabel, shortDate, spanLabel,
+  occurrenceEnd, RECURRENCES, recurrenceLabel, responsibleColors, responsibleKey, shortDate, spanLabel,
   timeLabel, toIsoDate, useCalendarEvents, useCreateCalendarEvent, useDeleteCalendarEvent,
   useResolveCalendarEvent, useUpdateCalendarEvent,
   type CalendarEvent, type CalendarEventInput, type CalendarEventNode,
@@ -40,6 +40,12 @@ const WEEKDAY_HEADERS = ["Mån", "Tis", "Ons", "Tors", "Fre", "Lör", "Sön"];
 const UPCOMING_DAYS = 30;
 
 type View = "month" | "upcoming" | "changes";
+
+/** Ett val i filtret Ansvarig / kontakt. */
+interface ResponsibleOption {
+  key: string;
+  label: string;
+}
 
 interface Occurrence {
   /** Dagen raden visas på. */
@@ -99,7 +105,26 @@ const BusinessCalendar: React.FC = () => {
   const from = view === "month" ? toIsoDate(gridStart) : todayIso;
   const to = view === "month" ? toIsoDate(addDays(gridStart, weeks * 7 - 1)) : toIsoDate(addDays(today, UPCOMING_DAYS));
 
-  const { data: events = [], isLoading, error } = useCalendarEvents(from, to);
+  const { data: allEvents = [], isLoading, error } = useCalendarEvents(from, to);
+
+  // Filtret på ansvarig. API:t skickar alla poster (med tillfällena i perioden),
+  // så valen är alla ansvariga i kalendern, inte bara månadens.
+  const [responsibleFilter, setResponsibleFilter] = useState<ResponsibleOption[]>([]);
+  const responsibleOptions = useMemo(() => {
+    const map = new Map<string, ResponsibleOption>(responsibleFilter.map((o) => [o.key, o]));
+    for (const e of allEvents) {
+      const key = responsibleKey(e.responsible);
+      if (key && !map.has(key)) map.set(key, { key, label: e.responsible.trim() });
+    }
+    return [...map.values()].sort((a, b) => a.label.localeCompare(b.label, "sv"));
+  }, [allEvents, responsibleFilter]);
+  const dotColors = useMemo(() => responsibleColors(allEvents.map((e) => e.responsible)), [allEvents]);
+  const dotColor = (responsible: string): string => dotColors.get(responsibleKey(responsible)) ?? "#9E9E9E";
+  const events = useMemo(() => {
+    if (responsibleFilter.length === 0) return allEvents;
+    const keys = new Set(responsibleFilter.map((o) => o.key));
+    return allEvents.filter((e) => keys.has(responsibleKey(e.responsible)));
+  }, [allEvents, responsibleFilter]);
 
   // Månadsvyn visar en flerdagshändelse på var och en av dess dagar; listan
   // visar den en gång, på dagen den börjar (eller i dag om den redan pågår).
@@ -143,7 +168,7 @@ const BusinessCalendar: React.FC = () => {
   }, [changes]);
 
   // Öppna poster följer med när listan laddas om efter en ändring.
-  const selectedLive = selectedId ? events.find((e) => e.id === selectedId) ?? null : null;
+  const selectedLive = selectedId ? allEvents.find((e) => e.id === selectedId) ?? null : null;
 
   const shiftMonth = (n: number) => setMonth(new Date(month.getFullYear(), month.getMonth() + n, 1));
 
@@ -172,11 +197,52 @@ const BusinessCalendar: React.FC = () => {
         </Button>
       </Stack>
 
-      <Stack direction="row" spacing={2} useFlexGap sx={{ mb: 2, flexWrap: "wrap" }}>
+      <Stack direction="row" spacing={2} useFlexGap sx={{ mb: 2, flexWrap: "wrap", alignItems: "center" }}>
         <Legend color={FREEZE_COLOR} label="Verksamhetskritiskt" icon />
         <Legend color={CHANGE_COLOR} label="Förändring i IT-miljön" />
         <Legend color={EVENT_COLOR} label="Verksamhetshändelse" />
         <Legend color={EVENT_COLOR} label="Förslag – inte fastställt" dashed />
+        {responsibleOptions.length > 0 && (
+          <Stack direction="row" spacing={0.75} sx={{ alignItems: "center" }}>
+            <ResponsibleDot color="text.disabled" />
+            <Typography variant="caption" sx={{ color: "text.secondary" }}>Prickens färg = samma ansvarig</Typography>
+          </Stack>
+        )}
+        <Box sx={{ flex: 1 }} />
+        {view !== "changes" && responsibleOptions.length > 0 && (
+          <Autocomplete
+            multiple
+            size="small"
+            limitTags={2}
+            disableCloseOnSelect
+            sx={{ width: { xs: "100%", md: 460 } }}
+            options={responsibleOptions}
+            value={responsibleFilter}
+            getOptionLabel={(o) => o.label}
+            isOptionEqualToValue={(a, b) => a.key === b.key}
+            onChange={(_e, value) => setResponsibleFilter(value)}
+            renderOption={({ key, ...props }, o) => (
+              <li key={key} {...props}>
+                <ResponsibleDot color={dotColor(o.label)} />
+                <Box component="span" sx={{ ml: 1 }}>{o.label}</Box>
+              </li>
+            )}
+            renderValue={(value, getItemProps) =>
+              value.map((o, index) => {
+                const { key, ...tagProps } = getItemProps({ index });
+                return (
+                  <Chip
+                    key={key} size="small" label={o.label} {...tagProps}
+                    icon={<ResponsibleDot color={dotColor(o.label)} />} sx={{ "&&": { maxWidth: 190 } }}
+                  />
+                );
+              })
+            }
+            renderInput={(params) => (
+              <TextField {...params} label="Ansvarig / kontakt" placeholder={responsibleFilter.length ? "" : "Alla"} />
+            )}
+          />
+        )}
       </Stack>
 
       {error && <Alert severity="error" sx={{ mb: 2 }}>{errorText(error, "Kunde inte ladda kalendern")}</Alert>}
@@ -231,7 +297,7 @@ const BusinessCalendar: React.FC = () => {
                         </Typography>
                         <Stack spacing={0.25}>
                           {(byDate.get(iso) ?? []).map(({ event, start }) => (
-                            <EventPill key={`${event.id}-${start}`} event={event} start={start} date={iso} onClick={() => setSelectedId(event.id)} />
+                            <EventPill key={`${event.id}-${start}`} event={event} start={start} date={iso} dotColor={dotColor(event.responsible)} onClick={() => setSelectedId(event.id)} />
                           ))}
                           {(changesByDate.get(iso) ?? []).map((c) => (
                             <ChangePill key={c.id} entry={c} date={iso} onClick={() => setChangeOpen({ entry: c })} />
@@ -254,7 +320,9 @@ const BusinessCalendar: React.FC = () => {
       ) : isLoading ? (
         <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}><CircularProgress /></Box>
       ) : occurrences.length === 0 ? (
-        <Typography sx={{ color: "text.secondary" }}>Inga händelser de kommande {UPCOMING_DAYS} dagarna.</Typography>
+        <Typography sx={{ color: "text.secondary" }}>
+          Inga händelser de kommande {UPCOMING_DAYS} dagarna{responsibleFilter.length > 0 && " för de valda ansvariga"}.
+        </Typography>
       ) : (
         <Stack spacing={2}>
           {[...byDate.entries()].map(([date, items]) => (
@@ -282,6 +350,12 @@ const BusinessCalendar: React.FC = () => {
                       <Typography sx={{ fontWeight: 600 }}>{event.title}</Typography>
                       <StatusChips event={event} />
                       {event.departments.map((d) => <Chip key={d} size="small" label={d} />)}
+                      {event.responsible.trim() && (
+                        <Chip
+                          size="small" variant="outlined" label={event.responsible.trim()}
+                          icon={<ResponsibleDot color={dotColor(event.responsible)} />}
+                        />
+                      )}
                       <Box sx={{ flex: 1 }} />
                       <DependencyChips event={event} />
                     </Stack>
@@ -296,6 +370,7 @@ const BusinessCalendar: React.FC = () => {
       {selectedLive && (
         <EventDetailDialog
           event={selectedLive}
+          dotColor={dotColor(selectedLive.responsible)}
           canEdit={isEditor || (selectedLive.status === "proposed" && selectedLive.proposed_by_id === userId)}
           onEdit={() => {
             setEditing({ event: selectedLive, date: selectedLive.start_date });
@@ -416,15 +491,32 @@ const Legend: React.FC<{ color: string; label: string; dashed?: boolean; icon?: 
   </Stack>
 );
 
+/** Pricken som märker en ansvarig; den vita och den mörka kanten håller den synlig på alla bakgrunder. */
+const ResponsibleDot: React.FC<{ color: string }> = ({ color }) => (
+  <Box
+    component="span"
+    sx={{
+      display: "inline-block", width: 10, height: 10, borderRadius: "50%", flexShrink: 0,
+      bgcolor: color, border: "1px solid #fff", boxSizing: "border-box", boxShadow: "0 0 0 1px rgba(0, 0, 0, 0.35)",
+    }}
+  />
+);
+
 /** En post i en dagruta: fylld = fastställd, streckad = förslag. */
-const EventPill: React.FC<{ event: CalendarEvent; start: string; date: string; onClick: () => void }> = ({ event, start, date, onClick }) => {
+const EventPill: React.FC<{
+  event: CalendarEvent; start: string; date: string; dotColor: string; onClick: () => void;
+}> = ({ event, start, date, dotColor, onClick }) => {
   const color = eventColor(event);
   const proposed = event.status === "proposed";
   // En fortsättningsdag i en flerdagshändelse.
   const continued = date !== start;
   const span = event.duration_days > 1 ? `${compactDate(start)} – ${compactDate(occurrenceEnd(start, event))} · ` : "";
+  const responsible = event.responsible.trim();
   return (
-    <Tooltip title={`${span}${timeLabel(event)} · ${event.title}${proposed ? " (förslag)" : ""}`} disableInteractive>
+    <Tooltip
+      title={`${span}${timeLabel(event)} · ${event.title}${proposed ? " (förslag)" : ""}${responsible ? ` · ${responsible}` : ""}`}
+      disableInteractive
+    >
       <Box
         onClick={onClick}
         onDoubleClick={(e) => e.stopPropagation()}
@@ -436,6 +528,7 @@ const EventPill: React.FC<{ event: CalendarEvent; start: string; date: string; o
         }}
       >
         {event.change_freeze && <LockIcon sx={{ fontSize: 11, flexShrink: 0 }} />}
+        {responsible && <ResponsibleDot color={dotColor} />}
         <Box component="span" sx={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
           {continued ? "↳ " : event.start_time ? `${event.start_time.slice(0, 5)} ` : ""}{event.title}
         </Box>
@@ -477,10 +570,11 @@ const DetailRow: React.FC<{ label: string; children: React.ReactNode }> = ({ lab
 
 const EventDetailDialog: React.FC<{
   event: CalendarEvent;
+  dotColor: string;
   canEdit: boolean;
   onEdit: () => void;
   onClose: () => void;
-}> = ({ event, canEdit, onEdit, onClose }) => {
+}> = ({ event, dotColor, canEdit, onEdit, onClose }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { isEditor } = useRoleStore();
@@ -567,7 +661,12 @@ const EventDetailDialog: React.FC<{
             </DetailRow>
           )}
           {event.responsible && (
-            <DetailRow label="Ansvarig / kontakt"><Typography>{event.responsible}</Typography></DetailRow>
+            <DetailRow label="Ansvarig / kontakt">
+              <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+                <ResponsibleDot color={dotColor} />
+                <Typography>{event.responsible}</Typography>
+              </Stack>
+            </DetailRow>
           )}
           <Typography variant="caption" sx={{ color: "text.secondary" }}>
             {proposed ? "Föreslagen" : "Upplagd"} av {event.proposed_by ?? "okänd"} {new Date(event.created_at).toLocaleDateString("sv-SE")}
