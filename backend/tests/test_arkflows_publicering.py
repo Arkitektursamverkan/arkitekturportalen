@@ -161,3 +161,134 @@ async def test_plattformens_felkropp_visas_inte(monkeypatch):
         await arkflows._platform_get(Klient(), "/data/sources")
     assert fel.value.status_code == 502
     assert "intern detalj" not in str(fel.value.detail) and "500" in str(fel.value.detail)
+
+
+# ── Origin and sync status ────────────────────────────────────────────────────
+
+FLODE = "a81cdecd-8fc3-49ff-93a9-1eb96ac830ba"
+
+
+def test_summary_carries_the_origin_but_not_the_pipeline_id():
+    s = arkflows._summary(
+        {"external_id": "ap-x", "ursprung": {"system": " Källsystemet ", "automatisk": True, "flode": FLODE}}
+    )
+    assert s["ursprung"] == {"system": "Källsystemet", "automatisk": True}
+    assert arkflows._summary({"external_id": "ap-y"})["ursprung"] is None
+    assert arkflows._summary({"external_id": "ap-z", "ursprung": {"automatisk": True}})["ursprung"] is None
+
+
+def test_the_pipeline_id_must_be_a_uuid():
+    assert arkflows._synkflöde({"ursprung": {"system": "K", "flode": FLODE}}) == FLODE
+    assert arkflows._synkflöde({"ursprung": {"system": "K", "flode": "../admin"}}) is None
+    assert arkflows._synkflöde({}) is None
+
+
+def test_the_browser_never_gets_the_servers_own_notes():
+    assert arkflows._utåt({"id": "ap-x", "scen": {}, "_synkflode": FLODE}) == {"id": "ap-x", "scen": {}}
+
+
+class _Svar:
+    def __init__(self, status, payload):
+        self.status_code = status
+        self._payload = payload
+
+    def json(self):
+        return self._payload
+
+
+def _plattform(monkeypatch, *, pipeline, scheman, körningar):
+    """Fakes the three platform calls the sync status makes."""
+
+    class Klient:
+        def __init__(self, **_kw):
+            pass
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *_):
+            return False
+
+        async def get(self, url, headers=None, params=None):
+            assert headers == {"X-Api-Key": "admin-nyckel"}
+            if url.endswith(f"/flows/{FLODE}"):
+                return pipeline
+            if url.endswith("/schedules"):
+                return scheman
+            assert url.endswith("/executions") and params["flow_id"] == FLODE and params["status"] == "success"
+            return körningar
+
+    async def flow(_id):
+        return {"id": "ap-x", "ea_nod_id": None, "prefix": None, "_synkflode": FLODE}
+
+    async def syns(_user):
+        return lambda _flow: False
+
+    arkflows._cache.clear()
+    monkeypatch.setattr(arkflows, "_flow", flow)
+    monkeypatch.setattr(arkflows, "_hidden_flow_filter", syns)
+    monkeypatch.setattr(arkflows, "PLATFORM_ADMIN_KEY", "admin-nyckel")
+    monkeypatch.setattr(arkflows, "_platform_url", lambda: "http://plattform/api/v1")
+    monkeypatch.setattr(arkflows.httpx, "AsyncClient", Klient)
+
+
+@pytest.mark.asyncio
+async def test_sync_is_active_when_the_pipeline_and_a_schedule_are_switched_on(monkeypatch):
+    _plattform(
+        monkeypatch,
+        pipeline=_Svar(200, {"id": FLODE, "enabled": True}),
+        scheman=_Svar(200, [
+            {"flow_id": FLODE, "enabled": True, "next_run_at": "2026-11-19T16:00:00Z"},
+            {"flow_id": "en-annan", "enabled": True, "next_run_at": "2026-11-19T15:00:00Z"},
+        ]),
+        körningar=_Svar(200, {"executions": [{"finished_at": "2026-11-19T14:01:02Z"}]}),
+    )
+    assert await arkflows.get_arkflow_sync("ap-x", None) == {
+        "känd": True, "aktiv": True, "senast": "2026-11-19T14:01:02Z", "nästa": "2026-11-19T16:00:00Z",
+    }
+
+
+@pytest.mark.asyncio
+async def test_sync_is_not_active_when_the_pipeline_or_its_schedule_is_off(monkeypatch):
+    _plattform(
+        monkeypatch,
+        pipeline=_Svar(200, {"id": FLODE, "enabled": False}),
+        scheman=_Svar(200, [{"flow_id": FLODE, "enabled": True, "next_run_at": "2026-11-19T16:00:00Z"}]),
+        körningar=_Svar(200, {"executions": []}),
+    )
+    assert (await arkflows.get_arkflow_sync("ap-x", None))["aktiv"] is False
+
+    _plattform(
+        monkeypatch,
+        pipeline=_Svar(200, {"id": FLODE, "enabled": True}),
+        scheman=_Svar(200, [{"flow_id": FLODE, "enabled": False, "next_run_at": None}]),
+        körningar=_Svar(200, {"executions": [{"finished_at": "2026-11-19T14:01:02Z"}]}),
+    )
+    svar = await arkflows.get_arkflow_sync("ap-x", None)
+    assert svar["känd"] is True and svar["aktiv"] is False and svar["nästa"] is None
+
+
+@pytest.mark.asyncio
+async def test_a_removed_pipeline_means_the_sync_is_off(monkeypatch):
+    _plattform(monkeypatch, pipeline=_Svar(404, {}), scheman=_Svar(200, []), körningar=_Svar(200, {"executions": []}))
+    assert await arkflows.get_arkflow_sync("ap-x", None) == {"känd": True, "aktiv": False, "senast": None, "nästa": None}
+
+
+@pytest.mark.asyncio
+async def test_says_nothing_when_the_platform_cannot_be_asked(monkeypatch):
+    # REGRESSION-skydd: a platform error must not read as "the sync is off".
+    _plattform(monkeypatch, pipeline=_Svar(500, {}), scheman=_Svar(200, []), körningar=_Svar(200, {"executions": []}))
+    assert (await arkflows.get_arkflow_sync("ap-x", None))["känd"] is False
+    monkeypatch.setattr(arkflows, "PLATFORM_ADMIN_KEY", "")
+    assert (await arkflows.get_arkflow_sync("ap-x", None))["känd"] is False
+
+
+@pytest.mark.asyncio
+async def test_a_hand_drawn_flowchart_has_no_sync_to_report(monkeypatch):
+    _plattform(monkeypatch, pipeline=_Svar(200, {"enabled": True}), scheman=_Svar(200, []), körningar=_Svar(200, {}))
+
+    async def ritad(_id):
+        return {"id": "ap-x", "ea_nod_id": None, "prefix": None, "_synkflode": None}
+
+    monkeypatch.setattr(arkflows, "_flow", ritad)
+    assert (await arkflows.get_arkflow_sync("ap-x", None))["känd"] is False

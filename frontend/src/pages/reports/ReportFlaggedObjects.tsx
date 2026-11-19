@@ -10,15 +10,11 @@ import { useNodes } from "@/api/nodes";
 import { useAllFlags } from "@/api/flags";
 import { NODE_COLORS } from "@/config/graphConfig";
 import type { FlagType } from "@/types/graph";
+import { ALL_FLAG_TYPES, FLAG_COLORS } from "@/types/graph";
 import ReportTitle from "@/components/reports/ReportTitle";
 
 type SortKey = "name" | "type" | "flag_type" | "created_by" | "created_at";
 
-const FLAG_COLORS: Record<FlagType, "warning" | "default" | "error"> = {
-  INCOMPLETE: "warning",
-  OUTDATED: "default",
-  INCORRECT: "error",
-};
 
 const TYPE_ROUTES: Record<string, string> = {
   Application: "/systems",
@@ -122,14 +118,14 @@ const ReportFlaggedObjects: React.FC = () => {
           value={flagTypeFilter}
           onChange={(_, v) => setFlagTypeFilter(v)}
         >
-          {(["INCOMPLETE", "OUTDATED", "INCORRECT"] as FlagType[]).map((ft) => (
+          {ALL_FLAG_TYPES.map((ft) => (
             <ToggleButton key={ft} value={ft} sx={{ px: 1.5 }}>
               <Typography variant="caption">{t(`flags.types.${ft}`)}</Typography>
             </ToggleButton>
           ))}
         </ToggleButtonGroup>
         <Stack direction="row" spacing={0.5}>
-          {(["INCOMPLETE", "OUTDATED", "INCORRECT"] as FlagType[]).map((ft) =>
+          {ALL_FLAG_TYPES.map((ft) =>
             (flagTypeCounts[ft] ?? 0) > 0 ? (
               <Chip
                 key={ft}

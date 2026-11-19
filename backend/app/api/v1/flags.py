@@ -9,7 +9,12 @@ from app.access import ensure_visible, hidden_node_ids
 from app.auth import CurrentUser
 from app.dal.postgres_repository import PostgresRepository
 from app.dependencies import get_repository, require_editor, require_user
-from app.schemas.flag import NodeFlagCreate, NodeFlagRead, NodeFlagRespond
+from app.schemas.flag import (
+    PROCESS_FLAG_TYPES,
+    NodeFlagCreate,
+    NodeFlagRead,
+    NodeFlagRespond,
+)
 
 router = APIRouter(prefix="/nodes", tags=["flags"])
 all_flags_router = APIRouter(prefix="/flags", tags=["flags"])
@@ -54,6 +59,15 @@ async def create_flag(
 ) -> NodeFlagRead:
     repo = _get_pg_repo()
     await _ensure_visible(node_id, user)
+    if data.flag_type in PROCESS_FLAG_TYPES:
+        # "The diagram is wrong" and "the process deviates" say something about
+        # a process. On any other object they would be noise in the report.
+        node = await get_repository().get_node(node_id)
+        if node is None or node.type.value != "Process":
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Den här flaggan kan bara sättas på en process",
+            )
     row = await repo.create_node_flag(
         node_id=node_id,
         flag_type=data.flag_type.value,

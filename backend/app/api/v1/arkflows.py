@@ -28,6 +28,7 @@ from __future__ import annotations
 import os
 import re
 import time
+import uuid
 from typing import Any
 from urllib.parse import quote
 
@@ -189,7 +190,38 @@ def _summary(data: dict) -> dict:
         "publicerad_at": data.get("publicerad_at"),
         "bredd": data.get("bredd"),
         "höjd": data.get("höjd"),
+        # Set when an integration reads the process into Arkitekten from
+        # another system: where it comes from, and whether the picture is
+        # generated automatically. See `_ursprung`.
+        "ursprung": _ursprung(data.get("ursprung")),
     }
+
+
+def _ursprung(v: Any) -> dict | None:
+    """Where a flowchart comes from, as the platform passed it on — or None.
+
+    `flode` (the platform pipeline that fetches the underlying data) stays on
+    the server: the browser asks `GET /arkflows/{id}/synk` whether the sync is
+    running and never needs the id.
+    """
+    if not isinstance(v, dict):
+        return None
+    system = v.get("system")
+    if not isinstance(system, str) or not system.strip():
+        return None
+    return {"system": system.strip()[:100], "automatisk": v.get("automatisk") is True}
+
+
+def _synkflöde(data: dict) -> str | None:
+    """The platform pipeline behind an automatically read process, if named."""
+    v = data.get("ursprung")
+    flode = v.get("flode") if isinstance(v, dict) else None
+    if not isinstance(flode, str):
+        return None
+    try:
+        return str(uuid.UUID(flode))
+    except ValueError:
+        return None
 
 
 async def _hidden_flow_filter(user: CurrentUser | None):  # type: ignore[no-untyped-def]
@@ -261,7 +293,12 @@ async def get_arkflow(ark_flow_id: str, user: CurrentUser | None = Depends(get_o
     flow = await _flow(ark_flow_id)
     if flow is None or (await _hidden_flow_filter(user))(flow):
         raise HTTPException(404, "No such flowchart")
-    return flow
+    return _utåt(flow)
+
+
+def _utåt(flow: dict) -> dict:
+    """A flowchart as the browser gets it: without the server's own notes."""
+    return {k: v for k, v in flow.items() if not k.startswith("_")}
 
 
 async def _flow(ark_flow_id: str) -> dict | None:
@@ -278,9 +315,73 @@ async def _flow(ark_flow_id: str) -> dict | None:
             if rec:
                 data = rec.get("data") or {}
                 return _store(
-                    f"flow:{ark_flow_id}", {**_summary(data), "scen": data.get("scen")}
+                    f"flow:{ark_flow_id}",
+                    # `_synkflode` never leaves the server – see `_utåt`.
+                    {**_summary(data), "scen": data.get("scen"), "_synkflode": _synkflöde(data)},
                 )
     return None
+
+
+_OKÄND_SYNK: dict = {"känd": False, "aktiv": False, "senast": None, "nästa": None}
+
+
+@router.get("/{ark_flow_id}/synk")
+async def get_arkflow_sync(ark_flow_id: str, user: CurrentUser | None = Depends(get_optional_user)) -> dict:
+    """Is the process still kept in step with the system it comes from?
+
+    For a flowchart that an integration reads in automatically, the platform
+    pipeline that fetches the underlying data is named in its origin. This asks
+    the platform about that pipeline: `aktiv` when it is switched on AND has a
+    schedule that is switched on, `senast` its last successful run, `nästa` the
+    next scheduled one. `känd` is false when there is nothing to ask about or
+    the platform cannot be asked (no admin key, platform down) — the page then
+    says nothing rather than something untrue.
+    """
+    if not _FLOW_ID.fullmatch(ark_flow_id):
+        raise HTTPException(404, "No such flowchart")
+    flow = await _flow(ark_flow_id)
+    if flow is None or (await _hidden_flow_filter(user))(flow):
+        raise HTTPException(404, "No such flowchart")
+    flode = flow.get("_synkflode")
+    if not flode or not PLATFORM_ADMIN_KEY or not _platform_url():
+        return _OKÄND_SYNK
+    cached = _cached(f"synk:{flode}")
+    if cached is not None:
+        return cached
+
+    headers = {"X-Api-Key": PLATFORM_ADMIN_KEY}
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            pipeline = await client.get(f"{_platform_url()}/flows/{flode}", headers=headers)
+            scheman = await client.get(f"{_platform_url()}/schedules", headers=headers)
+            körningar = await client.get(
+                f"{_platform_url()}/executions",
+                headers=headers,
+                params={"flow_id": flode, "status": "success", "page_size": 1},
+            )
+        if pipeline.status_code == 404:
+            # The pipeline is gone: nothing keeps the process in step any more.
+            return _store(f"synk:{flode}", {"känd": True, "aktiv": False, "senast": None, "nästa": None})
+        if pipeline.status_code != 200 or scheman.status_code != 200 or körningar.status_code != 200:
+            return _OKÄND_SYNK
+        påslagna = [
+            s for s in scheman.json()
+            if str(s.get("flow_id")) == flode and s.get("enabled")
+        ]
+        senaste = (körningar.json().get("executions") or [{}])[0]
+        nästa = sorted(s["next_run_at"] for s in påslagna if s.get("next_run_at"))
+        return _store(
+            f"synk:{flode}",
+            {
+                "känd": True,
+                "aktiv": bool(pipeline.json().get("enabled")) and bool(påslagna),
+                "senast": senaste.get("finished_at"),
+                "nästa": nästa[0] if nästa else None,
+            },
+        )
+    except (httpx.HTTPError, ValueError, KeyError, TypeError) as exc:
+        logger.warning("arkflows.synk_error", flow_id=ark_flow_id, error=str(exc))
+        return _OKÄND_SYNK
 
 
 @router.post("/sync", dependencies=[Depends(require_admin)])

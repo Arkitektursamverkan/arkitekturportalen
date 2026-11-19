@@ -25,10 +25,13 @@ import ErrorAlert from "@/components/common/ErrorAlert";
 import QuickAddNode from "@/components/graph/QuickAddNode";
 import DomainArchitectureTeaser from "@/components/targetArchitecture/DomainArchitectureTeaser";
 import FlowSceneView from "@/components/flow/FlowSceneView";
+import FlowOrigin from "@/components/flow/FlowOrigin";
+import ProcessFlagButton from "@/components/flow/ProcessFlagButton";
 import ObjectPane, { selectObject } from "@/components/objectContent/ObjectPane";
 import { arkflowForProcess, useArkflowForProcess } from "@/api/arkflows";
 import { useGraphStore } from "@/store/graphStore";
 import type { NodeRead } from "@/types/graph";
+import { PROCESS_FLAG_TYPES } from "@/types/graph";
 import { isPublishedProcess } from "@/utils/processStructure";
 
 // ── Tree helpers ──────────────────────────────────────────────────────────────
@@ -304,7 +307,9 @@ const ProcessExplorer: React.FC = () => {
   const [params, setParams] = useSearchParams();
   const selectedId = params.get("id") ?? undefined;
   const cyRef = useRef<Core | null>(null);
-  const { isEditor: isAdmin } = useRoleStore();
+  // Flaggor kräver inloggning (id sätts av UserSync när användaren är känd).
+  const { isEditor: isAdmin, id: användarId } = useRoleStore();
+  const inloggad = Boolean(användarId);
 
   const { data: rawProcesses, isLoading: loadingList } = useNodes({ node_type: "Process" });
   const { data: edges = [] } = useEdges();
@@ -493,6 +498,10 @@ const ProcessExplorer: React.FC = () => {
                 scen={flöde.flow.scen}
                 caption={`${flöde.flow.name}${flöde.flow.beteckning ? ` · ${t("flowScene.version")} ${flöde.flow.beteckning}` : ""}${flöde.flow.status ? ` (${flöde.flow.status})` : ""}${flöde.flow.ägare ? ` · ${t("flowScene.owner")}: ${flöde.flow.ägare}` : ""}`}
                 beskrivning={flöde.flow.beskrivning ?? undefined}
+                info={flöde.flow.ursprung ? <FlowOrigin flow={flöde.flow} /> : undefined}
+                // Vid bilden kan man säga både att BILDEN är fel och att
+                // processen avviker.
+                actions={inloggad ? <ProcessFlagButton nodeId={selectedId} types={PROCESS_FLAG_TYPES} /> : undefined}
               />
             )}
             {selectedId && graph && !loadingGraph && flik === "flode" && !flöde.flow?.scen && (
@@ -506,6 +515,13 @@ const ProcessExplorer: React.FC = () => {
               <>
                 <CytoscapeGraph data={domainFilter.filteredGraph ?? graph} layout="breadthfirst" height="100%" cyRef={cyRef} positionKey={`process-e2e:${selectedId}`} />
                 <GraphControls cyRef={cyRef} graphName="process-e2e" positionKey={`process-e2e:${selectedId}`} defaultLayout={LAYOUT_OPTIONS.breadthfirst} />
+                {/* Vid grafen finns ingen bild att ha synpunkter på – bara
+                    avvikelsen i processen. Till vänster om zoomknapparna. */}
+                {inloggad && (
+                  <Box sx={{ position: "absolute", top: 12, right: 56, zIndex: 10 }}>
+                    <ProcessFlagButton nodeId={selectedId} types={["PROCESS_DEVIATION"]} />
+                  </Box>
+                )}
                 <DomainFilterBar filter={domainFilter} />
                 <Box sx={{ position: "absolute", bottom: 16, left: 16 }}>
                   <LegendPanel />

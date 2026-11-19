@@ -397,7 +397,21 @@
     "types": {
       "INCOMPLETE": "Incomplete information",
       "OUTDATED": "Outdated information",
-      "INCORRECT": "Incorrect information"
+      "INCORRECT": "Incorrect information",
+      "PROCESS_IMAGE_WRONG": "The process diagram is wrong",
+      "PROCESS_DEVIATION": "Deviation in the process"
+    },
+    "process": {
+      "button": "Flag",
+      "dialogTitle": "Flag the process",
+      "what": "What is it about?",
+      "help_PROCESS_IMAGE_WRONG": "The diagram does not show the process as it is documented – something is missing, drawn wrong or unreadable.",
+      "help_PROCESS_DEVIATION": "This is not how we work – what is done in practice differs from the process as documented.",
+      "descriptionPlaceholder": "Describe what is wrong or how the work differs…",
+      "existing": "Flagged on this process",
+      "count_one": "{{count}} flag",
+      "count_other": "{{count}} flags",
+      "answer": "Answer"
     }
   },
   "nodeDetail": {
@@ -1115,7 +1129,15 @@
     "openArkitekten": "Open Arkitekten (process designer)",
     "tabSystemProcesses": "System processes",
     "systemProcessesNone": "This application has no published system processes.",
-    "ownerSystem": "Owner"
+    "ownerSystem": "Owner",
+    "origin": "Comes from {{system}}",
+    "originAuto": "Comes from {{system}} – drawn automatically in Arkitekten",
+    "syncActive": "The sync is active",
+    "syncOff": "The sync is switched off",
+    "syncLast": "last fetched {{when}}",
+    "syncNext": "next {{when}}",
+    "syncActiveHelp": "The process is fetched continuously from {{system}}. When it changes there, the diagram here is updated.",
+    "syncOffHelp": "The process is no longer fetched from {{system}}. The diagram shows the state when it was last fetched."
   },
   "integrationDirection": {
     "label": "Direction",

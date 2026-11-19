@@ -1,3 +1,4 @@
+import type React from "react";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Box, IconButton, Paper, Stack, Tooltip, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
@@ -64,6 +65,10 @@ interface Props {
   caption?: string;
   /** What the process does — published with the flow from Arkitekten. */
   beskrivning?: string;
+  /** Shown under the caption, e.g. where the picture comes from. */
+  info?: React.ReactNode;
+  /** Extra buttons, placed before the zoom controls. */
+  actions?: React.ReactNode;
 }
 
 interface Vy {
@@ -75,7 +80,7 @@ interface Vy {
 const MIN_ZOOM = 0.05;
 const MAX_ZOOM = 4;
 
-export default function FlowSceneView({ scen, caption, beskrivning }: Props) {
+export default function FlowSceneView({ scen, caption, beskrivning, info, actions }: Props) {
   const { t } = useTranslation();
   const hållare = useRef<HTMLDivElement | null>(null);
   const [vy, setVy] = useState<Vy>({ x: 0, y: 0, k: 1 });
@@ -180,6 +185,7 @@ export default function FlowSceneView({ scen, caption, beskrivning }: Props) {
               {beskrivning}
             </Box>
           )}
+          {info && <Box component="span" sx={{ display: "block", mt: 0.5 }}>{info}</Box>}
         </Typography>
       )}
 
@@ -288,6 +294,7 @@ export default function FlowSceneView({ scen, caption, beskrivning }: Props) {
       </Box>
 
       <Stack direction="row" spacing={0.5} sx={{ position: "absolute", top: 8, right: 8, zIndex: 2 }}>
+        {actions}
         <Tooltip title={t("flowScene.zoomIn")}>
           <IconButton size="small" onClick={() => zooma(1.25)} sx={{ bgcolor: "background.paper" }}>
             <AddIcon fontSize="small" />
