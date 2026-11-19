@@ -18,6 +18,7 @@ from app.api.v1 import (
     change_statistics,
     comments,
     csv_import,
+    custom_reports,
     directory,
     document_metadata,
     edges,
@@ -88,6 +89,7 @@ api_router.include_router(auth.router)
 api_router.include_router(target_architecture.router, dependencies=[Depends(modules.requires("governance"))])
 api_router.include_router(home_blocks.router)
 api_router.include_router(home_banners.router)
+api_router.include_router(custom_reports.router)
 api_router.include_router(solution_sketches.router)
 api_router.include_router(surveys.router, dependencies=[Depends(modules.requires("surveys"))])
 api_router.include_router(published_reports.router, dependencies=[Depends(modules.requires("surveys"))])

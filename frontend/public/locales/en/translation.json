@@ -1417,5 +1417,60 @@
     "saveError": "The field could not be saved.",
     "manage": "Manage own fields",
     "add": "Add own fields"
+  },
+  "customReports": {
+    "openCount_one": "{{count}} undecided",
+    "openCount_other": "{{count}} undecided",
+    "missing": "The report does not exist, or you are not allowed to see it.",
+    "adminOnly": "Administrators only",
+    "all": "All",
+    "group": "Group",
+    "edgeType": "Connection type",
+    "confidence": "Confidence",
+    "fromType": "From (type)",
+    "toType": "To (type)",
+    "groupBy": "Group by",
+    "groupings": {
+      "grupp": "Group",
+      "source": "From object",
+      "target": "To object",
+      "edge_type": "Connection type",
+      "säkerhet": "Confidence",
+      "ingen": "No grouping"
+    },
+    "showing": "Showing {{shown}} of {{total}} suggestions",
+    "nothing": "No suggestions match the filter.",
+    "status": {
+      "forslag": "Suggested",
+      "kopplad": "Connected",
+      "avstadd": "Declined",
+      "finns": "Already exists",
+      "saknas": "Object missing"
+    },
+    "statusHelp": {
+      "forslag": "",
+      "kopplad": "",
+      "avstadd": "",
+      "finns": "The connection already exists – made some other way.",
+      "saknas": "One of the objects no longer exists."
+    },
+    "connect": "Connect",
+    "decline": "Decline",
+    "undo": "Take the decision back",
+    "undoConnected": "Take the decision back (the connection stays – remove it on the object if it should not exist)",
+    "connectAll": "Connect all ({{count}})",
+    "declineAll": "Decline all",
+    "objectGone": "The object no longer exists",
+    "connected_one": "{{count}} connection created",
+    "connected_other": "{{count}} connections created",
+    "someFailed_one": "{{count}} suggestion could not be connected",
+    "someFailed_other": "{{count}} suggestions could not be connected",
+    "decideError": "The decision could not be saved",
+    "confirmConnectTitle_one": "Connect {{count}} suggestion?",
+    "confirmConnectTitle_other": "Connect {{count}} suggestions?",
+    "confirmDeclineTitle_one": "Decline {{count}} suggestion?",
+    "confirmDeclineTitle_other": "Decline {{count}} suggestions?",
+    "confirmConnectBody": "Every open suggestion shown under “{{group}}” is connected. Each connection can be removed on the object afterwards.",
+    "confirmDeclineBody": "Every open suggestion shown under “{{group}}” is put aside. It can be undone per row."
   }
 }

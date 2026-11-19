@@ -76,6 +76,7 @@ const ReportRoadmap = lazy(() => import("@/pages/reports/ReportRoadmap"));
 const ReportPrinciplesDocument = lazy(() => import("@/pages/reports/ReportPrinciplesDocument"));
 const ReportManualObjects = lazy(() => import("@/pages/reports/ReportManualObjects"));
 const ReportFlaggedObjects = lazy(() => import("@/pages/reports/ReportFlaggedObjects"));
+const CustomReport = lazy(() => import("@/pages/reports/CustomReport"));
 // A published survey report — one frozen edition, filed under "Rapporter".
 const PublishedReport = lazy(() => import("@/pages/reports/PublishedReport"));
 
@@ -199,6 +200,8 @@ const AppRouter: React.FC = () => (
         <Route path="/reports/manual-objects" element={<ReportManualObjects />} />
         <Route path="/reports/flagged-objects" element={<ReportFlaggedObjects />} />
         <Route path="/reports/published/:id" element={<EditorRoute><PublishedReport /></EditorRoute>} />
+        {/* An installation's own report. The server decides who may see it. */}
+        <Route path="/reports/egna/:key" element={<CustomReport />} />
         <Route path="*" element={
           <div style={{ padding: 32, textAlign: "center" }}>
             <h2>404 — Page not found</h2>
