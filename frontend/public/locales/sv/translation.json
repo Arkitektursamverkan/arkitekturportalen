@@ -397,7 +397,21 @@
     "types": {
       "INCOMPLETE": "Ofullständig information",
       "OUTDATED": "Föråldrad information",
-      "INCORRECT": "Felaktig information"
+      "INCORRECT": "Felaktig information",
+      "PROCESS_IMAGE_WRONG": "Processbilden är fel",
+      "PROCESS_DEVIATION": "Avvikelse i process"
+    },
+    "process": {
+      "button": "Flagga",
+      "dialogTitle": "Flagga processen",
+      "what": "Vad gäller det?",
+      "help_PROCESS_IMAGE_WRONG": "Bilden visar inte processen som den är beskriven – något saknas, är fel ritat eller går inte att läsa.",
+      "help_PROCESS_DEVIATION": "Vi arbetar inte så här – det som görs i verkligheten skiljer sig från processen som den är beskriven.",
+      "descriptionPlaceholder": "Beskriv vad som är fel eller hur arbetet skiljer sig…",
+      "existing": "Flaggat på den här processen",
+      "count_one": "{{count}} flagga",
+      "count_other": "{{count}} flaggor",
+      "answer": "Svar"
     }
   },
   "nodeDetail": {
@@ -1115,7 +1129,15 @@
     "openArkitekten": "Öppna Arkitekten (processritaren)",
     "tabSystemProcesses": "Systemprocesser",
     "systemProcessesNone": "Den här applikationen har inga publicerade systemprocesser.",
-    "ownerSystem": "Ägare"
+    "ownerSystem": "Ägare",
+    "origin": "Kommer från {{system}}",
+    "originAuto": "Kommer från {{system}} – ritad automatiskt i Arkitekten",
+    "syncActive": "Synken är aktiv",
+    "syncOff": "Synken är avstängd",
+    "syncLast": "senast hämtad {{when}}",
+    "syncNext": "nästa {{when}}",
+    "syncActiveHelp": "Processen hämtas löpande från {{system}}. Ändras den där uppdateras bilden här.",
+    "syncOffHelp": "Processen hämtas inte längre från {{system}}. Bilden visar läget när den senast hämtades."
   },
   "integrationDirection": {
     "label": "Riktning",

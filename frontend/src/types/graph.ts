@@ -87,7 +87,27 @@ export interface EdgeCreate {
   attributes?: Record<string, unknown>;
 }
 
-export type FlagType = "INCOMPLETE" | "OUTDATED" | "INCORRECT";
+export type FlagType =
+  | "INCOMPLETE"
+  | "OUTDATED"
+  | "INCORRECT"
+  /** On a process: the DIAGRAM does not show the process as it is documented. */
+  | "PROCESS_IMAGE_WRONG"
+  /** On a process: what is done deviates from what is documented. */
+  | "PROCESS_DEVIATION";
+
+/** The flags raised from the process view — only valid on a Process. */
+export const PROCESS_FLAG_TYPES: FlagType[] = ["PROCESS_IMAGE_WRONG", "PROCESS_DEVIATION"];
+/** Every flag type, in the order lists and filters show them. */
+export const ALL_FLAG_TYPES: FlagType[] = ["INCOMPLETE", "OUTDATED", "INCORRECT", ...PROCESS_FLAG_TYPES];
+/** Chip colour per flag type. */
+export const FLAG_COLORS: Record<FlagType, "warning" | "default" | "error" | "info"> = {
+  INCOMPLETE: "warning",
+  OUTDATED: "default",
+  INCORRECT: "error",
+  PROCESS_IMAGE_WRONG: "error",
+  PROCESS_DEVIATION: "info",
+};
 
 export interface NodeFlag {
   id: string;

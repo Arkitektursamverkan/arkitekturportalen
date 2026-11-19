@@ -139,6 +139,12 @@ export interface ArkflowSummary {
   ägare?: string | null;
   beskrivning?: string | null;
   publicerad_at?: string | null;
+  /**
+   * Set when an integration reads the process into Arkitekten from another
+   * system: the source system's name, and whether the picture is generated
+   * automatically rather than drawn by hand.
+   */
+  ursprung?: { system: string; automatisk: boolean } | null;
   bredd: number | null;
   höjd: number | null;
 }
@@ -233,6 +239,31 @@ export function useArkflowForProcess(
     /** The index loaded and this process simply has no flowchart. */
     missing: !index.isLoading && !match,
   };
+}
+
+/**
+ * Is an automatically read process still kept in step with its source?
+ * `känd` is false when there is nothing to ask about or the platform could not
+ * be asked – the page then says nothing about the sync.
+ */
+export interface ArkflowSynk {
+  känd: boolean;
+  aktiv: boolean;
+  senast: string | null;
+  nästa: string | null;
+}
+
+export function useArkflowSynk(id: string | null | undefined, enabled: boolean) {
+  const on = useModules().enabled("arkitekten");
+  return useQuery({
+    queryKey: ["arkflow-synk", id],
+    enabled: on && enabled && Boolean(id),
+    queryFn: async () => {
+      const { data } = await apiClient.get<ArkflowSynk>(`/arkflows/${id}/synk`);
+      return data;
+    },
+    staleTime: 2 * 60_000,
+  });
 }
 
 /** Vad en manuell synk gav – en körning per pipeline i plattformen. */

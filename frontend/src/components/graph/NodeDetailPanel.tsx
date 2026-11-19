@@ -19,6 +19,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useSnackbar } from "notistack";
 import type { FlagType, GraphNode, NodeRead as NodeReadType } from "@/types/graph";
+import { FLAG_COLORS } from "@/types/graph";
 import { LIST_KEY, isOwnField, listPath } from "@/config/domainLists";
 import OwnFields from "@/components/common/OwnFields";
 import { NODE_COLORS, ATTR_FIELDS, getValidEdgeTypes, getIntegrationDirection } from "@/config/graphConfig";
@@ -875,11 +876,6 @@ const ChangeProposalsSection: React.FC<{
 
 /* ── Node flags section ────────────────────────────────────────────── */
 
-const FLAG_COLORS: Record<string, string> = {
-  INCOMPLETE: "warning",
-  OUTDATED: "default",
-  INCORRECT: "error",
-};
 
 const NodeFlagsSection: React.FC<{ nodeId: string; flags: import("@/types/graph").NodeFlag[]; t: (k: string) => string; isAdmin: boolean }> = ({ nodeId, flags, t, isAdmin }) => {
   const deleteFlag = useDeleteFlag();
@@ -920,7 +916,7 @@ const NodeFlagsSection: React.FC<{ nodeId: string; flags: import("@/types/graph"
               <Chip
                 size="small"
                 label={t(`flags.types.${flag.flag_type}`)}
-                color={FLAG_COLORS[flag.flag_type] as "warning" | "default" | "error"}
+                color={FLAG_COLORS[flag.flag_type]}
                 sx={{ fontSize: 10, height: 18 }}
               />
               <Box sx={{ flex: 1 }} />

@@ -12,6 +12,15 @@ class FlagType(str, Enum):
     INCOMPLETE = "INCOMPLETE"
     OUTDATED = "OUTDATED"
     INCORRECT = "INCORRECT"
+    # On a Process only, raised from the process view:
+    # the DIAGRAM is wrong (it does not show the process as it is documented)
+    PROCESS_IMAGE_WRONG = "PROCESS_IMAGE_WRONG"
+    # the PROCESS deviates (what is done differs from what is documented)
+    PROCESS_DEVIATION = "PROCESS_DEVIATION"
+
+
+#: Flag types that only make sense on a Process node.
+PROCESS_FLAG_TYPES = frozenset({FlagType.PROCESS_IMAGE_WRONG, FlagType.PROCESS_DEVIATION})
 
 
 class NodeFlagCreate(BaseModel):

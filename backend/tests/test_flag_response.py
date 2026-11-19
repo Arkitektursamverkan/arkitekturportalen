@@ -42,3 +42,28 @@ async def test_svar_kraver_att_noden_syns(client, repo, api_headers):
     headers = {"Authorization": f"Bearer {issue_local_token(user)}"}
     r = await client.patch(f"/api/v1/nodes/{server}/flags/{flagga}/response", json={"response": "x"}, headers=headers)
     assert r.status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_processflaggor_satts_bara_pa_en_process(client, repo, api_headers):
+    """"Processbilden är fel" och "Avvikelse i process" säger något om en
+    process – på ett annat objekt vore de brus i rapporten."""
+    process = await client.post(
+        "/api/v1/nodes", json={"type": "Process", "name": f"Process {uuid.uuid4().hex[:6]}"}, headers=api_headers,
+    )
+    assert process.status_code == 201, process.text
+    pid = process.json()["id"]
+    for typ in ("PROCESS_IMAGE_WRONG", "PROCESS_DEVIATION"):
+        r = await client.post(
+            f"/api/v1/nodes/{pid}/flags", json={"flag_type": typ, "description": "Stämmer inte"}, headers=api_headers,
+        )
+        assert r.status_code == 201, r.text
+        assert r.json()["flag_type"] == typ
+    typer = {f["flag_type"] for f in (await client.get(f"/api/v1/nodes/{pid}/flags", headers=api_headers)).json()}
+    assert typer == {"PROCESS_IMAGE_WRONG", "PROCESS_DEVIATION"}
+
+    app, _ = await _flagga(client, api_headers, "Application", f"App {uuid.uuid4().hex[:6]}")
+    fel = await client.post(
+        f"/api/v1/nodes/{app}/flags", json={"flag_type": "PROCESS_DEVIATION"}, headers=api_headers,
+    )
+    assert fel.status_code == 400

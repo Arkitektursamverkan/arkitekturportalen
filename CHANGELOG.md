@@ -9,6 +9,11 @@ funktioner, en ny korrigering för rättelser.
 
 - (inget än)
 
+## 0.24.0 – 2026-11-19
+
+- **Processbilden säger var den kommer ifrån.** En processbild som en integration läser in i Arkitekten från ett annat system visar det under rubriken – ”Kommer från … – ritad automatiskt i Arkitekten” – tillsammans med om synken är aktiv, när processen senast hämtades och när den hämtas nästa gång. Är synken avstängd står det, och bilden visar då läget när den senast hämtades. Uppgiften kommer med processbilden (Arkitekten 0.15.0, Integrationsplattformen 0.13.0); synkens läge frågar portalen plattformen om (`GET /arkflows/{id}/synk`, kräver `INTEGRATION_PLATFORM_ADMIN_KEY`). Kan plattformen inte svara står ingenting om synken. Bilder ritade för hand visar ingenting nytt.
+- **Flagga en process.** Flikarna Processbild och Graf i processvyn har en flaggknapp. Vid processbilden väljer man mellan **Processbilden är fel** (bilden visar inte processen som den är beskriven) och **Avvikelse i process** (det som görs skiljer sig från det som är beskrivet); vid grafen finns bara avvikelsen. Knappen visar hur många flaggor processen har, och rutan listar dem med svar. Det är vanliga kvalitetsflaggor: de står i objektpanelen och i rapporten Flaggade objekt, där en redaktör svarar på dem. De två nya flaggtyperna kan bara sättas på en process. Flaggning kräver inloggning.
+
 ## 0.23.0 – 2026-11-18
 
 - **Verksamhetskalendern: filtrera på ansvarig och se vilka poster som hör ihop.** Ovanför kalendern finns ett nytt filter, **Ansvarig / kontakt**, där du väljer en eller flera ansvariga; då visas bara deras poster, både i månadsvyn och i Kommande 30 dagar. Filtret står kvar när du bläddrar mellan månader. Varje ansvarig har dessutom en egen färgad prick som står först i posten, så att man ser vilka poster som har samma ansvarig. Pricken finns också i filtret, i listan över kommande händelser (tillsammans med namnet) och i postens detaljruta, och namnet står i rutan som visas när man håller pekaren över en post. Stor och liten bokstav spelar ingen roll: ”Ekonomi” och ”ekonomi” räknas som samma. Poster utan ansvarig har ingen prick, och filtret visas först när någon post har en ansvarig. Förändringarna i IT-miljön påverkas inte av filtret.

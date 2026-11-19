@@ -18,7 +18,8 @@ class NodeFlagORM(Base):
     node_id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True), ForeignKey("ea_nodes.id", ondelete="CASCADE"), nullable=False
     )
-    # INCOMPLETE | OUTDATED | INCORRECT
+    # INCOMPLETE | OUTDATED | INCORRECT, and on a Process also
+    # PROCESS_IMAGE_WRONG | PROCESS_DEVIATION (schemas/flag.py)
     flag_type: Mapped[str] = mapped_column(String(30), nullable=False)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_by: Mapped[str | None] = mapped_column(String(255), nullable=True)
