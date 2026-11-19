@@ -77,6 +77,11 @@ export const REPORT_CATALOG: ReportMeta[] = [
 
 export const PUBLISHED_PREFIX = "/reports/published/";
 
+/** Where an installation's own reports live: `/reports/egna/<key>`. */
+export const CUSTOM_PREFIX = "/reports/egna/";
+/** Tag key of an installation's own report – never collides with a built-in slug. */
+export const customReportKey = (key: string) => `egen:${key}`;
+
 /** Published survey editions are tagged too, under a namespaced key. */
 export function publishedReportKey(id: string): string {
   return `published:${id}`;

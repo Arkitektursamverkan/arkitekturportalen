@@ -1426,5 +1426,60 @@
     "saveError": "Fältet gick inte att spara.",
     "manage": "Hantera egna fält",
     "add": "Lägg till egna fält"
+  },
+  "customReports": {
+    "openCount_one": "{{count}} obeslutat",
+    "openCount_other": "{{count}} obeslutade",
+    "missing": "Rapporten finns inte, eller så har du inte behörighet att se den.",
+    "adminOnly": "Bara för administratörer",
+    "all": "Alla",
+    "group": "Grupp",
+    "edgeType": "Kopplingstyp",
+    "confidence": "Säkerhet",
+    "fromType": "Från (typ)",
+    "toType": "Till (typ)",
+    "groupBy": "Gruppera på",
+    "groupings": {
+      "grupp": "Grupp",
+      "source": "Från-objekt",
+      "target": "Till-objekt",
+      "edge_type": "Kopplingstyp",
+      "säkerhet": "Säkerhet",
+      "ingen": "Ingen gruppering"
+    },
+    "showing": "Visar {{shown}} av {{total}} förslag",
+    "nothing": "Inga förslag matchar filtret.",
+    "status": {
+      "forslag": "Förslag",
+      "kopplad": "Kopplad",
+      "avstadd": "Avstådd",
+      "finns": "Finns redan",
+      "saknas": "Objekt saknas"
+    },
+    "statusHelp": {
+      "forslag": "",
+      "kopplad": "",
+      "avstadd": "",
+      "finns": "Kopplingen finns redan – skapad på annat sätt.",
+      "saknas": "Ett av objekten finns inte längre."
+    },
+    "connect": "Koppla",
+    "decline": "Avstå",
+    "undo": "Ångra beslutet",
+    "undoConnected": "Ångra beslutet (kopplingen står kvar – ta bort den på objektet om den inte ska finnas)",
+    "connectAll": "Koppla alla ({{count}})",
+    "declineAll": "Avstå alla",
+    "objectGone": "Objektet finns inte längre",
+    "connected_one": "{{count}} koppling skapad",
+    "connected_other": "{{count}} kopplingar skapade",
+    "someFailed_one": "{{count}} förslag gick inte att koppla",
+    "someFailed_other": "{{count}} förslag gick inte att koppla",
+    "decideError": "Beslutet gick inte att spara",
+    "confirmConnectTitle_one": "Koppla {{count}} förslag?",
+    "confirmConnectTitle_other": "Koppla {{count}} förslag?",
+    "confirmDeclineTitle_one": "Avstå {{count}} förslag?",
+    "confirmDeclineTitle_other": "Avstå {{count}} förslag?",
+    "confirmConnectBody": "Alla öppna förslag som visas under ”{{group}}” kopplas. Varje koppling går att ta bort på objektet efteråt.",
+    "confirmDeclineBody": "Alla öppna förslag som visas under ”{{group}}” läggs åt sidan. Det går att ångra per rad."
   }
 }

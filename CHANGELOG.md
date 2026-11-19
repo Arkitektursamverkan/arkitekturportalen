@@ -9,6 +9,11 @@ funktioner, en ny korrigering för rättelser.
 
 - (inget än)
 
+## 0.25.0 – 2026-11-19
+
+- **Egna rapporter.** En installation kan läsa in en egen rapport som data – resultatet av en engångsgenomgång, till exempel – i stället för att den byggs in i produkten. Rapporten läses in med `PUT /api/v1/custom-reports/{nyckel}` (administratör eller API-nyckeln), visas under Rapporter och är synlig bara för administratörer om inget annat anges (`admin_only`). För den som inte får se den finns den inte: varken i menyn eller på sin adress. Ny tabell `ea_custom_reports` (migrering 0074).
+- **Rapporttypen Kopplingsförslag.** Varje rad föreslår en koppling mellan två objekt, med grupp, säkerhet och motivering. Inget kopplas när rapporten läses in: en administratör väljer **Koppla** (kopplingen skapas, som om den dragits för hand) eller **Avstå** per rad, eller för en hel grupp efter en bekräftelse. Ett beslut går att ångra; en koppling som redan skapats står då kvar och tas bort på objektet. Rapporten filtreras på status, grupp, kopplingstyp, säkerhet och objekttyp, går att söka i och grupperas på grupp, från-objekt, till-objekt, kopplingstyp eller säkerhet. En rad vars koppling redan finns visas som ”Finns redan”, och besluten står kvar när rapporten läses in på nytt. Formatet står i `backend/app/api/v1/custom_reports.py`.
+
 ## 0.24.0 – 2026-11-19
 
 - **Processbilden säger var den kommer ifrån.** En processbild som en integration läser in i Arkitekten från ett annat system visar det under rubriken – ”Kommer från … – ritad automatiskt i Arkitekten” – tillsammans med om synken är aktiv, när processen senast hämtades och när den hämtas nästa gång. Är synken avstängd står det, och bilden visar då läget när den senast hämtades. Uppgiften kommer med processbilden (Arkitekten 0.15.0, Integrationsplattformen 0.13.0); synkens läge frågar portalen plattformen om (`GET /arkflows/{id}/synk`, kräver `INTEGRATION_PLATFORM_ADMIN_KEY`). Kan plattformen inte svara står ingenting om synken. Bilder ritade för hand visar ingenting nytt.

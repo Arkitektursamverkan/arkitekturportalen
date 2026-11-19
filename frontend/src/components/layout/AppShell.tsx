@@ -31,6 +31,7 @@ import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PollIcon from "@mui/icons-material/Poll";
+import RuleIcon from "@mui/icons-material/Rule";
 import LabelOutlinedIcon from "@mui/icons-material/LabelOutlined";
 import SortByAlphaIcon from "@mui/icons-material/SortByAlpha";
 import GroupIcon from "@mui/icons-material/Group";
@@ -47,6 +48,7 @@ import RandomSurveyDialog from "./RandomSurveyDialog";
 import { useUiStore } from "@/store/uiStore";
 import { useRoleStore } from "@/store/roleStore";
 import { publishedDate, usePublishedReports } from "@/api/publishedReports";
+import { useCustomReports } from "@/api/customReports";
 import { useWorkspaces } from "@/api/workspaces";
 import { useModules, usePublicOrgSettings } from "@/api/orgSettings";
 import {
@@ -58,6 +60,8 @@ import { SHORTCUT_DRAG_MIME } from "@/config/shortcutRegistry";
 import {
   PUBLISHED_PREFIX,
   REPORT_CATALOG,
+  CUSTOM_PREFIX,
+  customReportKey,
   publishedReportKey,
   reportKeyForPath,
 } from "@/config/reportCatalog";
@@ -256,9 +260,14 @@ const AppShell: React.FC<Props> = ({ children }) => {
   const [workspacesOpen, setWorkspacesOpen] = useState(isWorkspaceActive);
 
   const isReportActive =
-    ALL_REPORT_PATHS.has(location.pathname) || location.pathname.startsWith(PUBLISHED_PREFIX);
+    ALL_REPORT_PATHS.has(location.pathname) ||
+    location.pathname.startsWith(PUBLISHED_PREFIX) ||
+    location.pathname.startsWith(CUSTOM_PREFIX);
   // Editions published from the survey tool. Editor-only, like the surveys.
   const { data: publishedReports } = usePublishedReports(isEditor && moduleOn("surveys"));
+  // The installation's own reports. The server lists only what this user may
+  // see – a report for administrators is simply not there for anyone else.
+  const { data: customReports } = useCustomReports();
   const { data: reportTags } = useReportTags();
   const { data: reportNames } = useReportNames();
   const [reportsOpen, setReportsOpen] = useState(isReportActive);
@@ -292,8 +301,15 @@ const AppShell: React.FC<Props> = ({ children }) => {
         icon: item.icon,
       };
     }).sort((a, b) => a.label.localeCompare(b.label, i18n.language));
-    return [...published, ...builtin];
-  }, [publishedReports, reportNames, t, i18n.language, pathEnabled]);
+    const egna = (customReports ?? []).map((r) => ({
+      key: customReportKey(r.key),
+      path: `${CUSTOM_PREFIX}${r.key}`,
+      label: reportNames?.get(customReportKey(r.key)) ?? r.title,
+      secondary: r.obeslutade ? t("customReports.openCount", { count: r.obeslutade }) : undefined,
+      icon: <RuleIcon fontSize="small" />,
+    }));
+    return [...egna, ...published, ...builtin];
+  }, [publishedReports, customReports, reportNames, t, i18n.language, pathEnabled]);
 
   const reportGroups = React.useMemo(
     () => groupByTag(reportEntries, (e) => e.key, reportTags),
