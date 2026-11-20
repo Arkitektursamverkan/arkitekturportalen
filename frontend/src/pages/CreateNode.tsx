@@ -1,3 +1,4 @@
+import { useFieldLabel } from "@/api/orgSettings";
 import React, { useState } from "react";
 import {
   Alert,
@@ -100,6 +101,7 @@ const CreateNode: React.FC = () => {
   const [created, setCreated] = useState<NodeRead | null>(null);
 
   const attrFields = ATTR_FIELDS[nodeType];
+  const fieldLabel = useFieldLabel();
 
   // Reset form when type changes
   const handleTypeChange = (type: NodeType) => {
@@ -300,7 +302,7 @@ const CreateNode: React.FC = () => {
                   <TextField
                     key={key}
                     fullWidth size="small"
-                    label={t(labelKey)}
+                    label={fieldLabel(nodeType, key, t(labelKey))}
                     value={attrs[key] ?? ""}
                     onChange={(e) => setAttr(key, e.target.value)}
                   />

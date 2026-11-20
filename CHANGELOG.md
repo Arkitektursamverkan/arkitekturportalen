@@ -7,7 +7,11 @@ funktioner, en ny korrigering för rättelser.
 
 ## Ej släppt
 
-- (inget än)
+- **Fältens namn går att byta.** Under *Administration → Listor* finns kortet **Fältens namn**: en administratör ger objekttypernas fält de namn organisationen använder, till exempel *Avtalsägare* i stället för *Systemägare* på applikationer. Alla fält går att byta namn på – standardfälten, CSV-mallens fält och det objekten bär med sig från en synk. Bara namnet som visas ändras: värdet ligger kvar under samma nyckel, så rapporter, synkar och tidigare importer fungerar som förut. Det egna namnet visas i objektets panel, när ett objekt skapas, i ändringsförslag, i Ägaröversikten och i förändringsstatistiken. Ett tömt namn ger tillbaka standardnamnet. Ingen migrering.
+- **CSV-mallarna följer fältens namn.** Mallen per objekttyp, den samlade mallen och exporten har det egna namnet som kolumnrubrik, och importen läser både det egna namnet, det tidigare kolumnnamnet och fältets nyckel – en mall som fylldes i före namnbytet går fortfarande att läsa in. I den samlade filen får en kolumn som flera objekttyper delar det egna namnet bara när typerna är överens. Ett namn som redan är en annan kolumn i mallen går inte att spara.
+- **Applikationsmallen har samma fält som applikationen.** Mallen saknade Avdelning, Systemförvaltare, Systemadministratör och de planerade datumen, och kolumnerna `application_owner`, `lifecycle_stage` och `hosting` hamnade under egna nycklar som varken panelen eller rapporterna läste. De fyller nu Systemägare, Status och Driftform. Detsamma gäller processernas ägare, kategori och frekvens, informationsobjektens klassificering och informationskällornas typ och klassificering: det som läses in visas i objektets standardfält. Det som en tidigare import lade under de gamla nycklarna ligger kvar och följer med i exporten i rätt kolumn.
+- **Den samlade importen lägger värdena där sidorna läser dem.** Den sparade applikationers, processers och informationsobjekts värden under kolumnnamnen (`vendor`) i stället för fältens nycklar (`leverantör`), så en export som lästes in igen fyllde inte fälten.
+- **Felbesked vid avvisade uppgifter.** När API:t avvisade ett fält visade sidorna »[object Object]« eller bara att det inte gick att spara; nu visas skälet.
 
 ## 0.28.0 – 2026-11-20
 

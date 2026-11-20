@@ -38,10 +38,32 @@ export interface ExtraFields {
   edges: Record<string, ExtraField[]>;
 }
 
+/** The installation's own names for the built-in object types' fields: type → attribute key → name. */
+export interface FieldLabels {
+  nodes: Record<string, Record<string, string>>;
+}
+
 export interface DomainLists {
   disabled: string[];
   custom: CustomList[];
   extra_fields?: ExtraFields;
+  field_labels?: FieldLabels;
+}
+
+/** The name an admin gave a field of an object type; undefined = the standard name. */
+export function renamedField(lists: DomainLists | undefined, type: string, key: string): string | undefined {
+  return lists?.field_labels?.nodes?.[type]?.[key] || undefined;
+}
+
+/**
+ * The same, where the object type is not known (a list of roles across types):
+ * the name counts only when every type that renamed the field agrees.
+ */
+export function renamedFieldAnyType(lists: DomainLists | undefined, key: string): string | undefined {
+  const names = new Set(
+    Object.values(lists?.field_labels?.nodes ?? {}).map((labels) => labels[key]).filter(Boolean),
+  );
+  return names.size === 1 ? [...names][0] : undefined;
 }
 
 export const OWN_PREFIX = "x_";

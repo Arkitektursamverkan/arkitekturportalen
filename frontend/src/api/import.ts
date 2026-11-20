@@ -45,6 +45,25 @@ export function useImport2C8() {
   });
 }
 
+export interface CsvColumn {
+  /** The technical column name, which a file may always use. */
+  name: string;
+  /** The attribute the value is stored under; null for name, description and the like. */
+  attribute: string | null;
+  /** The heading the template has now: the installation's own name for the field, or the technical one. */
+  header: string;
+}
+
+/** The columns of each type's CSV file (keyed by the type's slug, "applications" …). */
+export function useCsvColumns() {
+  return useQuery({
+    queryKey: ["csv-columns"],
+    queryFn: async () =>
+      (await apiClient.get<Record<string, { node_type: string; columns: CsvColumn[] }>>("/import/csv/columns")).data,
+    staleTime: 60_000,
+  });
+}
+
 export function usePreviewCsv() {
   return useMutation({
     mutationFn: ({ entity, file }: { entity: string; file: File }) => {

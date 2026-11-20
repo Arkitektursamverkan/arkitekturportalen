@@ -65,6 +65,23 @@ function isUpstreamProxyRequest(url: string | undefined): boolean {
   return UPSTREAM_PROXY_PATHS.some((p) => url.includes(p));
 }
 
+/**
+ * The API's own words for what went wrong. A rejected field comes as a list
+ * (one entry per field, "Value error, <why>"); the reasons are what the user
+ * needs, not "[object Object]".
+ */
+export function detailText(detail: unknown): string | undefined {
+  if (typeof detail === "string") return detail || undefined;
+  if (Array.isArray(detail)) {
+    const reasons = detail
+      .map((d) => (d && typeof d === "object" && typeof (d as { msg?: unknown }).msg === "string" ? (d as { msg: string }).msg : ""))
+      .map((m) => m.replace(/^Value error, /, ""))
+      .filter(Boolean);
+    return reasons.length ? reasons.join(" ") : undefined;
+  }
+  return undefined;
+}
+
 apiClient.interceptors.response.use(
   (res) => res,
   (error: AxiosError) => {
@@ -78,7 +95,7 @@ apiClient.interceptors.response.use(
       clearLocalToken();
     }
     const message =
-      (error.response?.data as { detail?: string })?.detail ??
+      detailText((error.response?.data as { detail?: unknown })?.detail) ??
       error.message ??
       "An unexpected error occurred";
     return Promise.reject(new Error(message));

@@ -1,3 +1,4 @@
+import { useFieldLabel } from "@/api/orgSettings";
 import React, { useMemo, useState } from "react";
 import {
   Box, Card, CardContent, Chip, IconButton, List, ListItemButton, ListItemText, Stack, Table, TableBody,
@@ -31,6 +32,7 @@ const byName = (a: NodeRead, b: NodeRead) => a.name.localeCompare(b.name, "sv");
 
 const ServerServiceView: React.FC = () => {
   const { t } = useTranslation();
+  const fieldLabel = useFieldLabel();
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const selectedId = params.get("id") ?? undefined;
@@ -136,7 +138,7 @@ const ServerServiceView: React.FC = () => {
                   )}
                   <Stack direction="row" spacing={1} useFlexGap sx={{ mt: 1, flexWrap: "wrap" }}>
                     {ATTR_FIELDS.ServerService.filter((f) => attr(selected, f.key)).map((f) => (
-                      <Chip key={f.key} size="small" variant="outlined" label={`${t(f.labelKey)}: ${attr(selected, f.key)}`} />
+                      <Chip key={f.key} size="small" variant="outlined" label={`${fieldLabel("ServerService", f.key, t(f.labelKey))}: ${attr(selected, f.key)}`} />
                     ))}
                   </Stack>
                 </Box>

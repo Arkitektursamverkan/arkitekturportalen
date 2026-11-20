@@ -176,6 +176,10 @@ async def update_domain_lists(data: DomainLists, admin: CurrentUser = Depends(re
     """Switch lists off and on, and add, change and remove own lists."""
     repo = _get_pg_repo()
     current = parse_lists(org_settings.domain_lists())
+    from app.api.v1.csv_import import label_conflict
+
+    if conflict := label_conflict(data.field_labels.nodes):
+        raise HTTPException(status_code=422, detail=conflict)
     # A key is what the objects point at, so a list keeps it, and goes only when empty.
     removed = {c.key for c in current.custom} - {c.key for c in data.custom}
     if removed:
