@@ -3,6 +3,7 @@ import { Box, Chip, Stack, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useArkflow, type ArkflowSummary } from "@/api/arkflows";
 import FlowSceneView from "./FlowSceneView";
+import MaximizeArea from "./MaximizeArea";
 
 /**
  * The Systemprocesser tab on an application: the flowcharts published onto it
@@ -33,7 +34,8 @@ export default function SystemProcessesTab({ flows }: { flows: ArkflowSummary[] 
   }
 
   return (
-    <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+    // The process chooser follows the picture to full window.
+    <MaximizeArea sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
       {flows.length > 1 && (
         <Stack direction="row" spacing={1} sx={{ px: 1.5, py: 1, flexWrap: "wrap", rowGap: 1, borderBottom: 1, borderColor: "divider" }}>
           {flows.map((s) => (
@@ -63,6 +65,6 @@ export default function SystemProcessesTab({ flows }: { flows: ArkflowSummary[] 
           </Box>
         )}
       </Box>
-    </Box>
+    </MaximizeArea>
   );
 }
