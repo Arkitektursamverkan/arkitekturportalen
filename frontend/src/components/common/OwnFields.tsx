@@ -13,6 +13,9 @@ import { ownFieldsFor, type ExtraField, type OwnFieldKind } from "@/config/domai
  * connection. Each field saves on its own: a choice when it is picked, a text
  * when the field is left. An empty value clears the field.
  */
+/** The size the panels' other values are set in – an own value is one of them. */
+const TEXT = { fontSize: 12, lineHeight: 1.45 } as const;
+
 const OwnFields: React.FC<{
   kind: OwnFieldKind;
   /** The object type or connection type the fields belong to. */
@@ -70,18 +73,21 @@ const OwnFields: React.FC<{
         // A value saved before the choice was taken away is still shown.
         const options = f.type === "choice" && value && !f.options.includes(value) ? [...f.options, value] : f.options;
         return (
-          <Stack key={f.key} direction="row" spacing={1} sx={{ alignItems: "center", mb: 0.75 }}>
-            <Typography variant="caption" sx={{ color: "text.secondary", width: 96, flexShrink: 0, overflowWrap: "anywhere" }}>
+          // Top-aligned: a long text runs over several lines, and its label
+          // belongs with the first of them.
+          <Stack key={f.key} direction="row" spacing={1} sx={{ alignItems: "flex-start", mb: 0.75 }}>
+            <Typography variant="caption" sx={{ color: "text.secondary", width: 96, flexShrink: 0, overflowWrap: "anywhere", pt: "3px" }}>
               {f.label}
             </Typography>
             {!canEdit ? (
-              <Typography variant="body2" sx={{ color: value ? "text.primary" : "text.disabled", overflowWrap: "anywhere" }}>
+              <Typography variant="body2" sx={{ ...TEXT, color: value ? "text.primary" : "text.disabled", overflowWrap: "anywhere", whiteSpace: "pre-wrap", minWidth: 0 }}>
                 {value || "—"}
               </Typography>
             ) : f.type === "choice" ? (
               <TextField
                 select fullWidth size="small" variant="standard" value={value} disabled={saving === f.key}
                 slotProps={{ htmlInput: { "aria-label": f.label }, select: { displayEmpty: true } }}
+                sx={{ "& .MuiSelect-select": TEXT }}
                 onChange={(e) => { setValues((v) => ({ ...v, [f.key]: e.target.value })); void save(f, e.target.value); }}
               >
                 <MenuItem value=""><em>{t("ownFields.none")}</em></MenuItem>
@@ -89,11 +95,15 @@ const OwnFields: React.FC<{
               </TextField>
             ) : (
               <TextField
-                fullWidth size="small" variant="standard" value={value} disabled={saving === f.key}
+                // The field grows with its text: on one line a longer value
+                // ran out of the panel, and all but its beginning was unreadable.
+                fullWidth multiline size="small" variant="standard" value={value} disabled={saving === f.key}
                 slotProps={{ htmlInput: { "aria-label": f.label, maxLength: 500 } }}
+                sx={{ minWidth: 0, "& .MuiInputBase-root": { ...TEXT, py: "2px" } }}
                 onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
                 onBlur={(e) => void save(f, e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); }}
+                // Enter saves, as before; an own value is one text, not paragraphs.
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); (e.target as HTMLElement).blur(); } }}
               />
             )}
           </Stack>
