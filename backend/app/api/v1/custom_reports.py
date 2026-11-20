@@ -21,6 +21,13 @@ connection type, with a motivation. Nothing is connected by loading the
 report: an administrator decides per row, **Koppla** (the connection is
 created, exactly as if drawn by hand) or **Avstå**. A row whose connection
 already exists says so, and reloading the report keeps the decisions made.
+
+A row may carry values for the connection's own fields (`fält`, see
+app/domain_lists.py) — the motivation, say, in an own field the installation
+has added to the connection type. They are written on the connection when
+Koppla creates it. A value for a field the connection type does not have, or
+one the field does not accept, is left out: the report was written before
+the administrator decided, and the fields may have changed since.
 """
 from __future__ import annotations
 
@@ -30,16 +37,19 @@ from typing import Any, Literal
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from sqlalchemy import select
 
 from app.access import hidden_node_ids
 from app.auth import CurrentUser
 from app.dal.postgres_repository import PostgresRepository
 from app.dependencies import get_repository, require_admin, require_user
+from app.domain_lists import OWN_PREFIX, OWN_VALUE_MAX, ExtraField, clean_own_values
+from app.domain_lists import parse as parse_lists
 from app.models.custom_report import CustomReportORM
 from app.schemas.common import EdgeType
 from app.schemas.edge import EdgeCreate
+from app.services import org_settings
 
 router = APIRouter(prefix="/custom-reports", tags=["custom-reports"])
 
@@ -61,6 +71,18 @@ class ProposalRow(BaseModel):
     säkerhet: str = Field("", max_length=30)
     # Why it is suggested — what the reader needs to decide.
     motivering: str = Field("", max_length=2000)
+    # Values for the connection's own fields, written when Koppla creates it.
+    fält: dict[str, str] = Field(default_factory=dict, max_length=30)
+
+    @field_validator("fält")
+    @classmethod
+    def _own_fields_only(cls, fält: dict[str, str]) -> dict[str, str]:
+        for key, value in fält.items():
+            if not key.startswith(OWN_PREFIX) or len(key) > 50:
+                raise ValueError(f"fält: {key[:60]} är inte ett eget fält (nyckeln ska börja med {OWN_PREFIX})")
+            if len(value) > OWN_VALUE_MAX:
+                raise ValueError(f"fält: {key} får vara högst {OWN_VALUE_MAX} tecken")
+        return fält
 
 
 class ReportLoad(BaseModel):
@@ -111,6 +133,22 @@ def _meta(r: CustomReportORM) -> dict[str, Any]:
         "updated_at": r.updated_at,
         "updated_by": r.updated_by,
     }
+
+
+def own_values_for(row: dict[str, Any], fields: list[ExtraField]) -> dict[str, str]:
+    """The row's own-field values that the connection type takes today."""
+    by_key = {f.key: f for f in fields}
+    out: dict[str, str] = {}
+    for key, value in (row.get("fält") or {}).items():
+        if key not in by_key:
+            continue
+        try:
+            cleaned = clean_own_values([by_key[key]], {key: value})[key]
+        except ValueError:
+            continue
+        if cleaned is not None:
+            out[key] = cleaned
+    return out
 
 
 async def _get(key: str, user: CurrentUser) -> CustomReportORM:
@@ -215,6 +253,7 @@ async def decide(key: str, data: Decision, user: CurrentUser = Depends(require_a
     fel: list[dict[str, str]] = []
     if data.val == "koppla":
         finns = {(str(e.source_id), str(e.target_id), e.type.value) for e in await repo.list_edges()}
+        egna = parse_lists(org_settings.domain_lists()).extra_fields.edges
         for x in berörda:
             nyckel = (x["source_id"], x["target_id"], x["edge_type"])
             if nyckel in finns:
@@ -223,7 +262,10 @@ async def decide(key: str, data: Decision, user: CurrentUser = Depends(require_a
                 fel.append({"id": x["id"], "fel": "Ett av objekten finns inte längre"})
                 continue
             kant = await repo.create_edge(
-                EdgeCreate(source_id=UUID(x["source_id"]), target_id=UUID(x["target_id"]), type=EdgeType(x["edge_type"]))
+                EdgeCreate(
+                    source_id=UUID(x["source_id"]), target_id=UUID(x["target_id"]), type=EdgeType(x["edge_type"]),
+                    attributes=own_values_for(x, egna.get(x["edge_type"], [])),
+                )
             )
             skapade[x["id"]] = str(kant.id)
             finns.add(nyckel)
