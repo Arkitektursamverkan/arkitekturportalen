@@ -71,6 +71,7 @@ async def test_utan_installning_ar_allt_som_forut(client):
     resp = await client.get("/api/v1/org-settings/public")
     assert resp.json()["domain_lists"] == {
         "disabled": [], "custom": [], "extra_fields": {"nodes": {}, "edges": {}},
+        "field_labels": {"nodes": {}},
     }
 
 

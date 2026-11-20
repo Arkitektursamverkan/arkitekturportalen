@@ -1,4 +1,11 @@
-"""CSV import endpoints — template download + file upload for all node types."""
+"""CSV import endpoints — template download + file upload for all node types.
+
+A column is known by its technical name (`vendor`) and stores its value under
+the attribute key the object's detail panel shows (`leverantör`). When an admin
+has given a field a name of their own (app.domain_lists `field_labels`), the
+templates and the export carry that name as the column heading, and the import
+reads every spelling: the technical name, the attribute key and the own name.
+"""
 from __future__ import annotations
 
 import csv
@@ -16,9 +23,11 @@ from app.auth import CurrentUser
 from app.csv_safety import safe_writer, unescape_cell
 from app.dal.graph_repository import GraphRepository
 from app.dependencies import get_repository, require_admin
+from app.domain_lists import field_labels
 from app.schemas.common import EdgeType, ExternalSource, NodeType
 from app.schemas.edge import EdgeCreate
 from app.schemas.node import NodeCreate, NodeUpdate
+from app.services import org_settings
 
 log = structlog.get_logger(__name__)
 
@@ -31,7 +40,7 @@ router = APIRouter(prefix="/import/csv", tags=["csv-import"])
 class EntityConfig:
     node_type: NodeType
     columns: list[str]           # ordered CSV columns (starts with name, description)
-    attr_map: dict[str, str]     # csv_column → Swedish attribute key
+    attr_map: dict[str, str]     # csv_column → attribute key, the one the detail panel shows
     filename: str                # suggested download filename
     template_rows: list[list[str]] = field(default_factory=list)
     # Name is the key: a re-import updates the object with the same name instead
@@ -39,13 +48,17 @@ class EntityConfig:
     key_prefix: str | None = None
     # Column with the names of servers the object runs on (RUNS_ON), not an attribute.
     servers_column: str | None = None
+    # Attribute keys earlier versions of the import wrote → the column they
+    # belong to, so that an export still carries those values.
+    legacy_attrs: dict[str, str] = field(default_factory=dict)
 
 
 ENTITY_CONFIGS: dict[str, EntityConfig] = {
     "processes": EntityConfig(
         node_type=NodeType.PROCESS,
         columns=["name", "description", "owner", "category", "frequency", "parent_id"],
-        attr_map={"owner": "ägare", "category": "kategori", "frequency": "frekvens"},
+        attr_map={"owner": "owner", "category": "category", "frequency": "frequency"},
+        legacy_attrs={"ägare": "owner", "kategori": "category", "frekvens": "frequency"},
         filename="processer_mall.csv",
         template_rows=[
             ["Ekonomiprocesser", "Övergripande ekonomiprocess", "Ekonomi", "Ekonomi", "", ""],
@@ -56,19 +69,32 @@ ENTITY_CONFIGS: dict[str, EntityConfig] = {
     ),
     "applications": EntityConfig(
         node_type=NodeType.APPLICATION,
-        columns=["name", "description", "vendor", "category", "application_owner", "business_owner", "lifecycle_stage", "hosting"],
-        attr_map={"vendor": "leverantör", "category": "kategori", "application_owner": "application_owner", "business_owner": "business_owner", "lifecycle_stage": "lifecycle_stage", "hosting": "hosting"},
+        columns=[
+            "name", "description", "vendor", "category", "application_owner", "business_owner", "lifecycle_stage", "hosting",
+            "avdelning", "systemförvaltare", "systemadministratör", "planerad_driftstart", "planerad_avveckling",
+        ],
+        # The owner, the stage and the hosting are the panel's Systemägare,
+        # Status and Driftform – the fields the reports read.
+        attr_map={
+            "vendor": "leverantör", "category": "kategori", "application_owner": "systemägare",
+            "business_owner": "business_owner", "lifecycle_stage": "status", "hosting": "driftform",
+            "avdelning": "avdelning", "systemförvaltare": "systemförvaltare",
+            "systemadministratör": "systemadministratör", "planerad_driftstart": "planerad_driftstart",
+            "planerad_avveckling": "planerad_avveckling",
+        },
+        legacy_attrs={"application_owner": "application_owner", "lifecycle_stage": "lifecycle_stage", "hosting": "hosting"},
         filename="applikationer_mall.csv",
         template_rows=[
-            ["SAP S/4HANA", "ERP-system för ekonomi och logistik", "SAP", "ERP", "IT-avdelningen", "Ekonomichef", "I drift", "OnPrem"],
-            ["Workday", "HR och lönesystem", "Workday", "HCM", "HR-IT", "HR-chef", "I drift", "SaaS"],
-            ["Min applikation", "Beskriv systemet här", "Leverantör", "Kategori", "Systemägare", "Verksamhetsägare", "I drift", "Cloud"],
+            ["SAP S/4HANA", "ERP-system för ekonomi och logistik", "SAP", "ERP", "IT-avdelningen", "Ekonomichef", "I drift", "OnPrem", "Ekonomi", "Anna Andersson", "", "", ""],
+            ["Workday", "HR och lönesystem", "Workday", "HCM", "HR-IT", "HR-chef", "I drift", "SaaS", "HR", "", "", "", ""],
+            ["Min applikation", "Beskriv systemet här", "Leverantör", "Kategori", "Systemägare", "Verksamhetsägare", "I drift", "Cloud", "", "", "", "", ""],
         ],
     ),
     "information-objects": EntityConfig(
         node_type=NodeType.INFORMATION_OBJECT,
         columns=["name", "description", "definition", "data_owner", "classification", "domain"],
-        attr_map={"definition": "definition", "data_owner": "data_owner", "classification": "klassificering", "domain": "domain"},
+        attr_map={"definition": "definition", "data_owner": "data_owner", "classification": "classification", "domain": "domain"},
+        legacy_attrs={"klassificering": "classification"},
         filename="informationsobjekt_mall.csv",
         template_rows=[
             ["Faktura", "Leverantörsfaktura med betalningsinformation", "Dokument som specificerar belopp och betalningsvillkor", "Ekonomi", "Intern", "Ekonomi"],
@@ -79,7 +105,8 @@ ENTITY_CONFIGS: dict[str, EntityConfig] = {
     "information-sources": EntityConfig(
         node_type=NodeType.INFORMATION_SOURCE,
         columns=["name", "description", "system", "source_type", "classification"],
-        attr_map={"system": "system", "source_type": "typ", "classification": "klassificering"},
+        attr_map={"system": "system", "source_type": "type", "classification": "classification"},
+        legacy_attrs={"typ": "source_type", "klassificering": "classification"},
         filename="informationskallor_mall.csv",
         template_rows=[
             ["SAP FI-modul", "Finansmodul i SAP S/4HANA", "SAP S/4HANA", "Databas", "Intern"],
@@ -133,9 +160,85 @@ def _get_config(entity: str) -> EntityConfig:
     return cfg
 
 
+# ── Column headings ────────────────────────────────────────────────────────────
+
+def _norm(heading: str) -> str:
+    return " ".join(heading.split()).lower()
+
+
+def _labels(cfg: EntityConfig) -> dict[str, str]:
+    """The installation's own names for the type's fields: attribute key → name."""
+    return field_labels(org_settings.domain_lists(), cfg.node_type.value)
+
+
+def _header(cfg: EntityConfig, col: str, labels: dict[str, str]) -> str:
+    """The heading a column has in a file: the field's own name, or the technical one."""
+    attr = cfg.attr_map.get(col)
+    return (labels.get(attr) if attr else None) or col
+
+
+def _aliases(cfg: EntityConfig, labels: dict[str, str], reserved: frozenset[str] = frozenset()) -> dict[str, str]:
+    """Every heading a file may use for the type's columns, normalised → column.
+    The technical names go first, so an own name never takes one over."""
+    out: dict[str, str] = {c: c for c in cfg.columns}
+    for col, attr in cfg.attr_map.items():
+        out.setdefault(_norm(attr), col)
+    for col, attr in cfg.attr_map.items():
+        if labels.get(attr):
+            out.setdefault(_norm(labels[attr]), col)
+    return {k: v for k, v in out.items() if k not in reserved or k == v}
+
+
+def label_conflict(labels_by_type: dict[str, dict[str, str]]) -> str | None:
+    """Why these own names cannot be saved, or None: a name that is another
+    column's technical name in the same type's file would be read as that column."""
+    for cfg in ENTITY_CONFIGS.values():
+        labels = labels_by_type.get(cfg.node_type.value, {})
+        technical: dict[str, str] = {c: c for c in cfg.columns}
+        for col, attr in cfg.attr_map.items():
+            technical.setdefault(_norm(attr), col)
+        own_col = {attr: col for col, attr in cfg.attr_map.items()}
+        for attr, label in labels.items():
+            taken_by = technical.get(_norm(label))
+            if taken_by and taken_by != own_col.get(attr):
+                return f"Namnet {label} är redan en annan kolumn ({taken_by}) i CSV-mallen för objekttypen"
+    return None
+
+
+def _columns_of(row: dict[str, str | None], aliases: dict[str, str]) -> dict[str, str]:
+    """A file's row with its headings turned into column names. When two
+    headings mean the same column, the first one with a value counts."""
+    out: dict[str, str] = {}
+    for heading, value in row.items():
+        if not heading:
+            continue
+        key = _norm(heading)
+        col = aliases.get(key, key)
+        text = unescape_cell((value or "").strip()).strip()
+        if col not in out or not out[col]:
+            out[col] = text
+    return out
+
+
+@router.get("/columns")
+async def list_columns() -> dict:
+    """The columns of each type's file, with the heading the template has now."""
+    out: dict[str, dict] = {}
+    for entity, cfg in ENTITY_CONFIGS.items():
+        labels = _labels(cfg)
+        out[entity] = {
+            "node_type": cfg.node_type.value,
+            "columns": [
+                {"name": col, "attribute": cfg.attr_map.get(col), "header": _header(cfg, col, labels)}
+                for col in cfg.columns
+            ],
+        }
+    return out
+
+
 # ── CSV parsing ────────────────────────────────────────────────────────────────
 
-def _parse_csv(content: bytes, cfg: EntityConfig) -> tuple[list[dict], list[str]]:
+def _parse_csv(content: bytes, cfg: EntityConfig, labels: dict[str, str] | None = None) -> tuple[list[dict], list[str]]:
     try:
         text = content.decode("utf-8-sig")
     except UnicodeDecodeError:
@@ -147,7 +250,8 @@ def _parse_csv(content: bytes, cfg: EntityConfig) -> tuple[list[dict], list[str]
     if not reader.fieldnames:
         return [], ["Filen verkar vara tom eller saknar rubrikrad."]
 
-    fieldnames_norm = [f.strip().lower() for f in reader.fieldnames]
+    aliases = _aliases(cfg, labels or {})
+    fieldnames_norm = [aliases.get(_norm(f), _norm(f)) for f in reader.fieldnames]
 
     if "name" not in fieldnames_norm:
         return [], [f"Obligatorisk kolumn 'name' saknas. Hittade: {', '.join(reader.fieldnames)}"]
@@ -156,7 +260,7 @@ def _parse_csv(content: bytes, cfg: EntityConfig) -> tuple[list[dict], list[str]
     errors: list[str] = []
 
     for i, raw_row in enumerate(reader, start=2):
-        row = {k.strip().lower(): unescape_cell((v or "").strip()).strip() for k, v in raw_row.items() if k}
+        row = _columns_of(raw_row, aliases)
 
         name = row.get("name", "")
         if not name:
@@ -250,19 +354,41 @@ def _all_attr_columns() -> list[str]:
     return cols
 
 
-# Reverse mapping: Swedish attribute key → CSV column name (built from all entity configs)
-_ATTR_TO_COL: dict[str, str] = {}
-for _cfg in ENTITY_CONFIGS.values():
-    for _csv_col, _attr_key in _cfg.attr_map.items():
-        _ATTR_TO_COL[_attr_key] = _csv_col
-        _ATTR_TO_COL[_csv_col] = _csv_col  # identity mapping for English keys
+def _unified_header(attr_cols: list[str]) -> list[str]:
+    """The headings of the unified file. A column several types share gets an
+    own name only when every type that has the column calls it the same."""
+    labels = {entity: _labels(cfg) for entity, cfg in ENTITY_CONFIGS.items()}
+    header: list[str] = []
+    for col in attr_cols:
+        names = {_header(cfg, col, labels[entity]) for entity, cfg in ENTITY_CONFIGS.items() if col in cfg.columns}
+        header.append(names.pop() if len(names) == 1 else col)
+    return header
+
+
+def _export_columns(cfg: EntityConfig | None, attributes: dict) -> dict[str, str]:
+    """An object's attributes as column → value: the fields the panel shows
+    first, then what earlier imports stored under other keys."""
+    if cfg is None:
+        return {k: str(v) for k, v in attributes.items()}
+    to_col = {attr: col for col, attr in cfg.attr_map.items()}
+    out: dict[str, str] = {}
+    for key, value in attributes.items():
+        if key in to_col and value not in (None, ""):
+            out[to_col[key]] = str(value)
+    for key, value in attributes.items():
+        if key in to_col:
+            continue
+        col = cfg.legacy_attrs.get(key, key)
+        if value not in (None, "") and not out.get(col):
+            out[col] = str(value)
+    return out
 
 
 @router.get("/template/unified")
 async def download_unified_template() -> StreamingResponse:
     """Return a unified CSV template with all node types + connections."""
     attr_cols = _all_attr_columns()
-    header = ["type", "name", "description"] + attr_cols
+    header = ["type", "name", "description"] + _unified_header(attr_cols)
 
     buf = io.StringIO()
     buf.write("# EA-applikation — Komplett import\n")
@@ -314,7 +440,7 @@ async def export_csv(user: CurrentUser | None = Depends(get_optional_user)) -> S
     edges = await repo.list_edges()
 
     attr_cols = _all_attr_columns()
-    header = ["type", "name", "description"] + attr_cols
+    header = ["type", "name", "description"] + _unified_header(attr_cols)
 
     # Build a map from node UUID → name (for parent_id and connection resolution)
     id_to_name: dict[str, str] = {}
@@ -329,17 +455,15 @@ async def export_csv(user: CurrentUser | None = Depends(get_optional_user)) -> S
     for n in nodes:
         if n.archived:
             continue
-        # Map attributes back to columns
-        col_vals: dict[str, str] = {}
-        for attr_key, attr_val in (n.attributes or {}).items():
-            if attr_key == "parent_id":
-                # Resolve parent UUID to name
-                col_vals["parent_id"] = id_to_name.get(str(attr_val), str(attr_val))
-                continue
-            col = _ATTR_TO_COL.get(attr_key, attr_key)
-            col_vals[col] = str(attr_val)
-
         node_type = n.type.value if hasattr(n.type, "value") else str(n.type)
+        # Map attributes back to columns
+        attributes = dict(n.attributes or {})
+        parent = attributes.pop("parent_id", None)
+        col_vals = _export_columns(_CONFIG_BY_NAME.get(node_type), attributes)
+        if parent:
+            # Resolve parent UUID to name
+            col_vals["parent_id"] = id_to_name.get(str(parent), str(parent))
+
         csv_row = [node_type, n.name, n.description or ""]
         for ac in attr_cols:
             csv_row.append(col_vals.get(ac, ""))
@@ -479,9 +603,10 @@ async def download_template(entity: str) -> StreamingResponse:
     cfg = _get_config(entity)
     buf = io.StringIO()
     writer = safe_writer(buf)
-    writer.writerow(cfg.columns)
+    labels = _labels(cfg)
+    writer.writerow([_header(cfg, col, labels) for col in cfg.columns])
     for row in cfg.template_rows:
-        writer.writerow(row)
+        writer.writerow(row + [""] * (len(cfg.columns) - len(row)))
     buf.seek(0)
     return StreamingResponse(
         iter([buf.getvalue()]),
@@ -497,7 +622,7 @@ async def preview_csv(entity: str, file: UploadFile = File(...)) -> dict:
     """Parse a CSV and return rows that would be imported — no database writes."""
     cfg = _get_config(entity)
     content = await file.read()
-    rows, errors = _parse_csv(content, cfg)
+    rows, errors = _parse_csv(content, cfg, _labels(cfg))
     return {"rows": rows, "errors": errors, "total": len(rows)}
 
 
@@ -508,7 +633,7 @@ async def import_csv(entity: str, file: UploadFile = File(...)) -> dict:
     """Parse a CSV file and upsert nodes of the given entity type."""
     cfg = _get_config(entity)
     content = await file.read()
-    rows, parse_errors = _parse_csv(content, cfg)
+    rows, parse_errors = _parse_csv(content, cfg, _labels(cfg))
 
     if not rows and parse_errors:
         raise HTTPException(status_code=422, detail=parse_errors)
@@ -618,6 +743,10 @@ NODE_TYPE_MAP: dict[str, NodeType] = {
 # The per-type configuration of each type, for its column → attribute names
 # and its key in the unified file.
 _CONFIG_BY_TYPE: dict[NodeType, EntityConfig] = {c.node_type: c for c in ENTITY_CONFIGS.values()}
+_CONFIG_BY_NAME: dict[str, EntityConfig] = {c.node_type.value: c for c in ENTITY_CONFIGS.values()}
+
+# Headings of the unified file that are never a field.
+_UNIFIED_FIXED = frozenset({"id", "type", "name", "description"})
 
 EDGE_TYPE_SET = {e.value for e in EdgeType}
 
@@ -646,6 +775,18 @@ def _parse_unified_csv(content: bytes) -> tuple[list[dict], list[dict], list[str
         return [], [], ["File is empty."]
 
     delimiter = _detect_delimiter(text)
+
+    # What a heading means depends on the row's type; a heading the type does
+    # not know is tried as any other type's column.
+    type_aliases = {cfg.node_type: _aliases(cfg, _labels(cfg), _UNIFIED_FIXED) for cfg in ENTITY_CONFIGS.values()}
+    any_alias: dict[str, str] = {}
+    for aliases in type_aliases.values():
+        for heading, col in aliases.items():
+            if heading == col:
+                any_alias[heading] = col
+    for aliases in type_aliases.values():
+        for heading, col in aliases.items():
+            any_alias.setdefault(heading, col)
 
     # Split text into sections, then parse each with csv.reader for proper multiline handling
     nodes_text = ""
@@ -685,7 +826,7 @@ def _parse_unified_csv(content: bytes) -> tuple[list[dict], list[dict], list[str
     if nodes_text.strip():
         reader = csv.DictReader(io.StringIO(nodes_text), delimiter=delimiter)
         if reader.fieldnames:
-            fieldnames = [f.strip().lower() for f in reader.fieldnames]
+            fieldnames = [_norm(f) for f in reader.fieldnames]
             reader.fieldnames = fieldnames
             if "type" not in fieldnames or "name" not in fieldnames:
                 errors.append(f"Node header must include 'type' and 'name'. Got: {', '.join(fieldnames)}")
@@ -706,11 +847,17 @@ def _parse_unified_csv(content: bytes) -> tuple[list[dict], list[dict], list[str
                     continue
                 node_type = NODE_TYPE_MAP[node_type_key]
                 cfg = _CONFIG_BY_TYPE.get(node_type)
-                attrs = {k: v for k, v in row.items() if k not in ("id", "type", "name", "description") and v}
-                if cfg and cfg.key_prefix:
-                    # The newer types store their attributes under the names
-                    # their pages read (hostnamn, miljö …), not the column names.
-                    attrs = {cfg.attr_map.get(k, k): v for k, v in attrs.items() if k != cfg.servers_column}
+                # The attributes go under the names the pages read (leverantör,
+                # hostnamn …), not the column names.
+                own = type_aliases.get(node_type, {})
+                attrs: dict[str, str] = {}
+                for k, v in row.items():
+                    if k in _UNIFIED_FIXED or not v:
+                        continue
+                    col = own.get(k) or any_alias.get(k) or k
+                    if cfg and col == cfg.servers_column:
+                        continue
+                    attrs.setdefault(cfg.attr_map.get(col, col) if cfg else col, v)
                 nodes.append({
                     "line": row_num,
                     "id": _external_id(cfg, name),

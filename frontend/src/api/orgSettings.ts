@@ -1,7 +1,7 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "./client";
-import { listPathEnabled, type DomainLists } from "@/config/domainLists";
+import { listPathEnabled, renamedField, renamedFieldAnyType, type DomainLists } from "@/config/domainLists";
 import { moduleForPath, type ModuleKey } from "@/config/modules";
 import type { Navigation } from "@/config/navigation";
 
@@ -165,6 +165,21 @@ export function useModules(): {
   }, [modules, lists]);
   // If the settings cannot be read, show the core rather than spin forever.
   return { ready: data !== undefined || isError, ...fns };
+}
+
+/**
+ * What a field of an object type is called here: the name an admin gave it
+ * (Administration → Listor), or else the standard name passed in. Without a
+ * type the name counts when the types that renamed the field agree.
+ */
+export function useFieldLabel() {
+  const { data } = usePublicOrgSettings();
+  const lists = data?.domain_lists;
+  return useCallback(
+    (type: string | null | undefined, key: string, standard: string) =>
+      (type ? renamedField(lists, type, key) : renamedFieldAnyType(lists, key)) ?? standard,
+    [lists],
+  );
 }
 
 /** Which lists the installation has. */

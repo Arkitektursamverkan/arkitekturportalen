@@ -1,3 +1,4 @@
+import { useFieldLabel } from "@/api/orgSettings";
 import React, { useMemo, useState } from "react";
 import { Autocomplete, Box, Card, Chip, FormControl, InputLabel, MenuItem, Select, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
@@ -27,7 +28,8 @@ const ReportOwners: React.FC = () => {
   // A chosen person replaces the grouped overview with that person's roles.
   const [person, setPerson] = useState<Person | null>(null);
   const people = useMemo(() => peopleWithRoles(nodes), [nodes]);
-  const roleName = (f: string) => t(`attributes.${f}`, { defaultValue: f });
+  const fieldLabel = useFieldLabel();
+  const roleName = (f: string, type?: string) => fieldLabel(type, f, t(`attributes.${f}`, { defaultValue: f }));
   const typeName = (type: string) => t(`nodeTypes.${type}`, { defaultValue: type });
 
   const { groups, unowned } = useMemo(() => {
@@ -94,7 +96,7 @@ const ReportOwners: React.FC = () => {
                       <TableCell><Typography variant="caption" sx={{ color: "text.secondary" }}>{typeName(o.node_type)}</Typography></TableCell>
                       <TableCell>
                         <Stack direction="row" spacing={0.5} useFlexGap sx={{ flexWrap: "wrap" }}>
-                          {o.roles.map((f) => <Chip key={f} size="small" variant="outlined" label={roleName(f)} />)}
+                          {o.roles.map((f) => <Chip key={f} size="small" variant="outlined" label={roleName(f, o.node_type)} />)}
                         </Stack>
                       </TableCell>
                     </TableRow>
@@ -111,9 +113,9 @@ const ReportOwners: React.FC = () => {
         <FormControl size="small" sx={{ minWidth: 200 }}>
           <InputLabel>{t("reports.owners.groupBy")}</InputLabel>
           <Select value={groupBy} label={t("reports.owners.groupBy")} onChange={(e) => setGroupBy(e.target.value as GroupBy)}>
-            <MenuItem value="systemägare">{t("reports.owners.systemOwner")}</MenuItem>
-            <MenuItem value="systemförvaltare">{t("reports.owners.systemManager")}</MenuItem>
-            <MenuItem value="systemadministratör">{t("reports.owners.systemAdmin")}</MenuItem>
+            <MenuItem value="systemägare">{fieldLabel("Application", "systemägare", t("reports.owners.systemOwner"))}</MenuItem>
+            <MenuItem value="systemförvaltare">{fieldLabel("Application", "systemförvaltare", t("reports.owners.systemManager"))}</MenuItem>
+            <MenuItem value="systemadministratör">{fieldLabel("Application", "systemadministratör", t("reports.owners.systemAdmin"))}</MenuItem>
             <MenuItem value="avdelning">{t("reports.owners.department")}</MenuItem>
           </Select>
         </FormControl>

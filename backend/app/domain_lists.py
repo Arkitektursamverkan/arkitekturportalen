@@ -18,6 +18,12 @@ key. Every such key starts with `x_`, so it can never collide with an attribute
 the code or a synchronisation source owns – and so a synchronisation, which
 otherwise replaces an object's attributes, knows what to leave alone
 (`keep_own`).
+
+And an admin can give the fields the object types already have names of their
+own (`field_labels`): "Systemägare" becomes "Avtalsägare". Only the name shown
+changes – the value stays under the same attribute key, so reports, syncs and
+earlier imports go on working. The CSV templates carry the new name as the
+column heading and the import reads it back (app/api/v1/csv_import.py).
 """
 from __future__ import annotations
 
@@ -124,10 +130,57 @@ class ExtraFields(BaseModel):
         return {t: _unique_keys(f) for t, f in edges.items() if f}
 
 
+#: Column headings the CSV files use for something else; no field can be called these.
+RESERVED_LABELS = frozenset({"id", "type", "name", "description", "parent_id", "servers", "source", "target"})
+#: A heading starting like this is read as a formula, a comment or a section by the CSV files.
+_LABEL_BAD_START = ("=", "+", "-", "@", "#", "[", "'")
+
+
+class FieldLabels(BaseModel):
+    """The installation's own names for the fields of the built-in object types:
+    object type → attribute key → name. A field that is not named keeps its
+    standard name."""
+
+    nodes: dict[str, dict[str, str]] = Field(default_factory=dict)
+
+    @field_validator("nodes")
+    @classmethod
+    def _clean(cls, nodes: dict[str, dict[str, str]]) -> dict[str, dict[str, str]]:
+        known = {t.value for t in NodeType} - {CUSTOM_TYPE}
+        if bad := sorted(set(nodes) - known):
+            raise ValueError(f"Okänd objekttyp: {', '.join(bad)}")
+        out: dict[str, dict[str, str]] = {}
+        for node_type, labels in nodes.items():
+            cleaned: dict[str, str] = {}
+            for key, raw in labels.items():
+                label = " ".join(raw.split())
+                if not label:
+                    continue  # an emptied name = back to the standard one
+                if not key or len(key) > 100 or key.startswith(OWN_PREFIX):
+                    # An own field has its name in its own definition.
+                    raise ValueError(f"Fältet {key[:60]} kan inte byta namn här")
+                if len(label) > 100:
+                    raise ValueError(f"Namnet {label[:40]}… är längre än 100 tecken")
+                if label.startswith(_LABEL_BAD_START):
+                    raise ValueError(f"Namnet {label} får inte börja med {label[0]}")
+                if label.lower() in RESERVED_LABELS:
+                    raise ValueError(f"Namnet {label} är upptaget av CSV-filernas egna kolumner")
+                cleaned[key] = label
+            if len(cleaned) > 200:
+                raise ValueError("Högst 200 namnbyten per objekttyp")
+            names = [v.lower() for v in cleaned.values()]
+            if len(names) != len(set(names)):
+                raise ValueError("Två fält på samma objekttyp har fått samma namn")
+            if cleaned:
+                out[node_type] = cleaned
+        return out
+
+
 class DomainLists(BaseModel):
     disabled: list[str] = Field(default_factory=list)
     custom: list[CustomList] = Field(default_factory=list, max_length=100)
     extra_fields: ExtraFields = Field(default_factory=ExtraFields)
+    field_labels: FieldLabels = Field(default_factory=FieldLabels)
 
     @field_validator("disabled")
     @classmethod
@@ -149,6 +202,11 @@ class DomainLists(BaseModel):
 
 def parse(stored: dict[str, Any] | None) -> DomainLists:
     return DomainLists.model_validate(stored) if stored else DomainLists()
+
+
+def field_labels(stored: dict[str, Any] | None, node_type: str) -> dict[str, str]:
+    """The installation's own field names for one object type: attribute key → name."""
+    return parse(stored).field_labels.nodes.get(node_type, {})
 
 
 def sync_target(node_type: str) -> tuple[NodeType, str | None]:

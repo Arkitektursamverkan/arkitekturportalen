@@ -1,3 +1,4 @@
+import { useFieldLabel } from "@/api/orgSettings";
 import React, { useMemo, useState } from "react";
 import {
   Autocomplete, Box, Button, Card, CardContent, Chip, Dialog, DialogActions, DialogContent, DialogTitle,
@@ -55,6 +56,7 @@ const COLUMN_LABEL: Record<string, string> = {
 
 const NewServerDialog: React.FC<{ open: boolean; onClose: () => void; onCreated: (id: string) => void }> = ({ open, onClose, onCreated }) => {
   const { t } = useTranslation();
+  const fieldLabel = useFieldLabel();
   const { enqueueSnackbar } = useSnackbar();
   const createNode = useCreateNode();
   const [name, setName] = useState("");
@@ -87,7 +89,7 @@ const NewServerDialog: React.FC<{ open: boolean; onClose: () => void; onCreated:
           <TextField label={t("serverView.description")} value={description} onChange={(e) => setDescription(e.target.value)}
             multiline minRows={2} size="small" />
           {ATTR_FIELDS.Server.map((f) => (
-            <TextField key={f.key} label={t(f.labelKey)} size="small" value={attrs[f.key] ?? ""}
+            <TextField key={f.key} label={fieldLabel("Server", f.key, t(f.labelKey))} size="small" value={attrs[f.key] ?? ""}
               onChange={(e) => setAttrs((prev) => ({ ...prev, [f.key]: e.target.value }))} />
           ))}
         </Stack>
@@ -111,6 +113,7 @@ const HostedSection: React.FC<{
   hosted: { node: NodeRead; edge: EdgeRead }[];
 }> = ({ server, spec, candidates, hosted }) => {
   const { t } = useTranslation();
+  const fieldLabel = useFieldLabel();
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const isEditor = useRoleStore((s) => s.serverAccess === "edit");
@@ -147,7 +150,7 @@ const HostedSection: React.FC<{
             <TableHead>
               <TableRow>
                 <TableCell sx={{ fontWeight: 600 }}>{t("serverView.name")}</TableCell>
-                {spec.columns.map((c) => <TableCell key={c} sx={{ fontWeight: 600 }}>{t(COLUMN_LABEL[c])}</TableCell>)}
+                {spec.columns.map((c) => <TableCell key={c} sx={{ fontWeight: 600 }}>{fieldLabel(spec.type, c, t(COLUMN_LABEL[c]))}</TableCell>)}
                 {isEditor && <TableCell />}
               </TableRow>
             </TableHead>
@@ -204,6 +207,7 @@ const HostedSection: React.FC<{
 
 const ServerView: React.FC = () => {
   const { t } = useTranslation();
+  const fieldLabel = useFieldLabel();
   const [params, setParams] = useSearchParams();
   const selectedId = params.get("id") ?? undefined;
   const [searchText, setSearchText] = useState("");
@@ -322,7 +326,7 @@ const ServerView: React.FC = () => {
                   )}
                   <Stack direction="row" spacing={1} useFlexGap sx={{ mt: 1, flexWrap: "wrap" }}>
                     {ATTR_FIELDS.Server.filter((f) => attr(selected, f.key)).map((f) => (
-                      <Chip key={f.key} size="small" variant="outlined" label={`${t(f.labelKey)}: ${attr(selected, f.key)}`} />
+                      <Chip key={f.key} size="small" variant="outlined" label={`${fieldLabel("Server", f.key, t(f.labelKey))}: ${attr(selected, f.key)}`} />
                     ))}
                   </Stack>
                 </Box>

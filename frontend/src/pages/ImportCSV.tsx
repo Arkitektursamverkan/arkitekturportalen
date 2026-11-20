@@ -26,6 +26,7 @@ import { useTranslation } from "react-i18next";
 import { useSnackbar } from "notistack";
 import {
   usePreviewCsv,
+  useCsvColumns,
   useImportCsv,
   usePreviewUnifiedCsv,
   useImportUnifiedCsv,
@@ -70,7 +71,7 @@ const ENTITY_CONFIGS: EntityConfig[] = [
   {
     slug: "information-sources",
     labelKey: "csvImport.entities.informationSources",
-    columns: ["name", "description", "system", "type", "classification"],
+    columns: ["name", "description", "system", "source_type", "classification"],
     filename: "informationskallor_mall.csv",
   },
   {
@@ -166,7 +167,18 @@ const ImportCSV: React.FC = () => {
   };
 
   const entityLabel = t(entityConfig.labelKey);
-  const extraColumns = entityConfig.columns.filter((c) => !["name", "description"].includes(c));
+  // The API knows the columns and what the installation calls the fields
+  // (Administration → Listor); the list above is what shows until it answers.
+  const { data: serverColumns } = useCsvColumns();
+  const known = serverColumns?.[entityConfig.slug]?.columns;
+  const columns = known?.map((c) => c.name) ?? entityConfig.columns;
+  const columnLabel = (col: string): string => {
+    const c = known?.find((k) => k.name === col);
+    if (c && c.header !== c.name) return c.header;
+    const standard = t(`csvImport.columns.${col}`, { defaultValue: "" });
+    return standard || (c?.attribute ? t(`attributes.${c.attribute}`, { defaultValue: col }) : col);
+  };
+  const extraColumns = columns.filter((c) => !["name", "description"].includes(c));
 
   return (
     <Box sx={{ p: 3, maxWidth: 960, mx: "auto" }}>
@@ -233,10 +245,10 @@ const ImportCSV: React.FC = () => {
             {t("csvImport.step1.columns")}
           </Typography>
           <Stack direction="row" sx={{ flexWrap: "wrap", gap: 0.75 }}>
-            {entityConfig.columns.map((col) => (
+            {columns.map((col) => (
               <Chip
                 key={col}
-                label={col === "name" ? `${t(`csvImport.columns.${col}`)} *` : t(`csvImport.columns.${col}`, { defaultValue: col })}
+                label={col === "name" ? `${columnLabel(col)} *` : columnLabel(col)}
                 size="small"
                 variant={col === "name" ? "filled" : "outlined"}
                 color={col === "name" ? "primary" : "default"}
@@ -322,7 +334,7 @@ const ImportCSV: React.FC = () => {
                       <TableCell>{t("csvImport.columns.description")}</TableCell>
                       {extraColumns.map((col) => (
                         <TableCell key={col}>
-                          {t(`csvImport.columns.${col}`, { defaultValue: col })}
+                          {columnLabel(col)}
                         </TableCell>
                       ))}
                     </TableRow>

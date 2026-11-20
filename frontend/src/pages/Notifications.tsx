@@ -34,7 +34,7 @@ import {
 import { useDeleteComment, useReviewComment, type Comment } from "@/api/comments";
 import { useUpdateSketch, useSolutionSketch } from "@/api/solutionSketches";
 import { usePrinciples } from "@/api/principles";
-import { useModules } from "@/api/orgSettings";
+import { useFieldLabel, useModules } from "@/api/orgSettings";
 import { fieldLabel } from "@/components/solutionSketch/fieldLabels";
 
 const TA_SECTION_LABEL: Record<string, string> = {
@@ -528,6 +528,7 @@ const NODE_ROUTE: Record<string, string> = {
  */
 const ChangeProposalCard: React.FC<{ proposal: ChangeProposal }> = ({ proposal: p }) => {
   const { t } = useTranslation();
+  const fieldLabel = useFieldLabel();
   const navigate = useNavigate();
   const resolve = useResolveChangeProposal();
   const [note, setNote] = useState("");
@@ -558,7 +559,7 @@ const ChangeProposalCard: React.FC<{ proposal: ChangeProposal }> = ({ proposal: 
           </Typography>
         </Stack>
         <Typography variant="body2" sx={{ color: "text.secondary", mt: 1 }}>
-          {proposalFieldLabel(p.field, p.node_type, t)}
+          {proposalFieldLabel(p.field, p.node_type, t, fieldLabel)}
         </Typography>
         <Box sx={{ my: 0.5 }}>
           <Typography sx={{ color: "primary.main", fontWeight: 600, whiteSpace: "pre-wrap" }}>

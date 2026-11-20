@@ -461,6 +461,7 @@
       "serverServices": "Server services"
     },
     "columns": {
+      "source_type": "Type",
       "id": "ID",
       "name": "Name",
       "description": "Description",
@@ -1396,6 +1397,14 @@
       "choice": "Choice",
       "link": "Link"
     },
+    "fieldNames": "Field names",
+    "fieldNamesHint": "Give the object types' fields the names you use, for example Contract owner instead of System owner. Only the name shown changes – the values stay, and reports, syncs and earlier imports work as before. The CSV template gets the new name as its column heading, and the import reads both the new name and the old one.",
+    "fieldNamesFor": "Field names on {{type}}",
+    "fieldNamesDialogHint": "Write your name on the right. An empty field keeps the standard name.",
+    "fieldNamesOwn": "Own name",
+    "fieldNamesEdit": "Rename the fields",
+    "fieldNamesNone": "The standard names",
+    "fieldNamesDuplicate": "Two fields have been given the same name.",
     "ownFields": "Own fields",
     "ownFieldsHint": "Add fields of your own to the built-in object types and to the connections, for example Integration type on Integrates with. The fields are filled in on the object or connection by whoever may change it, and a synchronisation does not overwrite them. If a field is removed its values stay, and come back if the field is added again with the same name.",
     "ownFieldsObjects": "Objects",

@@ -461,6 +461,7 @@
       "serverServices": "Servertjänster"
     },
     "columns": {
+      "source_type": "Typ",
       "id": "ID",
       "name": "Namn",
       "description": "Beskrivning",
@@ -1405,6 +1406,14 @@
       "choice": "Val",
       "link": "Länk"
     },
+    "fieldNames": "Fältens namn",
+    "fieldNamesHint": "Ge objekttypernas fält de namn ni använder, till exempel Avtalsägare i stället för Systemägare. Bara namnet som visas ändras – värdena ligger kvar, och rapporter, synkar och tidigare importer fungerar som förut. CSV-mallen får det nya namnet som kolumnrubrik, och importen läser både det nya namnet och det gamla.",
+    "fieldNamesFor": "Fältens namn på {{type}}",
+    "fieldNamesDialogHint": "Skriv ert namn till höger. Ett tomt fält behåller standardnamnet.",
+    "fieldNamesOwn": "Eget namn",
+    "fieldNamesEdit": "Byt namn på fälten",
+    "fieldNamesNone": "Standardnamnen",
+    "fieldNamesDuplicate": "Två fält har fått samma namn.",
     "ownFields": "Egna fält",
     "ownFieldsHint": "Lägg egna fält på de inbyggda objekttyperna och på kopplingarna, till exempel Integrationstyp på Integrerar med. Fälten fylls i på objektet eller kopplingen av den som får ändra det, och en synk skriver inte över dem. Tas ett fält bort ligger värdena kvar och kommer tillbaka om fältet läggs till igen med samma namn.",
     "ownFieldsObjects": "Objekt",

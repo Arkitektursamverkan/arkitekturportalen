@@ -43,10 +43,15 @@ export const changeProposalKeys = {
 export const attrField = (key: string) => `attributes.${key}`;
 
 /** Läsbar rubrik för ett förslags fält, samma som i detaljpanelen. */
-export function proposalFieldLabel(field: string, nodeType: string, t: TFunction | ((k: string) => string)): string {
+export function proposalFieldLabel(
+  field: string, nodeType: string, t: TFunction | ((k: string) => string),
+  /** The installation's own field names (useFieldLabel). */
+  own?: (type: string, key: string, standard: string) => string,
+): string {
   if (field === "name") return t("common.name");
   if (field === "description") return t("common.description");
   const key = field.startsWith("attributes.") ? field.slice("attributes.".length) : field;
+  if (own) return own(nodeType, key, proposalFieldLabel(field, nodeType, t));
   const defined = (ATTR_FIELDS as Record<string, { key: string; labelKey: string }[]>)[nodeType]?.find((f) => f.key === key);
   if (defined) return t(defined.labelKey);
   const attrKey = `attributes.${key.toLowerCase()}`;

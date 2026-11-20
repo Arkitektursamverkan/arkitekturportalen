@@ -28,6 +28,7 @@ import { useGraphStore } from "@/store/graphStore";
 import { useClearSelectionOnNavigate } from "@/store/useClearSelectionOnNavigate";
 import { useRoleStore } from "@/store/roleStore";
 import { useUpdateNode, useUpdateNodeFields, useDeleteNode, useNodes as useAllNodes } from "@/api/nodes";
+import { useFieldLabel } from "@/api/orgSettings";
 import { useDeleteEdge, useEdges, useUpdateEdgeFields, useUpdateEdgeNote, useUpdateEdgeDirection } from "@/api/edges";
 import { useNodeFlags, useCreateFlag, useDeleteFlag, useRespondToFlag } from "@/api/flags";
 import {
@@ -240,6 +241,8 @@ interface NodeDetailProps {
 }
 
 const NodeDetail: React.FC<NodeDetailProps> = ({ node, navigate, t, isAdmin, isEditor, editing, setEditing, onUpdated, onRequestDelete }) => {
+  // A field goes by the name the installation gave it (Administration → Listor).
+  const fieldLabel = useFieldLabel();
   const updateNode = useUpdateNode();
   const updateNodeFields = useUpdateNodeFields();
   const isSystemAdmin = useRoleStore((s) => s.isAdmin);
@@ -458,11 +461,11 @@ const NodeDetail: React.FC<NodeDetailProps> = ({ node, navigate, t, isAdmin, isE
               if (k && !definedKeys.has(k) && !extraKeys.includes(k)) extraKeys.push(k);
             }
             const allFields = [
-              ...definedFields.map((f) => ({ key: f.key, label: t(f.labelKey) })),
+              ...definedFields.map((f) => ({ key: f.key, label: fieldLabel(node.type, f.key, t(f.labelKey)) })),
               ...extraKeys.map((k) => {
                 const attrKey = `attributes.${k.toLowerCase()}`;
                 const translated = t(attrKey);
-                return { key: k, label: translated !== attrKey ? translated : k };
+                return { key: k, label: fieldLabel(node.type, k, translated !== attrKey ? translated : k) };
               }),
             ];
             return allFields.map(({ key: k, label }) => (
@@ -801,6 +804,7 @@ const ChangeProposalsSection: React.FC<{
   const withdraw = useWithdrawChangeProposal();
   const { enqueueSnackbar } = useSnackbar();
   const busy = resolve.isPending || withdraw.isPending;
+  const fieldLabel = useFieldLabel();
 
   const onResolve = (p: ChangeProposal, outcome: "done" | "rejected") =>
     resolve.mutate(
@@ -821,7 +825,7 @@ const ChangeProposalsSection: React.FC<{
         {proposals.map((p) => (
           <Box key={p.id} sx={{ border: 1, borderColor: "divider", borderRadius: 1, p: 1, bgcolor: "background.default" }}>
             <Typography variant="caption" sx={{ fontWeight: 600, display: "block" }}>
-              {proposalFieldLabel(p.field, nodeType, t)}
+              {proposalFieldLabel(p.field, nodeType, t, fieldLabel)}
             </Typography>
             <Typography variant="caption" sx={{ display: "block", fontSize: 11 }}>
               <Box component="span" sx={{ textDecoration: "line-through", color: "text.secondary" }}>
