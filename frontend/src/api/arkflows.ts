@@ -116,6 +116,21 @@ export interface Scen {
    * same order as Arkitekten's export.
    */
   artefakter?: string;
+  /**
+   * A system sketch's layers, each as a finished picture: the sketch with only
+   * that layer showing (and what it connects to). Only `systemskiss` scenes
+   * carry it. Swap `bakgrund`, `bredd` and `höjd` for the layer's — never
+   * filter here.
+   */
+  lager?: ScenLager[];
+}
+
+export interface ScenLager {
+  id: string;
+  namn: string;
+  bakgrund: string;
+  bredd: number;
+  höjd: number;
 }
 
 export interface ArkflowSummary {
@@ -219,6 +234,23 @@ export function arkflowsForApplication(
   if (!flows || !nodeId) return [];
   return flows
     .filter((f) => f.familj === SYSTEMPROCESS_FAMILJ && f.ea_nod_id === nodeId)
+    .sort((a, b) => (a.name ?? "").localeCompare(b.name ?? "", "sv"));
+}
+
+/**
+ * A system sketch is drawn in Arkitekten's Systemskiss view and published onto
+ * a SERVER, where it shows under the Systemskiss tab. Matched on `ea_nod_id`,
+ * like a systemprocess on an application. A server can have several.
+ */
+export const SYSTEMSKISS_FAMILJ = "systemskiss";
+
+export function arkflowsForServer(
+  flows: ArkflowSummary[] | undefined,
+  nodeId: string | null | undefined,
+): ArkflowSummary[] {
+  if (!flows || !nodeId) return [];
+  return flows
+    .filter((f) => f.familj === SYSTEMSKISS_FAMILJ && f.ea_nod_id === nodeId)
     .sort((a, b) => (a.name ?? "").localeCompare(b.name ?? "", "sv"));
 }
 
