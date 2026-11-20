@@ -1255,7 +1255,8 @@
       "documents.write": "Upload documents",
       "notes.read": "Read shared notes",
       "notes.write": "Write notes",
-      "content.manage": "Manage others' documents and notes"
+      "content.manage": "Manage others' documents and notes",
+      "sketches.read": "See the object's system sketches"
     },
     "types": {
       "Process": "Processes",

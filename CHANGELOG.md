@@ -9,6 +9,10 @@ funktioner, en ny korrigering för rättelser.
 
 - (inget än)
 
+## 0.28.0 – 2026-11-20
+
+- **Systemskisserna har en egen behörighet.** Vem som ser en systemskiss på en server styrs nu under *Behörigheter*, med den nya behörigheten **Se objektets systemskisser** (`sketches.read`). Den läggs i en roll och delas ut som alla andra – till alla, en global roll, en grupp eller en person, för alla servrar eller en enda – och kräver ingen administratörsroll. Att få se servern räcker inte längre för att se skissen. **Vid uppgradering:** rollen Förvaltare får behörigheten (migrering 0075), så de som förvaltar servrar ser skisserna som förut; den som bara är Läsare på en server ser inte längre skissen förrän den får en roll med behörigheten. Administratörer ser allt som tidigare.
+
 ## 0.27.0 – 2026-11-20
 
 - **Maximera bilden.** Processbilder, systemprocesser och systemskisser har en knapp bredvid *Anpassa till fönstret* som låter bilden ta hela webbläsarfönstret; samma knapp eller Esc lämnar tillbaka det. Bilden anpassas till den nya ytan, och systemskissens lagerrad och valet av bild följer med – man kan byta lager utan att lämna det maximerade läget.

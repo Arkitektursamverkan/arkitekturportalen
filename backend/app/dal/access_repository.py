@@ -36,10 +36,11 @@ DEFAULT_ROLES: list[dict[str, Any]] = [
     {
         "key": "forvaltare", "name": "Förvaltare", "sort_order": 30,
         "description": "Som Bidragsgivare, och redigerar objektet och dess kopplingar, "
-                       "läser Begränsade dokument och hanterar allas dokument och anteckningar.",
+                       "läser Begränsade dokument, hanterar allas dokument och anteckningar "
+                       "och ser objektets systemskisser.",
         "permissions": [
             "object.read", "object.edit", "documents.read", "documents.read_restricted",
-            "documents.write", "notes.read", "notes.write", "content.manage",
+            "documents.write", "notes.read", "notes.write", "content.manage", "sketches.read",
         ],
     },
 ]
