@@ -7,6 +7,12 @@ funktioner, en ny korrigering för rättelser.
 
 ## Ej släppt
 
+- (inget än)
+
+## 0.29.0 – 2026-11-20
+
+Innehåller också det som står under 0.28.0, som aldrig släpptes som egen version – migrering 0075 körs alltså vid den här uppgraderingen.
+
 - **Fältens namn går att byta.** Under *Administration → Listor* finns kortet **Fältens namn**: en administratör ger objekttypernas fält de namn organisationen använder, till exempel *Avtalsägare* i stället för *Systemägare* på applikationer. Alla fält går att byta namn på – standardfälten, CSV-mallens fält och det objekten bär med sig från en synk. Bara namnet som visas ändras: värdet ligger kvar under samma nyckel, så rapporter, synkar och tidigare importer fungerar som förut. Det egna namnet visas i objektets panel, när ett objekt skapas, i ändringsförslag, i Ägaröversikten och i förändringsstatistiken. Ett tömt namn ger tillbaka standardnamnet. Ingen migrering.
 - **CSV-mallarna följer fältens namn.** Mallen per objekttyp, den samlade mallen och exporten har det egna namnet som kolumnrubrik, och importen läser både det egna namnet, det tidigare kolumnnamnet och fältets nyckel – en mall som fylldes i före namnbytet går fortfarande att läsa in. I den samlade filen får en kolumn som flera objekttyper delar det egna namnet bara när typerna är överens. Ett namn som redan är en annan kolumn i mallen går inte att spara.
 - **Applikationsmallen har samma fält som applikationen.** Mallen saknade Avdelning, Systemförvaltare, Systemadministratör och de planerade datumen, och kolumnerna `application_owner`, `lifecycle_stage` och `hosting` hamnade under egna nycklar som varken panelen eller rapporterna läste. De fyller nu Systemägare, Status och Driftform. Detsamma gäller processernas ägare, kategori och frekvens, informationsobjektens klassificering och informationskällornas typ och klassificering: det som läses in visas i objektets standardfält. Det som en tidigare import lade under de gamla nycklarna ligger kvar och följer med i exporten i rätt kolumn.
