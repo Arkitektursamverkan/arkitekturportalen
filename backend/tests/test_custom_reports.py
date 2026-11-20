@@ -157,3 +157,37 @@ async def test_ogiltig_inlasning_avvisas(client, repo, api_headers):
     assert typ.status_code == 422
     assert (await client.put("/api/v1/custom-reports/Fel_Nyckel", json={"title": "x", "rows": []}, headers=api_headers)).status_code == 422
     assert (await client.get("/api/v1/custom-reports/finns-inte", headers=api_headers)).status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_radens_egna_falt_foljer_med_nar_kopplingen_skapas(client, repo, api_headers):
+    """Raden bär värden för kopplingens egna fält. Det som kopplingstypen har
+    ett fält för skrivs på kopplingen; resten lämnas – och inget annat än egna
+    fält går att skicka med."""
+    from app.services import org_settings
+
+    märke = uuid.uuid4().hex[:8]
+    källa = await _nod(client, api_headers, "InformationSource", f"Källa {märke}")
+    objekt = await _nod(client, api_headers, "InformationObject", f"Objekt {märke}")
+    rad = {"id": "r1", "source_id": källa, "target_id": objekt, "edge_type": "CONTAINS", "motivering": "Nämns i beskrivningen."}
+    key = f"prov-{märke}"
+
+    inte_eget = await client.put(
+        f"/api/v1/custom-reports/{key}", json={"title": "x", "rows": [{**rad, "fält": {"note": "smyger in"}}]}, headers=api_headers,
+    )
+    assert inte_eget.status_code == 422
+
+    fält = {"x_beskrivning": "  Nämns i beskrivningen.  ", "x_okant": "finns inte på typen", "x_val": "Inte ett val"}
+    r = await client.put(f"/api/v1/custom-reports/{key}", json={"title": "x", "rows": [{**rad, "fält": fält}]}, headers=api_headers)
+    assert r.status_code == 200, r.text
+    await org_settings.set_domain_lists(repo._session_factory, {"extra_fields": {"edges": {"CONTAINS": [
+        {"key": "x_beskrivning", "label": "Beskrivning", "type": "text"},
+        {"key": "x_val", "label": "Val", "type": "choice", "options": ["A", "B"]},
+    ]}}}, "test")
+    try:
+        r = await client.post(f"/api/v1/custom-reports/{key}/beslut", json={"row_ids": ["r1"], "val": "koppla"}, headers=api_headers)
+        assert r.status_code == 200, r.text
+        (kant,) = await _kanter(client, api_headers, källa)
+        assert kant["attributes"] == {"x_beskrivning": "Nämns i beskrivningen."}
+    finally:
+        await org_settings.set_domain_lists(repo._session_factory, None, "test")
