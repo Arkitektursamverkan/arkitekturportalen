@@ -8,7 +8,8 @@ export type Permission =
   | "object.read" | "object.edit"
   | "documents.read" | "documents.read_restricted" | "documents.write"
   | "notes.read" | "notes.write"
-  | "content.manage";
+  | "content.manage"
+  | "sketches.read";
 
 export interface AccessMeta {
   permissions: Permission[];

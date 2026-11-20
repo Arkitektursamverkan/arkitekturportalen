@@ -19,6 +19,10 @@ What a permission lets you do:
 - documents.read / documents.read_restricted / documents.write,
   notes.read / notes.write, content.manage — the Dokument and Anteckningar
   tabs; see app/authz.py.
+- sketches.read — see the system sketches published on the object (a
+  server). Seeing the server is not enough: a sketch draws how the
+  environment is put together, which fewer should see than the server's
+  name and owner. See app/api/v1/arkflows.py.
 
 Anonymous callers reach the read endpoints that take get_optional_user only
 when the organisation settings allow reading without signing in; they get
@@ -44,6 +48,7 @@ PERMISSIONS: tuple[str, ...] = (
     "notes.read",
     "notes.write",
     "content.manage",
+    "sketches.read",
 )
 ALL_PERMISSIONS = frozenset(PERMISSIONS)
 

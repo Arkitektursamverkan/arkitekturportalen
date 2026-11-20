@@ -1264,7 +1264,8 @@
       "documents.write": "Ladda upp dokument",
       "notes.read": "Läsa delade anteckningar",
       "notes.write": "Skriva anteckningar",
-      "content.manage": "Hantera andras dokument och anteckningar"
+      "content.manage": "Hantera andras dokument och anteckningar",
+      "sketches.read": "Se objektets systemskisser"
     },
     "types": {
       "Process": "Processer",

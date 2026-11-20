@@ -224,11 +224,20 @@ def _synkflöde(data: dict) -> str | None:
         return None
 
 
+# The family Arkitekten gives a published system sketch.
+SKISSFAMILJ = "systemskiss"
+
+
 async def _hidden_flow_filter(user: CurrentUser | None):  # type: ignore[no-untyped-def]
     """A test for "may this user not see this flowchart?" – by the object it
     is published onto (`ea_nod_id`), or, for one mirrored before publishing
     existed, by the Process its `prefix` names. A flowchart that points at
-    nothing the portal knows is shown, as before."""
+    nothing the portal knows is shown, as before.
+
+    A system sketch asks for more than seeing the object it is published on:
+    the permission `sketches.read` there. It is granted like any other, under
+    Behörigheter – so who sees the sketches is decided in the portal, by
+    object, type or everything, and needs no administrator role."""
     policy = await load_policy(user)
     if policy.sees_everything:
         return lambda _flow: False
@@ -242,6 +251,11 @@ async def _hidden_flow_filter(user: CurrentUser | None):  # type: ignore[no-unty
                 (hidden_prefixes if str(p.id) in hidden else visible_prefixes).add(prefix)
 
     def is_hidden(flow: dict) -> bool:
+        if flow.get("familj") == SKISSFAMILJ:
+            # Sketches are published on servers; one that points at nothing
+            # has nobody who was granted it.
+            nod = flow.get("ea_nod_id")
+            return not nod or str(nod) in hidden or not policy.can("sketches.read", nod, "Server")
         if flow.get("ea_nod_id"):
             return str(flow["ea_nod_id"]) in hidden
         prefix = flow.get("prefix")

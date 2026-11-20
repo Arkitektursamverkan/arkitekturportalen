@@ -292,3 +292,54 @@ async def test_a_hand_drawn_flowchart_has_no_sync_to_report(monkeypatch):
 
     monkeypatch.setattr(arkflows, "_flow", ritad)
     assert (await arkflows.get_arkflow_sync("ap-x", None))["känd"] is False
+
+
+@pytest.mark.asyncio
+async def test_systemskiss_kraver_egen_behorighet(client, api_headers, monkeypatch):
+    """En systemskiss syns bara för den som har sketches.read på servern den
+    är publicerad på – att få se servern räcker inte."""
+    from types import SimpleNamespace
+
+    from app.access import Policy
+
+    monkeypatch.setenv("INTEGRATION_PLATFORM_URL", "http://plattform.test/api/v1")
+    resp = await client.post("/api/v1/nodes", json={"type": "Server", "name": "Skisserver"}, headers=api_headers)
+    assert resp.status_code == 201
+    server = resp.json()["id"]
+    flows = [
+        {"external_id": "sk-miljo", "familj": "systemskiss", "ea_nod_id": server, "scen": {}},
+        {"external_id": "sk-utan-server", "familj": "systemskiss", "scen": {}},
+    ]
+    arkflows._cache.clear()
+    _falsk_plattform(monkeypatch, flows)
+
+    def grant(*permissions, **scope):
+        return SimpleNamespace(permissions=list(permissions), scope_type="types", node_types=["Server"],
+                               node_id=None, include_children=False) if not scope else SimpleNamespace(
+            permissions=list(permissions), node_types=[], include_children=False, **scope)
+
+    async def synliga(*grants):
+        async def policy(_user):
+            return Policy(grants=grants)
+
+        monkeypatch.setattr(arkflows, "load_policy", policy)
+        return {f["id"] for f in (await client.get("/api/v1/arkflows", headers=api_headers)).json()["flows"]}
+
+    # Ser servern (Läsare på servrar) – men inte skissen.
+    assert await synliga(grant("object.read", "documents.read")) == set()
+    assert (await client.get("/api/v1/arkflows/sk-miljo", headers=api_headers)).status_code == 404
+    # Behörigheten på typen, eller på just den servern, visar skissen.
+    assert await synliga(grant("sketches.read")) == {"sk-miljo"}
+    assert await synliga(grant("sketches.read", scope_type="node", node_id=server)) == {"sk-miljo"}
+    assert (await client.get("/api/v1/arkflows/sk-miljo", headers=api_headers)).status_code == 200
+    # På en annan server hjälper den inte.
+    assert await synliga(grant("sketches.read", scope_type="node", node_id="00000000-0000-0000-0000-00000000abcd")) == set()
+
+    # En administratör ser allt, också en skiss som inte pekar på någon server.
+    async def full(_user):
+        return Policy(full=True)
+
+    monkeypatch.setattr(arkflows, "load_policy", full)
+    alla = {f["id"] for f in (await client.get("/api/v1/arkflows", headers=api_headers)).json()["flows"]}
+    assert alla == {"sk-miljo", "sk-utan-server"}
+    arkflows._cache.clear()
