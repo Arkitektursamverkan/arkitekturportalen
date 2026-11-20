@@ -12,6 +12,8 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useSnackbar } from "notistack";
 import { useCreateNode, useNodes } from "@/api/nodes";
 import { useCreateEdge, useDeleteEdge, useEdges } from "@/api/edges";
+import { arkflowsForServer, useArkflows } from "@/api/arkflows";
+import SystemSketchTab from "@/components/flow/SystemSketchTab";
 import ListSearchBox from "@/components/common/ListSearchBox";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import ObjectPane, { selectObject } from "@/components/objectContent/ObjectPane";
@@ -234,6 +236,10 @@ const ServerView: React.FC = () => {
   }, [servers, edges, nodeById]);
 
   const selected = servers.find((s) => s.id === selectedId);
+  // System sketches published onto this server from Arkitekten. The tab only
+  // exists when there is one — like Systemprocesser on an application.
+  const { data: arkflows } = useArkflows();
+  const systemskisser = useMemo(() => arkflowsForServer(arkflows, selected?.id), [arkflows, selected?.id]);
   const visibleServers = servers.filter((s) => !searchText || s.name.toLowerCase().includes(searchText.toLowerCase()));
 
   if (serverAccess === "none") {
@@ -282,8 +288,16 @@ const ServerView: React.FC = () => {
         )}
       </Box>
 
-      <ObjectPane nodeId={selected?.id} viewTabs={[{ value: "oversikt", label: t("objectContent.tabOverview") }]}>
-        {() => (
+      <ObjectPane
+        nodeId={selected?.id}
+        viewTabs={[
+          { value: "oversikt", label: t("objectContent.tabOverview") },
+          ...(systemskisser.length > 0 ? [{ value: "systemskiss", label: t("flowScene.tabSystemSketch") }] : []),
+        ]}
+      >
+        {(flik) => flik === "systemskiss" && systemskisser.length > 0 ? (
+          <SystemSketchTab flows={systemskisser} />
+        ) : (
           <Box sx={{ height: "100%", overflow: "auto", p: 3 }}>
             {!selected ? (
               <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>

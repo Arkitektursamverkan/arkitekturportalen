@@ -9,6 +9,10 @@ funktioner, en ny korrigering för rättelser.
 
 - (inget än)
 
+## 0.26.0 – 2026-11-20
+
+- **Systemskiss på en server.** En systemskiss som publicerats på en server från Arkitekten (0.17.0 eller senare) visas under den nya fliken *Systemskiss* på servern, bredvid Dokument och Anteckningar. Skissens lager – typiskt ett per applikation – väljs i en rad över bilden, och bilden kan laddas ner som SVG. Fliken finns bara på servrar som har en skiss, och den som inte får se servern får inte se skissen. Skisserna kommer samma väg som processbilderna (Integrationsplattformens Arkitekten-koppling med familjen *alla*); ingen ny tabell och ingen migrering.
+
 ## 0.25.0 – 2026-11-19
 
 - **Egna rapporter.** En installation kan läsa in en egen rapport som data – resultatet av en engångsgenomgång, till exempel – i stället för att den byggs in i produkten. Rapporten läses in med `PUT /api/v1/custom-reports/{nyckel}` (administratör eller API-nyckeln), visas under Rapporter och är synlig bara för administratörer om inget annat anges (`admin_only`). För den som inte får se den finns den inte: varken i menyn eller på sin adress. Ny tabell `ea_custom_reports` (migrering 0074).
