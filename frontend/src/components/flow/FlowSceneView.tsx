@@ -9,6 +9,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useTranslation } from "react-i18next";
 import type { Scen, ScenFigur } from "@/api/arkflows";
 import { sanitizeSvg } from "@/utils/sanitizeSvg";
+import FlowInfoBox from "./FlowInfoBox";
 
 /**
  * Draws a flowchart scene from Arkitekten.
@@ -170,24 +171,7 @@ export default function FlowSceneView({ scen, caption, beskrivning, info, action
 
   return (
     <Box sx={{ position: "relative", height: "100%", width: "100%", overflow: "hidden" }}>
-      {caption && (
-        <Typography
-          variant="caption"
-          sx={{
-            position: "absolute", top: 8, left: 12, zIndex: 2,
-            bgcolor: "background.paper", px: 1, py: 0.25, borderRadius: 1,
-            border: 1, borderColor: "divider", maxWidth: "min(640px, calc(100% - 24px))",
-          }}
-        >
-          {caption}
-          {beskrivning && (
-            <Box component="span" sx={{ display: "block", color: "text.secondary", whiteSpace: "pre-line" }}>
-              {beskrivning}
-            </Box>
-          )}
-          {info && <Box component="span" sx={{ display: "block", mt: 0.5 }}>{info}</Box>}
-        </Typography>
-      )}
+      {caption && <FlowInfoBox caption={caption} beskrivning={beskrivning} info={info} />}
 
       <Box
         ref={hållare}

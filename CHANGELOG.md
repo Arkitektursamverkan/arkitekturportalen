@@ -9,6 +9,10 @@ funktioner, en ny korrigering för rättelser.
 
 - (inget än)
 
+## 0.26.1 – 2026-11-20
+
+- **Rutan med bildens namn och beskrivning går att flytta, skala och minimera.** Den låg fast uppe till vänster över processbilder och systemskisser och kunde skymma det man ville se. Dra i rubriken för att flytta den, i hörnet för att ändra storlek, och tryck på pilen för att visa bara namnet. Valet minns i webbläsaren.
+
 ## 0.26.0 – 2026-11-20
 
 - **Systemskiss på en server.** En systemskiss som publicerats på en server från Arkitekten (0.17.0 eller senare) visas under den nya fliken *Systemskiss* på servern, bredvid Dokument och Anteckningar. Skissens lager – typiskt ett per applikation – väljs i en rad över bilden, och bilden kan laddas ner som SVG. Fliken finns bara på servrar som har en skiss, och den som inte får se servern får inte se skissen. Skisserna kommer samma väg som processbilderna (Integrationsplattformens Arkitekten-koppling med familjen *alla*); ingen ny tabell och ingen migrering.
