@@ -1125,6 +1125,8 @@
     "zoomIn": "Zooma in",
     "zoomOut": "Zooma ut",
     "fit": "Anpassa till fönstret",
+    "maximize": "Maximera fönstret",
+    "restore": "Återställ fönstret",
     "legend": "Teckenförklaring",
     "openArkitekten": "Öppna Arkitekten (processritaren)",
     "tabSystemProcesses": "Systemprocesser",

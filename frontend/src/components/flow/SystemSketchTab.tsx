@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useArkflow, type ArkflowSummary, type Scen } from "@/api/arkflows";
 import { sanitizeSvg } from "@/utils/sanitizeSvg";
 import FlowSceneView from "./FlowSceneView";
+import MaximizeArea from "./MaximizeArea";
 
 /**
  * The scene as it looks with one LAYER showing. Arkitekten ships each layer as
@@ -63,7 +64,8 @@ export default function SystemSketchTab({ flows }: { flows: ArkflowSummary[] }) 
   const rad = { px: 1.5, py: 1, flexWrap: "wrap", rowGap: 1, borderBottom: 1, borderColor: "divider", alignItems: "center" } as const;
 
   return (
-    <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+    // The sketch chooser and the layer row follow the picture to full window.
+    <MaximizeArea sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
       {flows.length > 1 && (
         <Stack direction="row" spacing={1} sx={rad}>
           {flows.map((s) => (
@@ -127,6 +129,6 @@ export default function SystemSketchTab({ flows }: { flows: ArkflowSummary[] }) 
           </Box>
         )}
       </Box>
-    </Box>
+    </MaximizeArea>
   );
 }

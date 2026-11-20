@@ -7,7 +7,7 @@ funktioner, en ny korrigering för rättelser.
 
 ## Ej släppt
 
-- (inget än)
+- **Maximera bilden.** Processbilder, systemprocesser och systemskisser har en knapp bredvid *Anpassa till fönstret* som låter bilden ta hela webbläsarfönstret; samma knapp eller Esc lämnar tillbaka det. Bilden anpassas till den nya ytan, och systemskissens lagerrad och valet av bild följer med – man kan byta lager utan att lämna det maximerade läget.
 
 ## 0.26.1 – 2026-11-20
 

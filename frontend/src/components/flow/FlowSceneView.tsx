@@ -6,10 +6,13 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import FitScreenIcon from "@mui/icons-material/FitScreen";
 import LegendToggleIcon from "@mui/icons-material/LegendToggle";
 import CloseIcon from "@mui/icons-material/Close";
+import OpenInFullIcon from "@mui/icons-material/OpenInFull";
+import CloseFullscreenIcon from "@mui/icons-material/CloseFullscreen";
 import { useTranslation } from "react-i18next";
 import type { Scen, ScenFigur } from "@/api/arkflows";
 import { sanitizeSvg } from "@/utils/sanitizeSvg";
 import FlowInfoBox from "./FlowInfoBox";
+import { maximizedSx, useMaximize, useMaximizeArea } from "./MaximizeArea";
 
 /**
  * Draws a flowchart scene from Arkitekten.
@@ -93,6 +96,12 @@ export default function FlowSceneView({ scen, caption, beskrivning, info, action
    */
   const [visaFigurer, setVisaFigurer] = useState(false);
   const drar = useRef<{ x: number; y: number; vy: Vy } | null>(null);
+  // The whole browser window for the picture. A surrounding MaximizeArea owns
+  // the state when there is one (it then also carries the page's own controls
+  // along); a picture standing alone maximises itself.
+  const yttre = useMaximizeArea();
+  const eget = useMaximize();
+  const { maximized, toggle: växlaMaximering } = yttre ?? eget;
 
   /** Scale and centre so the whole diagram is visible. */
   const passaIn = useCallback(() => {
@@ -170,7 +179,7 @@ export default function FlowSceneView({ scen, caption, beskrivning, info, action
   const valtSteg = vald ? scen.steg?.[vald] : undefined;
 
   return (
-    <Box sx={{ position: "relative", height: "100%", width: "100%", overflow: "hidden" }}>
+    <Box sx={[{ height: "100%", width: "100%", overflow: "hidden" }, ...maximizedSx(!yttre && maximized)]}>
       {caption && <FlowInfoBox caption={caption} beskrivning={beskrivning} info={info} />}
 
       <Box
@@ -292,6 +301,18 @@ export default function FlowSceneView({ scen, caption, beskrivning, info, action
         <Tooltip title={t("flowScene.fit")}>
           <IconButton size="small" onClick={passaIn} sx={{ bgcolor: "background.paper" }}>
             <FitScreenIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+        {/* The picture refits itself: the resize observer above sees the new size. */}
+        <Tooltip title={t(maximized ? "flowScene.restore" : "flowScene.maximize")}>
+          <IconButton
+            size="small"
+            onClick={växlaMaximering}
+            sx={{ bgcolor: maximized ? "action.selected" : "background.paper" }}
+            aria-pressed={maximized}
+            aria-label={t(maximized ? "flowScene.restore" : "flowScene.maximize")}
+          >
+            {maximized ? <CloseFullscreenIcon fontSize="small" /> : <OpenInFullIcon fontSize="small" />}
           </IconButton>
         </Tooltip>
         {/* Only offered when the scene brought a legend — older mirrored
