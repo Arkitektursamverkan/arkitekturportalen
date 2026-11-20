@@ -13,6 +13,7 @@ funktioner, en ny korrigering för rättelser.
 
 - **Systemskisserna har en egen behörighet.** Vem som ser en systemskiss på en server styrs nu under *Behörigheter*, med den nya behörigheten **Se objektets systemskisser** (`sketches.read`). Den läggs i en roll och delas ut som alla andra – till alla, en global roll, en grupp eller en person, för alla servrar eller en enda – och kräver ingen administratörsroll. Att få se servern räcker inte längre för att se skissen. **Vid uppgradering:** rollen Förvaltare får behörigheten (migrering 0075), så de som förvaltar servrar ser skisserna som förut; den som bara är Läsare på en server ser inte längre skissen förrän den får en roll med behörigheten. Administratörer ser allt som tidigare.
 - **Kopplingsförslagets uppgifter följer med kopplingen.** En rad i en egen rapport av typen Kopplingsförslag kan bära värden för kopplingens egna fält (`fält`, nycklar som börjar med `x_`) – motiveringen, till exempel, i ett eget fält som installationen lagt på kopplingstypen. Värdena skrivs på kopplingen när **Koppla** skapar den och syns sedan i kopplingens panel. Ett värde för ett fält som kopplingstypen inte har lämnas utanför. En koppling som redan finns rörs inte.
+- **Egna fält visar hela sin text.** Ett längre värde i ett eget fält rann ut ur objektets eller kopplingens panel på en enda rad. Fältet bryter nu texten och växer med den, och texten har samma storlek som panelens övriga uppgifter.
 
 ## 0.27.0 – 2026-11-20
 
