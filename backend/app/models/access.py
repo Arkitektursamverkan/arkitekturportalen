@@ -50,6 +50,9 @@ class GroupORM(Base):
     id: Mapped[UUID] = mapped_column(PG_UUID(as_uuid=True), primary_key=True, default=uuid4)
     name: Mapped[str] = mapped_column(String(150), nullable=False, unique=True)
     description: Mapped[str] = mapped_column(Text, nullable=False, server_default="")
+    # An Entra group (object id). When set, the members come from sign-in –
+    # the token's groups claim – and are not edited by hand (app/auth.py).
+    entra_group_id: Mapped[str | None] = mapped_column(String(36), nullable=True, unique=True, index=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

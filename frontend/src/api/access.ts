@@ -50,6 +50,8 @@ export interface Group {
   name: string;
   description: string;
   members: UserBrief[];
+  /** An Entra group's object id: the members then come from sign-in. */
+  entra_group_id: string | null;
 }
 
 export type PrincipalType = "everyone" | "role" | "group" | "user";
@@ -229,7 +231,7 @@ export function useDeleteRole() {
 export function useCreateGroup() {
   const invalidate = useInvalidateAccess();
   return useMutation({
-    mutationFn: async (input: { name: string; description: string; member_ids: string[] }) =>
+    mutationFn: async (input: { name: string; description: string; member_ids: string[]; entra_group_id?: string | null }) =>
       (await apiClient.post<Group>("/access/groups", input)).data,
     onSuccess: invalidate,
   });
@@ -238,7 +240,7 @@ export function useCreateGroup() {
 export function useUpdateGroup() {
   const invalidate = useInvalidateAccess();
   return useMutation({
-    mutationFn: async ({ id, patch }: { id: string; patch: { name?: string; description?: string } }) =>
+    mutationFn: async ({ id, patch }: { id: string; patch: { name?: string; description?: string; entra_group_id?: string } }) =>
       (await apiClient.patch<Group>(`/access/groups/${id}`, patch)).data,
     onSuccess: invalidate,
   });

@@ -279,9 +279,20 @@ class AccessRepository:
                 q = q.where(GroupORM.id != except_id)
             return (await s.execute(q)).first() is not None
 
-    async def create_group(self, name: str, description: str, actor: str | None) -> GroupORM:
+    async def entra_group_taken(self, entra_group_id: str, except_id: UUID | None = None) -> bool:
         async with self._session_factory() as s:
-            row = GroupORM(id=uuid.uuid4(), name=name, description=description, created_by=actor)
+            q = select(GroupORM.id).where(GroupORM.entra_group_id == entra_group_id)
+            if except_id:
+                q = q.where(GroupORM.id != except_id)
+            return (await s.execute(q)).first() is not None
+
+    async def create_group(
+        self, name: str, description: str, actor: str | None, entra_group_id: str | None = None,
+    ) -> GroupORM:
+        async with self._session_factory() as s:
+            row = GroupORM(
+                id=uuid.uuid4(), name=name, description=description, created_by=actor, entra_group_id=entra_group_id,
+            )
             s.add(row)
             _audit(s, "CREATE", row.id, name, "Grupp", actor)
             await s.commit()
