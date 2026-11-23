@@ -17,6 +17,15 @@ export function sceneForLayer(scen: Scen, lagerId: string | null): Scen {
   return lager ? { ...scen, bakgrund: lager.bakgrund, bredd: lager.bredd, höjd: lager.höjd } : scen;
 }
 
+/**
+ * "version 1.0 (fastslagen)" – which version of the sketch the picture is, as
+ * Arkitekten stamped it. Empty for scenes from before sketches had versions.
+ */
+export function sketchVersion(rev: Scen["revision"], ord: string): string {
+  if (!rev?.version) return "";
+  return `${ord} ${rev.version}${rev.status ? ` (${rev.status})` : ""}`;
+}
+
 /** The picture as a standalone SVG file — sanitised, like what is shown. */
 export function sketchSvg(scen: Scen): string {
   const b = Math.max(1, Math.round(scen.bredd));
@@ -113,7 +122,7 @@ export default function SystemSketchTab({ flows }: { flows: ArkflowSummary[] }) 
             // A new picture has new measures: remount so it is fitted to the window.
             key={`${f.id}-${lagerId ?? "alla"}`}
             scen={scen}
-            caption={[f.name, lagernamn].filter(Boolean).join(" · ")}
+            caption={[f.name, sketchVersion(f.scen?.revision, t("flowScene.version")), lagernamn].filter(Boolean).join(" · ")}
             beskrivning={f.beskrivning ?? undefined}
             actions={
               <Tooltip title={t("flowScene.sketchDownload")}>
