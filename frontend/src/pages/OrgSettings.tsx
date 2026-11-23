@@ -34,12 +34,16 @@ const FIELDS: { key: TextKey; label: string; help: string }[] = [
   },
 ];
 
-type TextKey = Exclude<keyof OrgSettingsValues, "anonymous_read" | "modules">;
-type Form = Record<TextKey, string> & { anonymous_read: "" | "on" | "off" };
+type TextKey = Exclude<keyof OrgSettingsValues, "anonymous_read" | "shared_login" | "modules">;
+type Tri = "" | "on" | "off";
+type Form = Record<TextKey, string> & { anonymous_read: Tri; shared_login: Tri };
+const tri = (v: boolean | null): Tri => (v === null ? "" : v ? "on" : "off");
+const fromTri = (v: Tri): boolean | null => (v === "" ? null : v === "on");
 
 const EMPTY: Form = {
   app_name: "", org_name: "", org_short_name: "", brand_color: "", allowed_email_domains: "", change_log_departments: "",
   anonymous_read: "",
+  shared_login: "",
 };
 
 function errorText(e: unknown): string {
@@ -68,7 +72,8 @@ const OrgSettings: React.FC = () => {
       brand_color: v.brand_color ?? "",
       allowed_email_domains: v.allowed_email_domains ?? "",
       change_log_departments: v.change_log_departments ?? "",
-      anonymous_read: v.anonymous_read === null ? "" : v.anonymous_read ? "on" : "off",
+      anonymous_read: tri(v.anonymous_read),
+      shared_login: tri(v.shared_login),
     });
   }, [data]);
 
@@ -81,8 +86,10 @@ const OrgSettings: React.FC = () => {
   };
 
   const handleSave = () => {
-    const anonymous = form.anonymous_read === "" ? null : form.anonymous_read === "on";
-    update.mutate({ ...form, anonymous_read: anonymous }, { onSuccess: () => setSaved(true) });
+    update.mutate(
+      { ...form, anonymous_read: fromTri(form.anonymous_read), shared_login: fromTri(form.shared_login) },
+      { onSuccess: () => setSaved(true) },
+    );
   };
 
   const handleLogo = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -157,6 +164,20 @@ const OrgSettings: React.FC = () => {
               <MenuItem value="">Standard från installationen ({data.defaults.anonymous_read ? "tillåten" : "inte tillåten"})</MenuItem>
               <MenuItem value="on">Tillåten</MenuItem>
               <MenuItem value="off">Inte tillåten</MenuItem>
+            </TextField>
+
+            <TextField
+              select
+              label="Gemensam inloggning"
+              value={form.shared_login}
+              onChange={(e) => set("shared_login", e.target.value as Form["shared_login"])}
+              helperText="På: den som redan är inloggad med Microsoft – i portalen, Arkitekten eller en annan app i installationen – loggas in i de andra av sig själv, utan att klicka på Logga in. Av: varje app har sin egen inloggningsknapp. Gäller Microsoft-inloggning; lokala konton loggar alltid in själva."
+              size="small"
+              fullWidth
+            >
+              <MenuItem value="">Standard från installationen ({data.defaults.shared_login ? "på" : "av"})</MenuItem>
+              <MenuItem value="on">På</MenuItem>
+              <MenuItem value="off">Av</MenuItem>
             </TextField>
 
             {update.isError && <Alert severity="error">{errorText(update.error)}</Alert>}

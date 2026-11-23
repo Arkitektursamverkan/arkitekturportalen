@@ -21,7 +21,7 @@ from app.models.org_settings import OrgSettingsORM
 
 FIELDS = (
     "app_name", "org_name", "org_short_name", "brand_color", "allowed_email_domains", "change_log_departments",
-    "anonymous_read", "modules",
+    "anonymous_read", "shared_login", "modules",
 )
 
 # modules is a list of module keys; [] (none switched on) differs from None (not set).
@@ -54,6 +54,7 @@ def defaults() -> dict[str, Value]:
         "allowed_email_domains": settings.ALLOWED_EMAIL_DOMAINS or None,
         "change_log_departments": settings.CHANGE_LOG_DEPARTMENTS or None,
         "anonymous_read": settings.ANONYMOUS_READ,
+        "shared_login": settings.SHARED_LOGIN,
         "modules": module_catalog.parse(settings.MODULES),
     }
 
@@ -79,6 +80,9 @@ class OrgSettings:
     # Read endpoints answer callers that send no credentials (what the
     # everyone grants allow); otherwise they get 401.
     anonymous_read: bool
+    # Sign in by itself when the browser has a Microsoft session – in the
+    # portal, Arkitekten and the installation's other apps.
+    shared_login: bool
     # The optional modules switched on (app.modules).
     modules: frozenset[str]
     has_logo: bool
@@ -94,6 +98,7 @@ def current() -> OrgSettings:
         allowed_email_domains=[d.lower() for d in _split(_effective("allowed_email_domains") or "")],
         change_log_departments=_split(_effective("change_log_departments") or ""),
         anonymous_read=bool(_effective("anonymous_read")),
+        shared_login=bool(_effective("shared_login")),
         modules=frozenset(_effective("modules")),
         has_logo=_stored.get("logo") is not None,
         updated_at=_stored.get("updated_at"),
@@ -139,6 +144,10 @@ def _clean(field: str, value: Value) -> Value:
     if field == "anonymous_read":
         if value is not None and not isinstance(value, bool):
             raise OrgSettingsError("Läsning utan inloggning ska vara på, av eller standard")
+        return value
+    if field == "shared_login":
+        if value is not None and not isinstance(value, bool):
+            raise OrgSettingsError("Gemensam inloggning ska vara på, av eller standard")
         return value
     if isinstance(value, (bool, list)):
         raise OrgSettingsError(f"{field} ska vara text")

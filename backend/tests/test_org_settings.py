@@ -55,6 +55,7 @@ async def test_osatt_varde_hamtas_fran_miljon(client, api_headers):
     public = (await client.get("/api/v1/org-settings/public")).json()
     assert {k: v for k, v in public.items() if k not in ("modules", "navigation", "domain_lists", "app_name")} == {
         "org_name": "Miljöbolaget", "org_short_name": "Miljöbolaget", "brand_color": None, "logo_version": None,
+        "shared_login": False,
     }
     assert org_settings.email_domain_allowed("kim@example.net")
     assert not org_settings.email_domain_allowed("kim@example.org")
@@ -118,7 +119,7 @@ async def test_ogiltiga_varden_avvisas(client, api_headers, falt):
     assert resp.status_code == 422
     assert (await client.get("/api/v1/org-settings", headers=api_headers)).json()["values"] == {
         "app_name": None, "org_name": None, "org_short_name": None, "brand_color": None,
-        "allowed_email_domains": None, "change_log_departments": None, "anonymous_read": None, "modules": None,
+        "allowed_email_domains": None, "change_log_departments": None, "anonymous_read": None, "shared_login": None, "modules": None,
     }
 
 
@@ -202,3 +203,17 @@ async def test_pdf_far_namn_logotyp_och_farg_fran_installningarna(client, api_he
     assert 'src="data:image/png;base64,' in html
     assert 'alt="Miljöbolaget"' in html
 
+
+
+@pytest.mark.asyncio
+async def test_gemensam_inloggning_syns_for_inloggningssidan_och_arkitekten(client, api_headers):
+    """Gemensam inloggning: av som förval; admin slår på den; inloggningssidan
+    (utan inloggning) och Arkitekten (GET /installation) läser den."""
+    assert (await client.get("/api/v1/org-settings/public")).json()["shared_login"] is False
+    resp = await client.put("/api/v1/org-settings", json={"shared_login": True}, headers=api_headers)
+    assert resp.status_code == 200, resp.text
+    assert (await client.get("/api/v1/org-settings/public")).json()["shared_login"] is True
+    assert (await client.get("/api/v1/installation", headers=api_headers)).json()["shared_login"] is True
+    assert (await client.put("/api/v1/org-settings", json={"shared_login": "ja"}, headers=api_headers)).status_code in (400, 422)
+    assert (await client.put("/api/v1/org-settings", json={"shared_login": None}, headers=api_headers)).status_code == 200
+    assert (await client.get("/api/v1/org-settings/public")).json()["shared_login"] is False

@@ -258,4 +258,13 @@ def snapshot(include_secret: bool) -> dict[str, Any]:
         }
         if include_secret and settings.ENTRA_CLIENT_SECRET:
             entra["client_secret"] = settings.ENTRA_CLIENT_SECRET
-    return {"portal_url": portal_url(), "arkitekten_url": arkitekten_url(), "entra": entra}
+    from app.services import org_settings
+
+    return {
+        "portal_url": portal_url(),
+        "arkitekten_url": arkitekten_url(),
+        "entra": entra,
+        # Shared sign-in (Administration → Organisation): Arkitekten then
+        # sends a signed-out visitor straight on to Microsoft.
+        "shared_login": org_settings.current().shared_login,
+    }

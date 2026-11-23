@@ -72,7 +72,7 @@ async def test_webhook_secret_gets_everything_but_client_secret(client, monkeypa
 
 async def test_entra_null_without_registration(client, api_headers):
     r = await client.get("/api/v1/installation", headers=api_headers)
-    assert r.json() == {"portal_url": None, "arkitekten_url": None, "entra": None}
+    assert r.json() == {"portal_url": None, "arkitekten_url": None, "entra": None, "shared_login": False}
 
 
 # ── Arkitekten registers ────────────────────────────────────────────────────

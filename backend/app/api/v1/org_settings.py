@@ -32,6 +32,7 @@ class OrgSettingsValues(BaseModel):
     allowed_email_domains: str | None = None
     change_log_departments: str | None = None
     anonymous_read: bool | None = None
+    shared_login: bool | None = None
     # Keys of the optional modules switched on; [] = none, None = not set.
     modules: list[str] | None = None
 
@@ -69,6 +70,9 @@ class OrgSettingsPublic(BaseModel):
     navigation: Navigation | None = None
     # Lists switched off and added (app.domain_lists).
     domain_lists: DomainLists = DomainLists()
+    # Sign in by itself with Microsoft when the browser has a session (the
+    # login page, and the installation's other apps, read it from here).
+    shared_login: bool = False
 
 
 def _get_pg_repo() -> PostgresRepository:
@@ -92,6 +96,7 @@ def _public() -> OrgSettingsPublic:
         modules=[k for k in module_catalog.KEYS if module_catalog.enabled(k)],
         navigation=Navigation.model_validate(nav) if (nav := org_settings.navigation()) else None,
         domain_lists=parse_lists(org_settings.domain_lists()),
+        shared_login=cur.shared_login,
     )
 
 

@@ -1,11 +1,13 @@
 import { clearLocalToken, hasValidLocalToken } from "./localSession";
 import { getMsal } from "./msal";
+import { markSignedOut } from "./sharedLogin";
 
 /**
  * Loggar ut: ett lokalt konto genom att glömma biljetten, ett Microsoft-konto
  * via Entras utloggning (som kommer tillbaka till webbplatsens rot).
  */
 export async function signOut(reload: () => void = () => window.location.reload()): Promise<void> {
+  markSignedOut();
   if (hasValidLocalToken()) {
     clearLocalToken();
     reload();
