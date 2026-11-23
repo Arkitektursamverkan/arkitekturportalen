@@ -36,7 +36,13 @@ import httpx
 import structlog
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.access import get_optional_user, hidden_node_ids, load_policy
+from app.access import (
+    CLASSIFIED_PREFIX,
+    UNKNOWN_CLASS,
+    get_optional_user,
+    hidden_node_ids,
+    load_policy,
+)
 from app.auth import CurrentUser
 from app.dependencies import get_repository, require_admin
 from app.platform_access import configured_url
@@ -194,7 +200,54 @@ def _summary(data: dict) -> dict:
         # another system: where it comes from, and whether the picture is
         # generated automatically. See `_ursprung`.
         "ursprung": _ursprung(data.get("ursprung")),
+        # The information classification and the protection class it
+        # requires (Arkitekten 0.19.0). Server-only — it decides who sees the
+        # picture (`_hidden_flow_filter`); what the picture SHOWS of it is the
+        # scene's `revision.klassning`, which follows Arkitekten's setting.
+        "_klassning": _klassning(data.get("klassning")),
     }
+
+
+_KLASS_ID = re.compile(r"^[a-z0-9-]{1,64}$")
+
+
+def _klassning(v: Any) -> dict | None:
+    """The classification as the platform passed it on, or None for an
+    unclassified picture. A requirement that cannot be read is "okand" —
+    administrators only, never open to all."""
+    if not isinstance(v, dict):
+        return None
+    klass = v.get("skyddsklass")
+    if klass is None:
+        krav = None
+    elif isinstance(klass, str) and _KLASS_ID.fullmatch(klass):
+        krav = klass
+    else:
+        krav = UNKNOWN_CLASS
+    namn = v["namn"] if isinstance(v.get("namn"), str) else ""
+    klassnamn = v["skyddsklass_namn"] if isinstance(v.get("skyddsklass_namn"), str) else ""
+    return {"nivå": str(v.get("nivå") or ""), "namn": namn[:120], "skyddsklass": krav, "skyddsklass_namn": klassnamn[:120]}
+
+
+async def known_classifications() -> list[dict]:
+    """The protection classes the mirrored pictures require — what an
+    administrator can grant under Behörigheter. Empty when the platform
+    cannot be reached."""
+    try:
+        index = await _index()
+    except Exception:  # the meta endpoint must answer anyway
+        logger.warning("arkflows.classifications_unavailable")
+        return []
+    found: dict[str, dict] = {}
+    for f in index["flows"]:
+        k = f.get("_klassning") or {}
+        cid = k.get("skyddsklass")
+        if not cid or cid == UNKNOWN_CLASS:
+            continue
+        c = found.setdefault(cid, {"id": cid, "name": k.get("skyddsklass_namn") or cid, "levels": []})
+        if k.get("namn") and k["namn"] not in c["levels"]:
+            c["levels"].append(k["namn"])
+    return list(found.values())
 
 
 def _ursprung(v: Any) -> dict | None:
@@ -228,7 +281,7 @@ def _synkflöde(data: dict) -> str | None:
 SKISSFAMILJ = "systemskiss"
 
 
-async def _hidden_flow_filter(user: CurrentUser | None):  # type: ignore[no-untyped-def]
+async def _hidden_flow_filter(user: CurrentUser | None, flows: list[dict]):  # type: ignore[no-untyped-def]
     """A test for "may this user not see this flowchart?" – by the object it
     is published onto (`ea_nod_id`), or, for one mirrored before publishing
     existed, by the Process its `prefix` names. A flowchart that points at
@@ -237,30 +290,75 @@ async def _hidden_flow_filter(user: CurrentUser | None):  # type: ignore[no-unty
     A system sketch asks for more than seeing the object it is published on:
     the permission `sketches.read` there. It is granted like any other, under
     Behörigheter – so who sees the sketches is decided in the portal, by
-    object, type or everything, and needs no administrator role."""
+    object, type or everything, and needs no administrator role.
+
+    A CLASSIFIED picture asks for its protection class too (`cleared`), and
+    is hidden when it points at nothing a clearance could be granted on.
+    `flows` are the ones about to be tested: the object types a clearance is
+    looked up under are read only when one of them is classified."""
     policy = await load_policy(user)
     if policy.sees_everything:
         return lambda _flow: False
     hidden = await hidden_node_ids(user, policy)
     hidden_prefixes: set[str] = set()
     visible_prefixes: set[str] = set()
+    # The visible processes per prefix — where a clearance is looked for on a
+    # picture that is matched on its number rather than published on a node.
+    by_prefix: dict[str, list[str]] = {}
     for archived in (False, True):
         for p in await get_repository().list_nodes(node_type="Process", archived=archived, limit=100_000):
             prefix = (p.attributes or {}).get("prefix")
             if isinstance(prefix, str) and prefix:
                 (hidden_prefixes if str(p.id) in hidden else visible_prefixes).add(prefix)
+                if str(p.id) not in hidden:
+                    by_prefix.setdefault(prefix, []).append(str(p.id))
+    # The object types of the nodes pictures are published on, read once and
+    # only when some picture is classified — a type grant can carry a clearance.
+    types: dict[str, str] | None = None
+
+    async def node_types() -> dict[str, str]:
+        out: dict[str, str] = {}
+        for t in ("Process", "Application", "Server"):
+            for archived in (False, True):
+                for n in await get_repository().list_nodes(node_type=t, archived=archived, limit=100_000):
+                    out[str(n.id)] = t
+        return out
+
+    def cleared(flow: dict, node_ids: list[str]) -> bool:
+        """Classification (Arkitekten's protection classes): a picture whose
+        level requires a class is shown only to whoever holds
+        `classified.<class>` on an object it is published on. An unclassified
+        picture, or a level that requires nothing, is open as before; a level
+        Arkitekten no longer knows ("okand") only to administrators."""
+        krav = (flow.get("_klassning") or {}).get("skyddsklass")
+        if not krav:
+            return True
+        if krav == UNKNOWN_CLASS:
+            return policy.full
+        perm = CLASSIFIED_PREFIX + krav
+        return any(policy.can(perm, n, (types or {}).get(n, "Process")) for n in node_ids)
 
     def is_hidden(flow: dict) -> bool:
         if flow.get("familj") == SKISSFAMILJ:
             # Sketches are published on servers; one that points at nothing
             # has nobody who was granted it.
             nod = flow.get("ea_nod_id")
-            return not nod or str(nod) in hidden or not policy.can("sketches.read", nod, "Server")
+            return (
+                not nod
+                or str(nod) in hidden
+                or not policy.can("sketches.read", nod, "Server")
+                or not cleared(flow, [str(nod)])
+            )
         if flow.get("ea_nod_id"):
-            return str(flow["ea_nod_id"]) in hidden
+            return str(flow["ea_nod_id"]) in hidden or not cleared(flow, [str(flow["ea_nod_id"])])
         prefix = flow.get("prefix")
-        return bool(prefix) and prefix in hidden_prefixes and prefix not in visible_prefixes
+        if bool(prefix) and prefix in hidden_prefixes and prefix not in visible_prefixes:
+            return True
+        # Not tied to any object: a classified one has nobody it was granted to.
+        return not cleared(flow, by_prefix.get(prefix, []) if prefix else [])
 
+    if any((f.get("_klassning") or {}).get("skyddsklass") for f in flows):
+        types = await node_types()
     return is_hidden
 
 
@@ -269,8 +367,8 @@ async def list_arkflows(user: CurrentUser | None = Depends(get_optional_user)) -
     """Every flowchart available to the portal, without the scenes – those
     whose process (or application) the user may see."""
     index = await _index()
-    is_hidden = await _hidden_flow_filter(user)
-    return {"flows": [f for f in index["flows"] if not is_hidden(f)]}
+    is_hidden = await _hidden_flow_filter(user, index["flows"])
+    return {"flows": [_utåt(f) for f in index["flows"] if not is_hidden(f)]}
 
 
 async def _index() -> dict:
@@ -305,7 +403,7 @@ async def get_arkflow(ark_flow_id: str, user: CurrentUser | None = Depends(get_o
     if not _FLOW_ID.fullmatch(ark_flow_id):
         raise HTTPException(404, "No such flowchart")
     flow = await _flow(ark_flow_id)
-    if flow is None or (await _hidden_flow_filter(user))(flow):
+    if flow is None or (await _hidden_flow_filter(user, [flow]))(flow):
         raise HTTPException(404, "No such flowchart")
     return _utåt(flow)
 
@@ -354,7 +452,7 @@ async def get_arkflow_sync(ark_flow_id: str, user: CurrentUser | None = Depends(
     if not _FLOW_ID.fullmatch(ark_flow_id):
         raise HTTPException(404, "No such flowchart")
     flow = await _flow(ark_flow_id)
-    if flow is None or (await _hidden_flow_filter(user))(flow):
+    if flow is None or (await _hidden_flow_filter(user, [flow]))(flow):
         raise HTTPException(404, "No such flowchart")
     flode = flow.get("_synkflode")
     if not flode or not PLATFORM_ADMIN_KEY or not _platform_url():

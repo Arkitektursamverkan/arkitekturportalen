@@ -221,7 +221,7 @@ def _plattform(monkeypatch, *, pipeline, scheman, körningar):
     async def flow(_id):
         return {"id": "ap-x", "ea_nod_id": None, "prefix": None, "_synkflode": FLODE}
 
-    async def syns(_user):
+    async def syns(_user, _flows):
         return lambda _flow: False
 
     arkflows._cache.clear()
@@ -342,4 +342,93 @@ async def test_systemskiss_kraver_egen_behorighet(client, api_headers, monkeypat
     monkeypatch.setattr(arkflows, "load_policy", full)
     alla = {f["id"] for f in (await client.get("/api/v1/arkflows", headers=api_headers)).json()["flows"]}
     assert alla == {"sk-miljo", "sk-utan-server"}
+    arkflows._cache.clear()
+
+
+def test_summary_keeps_the_classification_on_the_server():
+    s = arkflows._summary(
+        {"external_id": "a", "klassning": {"nivå": "n3", "namn": "Nivå 3", "skyddsklass": "kansliga", "skyddsklass_namn": "K"}}
+    )
+    assert s["_klassning"] == {"nivå": "n3", "namn": "Nivå 3", "skyddsklass": "kansliga", "skyddsklass_namn": "K"}
+    # What the browser gets: no server notes.
+    assert "_klassning" not in arkflows._utåt(s)
+    assert arkflows._summary({"external_id": "b"})["_klassning"] is None
+    # A requirement that cannot be read is administrators-only, never open.
+    bad = arkflows._summary({"external_id": "c", "klassning": {"nivå": "n", "skyddsklass": "../x"}})
+    assert bad["_klassning"]["skyddsklass"] == "okand"
+
+
+@pytest.mark.asyncio
+async def test_klassad_bild_kraver_skyddsklassen(client, api_headers, monkeypatch):
+    """En bild vars klassningsnivå kräver en skyddsklass syns bara för den som
+    har classified.<klass> på objektet den är publicerad på. Klassen ger inte
+    själv rätt att se objektet."""
+    from types import SimpleNamespace
+
+    from app.access import Policy
+
+    monkeypatch.setenv("INTEGRATION_PLATFORM_URL", "http://plattform.test/api/v1")
+
+    async def nod(typ, namn, **attr):
+        resp = await client.post("/api/v1/nodes", json={"type": typ, "name": namn, "attributes": attr}, headers=api_headers)
+        assert resp.status_code == 201
+        return resp.json()["id"]
+
+    process = await nod("Process", "Lön", prefix="9.1")
+    app_ = await nod("Application", "Lönesystemet")
+    server = await nod("Server", "Lönserver")
+    känslig = {"nivå": "n3", "namn": "Nivå 3", "skyddsklass": "kansliga", "skyddsklass_namn": "Känsliga"}
+    flows = [
+        {"external_id": "ap-lon", "familj": "affarsprocess", "ea_nod_id": process, "klassning": känslig, "scen": {}},
+        {"external_id": "sys-lon", "familj": "flodesschema", "ea_nod_id": app_, "klassning": känslig, "scen": {}},
+        {"external_id": "sk-lon", "familj": "systemskiss", "ea_nod_id": server, "klassning": känslig, "scen": {}},
+        {"external_id": "ap-prefix", "prefix": "9.1", "klassning": känslig, "scen": {}},
+        {"external_id": "ap-fri", "ea_nod_id": process, "klassning": {**känslig, "skyddsklass": None}, "scen": {}},
+        {"external_id": "ap-okand", "ea_nod_id": process, "klassning": {**känslig, "skyddsklass": "okand"}, "scen": {}},
+        {"external_id": "ap-lost", "klassning": känslig, "scen": {}},
+    ]
+    arkflows._cache.clear()
+    _falsk_plattform(monkeypatch, flows)
+
+    def alla(*permissions):
+        return SimpleNamespace(permissions=list(permissions), scope_type="all", node_types=[], node_id=None, include_children=False)
+
+    def typ(t, *permissions):
+        return SimpleNamespace(permissions=list(permissions), scope_type="types", node_types=[t], node_id=None, include_children=False)
+
+    def på(node_id, *permissions):
+        return SimpleNamespace(permissions=list(permissions), scope_type="node", node_types=[], node_id=node_id, include_children=False)
+
+    async def synliga(*grants):
+        async def policy(_user):
+            return Policy(grants=grants)
+
+        monkeypatch.setattr(arkflows, "load_policy", policy)
+        return {f["id"] for f in (await client.get("/api/v1/arkflows", headers=api_headers)).json()["flows"]}
+
+    läsare = alla("object.read", "sketches.read")
+    # Läsare utan klassen: bara bilden vars nivå inte kräver något.
+    assert await synliga(läsare) == {"ap-fri"}
+    assert (await client.get("/api/v1/arkflows/ap-lon", headers=api_headers)).status_code == 404
+    # Klassen på allt: allt utom en nivå Arkitekten inte känner, och en bild som inte pekar på något.
+    assert await synliga(läsare, alla("classified.kansliga")) == {"ap-lon", "sys-lon", "sk-lon", "ap-prefix", "ap-fri"}
+    assert (await client.get("/api/v1/arkflows/ap-lon", headers=api_headers)).status_code == 200
+    # På en objekttyp, eller ett enskilt objekt.
+    assert await synliga(läsare, typ("Application", "classified.kansliga")) == {"sys-lon", "ap-fri"}
+    assert await synliga(läsare, på(process, "classified.kansliga")) == {"ap-lon", "ap-prefix", "ap-fri"}
+    # En annan klass hjälper inte.
+    assert await synliga(läsare, alla("classified.affarshemligt")) == {"ap-fri"}
+    # Klassen ensam ger inte rätt att se objektet – och alltså inte bilden.
+    assert await synliga(alla("classified.kansliga")) == set()
+
+    async def full(_user):
+        return Policy(full=True)
+
+    monkeypatch.setattr(arkflows, "load_policy", full)
+    assert {f["id"] for f in (await client.get("/api/v1/arkflows", headers=api_headers)).json()["flows"]} == {
+        f["external_id"] for f in flows
+    }
+    # Behörigheter: klasserna bilderna kräver går att dela ut.
+    meta = (await client.get("/api/v1/access/meta", headers=api_headers)).json()
+    assert meta["classifications"] == [{"id": "kansliga", "name": "Känsliga", "levels": ["Nivå 3"]}]
     arkflows._cache.clear()

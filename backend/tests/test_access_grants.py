@@ -236,3 +236,47 @@ async def test_ogiltiga_tilldelningar_avvisas(client, api_headers, repo):
     # Bara admin hanterar tilldelningar.
     _, redaktor = await _anvandare(repo, "ogiltig.redaktor@example.org", roll="superuser")
     assert (await client.get("/api/v1/access/grants", headers=redaktor)).status_code == 403
+
+
+@pytest.mark.asyncio
+async def test_skyddsklass_ar_en_rattighet_i_en_roll(client, api_headers, repo):
+    """En skyddsklass från Arkitekten (classified.<id>) läggs i en roll som
+    vilken rättighet som helst – men ger inte själv rätt att se objektet, och
+    "okand" (nivå utanför Arkitektens modell) kan ingen få."""
+    resp = await client.post(
+        "/api/v1/access/roles",
+        json={"name": "Känsliga personuppgifter", "permissions": ["classified.kansliga", "object.read"]},
+        headers=api_headers,
+    )
+    assert resp.status_code == 201, resp.text
+    roll = resp.json()
+    # Den fasta ordningen först, klasserna efter.
+    assert roll["permissions"] == ["object.read", "classified.kansliga"]
+    for fel in (["classified.okand"], ["classified.Stor"], ["classified."], ["klassad.x"]):
+        r = await client.post("/api/v1/access/roles", json={"name": f"Fel {fel[0]}", "permissions": fel}, headers=api_headers)
+        assert r.status_code == 422, fel
+    # En klass som en roll har syns i Behörigheter även när ingen bild kräver den nu.
+    meta = (await client.get("/api/v1/access/meta", headers=api_headers)).json()
+    assert {"id": "kansliga", "name": "kansliga", "levels": []} in meta["classifications"]
+    # Kontrollera åtkomst visar klassen.
+    user, _h = await _anvandare(repo, "klassad@example.org")
+    app_id = await _nod(client, api_headers, "Application", "Klassat system")
+    await _tilldela(client, api_headers, principal_type="user", user_id=str(user.id), role_id=roll["id"],
+                    scope_type="node", node_id=app_id)
+    check = (await client.get(f"/api/v1/access/check?user_id={user.id}&node_id={app_id}", headers=api_headers)).json()
+    assert "classified.kansliga" in check["permissions"]
+
+
+def test_klass_ensam_ger_inte_lasratt():
+    from types import SimpleNamespace
+
+    from app.access import Policy
+
+    g = SimpleNamespace(permissions=["classified.x"], scope_type="all", node_types=[], node_id=None, include_children=False)
+    p = Policy(grants=[g])
+    assert p.can("classified.x", "n1", "Process")
+    assert not p.can_see("n1", "Process")
+    full = Policy(full=True)
+    assert full.can("classified.vad-som-helst", "n1", "Process")
+    # Avstängda listor gäller också administratören.
+    assert not Policy(full=True, hidden_types=["Process"]).can("classified.x", "n1", "Process")

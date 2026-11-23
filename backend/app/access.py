@@ -23,6 +23,14 @@ What a permission lets you do:
   server). Seeing the server is not enough: a sketch draws how the
   environment is put together, which fewer should see than the server's
   name and owner. See app/api/v1/arkflows.py.
+- classified.<id> — see the pictures from Arkitekten (processes, system
+  processes, sketches) whose information classification requires the
+  protection class <id> ("Känsliga personuppgifter"), on the object they are
+  published on. The classes are Arkitekten's (its docs/klassning.md); each
+  picture carries the one it requires. Unlike the others these do NOT imply
+  object.read — a clearance lets you see more of what you already see, never
+  an object you could not. A level missing from Arkitekten's model requires
+  "classified.okand", which nobody but an administrator holds.
 
 Anonymous callers reach the read endpoints that take get_optional_user only
 when the organisation settings allow reading without signing in; they get
@@ -30,6 +38,7 @@ what the everyone grants give.
 """
 from __future__ import annotations
 
+import re
 from collections.abc import Iterable
 from typing import Annotated, Any, Literal
 from uuid import UUID
@@ -51,6 +60,21 @@ PERMISSIONS: tuple[str, ...] = (
     "sketches.read",
 )
 ALL_PERMISSIONS = frozenset(PERMISSIONS)
+
+# Clearances for classified pictures: "classified." + the protection class id
+# Arkitekten sends. Open-ended — the installation's classes, not the code's.
+CLASSIFIED_PREFIX = "classified."
+CLASSIFIED_RE = re.compile(r"^classified\.[a-z0-9-]{1,64}$")
+# The class of a level Arkitekten no longer knows: administrators only.
+UNKNOWN_CLASS = "okand"
+
+
+def is_classified(perm: str) -> bool:
+    return bool(CLASSIFIED_RE.fullmatch(perm))
+
+
+def is_known_permission(perm: str) -> bool:
+    return perm in ALL_PERMISSIONS or (is_classified(perm) and perm != CLASSIFIED_PREFIX + UNKNOWN_CLASS)
 
 # The object types grants can be scoped to.
 MANAGED_TYPES: tuple[str, ...] = (
@@ -173,7 +197,11 @@ class Policy:
         return _with_read(p)
 
     def can(self, perm: str, node_id: Any, node_type: Any) -> bool:
-        return perm in self.perms(node_id, node_type)
+        p = self.perms(node_id, node_type)
+        # Full access holds every clearance too — on what is not switched off.
+        if self.full and p and is_classified(perm):
+            return True
+        return perm in p
 
     def can_see(self, node_id: Any, node_type: Any) -> bool:
         return self.can("object.read", node_id, node_type)
@@ -233,8 +261,11 @@ class Policy:
 
 
 def _with_read(p: set[str]) -> frozenset[str]:
-    # Any permission on an object means you may see it.
-    return frozenset(p | {"object.read"}) if p else frozenset()
+    # Any permission on an object means you may see it — except a clearance
+    # for classified pictures, which only adds to what you already see.
+    if not any(not is_classified(x) for x in p):
+        return frozenset(p)
+    return frozenset(p | {"object.read"})
 
 
 # ── Loading ─────────────────────────────────────────────────────────────────

@@ -4,13 +4,26 @@ import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 import { useNodes } from "@/api/nodes";
 import { NODE_COLORS } from "@/config/graphConfig";
-import type { Grant, GrantReach } from "@/api/access";
+import type { AccessMeta, Grant, GrantReach } from "@/api/access";
 import type { NodeRead } from "@/types/graph";
 
 /**
  * Shared pieces of Behörigheter: how a grant's who, what and why read, and
  * the pickers for objects and users.
  */
+
+export const CLASSIFIED = "classified.";
+
+/** A permission's name: the fixed ones from the translations, a protection
+ *  class from Arkitekten by its own name. */
+export function permissionLabel(p: string, t: TFunction, meta?: AccessMeta): string {
+  if (p.startsWith(CLASSIFIED)) {
+    const id = p.slice(CLASSIFIED.length);
+    const name = meta?.classifications.find((c) => c.id === id)?.name ?? id;
+    return t("access.classified.permission", { name });
+  }
+  return t(`access.permissions.${p}`);
+}
 
 export function principalLabel(g: Grant, t: TFunction): string {
   switch (g.principal_type) {

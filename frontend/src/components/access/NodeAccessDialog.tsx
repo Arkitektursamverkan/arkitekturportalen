@@ -8,14 +8,15 @@ import AddIcon from "@mui/icons-material/Add";
 import { useTranslation } from "react-i18next";
 import ErrorAlert from "@/components/common/ErrorAlert";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
-import { useDeleteGrant, useNodeAccess } from "@/api/access";
+import { useAccessMeta, useDeleteGrant, useNodeAccess } from "@/api/access";
 import { useRoleStore } from "@/store/roleStore";
 import GrantDialog from "./GrantDialog";
-import { PrincipalChip, scopeLabel, viaLabel } from "./accessParts";
+import { PrincipalChip, permissionLabel, scopeLabel, viaLabel } from "./accessParts";
 
 /** Vem har åtkomst? — every grant reaching one object, and how it gets there. */
 const NodeAccessDialog: React.FC<{ nodeId: string; onClose: () => void }> = ({ nodeId, onClose }) => {
   const { t } = useTranslation();
+  const { data: meta } = useAccessMeta();
   const isAdmin = useRoleStore((s) => s.isAdmin);
   const { data, isLoading, error } = useNodeAccess(nodeId);
   const del = useDeleteGrant();
@@ -48,7 +49,7 @@ const NodeAccessDialog: React.FC<{ nodeId: string; onClose: () => void }> = ({ n
                     <TableRow key={r.grant.id}>
                       <TableCell><PrincipalChip grant={r.grant} /></TableCell>
                       <TableCell>
-                        <Tooltip title={r.grant.permissions.map((p) => t(`access.permissions.${p}`)).join(" · ")}>
+                        <Tooltip title={r.grant.permissions.map((p) => permissionLabel(p, t, meta)).join(" · ")}>
                           <Typography variant="body2" component="span">{r.grant.role_name}</Typography>
                         </Tooltip>
                       </TableCell>

@@ -1338,7 +1338,7 @@
       "inUse": "Används i {{n}} tilldelningar",
       "delete": "Ta bort roll",
       "confirmDelete": "Ta bort rollen ”{{name}}”?",
-      "hint": "En roll är ett paket rättigheter. Ändrar du en roll ändras åtkomsten för alla som har den. Den som har någon rättighet på ett objekt ser alltid objektet."
+      "hint": "En roll är ett paket rättigheter. Ändrar du en roll ändras åtkomsten för alla som har den. Den som har någon rättighet på ett objekt ser alltid objektet – utom en skyddsklass för klassad information, som bara visar mer av det man redan ser."
     },
     "check": {
       "intro": "Välj en användare och ett objekt för att se vad användaren får göra med objektet – och varifrån behörigheten kommer.",
@@ -1360,7 +1360,14 @@
     },
     "userManagementHint": "Vem som ser och får göra vad med objekten – till exempel Servrar – bestäms under Behörigheter.",
     "groupsColumn": "Grupper",
-    "openAccess": "Behörigheter"
+    "openAccess": "Behörigheter",
+    "classified": {
+      "title": "Klassad information från Arkitekten",
+      "hint": "En process eller systemskiss vars klassningsnivå kräver en skyddsklass syns bara för den som har klassen på objektet bilden är publicerad på. Klassen visar inte själv objektet – den visar klassade bilder på objekt man redan ser.",
+      "none": "Ingen bild från Arkitekten kräver en skyddsklass ännu. Skyddsklasserna läggs upp i Arkitekten under Inställningar → Informationsklassning, och dyker upp här när en klassad bild hämtats.",
+      "permission": "Se bilder klassade {{name}}",
+      "levels": "Nivåer: {{levels}}"
+    }
   },
   "serverServiceView": {
     "select": "Servertjänster",

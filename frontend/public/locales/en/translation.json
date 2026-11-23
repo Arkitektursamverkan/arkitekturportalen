@@ -1329,7 +1329,7 @@
       "inUse": "Used in {{n}} grants",
       "delete": "Delete role",
       "confirmDelete": "Delete the role “{{name}}”?",
-      "hint": "A role is a bundle of permissions. Changing a role changes access for everyone who has it. Anyone with any permission on an object always sees the object."
+      "hint": "A role is a bundle of permissions. Changing a role changes access for everyone who has it. Anyone with any permission on an object always sees the object – except a protection class for classified information, which only shows more of what you already see."
     },
     "check": {
       "intro": "Choose a user and an object to see what the user may do with the object – and where the access comes from.",
@@ -1351,7 +1351,14 @@
     },
     "userManagementHint": "Who sees and may do what with the objects – Servers, for example – is decided under Access.",
     "groupsColumn": "Groups",
-    "openAccess": "Access"
+    "openAccess": "Access",
+    "classified": {
+      "title": "Classified information from Arkitekten",
+      "hint": "A process or system sketch whose classification level requires a protection class is shown only to those who hold the class on the object the picture is published on. The class does not show the object by itself – it shows classified pictures on objects you already see.",
+      "none": "No picture from Arkitekten requires a protection class yet. Protection classes are set up in Arkitekten under Settings → Information classification, and appear here once a classified picture has been fetched.",
+      "permission": "See pictures classified {{name}}",
+      "levels": "Levels: {{levels}}"
+    }
   },
   "serverServiceView": {
     "select": "Server services",

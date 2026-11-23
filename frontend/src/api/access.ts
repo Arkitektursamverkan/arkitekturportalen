@@ -9,12 +9,23 @@ export type Permission =
   | "documents.read" | "documents.read_restricted" | "documents.write"
   | "notes.read" | "notes.write"
   | "content.manage"
-  | "sketches.read";
+  | "sketches.read"
+  // A protection class from Arkitekten: see classified pictures on the object.
+  | `classified.${string}`;
+
+/** A protection class the pictures from Arkitekten require (backend app/access.py). */
+export interface Classification {
+  id: string;
+  name: string;
+  /** The classification levels that require it, by name. */
+  levels: string[];
+}
 
 export interface AccessMeta {
   permissions: Permission[];
   node_types: string[];
   principal_roles: string[];
+  classifications: Classification[];
 }
 
 export interface Role {

@@ -13,7 +13,7 @@ import { useSearchParams } from "react-router-dom";
 import ErrorAlert from "@/components/common/ErrorAlert";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import GrantDialog from "@/components/access/GrantDialog";
-import { NodePicker, PrincipalChip, principalLabel, scopeLabel, viaLabel } from "@/components/access/accessParts";
+import { CLASSIFIED, NodePicker, PrincipalChip, permissionLabel, principalLabel, scopeLabel, viaLabel } from "@/components/access/accessParts";
 import {
   useAccessCheck, useAccessMeta, useCreateGroup, useCreateRole, useDeleteGrant, useDeleteGroup,
   useDeleteRole, useGrants, useGroups, useRoles, useSetGroupMembers, useUpdateGroup, useUpdateRole,
@@ -63,6 +63,7 @@ const AccessManagement: React.FC = () => {
 
 const GrantsTab: React.FC = () => {
   const { t } = useTranslation();
+  const { data: meta } = useAccessMeta();
   const { data: grants = [], isLoading, error } = useGrants();
   const del = useDeleteGrant();
   const [adding, setAdding] = useState(false);
@@ -103,7 +104,7 @@ const GrantsTab: React.FC = () => {
               <TableRow key={g.id} hover>
                 <TableCell><PrincipalChip grant={g} /></TableCell>
                 <TableCell>
-                  <Tooltip title={g.permissions.map((p) => t(`access.permissions.${p}`)).join(" · ")}>
+                  <Tooltip title={g.permissions.map((p) => permissionLabel(p, t, meta)).join(" · ")}>
                     <Typography variant="body2" component="span">{g.role_name}</Typography>
                   </Tooltip>
                 </TableCell>
@@ -350,6 +351,35 @@ const RolesTab: React.FC = () => {
                 ))}
               </TableRow>
             ))}
+            {/* Protection classes from Arkitekten's information classification. */}
+            <TableRow>
+              <TableCell colSpan={roles.length + 1} sx={{ bgcolor: "action.hover" }}>
+                <Typography variant="body2" sx={{ fontWeight: 700 }}>{t("access.classified.title")}</Typography>
+                <Typography variant="caption" sx={{ color: "text.secondary" }}>
+                  {meta.classifications.length ? t("access.classified.hint") : t("access.classified.none")}
+                </Typography>
+              </TableCell>
+            </TableRow>
+            {meta.classifications.map((c) => {
+              const p = `${CLASSIFIED}${c.id}` as Permission;
+              return (
+                <TableRow key={p} hover>
+                  <TableCell>
+                    <Typography variant="body2">{permissionLabel(p, t, meta)}</Typography>
+                    {c.levels.length > 0 && (
+                      <Typography variant="caption" sx={{ color: "text.secondary" }}>
+                        {t("access.classified.levels", { levels: c.levels.join(", ") })}
+                      </Typography>
+                    )}
+                  </TableCell>
+                  {roles.map((r) => (
+                    <TableCell key={r.id} align="center" padding="checkbox">
+                      <Checkbox size="small" checked={r.permissions.includes(p)} disabled={update.isPending} onChange={() => toggle(r, p)} />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </TableContainer>
@@ -442,10 +472,10 @@ const CheckTab: React.FC = () => {
             <Paper variant="outlined" sx={{ p: 2 }}>
               <Typography variant="subtitle2" sx={{ mb: 1 }}>{t("access.check.may")}</Typography>
               <Stack spacing={0.5}>
-                {(meta?.permissions ?? []).map((p) => (
+                {[...(meta?.permissions ?? []), ...(meta?.classifications ?? []).map((c) => `${CLASSIFIED}${c.id}` as Permission)].map((p) => (
                   <Stack key={p} direction="row" spacing={1} sx={{ alignItems: "center", opacity: data.permissions.includes(p) ? 1 : 0.4 }}>
                     {data.permissions.includes(p) ? <CheckIcon fontSize="small" color="success" /> : <Box sx={{ width: 20 }} />}
-                    <Typography variant="body2">{t(`access.permissions.${p}`)}</Typography>
+                    <Typography variant="body2">{permissionLabel(p, t, meta)}</Typography>
                   </Stack>
                 ))}
               </Stack>
