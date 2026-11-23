@@ -7,7 +7,9 @@ funktioner, en ny korrigering för rättelser.
 
 ## Ej släppt
 
-- (inget än)
+## 0.31.0 – 2026-11-23
+
+- **Klassningen styr vem som ser bilderna från Arkitekten.** En process, systemprocess eller systemskiss vars informationsklassning kräver en *skyddsklass* (läggs upp i Arkitekten 0.19.0 under *Inställningar → Informationsklassning*) syns bara för den som har klassen på objektet bilden är publicerad på – annars finns bilden inte (404), varken i listan eller som djuplänk. Under *Behörigheter → Roller* står varje skyddsklass som bilderna kräver som en egen rad, *Se bilder klassade …*, och delas ut med en roll på allt, en objekttyp eller ett enskilt objekt, som andra rättigheter. En skyddsklass ger inte själv rätt att se objektet – den visar klassade bilder på objekt man redan ser. Administratörer ser allt; en nivå som inte längre finns i Arkitektens modell ser bara administratörer. Oklassade bilder och nivåer utan skyddsklass är öppna som förut. *Kontrollera åtkomst* visar skyddsklasserna. Kräver integrationsplattformen 0.14.0 (som för vidare klassningen). Ingen migrering.
 
 ## 0.30.0 – 2026-11-23
 

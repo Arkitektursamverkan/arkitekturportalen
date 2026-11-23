@@ -14,7 +14,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.exc import IntegrityError
 
-from app.access import PERMISSIONS, load_policy
+from app.access import CLASSIFIED_PREFIX, PERMISSIONS, is_classified, load_policy
 from app.auth import CurrentUser
 from app.authz import node_permissions
 from app.dal.access_repository import GrantView
@@ -23,6 +23,7 @@ from app.dependencies import get_repository, require_admin, require_user
 from app.schemas.access import (
     AccessCheck,
     AccessMeta,
+    Classification,
     GrantCreate,
     GrantReach,
     GrantRead,
@@ -88,8 +89,21 @@ def _slug(name: str) -> str:
 
 @router.get("/meta", response_model=AccessMeta)
 async def meta(_user: CurrentUser = Depends(require_user)) -> AccessMeta:
-    """The fixed vocabulary: permission keys, object types, global roles."""
-    return AccessMeta()
+    """The vocabulary: permission keys, object types, global roles — and the
+    protection classes the pictures from Arkitekten require, plus any a role
+    still holds (a class no longer in use keeps its row until it is cleared)."""
+    from app.api.v1.arkflows import known_classifications
+
+    found = {c["id"]: c for c in await known_classifications()}
+    repo = get_repository()
+    roles = await repo.access.list_roles() if isinstance(repo, PostgresRepository) else []
+    for role, _n in roles:
+        for p in role.permissions or []:
+            if is_classified(p):
+                cid = p[len(CLASSIFIED_PREFIX):]
+                found.setdefault(cid, {"id": cid, "name": cid, "levels": []})
+    ordered = sorted(found.values(), key=lambda c: str(c["name"]).lower())
+    return AccessMeta(classifications=[Classification(**c) for c in ordered])
 
 
 # ── Roles ───────────────────────────────────────────────────────────────────
@@ -345,6 +359,7 @@ async def check_access(user_id: UUID, node_id: UUID, _admin: CurrentUser = Depen
         user_role=target.role,
         is_admin=policy.full,
         groups=[g.name for g in await repo.access.groups_of(target.id)],
-        permissions=[p for p in PERMISSIONS if p in policy.perms(node.id, node.type)],
+        permissions=[p for p in PERMISSIONS if p in (perms := policy.perms(node.id, node.type))]
+        + sorted(p for p in perms if is_classified(p)),
         grants=[r for g in grants if (r := _reach(g, node, ancestors))],
     )

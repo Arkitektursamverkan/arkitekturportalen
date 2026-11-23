@@ -7,7 +7,13 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field, model_validator
 
-from app.access import MANAGED_TYPES, PERMISSIONS, PRINCIPAL_ROLES
+from app.access import (
+    MANAGED_TYPES,
+    PERMISSIONS,
+    PRINCIPAL_ROLES,
+    is_classified,
+    is_known_permission,
+)
 
 PrincipalType = Literal["everyone", "role", "group", "user"]
 ScopeType = Literal["all", "types", "node"]
@@ -16,18 +22,31 @@ ScopeType = Literal["all", "types", "node"]
 Via = Literal["all", "type", "node", "inherited"]
 
 
+class Classification(BaseModel):
+    """A protection class from Arkitekten — the permission `classified.<id>`."""
+
+    id: str
+    name: str
+    # The classification levels that require it, by name, as last seen.
+    levels: list[str] = Field(default_factory=list)
+
+
 class AccessMeta(BaseModel):
     permissions: list[str] = list(PERMISSIONS)
     node_types: list[str] = list(MANAGED_TYPES)
     principal_roles: list[str] = list(PRINCIPAL_ROLES)
+    # The protection classes the published pictures require, and any a role
+    # still holds — see app.access (classified.<id>).
+    classifications: list[Classification] = Field(default_factory=list)
 
 
 def _check_permissions(perms: list[str]) -> list[str]:
-    unknown = [p for p in perms if p not in PERMISSIONS]
+    unknown = [p for p in perms if not is_known_permission(p)]
     if unknown:
         raise ValueError(f"Okända rättigheter: {', '.join(unknown)}")
-    # Keep the canonical order so the matrix reads the same everywhere.
-    return [p for p in PERMISSIONS if p in perms]
+    # Keep the canonical order so the matrix reads the same everywhere;
+    # clearances after the fixed permissions, alphabetically.
+    return [p for p in PERMISSIONS if p in perms] + sorted({p for p in perms if is_classified(p)})
 
 
 # ── Roles ───────────────────────────────────────────────────────────────────
