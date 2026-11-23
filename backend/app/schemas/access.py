@@ -98,17 +98,47 @@ class GroupRead(BaseModel):
     name: str
     description: str
     members: list[UserBrief]
+    # Set: members come from the Entra group at sign-in, not by hand.
+    entra_group_id: str | None = None
+
+
+def _entra_group(v: str | None) -> str | None:
+    """An Entra group's object id (a GUID), lower-case; "" clears it."""
+    if v is None:
+        return None
+    v = v.strip().lower()
+    if v == "":
+        return ""
+    try:
+        return str(UUID(v))
+    except ValueError as e:
+        raise ValueError("Entra-gruppens objekt-id ska vara ett GUID") from e
 
 
 class GroupCreate(BaseModel):
     name: str = Field(..., min_length=1, max_length=150)
     description: str = ""
     member_ids: list[UUID] = Field(default_factory=list, max_length=1000)
+    entra_group_id: str | None = None
+
+    @model_validator(mode="after")
+    def _entra(self) -> GroupCreate:
+        self.entra_group_id = _entra_group(self.entra_group_id) or None
+        if self.entra_group_id and self.member_ids:
+            raise ValueError("En grupp kopplad till Entra får sina medlemmar från Entra")
+        return self
 
 
 class GroupUpdate(BaseModel):
     name: str | None = Field(None, min_length=1, max_length=150)
     description: str | None = None
+    # "" removes the link; the members stay until edited by hand.
+    entra_group_id: str | None = None
+
+    @model_validator(mode="after")
+    def _entra(self) -> GroupUpdate:
+        self.entra_group_id = _entra_group(self.entra_group_id)
+        return self
 
 
 class GroupMembers(BaseModel):

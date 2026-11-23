@@ -13,6 +13,8 @@ export interface OrgSettingsValues {
   allowed_email_domains: string | null;
   change_log_departments: string | null;
   anonymous_read: boolean | null;
+  /** Shared sign-in across the installation's apps; null = the installation's default. */
+  shared_login: boolean | null;
   /** Keys of the optional modules switched on; [] = none, null = not set. */
   modules: string[] | null;
 }
@@ -49,6 +51,8 @@ export interface OrgSettingsPublic {
   navigation: Navigation | null;
   /** Lists switched off and added under the architecture domains. */
   domain_lists: DomainLists;
+  /** Sign in by itself with Microsoft when the browser has a session. */
+  shared_login?: boolean;
 }
 
 const ADMIN_KEY = ["org-settings", "admin"] as const;

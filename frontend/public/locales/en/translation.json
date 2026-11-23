@@ -1319,7 +1319,12 @@
       "empty": "No groups yet. A group gathers people who should have the same access, e.g. Operations.",
       "confirmDelete": "Delete the group “{{name}}”? All grants to the group are deleted too.",
       "delete": "Delete",
-      "edit": "Edit"
+      "edit": "Edit",
+      "fromEntra": "From Entra",
+      "entraHint": "Members come from the Entra group {{id}} and are updated as each signs in.",
+      "entraId": "Entra group (object id)",
+      "entraHelp": "Empty = members are picked here. With an object id, members come from the Entra group at sign-in.",
+      "entraMembers": "Members come from the Entra group and are added when they sign in. Signed in so far: {{n}}."
     },
     "roles": {
       "add": "New role",

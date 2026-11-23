@@ -173,6 +173,11 @@ const GroupsTab: React.FC = () => {
               <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                 <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>{g.name}</Typography>
                 <Chip size="small" label={t("access.groups.memberCount", { n: g.members.length })} />
+                {g.entra_group_id && (
+                  <Tooltip title={t("access.groups.entraHint", { id: g.entra_group_id })}>
+                    <Chip size="small" color="primary" variant="outlined" label={t("access.groups.fromEntra")} />
+                  </Tooltip>
+                )}
                 <Box sx={{ flexGrow: 1 }} />
                 <Tooltip title={t("access.groups.edit")}>
                   <IconButton size="small" onClick={() => setEditing(g)}><EditIcon fontSize="small" /></IconButton>
@@ -224,6 +229,8 @@ const GroupDialog: React.FC<{ group: Group | null; onClose: () => void }> = ({ g
   const [name, setName] = useState(group?.name ?? "");
   const [description, setDescription] = useState(group?.description ?? "");
   const [members, setMembersState] = useState<string[]>(group?.members.map((m) => m.id) ?? []);
+  const [entraId, setEntraId] = useState(group?.entra_group_id ?? "");
+  const linked = entraId.trim() !== "";
   const [error, setError] = useState<string | null>(null);
   const people = users.filter((u) => u.role !== "system");
   const pending = create.isPending || update.isPending || setMembers.isPending;
@@ -232,10 +239,19 @@ const GroupDialog: React.FC<{ group: Group | null; onClose: () => void }> = ({ g
     setError(null);
     try {
       if (group) {
-        await update.mutateAsync({ id: group.id, patch: { name: name.trim(), description: description.trim() } });
-        await setMembers.mutateAsync({ id: group.id, userIds: members });
+        await update.mutateAsync({
+          id: group.id,
+          patch: { name: name.trim(), description: description.trim(), entra_group_id: entraId.trim() },
+        });
+        // A group linked to Entra gets its members from sign-in.
+        if (!linked) await setMembers.mutateAsync({ id: group.id, userIds: members });
       } else {
-        await create.mutateAsync({ name: name.trim(), description: description.trim(), member_ids: members });
+        await create.mutateAsync({
+          name: name.trim(),
+          description: description.trim(),
+          member_ids: linked ? [] : members,
+          entra_group_id: entraId.trim() || null,
+        });
       }
       onClose();
     } catch (e) {
@@ -251,6 +267,19 @@ const GroupDialog: React.FC<{ group: Group | null; onClose: () => void }> = ({ g
           {error && <Alert severity="error">{error}</Alert>}
           <TextField size="small" label={t("access.groups.name")} value={name} onChange={(e) => setName(e.target.value)} autoFocus />
           <TextField size="small" label={t("access.groups.description")} value={description} onChange={(e) => setDescription(e.target.value)} multiline minRows={2} />
+          <TextField
+            size="small"
+            label={t("access.groups.entraId")}
+            helperText={t("access.groups.entraHelp")}
+            value={entraId}
+            onChange={(e) => setEntraId(e.target.value)}
+            placeholder="00000000-0000-0000-0000-000000000000"
+          />
+          {linked ? (
+            <Alert severity="info" variant="outlined">
+              {t("access.groups.entraMembers", { n: group?.entra_group_id ? group.members.length : 0 })}
+            </Alert>
+          ) : (
           <Autocomplete
             multiple
             size="small"
@@ -264,6 +293,7 @@ const GroupDialog: React.FC<{ group: Group | null; onClose: () => void }> = ({ g
             }
             renderInput={(params) => <TextField {...params} label={t("access.groups.members")} />}
           />
+          )}
         </Stack>
       </DialogContent>
       <DialogActions>

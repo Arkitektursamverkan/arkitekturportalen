@@ -29,7 +29,7 @@ import httpx
 import jwt
 import structlog
 from jwt import PyJWKClient
-from sqlalchemy import select
+from sqlalchemy import delete, select
 
 from app.config import settings
 from app.models.user import UserORM
@@ -200,6 +200,53 @@ def verify_token(token: str) -> tuple[Literal["entra", "local"], dict[str, Any]]
     raise AuthError(f"Unsupported token algorithm: {alg}")
 
 
+def entra_groups_in(claims: dict[str, Any]) -> set[str] | None:
+    """The Entra groups (object ids) a token says the user is in, or None
+    when the token cannot say: too many groups ("overage" – Entra then sends
+    a link to Graph instead of the list)."""
+    if "groups" in (claims.get("_claim_names") or {}) or claims.get("hasgroups"):
+        return None
+    raw = claims.get("groups") or []
+    return {str(g).strip().lower() for g in raw if isinstance(g, str)} if isinstance(raw, list) else set()
+
+
+async def sync_entra_groups(session: Any, row: UserORM, claims: dict[str, Any]) -> None:
+    """The user's place in the groups linked to an Entra group follows the
+    token's groups claim, at every request: in the group when Entra says so,
+    out of it otherwise. Groups without a link are never touched. An
+    overage token (too many groups to list) changes nothing.
+
+    The app registration must emit the groups claim (Token configuration →
+    groups claim; "Groups assigned to the application" keeps it short)."""
+    from app.models.access import GroupMemberORM, GroupORM
+
+    linked = (await session.execute(
+        select(GroupORM.id, GroupORM.entra_group_id).where(GroupORM.entra_group_id.is_not(None))
+    )).all()
+    if not linked:
+        return
+    in_entra = entra_groups_in(claims)
+    if in_entra is None:
+        log.warning("auth.entra_groups_overage", user_id=str(row.id))
+        return
+    want = {gid for gid, eid in linked if str(eid).lower() in in_entra}
+    have = set((await session.execute(
+        select(GroupMemberORM.group_id).where(
+            GroupMemberORM.user_id == row.id, GroupMemberORM.group_id.in_([gid for gid, _ in linked]),
+        )
+    )).scalars().all())
+    if want == have:
+        return
+    for gid in want - have:
+        session.add(GroupMemberORM(group_id=gid, user_id=row.id))
+    if have - want:
+        await session.execute(
+            delete(GroupMemberORM).where(GroupMemberORM.user_id == row.id, GroupMemberORM.group_id.in_(have - want))
+        )
+    log.info("auth.entra_groups_synced", user_id=str(row.id),
+             added=[str(g) for g in want - have], removed=[str(g) for g in have - want])
+
+
 async def find_or_create_user(
     session: Any,
     token_type: Literal["entra", "local"],
@@ -274,6 +321,7 @@ async def find_or_create_user(
             if email and row.email != email:
                 row.email = email
             row.last_login_at = now
+        await sync_entra_groups(session, row, claims)
         return row
 
     # Local

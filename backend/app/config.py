@@ -68,6 +68,12 @@ class Settings(BaseSettings):
     # Default for the organisation settings, like ALLOWED_EMAIL_DOMAINS.
     ANONYMOUS_READ: bool = False
 
+    # Shared sign-in: the portal, Arkitekten and other apps on the same Entra
+    # app registration sign in by themselves when the browser already has a
+    # Microsoft session – no "Logga in" click per app. Default for the
+    # organisation settings, like ANONYMOUS_READ.
+    SHARED_LOGIN: bool = False
+
     # Optional modules switched on at installation (app.modules): comma-
     # separated keys or "all"; empty = the core only. Default for the
     # organisation settings, like ANONYMOUS_READ.

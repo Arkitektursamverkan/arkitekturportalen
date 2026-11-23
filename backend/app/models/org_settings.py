@@ -39,6 +39,8 @@ class OrgSettingsORM(Base):
     allowed_email_domains: Mapped[str | None] = mapped_column(Text, nullable=True)
     change_log_departments: Mapped[str | None] = mapped_column(Text, nullable=True)
     anonymous_read: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
+    # Shared sign-in across the installation's apps (settings.SHARED_LOGIN).
+    shared_login: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
     # Comma-separated module keys (app.modules); "" = none, NULL = MODULES.
     modules: Mapped[str | None] = mapped_column(Text, nullable=True)
     # The left menu (app.schemas.navigation); NULL = the standard menu.

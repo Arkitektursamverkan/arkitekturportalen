@@ -1328,7 +1328,12 @@
       "empty": "Inga grupper ännu. En grupp samlar personer som ska ha samma behörighet, t.ex. Driftledning.",
       "confirmDelete": "Ta bort gruppen ”{{name}}”? Alla tilldelningar till gruppen tas också bort.",
       "delete": "Ta bort",
-      "edit": "Ändra"
+      "edit": "Ändra",
+      "fromEntra": "Från Entra",
+      "entraHint": "Medlemmarna kommer från Entra-gruppen {{id}} och uppdateras när var och en loggar in.",
+      "entraId": "Entra-grupp (objekt-id)",
+      "entraHelp": "Tomt = medlemmarna väljs här. Med ett objekt-id kommer medlemmarna från Entra-gruppen vid inloggningen.",
+      "entraMembers": "Medlemmarna kommer från Entra-gruppen och läggs till när de loggar in. Hittills inloggade: {{n}}."
     },
     "roles": {
       "add": "Ny roll",

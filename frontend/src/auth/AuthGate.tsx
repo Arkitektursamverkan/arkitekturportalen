@@ -18,6 +18,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { loginRequest } from "./msalConfig";
 import { describeAuthError } from "./msal";
 import { hasValidLocalToken, setLocalToken } from "./localSession";
+import { clearSignedOut, markAutoLogin, mayAutoLogin } from "./sharedLogin";
 import { apiClient } from "@/api/client";
 import { orgLogoUrl, usePublicOrgSettings } from "@/api/orgSettings";
 
@@ -59,13 +60,28 @@ const AuthGate: React.FC<Props> = ({ children, msalEnabled, initialError }) => {
     enabled: !isAuthenticated,
     retry: false,
   });
+  // Gemensam inloggning: med en Microsoft-session i webbläsaren går
+  // omdirigeringen till Entra och tillbaka utan att någon behöver klicka.
+  const autoLogin =
+    msalEnabled &&
+    Boolean(org?.shared_login) &&
+    !isAuthenticated &&
+    inProgress === InteractionStatus.None &&
+    !error &&
+    !setup?.needed &&
+    mayAutoLogin();
+  useEffect(() => {
+    if (!autoLogin) return;
+    markAutoLogin();
+    instance.loginRedirect(loginRequest).catch((e) => setError(describeAuthError(e)));
+  }, [autoLogin, instance]);
   const logoSrc = orgLogoUrl(org?.logo_version ?? null);
   // The organisation's colour on the sign-in button; the app keeps its theme.
   const brandSx = org?.brand_color
     ? { bgcolor: org.brand_color, "&:hover": { bgcolor: org.brand_color, filter: "brightness(0.9)" } }
     : {};
 
-  if (msalEnabled && inProgress !== InteractionStatus.None) {
+  if ((msalEnabled && inProgress !== InteractionStatus.None) || autoLogin) {
     return (
       <CenterBox>
         <CircularProgress />
@@ -102,6 +118,7 @@ const AuthGate: React.FC<Props> = ({ children, msalEnabled, initialError }) => {
               startIcon={<MicrosoftIcon />}
               onClick={() => {
                 setError(null);
+                clearSignedOut();
                 instance.loginRedirect(loginRequest).catch((e) => setError(describeAuthError(e)));
               }}
               sx={{ minWidth: 280, ...brandSx }}

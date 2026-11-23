@@ -167,7 +167,13 @@ def _group_read(g: Any, members: list[Any]) -> GroupRead:
     return GroupRead(
         id=g.id, name=g.name, description=g.description,
         members=[UserBrief(id=u.id, name=u.name, email=u.email) for u in members],
+        entra_group_id=g.entra_group_id,
     )
+
+
+async def _check_entra_group(entra_group_id: str | None, except_id: UUID | None = None) -> None:
+    if entra_group_id and await _pg_repo().access.entra_group_taken(entra_group_id, except_id=except_id):
+        raise HTTPException(status_code=400, detail="Entra-gruppen är redan kopplad till en annan grupp")
 
 
 async def _group(group_id: UUID) -> GroupRead:
@@ -196,7 +202,8 @@ async def create_group(data: GroupCreate, admin: CurrentUser = Depends(require_a
     if await repo.access.group_name_taken(name):
         raise HTTPException(status_code=400, detail="Det finns redan en grupp med det namnet")
     members = await _check_members(data.member_ids)
-    row = await repo.access.create_group(name, data.description.strip(), _actor(admin))
+    await _check_entra_group(data.entra_group_id)
+    row = await repo.access.create_group(name, data.description.strip(), _actor(admin), data.entra_group_id)
     if members:
         await repo.access.set_group_members(row.id, members, _actor(admin))
     return await _group(row.id)
@@ -205,9 +212,12 @@ async def create_group(data: GroupCreate, admin: CurrentUser = Depends(require_a
 @router.patch("/groups/{group_id}", response_model=GroupRead)
 async def update_group(group_id: UUID, data: GroupUpdate, admin: CurrentUser = Depends(require_admin)) -> GroupRead:
     repo = _pg_repo()
-    fields = {k: v.strip() for k, v in data.model_dump(exclude_none=True).items()}
+    fields: dict[str, Any] = {k: v.strip() for k, v in data.model_dump(exclude_none=True).items()}
     if "name" in fields and await repo.access.group_name_taken(fields["name"], except_id=group_id):
         raise HTTPException(status_code=400, detail="Det finns redan en grupp med det namnet")
+    if "entra_group_id" in fields:
+        fields["entra_group_id"] = fields["entra_group_id"] or None
+        await _check_entra_group(fields["entra_group_id"], except_id=group_id)
     if await repo.access.update_group(group_id, fields, _actor(admin)) is None:
         raise HTTPException(status_code=404, detail="Gruppen finns inte")
     return await _group(group_id)
@@ -216,8 +226,11 @@ async def update_group(group_id: UUID, data: GroupUpdate, admin: CurrentUser = D
 @router.put("/groups/{group_id}/members", response_model=GroupRead)
 async def set_members(group_id: UUID, data: GroupMembers, admin: CurrentUser = Depends(require_admin)) -> GroupRead:
     repo = _pg_repo()
-    if await repo.access.get_group(group_id) is None:
+    group = await repo.access.get_group(group_id)
+    if group is None:
         raise HTTPException(status_code=404, detail="Gruppen finns inte")
+    if group.entra_group_id:
+        raise HTTPException(status_code=409, detail="Gruppens medlemmar kommer från Entra och ändras där")
     await repo.access.set_group_members(group_id, await _check_members(data.user_ids), _actor(admin))
     return await _group(group_id)
 
