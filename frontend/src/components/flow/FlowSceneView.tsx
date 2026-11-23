@@ -180,7 +180,9 @@ export default function FlowSceneView({ scen, caption, beskrivning, info, action
 
   return (
     <Box sx={[{ height: "100%", width: "100%", overflow: "hidden" }, ...maximizedSx(!yttre && maximized)]}>
-      {caption && <FlowInfoBox caption={caption} beskrivning={beskrivning} info={info} />}
+      {caption && (
+        <FlowInfoBox caption={caption} klassning={scen.revision?.klassning} beskrivning={beskrivning} info={info} />
+      )}
 
       <Box
         ref={hållare}

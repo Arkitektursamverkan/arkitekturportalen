@@ -1,6 +1,7 @@
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
-import { Box, IconButton, Paper, Stack, Tooltip, Typography } from "@mui/material";
+import { Box, Chip, IconButton, Paper, Stack, Tooltip, Typography } from "@mui/material";
+import ShieldOutlinedIcon from "@mui/icons-material/ShieldOutlined";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -58,11 +59,17 @@ export function clampInfoBox(x: number, y: number, yta: { width: number; height:
 
 interface Props {
   caption: string;
+  /**
+   * The picture's information classification, when Arkitekten sends one. It
+   * stays visible when the box is minimised: how the picture may be handled
+   * matters before anything else in it.
+   */
+  klassning?: string;
   beskrivning?: string;
   info?: React.ReactNode;
 }
 
-export default function FlowInfoBox({ caption, beskrivning, info }: Props) {
+export default function FlowInfoBox({ caption, klassning, beskrivning, info }: Props) {
   const { t } = useTranslation();
   const [läge, setLäge] = useState<InfoBoxState>(() => readInfoBoxState());
   const ruta = useRef<HTMLDivElement | null>(null);
@@ -147,6 +154,17 @@ export default function FlowInfoBox({ caption, beskrivning, info }: Props) {
         <Typography variant="caption" sx={{ flexGrow: 1, fontWeight: harMer ? 600 : 400 }} noWrap={!öppen}>
           {caption}
         </Typography>
+        {klassning && (
+          <Tooltip title={t("flowScene.classificationTitle")}>
+            <Chip
+              size="small"
+              icon={<ShieldOutlinedIcon />}
+              label={klassning}
+              aria-label={`${t("flowScene.classificationTitle")}: ${klassning}`}
+              sx={{ height: 20, fontSize: 11, maxWidth: 260, bgcolor: "#f6f2fc", color: "#3f2a6b", "& .MuiChip-icon": { fontSize: 14, color: "inherit" } }}
+            />
+          </Tooltip>
+        )}
         {harMer && (
           <Tooltip title={läge.minimised ? t("flowScene.infoShow") : t("flowScene.infoHide")}>
             <IconButton

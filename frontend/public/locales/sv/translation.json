@@ -1139,6 +1139,7 @@
     "sketchAllLayers": "Alla",
     "sketchLayers": "Lager",
     "sketchDownload": "Ladda ner bilden (SVG)",
+    "classificationTitle": "Informationsklassning",
     "ownerSystem": "Ägare",
     "origin": "Kommer från {{system}}",
     "originAuto": "Kommer från {{system}} – ritad automatiskt i Arkitekten",

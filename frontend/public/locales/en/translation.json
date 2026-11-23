@@ -1139,6 +1139,7 @@
     "sketchAllLayers": "All",
     "sketchLayers": "Layers",
     "sketchDownload": "Download the picture (SVG)",
+    "classificationTitle": "Information classification",
     "ownerSystem": "Owner",
     "origin": "Comes from {{system}}",
     "originAuto": "Comes from {{system}} – drawn automatically in Arkitekten",

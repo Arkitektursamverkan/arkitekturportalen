@@ -123,6 +123,20 @@ export interface Scen {
    * filter here.
    */
   lager?: ScenLager[];
+  /**
+   * What the picture IS: version, status, date and – when the installation
+   * shows it – the information classification, as Arkitekten stamps its
+   * exports. Read as given, never recomputed. Absent on older scenes.
+   */
+  revision?: ScenRevision | null;
+}
+
+export interface ScenRevision {
+  version?: string;
+  status?: string;
+  datum?: string;
+  /** The classification level, ready to show ("Nivå 2 – Betydande skada"). */
+  klassning?: string;
 }
 
 export interface ScenLager {

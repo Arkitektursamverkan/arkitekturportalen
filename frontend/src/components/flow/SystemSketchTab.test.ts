@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { arkflowsForServer, type ArkflowSummary, type Scen } from "@/api/arkflows";
-import { sceneForLayer, sketchSvg } from "./SystemSketchTab";
+import { sceneForLayer, sketchSvg, sketchVersion } from "./SystemSketchTab";
 
 const scen = {
   format: "ark-scen",
@@ -38,5 +38,15 @@ describe("the Systemskiss tab", () => {
     ] as ArkflowSummary[];
     expect(arkflowsForServer(flows, "srv").map((f) => f.id)).toEqual(["sk-a", "sk-b"]);
     expect(arkflowsForServer(flows, undefined)).toEqual([]);
+  });
+});
+
+describe("the sketch's version in the info box", () => {
+  it("says which version the picture is, as Arkitekten stamped it", () => {
+    expect(sketchVersion({ version: "1.0", status: "fastslagen" }, "version")).toBe("version 1.0 (fastslagen)");
+    expect(sketchVersion({ version: "0.1" }, "version")).toBe("version 0.1");
+    // Scenes from before sketches had versions say nothing.
+    expect(sketchVersion(null, "version")).toBe("");
+    expect(sketchVersion(undefined, "version")).toBe("");
   });
 });

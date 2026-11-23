@@ -9,6 +9,10 @@ funktioner, en ny korrigering för rättelser.
 
 - (inget än)
 
+## 0.30.0 – 2026-11-23
+
+- **Bildrutan säger vilken version och klassning bilden har.** På fliken *Systemskiss* står skissens version i rutan över bilden (t.ex. »version 1.0 (fastslagen)«) – den version Arkitekten (från 0.18.0) skickar, som är den senast fastslagna. För alla bilder från Arkitekten – processer, systemprocesser och skisser – visas informationsklassningen som ett märke i rutan när installationen har slagit på klassning och valt att visa den i exporten. Märket syns också när rutan är minimerad. Bara frontend; ingen migrering. Äldre scener visar ingenting nytt.
+
 ## 0.29.0 – 2026-11-20
 
 Innehåller också det som står under 0.28.0, som aldrig släpptes som egen version – migrering 0075 körs alltså vid den här uppgraderingen.
