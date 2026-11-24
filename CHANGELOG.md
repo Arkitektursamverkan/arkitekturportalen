@@ -7,6 +7,8 @@ funktioner, en ny korrigering för rättelser.
 
 ## Ej släppt
 
+## 0.33.0 – 2026-11-24
+
 - **En applikation kan vara en komponent i en annan.** Kopplingstypen *Innehåller* går nu även mellan två applikationer – t.ex. *EA-portalen innehåller Ljuset i huset* – under *Kopplingar*, när man skapar ett objekt och i grafen (*Integrerar med* är fortfarande förvalet). Systemvyn för komponenten visar också applikationen den ingår i. En koppling som skulle göra en applikation till en del av sig själv, direkt eller längre ner, avvisas (409). Ingen migrering.
 
 ## 0.32.1 – 2026-11-24
