@@ -74,6 +74,11 @@ export function edgeTypeKey(
   return `edgeTypes.${type}`;
 }
 
+/** The translation key for an edge's description – see edgeTypeKey. */
+export function edgeDescriptionKey(type: EdgeType | string, sourceType?: string | null, targetType?: string | null): string {
+  return isComponentEdge(type, sourceType, targetType) ? "edgeTypeDescriptions.HAS_COMPONENT" : `edgeTypeDescriptions.${type}`;
+}
+
 export function getValidEdgeTypes(sourceType: NodeType, targetType: NodeType): EdgeType[] {
   return ALLOWED_CONNECTIONS[sourceType]?.[targetType] ?? [];
 }

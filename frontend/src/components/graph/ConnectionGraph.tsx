@@ -402,7 +402,7 @@ const ConnectionGraph: React.FC<Props> = ({
             <Stack direction="row" spacing={2} sx={{ alignItems: "center", justifyContent: "space-between" }}>
               <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                 <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: EDGE_STYLES[selectedEdge.type]?.color }} />
-                <Typography variant="body2" sx={{ fontWeight: 500 }}>{t(`edgeTypes.${selectedEdge.type}`)}</Typography>
+                <Typography variant="body2" sx={{ fontWeight: 500 }}>{t(edgeTypeKey(selectedEdge.type, typeOf(selectedEdge.source_id), typeOf(selectedEdge.target_id)))}</Typography>
                 <Chip label={t("connections.graph.selectedEdge")} size="small" variant="outlined" />
               </Stack>
               <Stack direction="row" spacing={1}>

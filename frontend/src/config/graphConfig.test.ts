@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { edgeTypeKey, getValidEdgeTypes, getValidTargetTypes } from "./graphConfig";
+import { edgeDescriptionKey, edgeTypeKey, getValidEdgeTypes, getValidTargetTypes } from "./graphConfig";
 
 describe("kopplingar mellan applikationer", () => {
   it("en applikation kan integrera med eller innehålla en annan (komponent)", () => {
@@ -26,5 +26,12 @@ describe("kopplingens namn", () => {
     expect(edgeTypeKey("CONTAINS", "Application", "InformationSource")).toBe("edgeTypes.CONTAINS");
     expect(edgeTypeKey("INTEGRATES_WITH", "Application", "Application")).toBe("edgeTypes.INTEGRATES_WITH");
     expect(edgeTypeKey("CONTAINS")).toBe("edgeTypes.CONTAINS");
+  });
+});
+
+describe("kopplingens beskrivning", () => {
+  it("komponenten får sin egen beskrivning, andra kopplingar sin typs", () => {
+    expect(edgeDescriptionKey("CONTAINS", "Application", "Application")).toBe("edgeTypeDescriptions.HAS_COMPONENT");
+    expect(edgeDescriptionKey("CONTAINS", "Application", "InformationSource")).toBe("edgeTypeDescriptions.CONTAINS");
   });
 });
