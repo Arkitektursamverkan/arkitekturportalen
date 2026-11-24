@@ -273,10 +273,13 @@
     "InformationSource": "Information Source",
     "TechnologyComponent": "Technology Component",
     "Server": "Server",
-    "ServerService": "Server service"
+    "ServerService": "Server service",
+    "CustomObject": "Custom object"
   },
   "edgeTypes": {
     "USES": "Uses",
+    "HAS_COMPONENT": "Has component",
+    "PART_OF": "Part of",
     "SUPPORTS": "Supports",
     "HANDLES": "Handles",
     "REALIZES": "Realizes",
@@ -286,6 +289,7 @@
   },
   "edgeTypeDescriptions": {
     "USES": "A process uses an application or information resource to carry out its work.",
+    "HAS_COMPONENT": "An application has another application as a component – e.g. the EA portal has the component Ljuset i huset.",
     "SUPPORTS": "An application provides functional support for a process.",
     "HANDLES": "An application reads, writes, or processes an information object.",
     "REALIZES": "An information source is the physical or logical store that holds an information object.",

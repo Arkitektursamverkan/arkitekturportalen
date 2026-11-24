@@ -39,6 +39,7 @@ import {
   getValidEdgeTypes,
   getValidTargetTypes,
   getValidSourceTypes,
+  edgeTypeKey,
 } from "@/config/graphConfig";
 import IntegrationDirectionSelect from "@/components/graph/IntegrationDirectionSelect";
 import { useRoleStore } from "@/store/roleStore";
@@ -435,7 +436,7 @@ const CreateNode: React.FC = () => {
                           <MenuItem key={et} value={et}>
                             <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                               <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: EDGE_STYLES[et]?.color, flexShrink: 0 }} />
-                              <span>{t(`edgeTypes.${et}`)}</span>
+                              <span>{t(conn.direction === "to" ? edgeTypeKey(et, nodeType, conn.node?.type) : edgeTypeKey(et, conn.node?.type, nodeType, true))}</span>
                             </Stack>
                           </MenuItem>
                         ))}

@@ -12,6 +12,7 @@ import {
   EDGE_STYLES,
   getEdgeArrows,
   cytoscapeStylesheet,
+  edgeTypeKey,
 } from "@/config/graphConfig";
 import { useGraphStore } from "@/store/graphStore";
 import { savePositions, getPositions } from "./positionCache";
@@ -34,6 +35,7 @@ export const LAYOUT_OPTIONS: Record<string, cytoscape.LayoutOptions> = {
 
 function buildElements(data: GraphData, translate: (key: string) => string): ElementDefinition[] {
   const nodeIds = new Set(data.nodes.map((n) => n.id));
+  const typeOf = new Map(data.nodes.map((n) => [n.id, n.type as string]));
 
   const nodeEls: ElementDefinition[] = data.nodes.map((n) => ({
     data: {
@@ -57,7 +59,7 @@ function buildElements(data: GraphData, translate: (key: string) => string): Ele
           id: e.id,
           source: e.source,
           target: e.target,
-          label: translate(`edgeTypes.${e.type}`),
+          label: translate(edgeTypeKey(e.type, typeOf.get(e.source), typeOf.get(e.target))),
           color: style.color,
           lineStyle: style.lineStyle,
           width: style.width,
