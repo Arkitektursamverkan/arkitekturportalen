@@ -7,6 +7,10 @@ funktioner, en ny korrigering för rättelser.
 
 ## Ej släppt
 
+## 0.33.2 – 2026-11-24
+
+- **Lägg till objekt visar *Eget objekt* bara när det finns egna listor.** Valet gäller objekt i installationens egna listor (*Administration → Listor*); utan en enda egen lista fanns inget att välja och ingen lista för ett nytt objekt att hamna i, så det döljs nu.
+
 ## 0.33.1 – 2026-11-24
 
 - **Komponenter heter vad de är.** En applikation som innehåller en annan visas som **Har komponent** – i valet av relationstyp under *Kopplingar*, när man skapar ett objekt, i grafernas linjer och i tabellen över kopplingar. Under *Lägg till objekt* (+) i systemvyn går det åt båda hållen: *Applikation (Har komponent)* och *Applikation (Ingår i)*. Lagras som förut (`CONTAINS`); ingen migrering.
