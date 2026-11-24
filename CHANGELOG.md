@@ -7,6 +7,9 @@ funktioner, en ny korrigering för rättelser.
 
 ## Ej släppt
 
+- **Komponenter heter vad de är.** En applikation som innehåller en annan visas som **Har komponent** – i valet av relationstyp under *Kopplingar*, när man skapar ett objekt, i grafernas linjer och i tabellen över kopplingar. Under *Lägg till objekt* (+) i systemvyn går det åt båda hållen: *Applikation (Har komponent)* och *Applikation (Ingår i)*. Lagras som förut (`CONTAINS`); ingen migrering.
+- **Rättat:** *Lägg till objekt* visade `nodeTypes.CustomObject` i stället för *Eget objekt*.
+
 ## 0.33.0 – 2026-11-24
 
 - **En applikation kan vara en komponent i en annan.** Kopplingstypen *Innehåller* går nu även mellan två applikationer – t.ex. *EA-portalen innehåller Ljuset i huset* – under *Kopplingar*, när man skapar ett objekt och i grafen (*Integrerar med* är fortfarande förvalet). Systemvyn för komponenten visar också applikationen den ingår i. En koppling som skulle göra en applikation till en del av sig själv, direkt eller längre ner, avvisas (409). Ingen migrering.

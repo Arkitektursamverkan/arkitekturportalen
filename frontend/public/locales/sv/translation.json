@@ -273,10 +273,13 @@
     "InformationSource": "Informationskälla",
     "TechnologyComponent": "Teknikkomponent",
     "Server": "Server",
-    "ServerService": "Servertjänst"
+    "ServerService": "Servertjänst",
+    "CustomObject": "Eget objekt"
   },
   "edgeTypes": {
     "USES": "Använder",
+    "HAS_COMPONENT": "Har komponent",
+    "PART_OF": "Ingår i",
     "SUPPORTS": "Stöder",
     "HANDLES": "Hanterar",
     "REALIZES": "Realiserar",
@@ -286,6 +289,7 @@
   },
   "edgeTypeDescriptions": {
     "USES": "En process använder en applikation eller informationsresurs för att utföra sitt arbete.",
+    "HAS_COMPONENT": "En applikation har en annan applikation som komponent – t.ex. EA-portalen har komponenten Ljuset i huset.",
     "SUPPORTS": "En applikation ger funktionellt stöd till en process.",
     "HANDLES": "En applikation läser, skriver eller bearbetar ett informationsobjekt.",
     "REALIZES": "En informationskälla är det fysiska eller logiska lager som lagrar ett informationsobjekt.",

@@ -54,6 +54,7 @@ import {
   getValidEdgeTypes,
   getValidSourceTypes,
   getValidTargetTypes,
+  edgeTypeKey,
 } from "@/config/graphConfig";
 import type {
   EdgeType,
@@ -487,7 +488,7 @@ const Connections: React.FC = () => {
                   <MenuItem key={et} value={et}>
                     <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                       <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: EDGE_STYLES[et]?.color, flexShrink: 0 }} />
-                      <span>{t(`edgeTypes.${et}`)}</span>
+                      <span>{t(edgeTypeKey(et, source?.type, target?.type))}</span>
                     </Stack>
                   </MenuItem>
                 ))}
@@ -748,7 +749,7 @@ function EditableConnectionRow({
         <Stack spacing={0.5} sx={{ alignItems: "center" }}>
           <Tooltip title={t(`edgeTypeDescriptions.${edge.type}`)} placement="top">
             <Chip
-              label={t(`edgeTypes.${edge.type}`)}
+              label={t(edgeTypeKey(edge.type, src?.type, tgt?.type))}
               size="small"
               variant="outlined"
               sx={{ fontSize: 11, cursor: "help" }}

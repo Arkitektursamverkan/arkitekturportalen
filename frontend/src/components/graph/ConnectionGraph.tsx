@@ -47,6 +47,7 @@ import {
   cytoscapeStylesheet,
   getValidEdgeTypes,
   getValidTargetTypes,
+  edgeTypeKey,
 } from "@/config/graphConfig";
 import { savePositions, getPositions } from "./positionCache";
 import GraphControls from "./GraphControls";
@@ -80,14 +81,14 @@ function buildNodeData(n: NodeRead) {
   };
 }
 
-function buildEdgeData(e: EdgeRead, translate: (key: string) => string) {
+function buildEdgeData(e: EdgeRead, translate: (key: string) => string, typeOf: (id: string) => string | undefined = () => undefined) {
   const style = EDGE_STYLES[e.type] ?? EDGE_STYLES.USES;
   const arrows = getEdgeArrows(e.type, e.attributes);
   return {
     id: e.id,
     source: e.source_id,
     target: e.target_id,
-    label: translate(`edgeTypes.${e.type}`),
+    label: translate(edgeTypeKey(e.type, typeOf(e.source_id), typeOf(e.target_id))),
     color: style.color,
     lineStyle: style.lineStyle,
     width: style.width,
@@ -115,6 +116,7 @@ const ConnectionGraph: React.FC<Props> = ({
   nodes, edges, visibleNodeIds, visibleEdgeIds, onCreate, onDelete, creating, deleting,
 }) => {
   const { t } = useTranslation();
+  const typeOf = (id: string): string | undefined => nodes.find((n) => n.id === id)?.type;
   const cyRef       = useRef<Core | null>(null);
   const initialised = useRef(false);
   const [cyReady, setCyReady] = useState(false);
@@ -253,7 +255,7 @@ const ConnectionGraph: React.FC<Props> = ({
       data: buildNodeData(n),
       ...(allCached && cached[n.id] ? { position: cached[n.id] } : {}),
     })));
-    cy.add(edges.map((e) => ({ data: buildEdgeData(e, t) })));
+    cy.add(edges.map((e) => ({ data: buildEdgeData(e, t, typeOf) })));
 
     if (!allCached) {
       cy.layout(COSE_LAYOUT).run();
@@ -268,7 +270,7 @@ const ConnectionGraph: React.FC<Props> = ({
     if (!cy || !initialised.current) return;
     const existing = new Set(cy.edges().map((e) => e.id()));
     const incoming  = new Set(edges.map((e) => e.id));
-    for (const e of edges)   if (!existing.has(e.id)) cy.add({ data: buildEdgeData(e, t) });
+    for (const e of edges)   if (!existing.has(e.id)) cy.add({ data: buildEdgeData(e, t, typeOf) });
     for (const id of existing) if (!incoming.has(id))  cy.getElementById(id).remove();
   }, [edges, cyReady]);
 
@@ -439,7 +441,7 @@ const ConnectionGraph: React.FC<Props> = ({
                 onChange={(e) => setSelectedEdgeType(e.target.value as EdgeType)}
               >
                 {availableEdgeTypes.map((et) => (
-                  <MenuItem key={et} value={et}>{t(`edgeTypes.${et}`)}</MenuItem>
+                  <MenuItem key={et} value={et}>{t(edgeTypeKey(et, pendingSource?.type, dialogTarget?.type))}</MenuItem>
                 ))}
               </Select>
             </FormControl>

@@ -19,6 +19,8 @@ import {
   getValidSourceTypes,
   getValidEdgeTypes,
   DEFAULT_INTEGRATION_DIRECTION,
+  edgeTypeKey,
+  isComponentEdge,
 } from "@/config/graphConfig";
 import type { EdgeType, IntegrationDirection, NodeRead, NodeType } from "@/types/graph";
 import IntegrationDirectionSelect from "./IntegrationDirectionSelect";
@@ -87,14 +89,16 @@ const QuickAddNode: React.FC<Props> = ({ anchorNodeId, anchorNodeType, anchorNod
     // Anchor as source → related node is target
     for (const tgt of getValidTargetTypes(anchorNodeType)) {
       for (const et of getValidEdgeTypes(anchorNodeType, tgt)) {
-        const key = `${tgt}-${et}`;
+        // A symmetric pair (Application → Application) is offered both ways
+        // when the direction means something – "har komponent" and "ingår i".
+        const key = isComponentEdge(et, anchorNodeType, tgt) ? `${tgt}-${et}-out` : `${tgt}-${et}`;
         if (seen.has(key)) continue;
         seen.add(key);
         result.push({
           nodeType: tgt,
           edgeType: et,
           direction: "anchorIsSource",
-          label: `${t(`nodeTypes.${tgt}`)} (${t(`edgeTypes.${et}`)})`,
+          label: `${t(`nodeTypes.${tgt}`)} (${t(edgeTypeKey(et, anchorNodeType, tgt))})`,
         });
       }
     }
@@ -102,14 +106,14 @@ const QuickAddNode: React.FC<Props> = ({ anchorNodeId, anchorNodeType, anchorNod
     // Anchor as target → related node is source
     for (const src of getValidSourceTypes(anchorNodeType)) {
       for (const et of getValidEdgeTypes(src, anchorNodeType)) {
-        const key = `${src}-${et}`;
+        const key = isComponentEdge(et, src, anchorNodeType) ? `${src}-${et}-in` : `${src}-${et}`;
         if (seen.has(key)) continue;
         seen.add(key);
         result.push({
           nodeType: src,
           edgeType: et,
           direction: "anchorIsTarget",
-          label: `${t(`nodeTypes.${src}`)} (${t(`edgeTypes.${et}`)})`,
+          label: `${t(`nodeTypes.${src}`)} (${t(edgeTypeKey(et, src, anchorNodeType, true))})`,
         });
       }
     }

@@ -50,6 +50,30 @@ export const ALLOWED_CONNECTIONS: Partial<Record<NodeType, Partial<Record<NodeTy
   },
 };
 
+// ── Components ────────────────────────────────────────────────────────────────
+// Application CONTAINS Application: the source has the target as a component
+// (EA-portalen har komponenten Ljuset i huset). Same stored type as an
+// application containing an information source, but named for what it means.
+
+export function isComponentEdge(type: EdgeType | string, sourceType?: string | null, targetType?: string | null): boolean {
+  return type === "CONTAINS" && sourceType === "Application" && targetType === "Application";
+}
+
+/**
+ * The translation key for an edge's name: "Har komponent" for a component,
+ * the type's own name otherwise. `reverse` names it from the target's side
+ * ("Ingår i") – where the reader stands on the component.
+ */
+export function edgeTypeKey(
+  type: EdgeType | string,
+  sourceType?: string | null,
+  targetType?: string | null,
+  reverse = false,
+): string {
+  if (isComponentEdge(type, sourceType, targetType)) return reverse ? "edgeTypes.PART_OF" : "edgeTypes.HAS_COMPONENT";
+  return `edgeTypes.${type}`;
+}
+
 export function getValidEdgeTypes(sourceType: NodeType, targetType: NodeType): EdgeType[] {
   return ALLOWED_CONNECTIONS[sourceType]?.[targetType] ?? [];
 }
