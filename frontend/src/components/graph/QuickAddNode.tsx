@@ -12,6 +12,7 @@ import { useSnackbar } from "notistack";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCreateNode, useNodes } from "@/api/nodes";
 import { useCreateEdge } from "@/api/edges";
+import { usePublicOrgSettings } from "@/api/orgSettings";
 import { useRoleStore } from "@/store/roleStore";
 import {
   NODE_COLORS,
@@ -64,6 +65,8 @@ const QuickAddNode: React.FC<Props> = ({ anchorNodeId, anchorNodeType, anchorNod
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { isEditor, serverAccess } = useRoleStore();
+  const { data: orgSettings } = usePublicOrgSettings();
+  const hasOwnLists = (orgSettings?.domain_lists?.custom?.length ?? 0) > 0;
   const qc = useQueryClient();
   const createNode = useCreateNode();
   const createEdge = useCreateEdge();
@@ -119,15 +122,18 @@ const QuickAddNode: React.FC<Props> = ({ anchorNodeId, anchorNodeType, anchorNod
     }
 
     // Servers can only be connected by those with edit access to Servrar.
-    const permitted = serverAccess === "edit"
-      ? result
-      : result.filter((o) => o.nodeType !== "Server" && o.nodeType !== "ServerService");
+    // An own-list object ("Eget objekt") only when the installation has an
+    // own list (Administration → Listor) – otherwise there is nothing to pick
+    // and nowhere for a new one to belong.
+    const permitted = result
+      .filter((o) => serverAccess === "edit" || (o.nodeType !== "Server" && o.nodeType !== "ServerService"))
+      .filter((o) => o.nodeType !== "CustomObject" || hasOwnLists);
     if (allowedEdgeTypes) {
       const allowed = new Set(allowedEdgeTypes);
       return permitted.filter((o) => allowed.has(o.edgeType));
     }
     return permitted;
-  }, [anchorNodeType, allowedEdgeTypes, serverAccess, t]);
+  }, [anchorNodeType, allowedEdgeTypes, serverAccess, hasOwnLists, t]);
 
   // Filter existing nodes to match selected option type
   const existingOptions = useMemo(() => {
