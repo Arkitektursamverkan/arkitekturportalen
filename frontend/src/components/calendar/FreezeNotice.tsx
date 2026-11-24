@@ -4,12 +4,12 @@ import LockIcon from "@mui/icons-material/Lock";
 import { useNavigate } from "react-router-dom";
 import { addDays, occurrenceEnd, shortDate, timeLabel, toIsoDate, useCalendarEvents } from "@/api/calendar";
 
-/** Hur långt fram startsidan varnar för verksamhetskritiska händelser. */
-const DAYS_AHEAD = 7;
+/** Hur långt fram startsidan varnar för verksamhetskritiska händelser: dagen innan och samma dag. */
+const DAYS_AHEAD = 1;
 
 /**
- * Fastställda verksamhetskritiska händelser i dag och den närmaste veckan – det den som
- * planerar en ändring behöver se först. Förslag varnar inte.
+ * Fastställda verksamhetskritiska händelser i dag och i morgon (och de som pågår) – det den
+ * som planerar en ändring behöver se först. Förslag varnar inte.
  */
 const FreezeNotice: React.FC = () => {
   const navigate = useNavigate();

@@ -7,6 +7,8 @@ funktioner, en ny korrigering för rättelser.
 
 ## Ej släppt
 
+- **Startsidan varnar bara dagen innan och samma dag.** Bannern om verksamhetskritiska händelser visas från dagen före händelsen (»i morgon«) och medan den pågår – inte längre en vecka i förväg. Bara frontend; ingen migrering.
+
 ## 0.32.0 – 2026-11-23
 
 - **Gemensam inloggning.** Ny organisationsinställning under *Administration → Organisation*: med den påslagen loggar portalen in av sig själv med Microsoft när webbläsaren redan har en Microsoft-session – utan knappen *Logga in med Microsoft* – och Arkitekten (från 0.20.0) och installationens andra appar gör likadant (de läser inställningen ur `GET /installation` respektive `/org-settings/public`). Av = varje app har sin egen inloggningsknapp. Standard från miljön: `SHARED_LOGIN` (av). Ingen automatisk inloggning efter *Logga ut* i fliken; högst ett automatiskt försök per minut. Migrering 0077.
