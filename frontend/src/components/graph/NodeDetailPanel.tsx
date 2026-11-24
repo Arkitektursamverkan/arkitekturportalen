@@ -22,7 +22,7 @@ import type { FlagType, GraphNode, NodeRead as NodeReadType } from "@/types/grap
 import { FLAG_COLORS } from "@/types/graph";
 import { LIST_KEY, isOwnField, listPath } from "@/config/domainLists";
 import OwnFields from "@/components/common/OwnFields";
-import { NODE_COLORS, ATTR_FIELDS, getValidEdgeTypes, getIntegrationDirection } from "@/config/graphConfig";
+import { NODE_COLORS, ATTR_FIELDS, getValidEdgeTypes, getIntegrationDirection, edgeTypeKey } from "@/config/graphConfig";
 import IntegrationDirectionSelect from "./IntegrationDirectionSelect";
 import { useGraphStore } from "@/store/graphStore";
 import { useClearSelectionOnNavigate } from "@/store/useClearSelectionOnNavigate";
@@ -62,6 +62,9 @@ const NodeDetailPanel: React.FC = () => {
   const navigate = useNavigate();
   const [, setSearchParams] = useSearchParams();
   const { selectedNode, selectedEdge, clearSelection, selectNode } = useGraphStore();
+  // The ends' types, for what the selected edge is called (Har komponent …).
+  const { data: edgeEnds = [] } = useAllNodes();
+  const typeOfEnd = (id?: string) => edgeEnds.find((n) => n.id === id)?.type;
   const { isAdmin } = useRoleStore();
   // Going to another page closes the panel.
   useClearSelectionOnNavigate();
@@ -152,7 +155,7 @@ const NodeDetailPanel: React.FC = () => {
           <DialogTitle>{t("nodeDetail.deleteEdgeTitle")}</DialogTitle>
           <DialogContent>
             <DialogContentText>
-              {t("nodeDetail.deleteEdgeBody", { type: t(`edgeTypes.${selectedEdge.type}`) })}
+              {t("nodeDetail.deleteEdgeBody", { type: t(edgeTypeKey(selectedEdge.type, typeOfEnd(selectedEdge.source), typeOfEnd(selectedEdge.target))) })}
             </DialogContentText>
           </DialogContent>
           <DialogActions>
@@ -646,11 +649,17 @@ const EdgeNotesSection: React.FC<{
         {shownEdges.map((edge) => {
           const otherId = edge.source_id === nodeId ? edge.target_id : edge.source_id;
           const other = allNodes.find((n) => n.id === otherId);
+          // Named from this node's side: the component reads "Ingår i".
+          const self = allNodes.find((n) => n.id === nodeId);
+          const labelKey = edge.source_id === nodeId
+            ? edgeTypeKey(edge.type, self?.type, other?.type)
+            : edgeTypeKey(edge.type, other?.type, self?.type, true);
           return (
             <EdgeNoteRow
               key={edge.id}
               edge={edge}
               otherNode={other ?? null}
+              labelKey={labelKey}
               onSave={async (note) => {
                 try {
                   await updateNote.mutateAsync({ id: edge.id, note });
@@ -671,9 +680,10 @@ const EdgeNotesSection: React.FC<{
 const EdgeNoteRow: React.FC<{
   edge: EdgeRead;
   otherNode: { name: string; type: string } | null;
+  labelKey: string;
   onSave: (note: string | null) => Promise<void>;
   t: (k: string) => string;
-}> = ({ edge, otherNode, onSave, t }) => {
+}> = ({ edge, otherNode, labelKey, onSave, t }) => {
   const existingNote = (edge.attributes?.note as string | undefined) ?? "";
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(existingNote);
@@ -689,7 +699,7 @@ const EdgeNoteRow: React.FC<{
       <Stack direction="row" spacing={0.5} sx={{ alignItems: "center", mb: 0.5 }}>
         <Chip
           size="small"
-          label={t(`edgeTypes.${edge.type}`)}
+          label={t(labelKey)}
           sx={{ fontSize: 10, height: 18 }}
         />
         {otherNode && (
@@ -1152,7 +1162,7 @@ const EdgeDetail: React.FC<EdgeDetailProps> = ({ edge, t, isAdmin, isEditor, onR
   return (
     <Box>
       <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 1 }}>
-        <Chip label={t(`edgeTypes.${edge.type}`)} size="small" />
+        <Chip label={t(edgeTypeKey(edge.type, sourceNode?.type, targetNode?.type))} size="small" />
         <Box sx={{ flex: 1 }} />
         {isEditor && (
           <IconButton size="small" onClick={onRequestDelete} color="error" title={t("common.delete")}>

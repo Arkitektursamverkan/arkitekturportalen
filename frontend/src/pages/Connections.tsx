@@ -54,6 +54,7 @@ import {
   getValidEdgeTypes,
   getValidSourceTypes,
   getValidTargetTypes,
+  edgeDescriptionKey,
   edgeTypeKey,
 } from "@/config/graphConfig";
 import type {
@@ -747,7 +748,7 @@ function EditableConnectionRow({
       </TableCell>
       <TableCell align="center">
         <Stack spacing={0.5} sx={{ alignItems: "center" }}>
-          <Tooltip title={t(`edgeTypeDescriptions.${edge.type}`)} placement="top">
+          <Tooltip title={t(edgeDescriptionKey(edge.type, src?.type, tgt?.type))} placement="top">
             <Chip
               label={t(edgeTypeKey(edge.type, src?.type, tgt?.type))}
               size="small"
@@ -838,7 +839,7 @@ function ConnectionGuide() {
                   <TableCell>
                     <Stack direction="row" spacing={0.75} sx={{ alignItems: "center" }}>
                       <Box sx={{ width: 20, height: 2, bgcolor: EDGE_STYLES[edgeType]?.color }} />
-                      <Typography variant="body2" sx={{ fontSize: 12 }}>{t(`edgeTypes.${edgeType}`)}</Typography>
+                      <Typography variant="body2" sx={{ fontSize: 12 }}>{t(edgeTypeKey(edgeType, sourceType, targetType))}</Typography>
                     </Stack>
                   </TableCell>
                   <TableCell>
@@ -850,7 +851,7 @@ function ConnectionGuide() {
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2" sx={{ color: "text.secondary", fontSize: 12 }}>
-                      {t(`edgeTypeDescriptions.${edgeType}`)}
+                      {t(edgeDescriptionKey(edgeType, sourceType, targetType))}
                     </Typography>
                   </TableCell>
                 </TableRow>
