@@ -12,7 +12,9 @@ export const ALLOWED_CONNECTIONS: Partial<Record<NodeType, Partial<Record<NodeTy
   },
   Application: {
     Process:              ["SUPPORTS"],
-    Application:          ["INTEGRATES_WITH"],
+    // CONTAINS: the source has the target as a component (EA-portalen
+    // innehåller Ljuset i huset). Integration stays the default choice.
+    Application:          ["INTEGRATES_WITH", "CONTAINS"],
     InformationObject:    ["HANDLES"],
     InformationSource:    ["CONTAINS"],
     TechnologyComponent:  ["RUNS_ON"],

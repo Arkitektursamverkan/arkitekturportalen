@@ -10,6 +10,7 @@ from app.auth import CurrentUser
 from app.dependencies import get_repository, require_user
 from app.domain_lists import clean_own_values
 from app.domain_lists import parse as parse_lists
+from app.schemas.common import EdgeType
 from app.schemas.edge import EdgeCreate, EdgeDirectionUpdate, EdgeRead, EdgeUpdate
 from app.schemas.node import OwnFieldValues
 from app.services import org_settings
@@ -47,9 +48,40 @@ async def _require_write(user: CurrentUser, source_id: UUID | str, target_id: UU
     (await load_policy(user)).require_edge_write(source, target)
 
 
+async def _require_no_component_cycle(data: EdgeCreate) -> None:
+    """An application can be a component of another (Application CONTAINS
+    Application: "EA-portalen innehåller Ljuset i huset"). It cannot be a part
+    of itself, directly or further down: refuse an edge that closes a loop."""
+    if data.type is not EdgeType.CONTAINS:
+        return
+    repo = get_repository()
+    source = await repo.get_node(data.source_id)
+    target = await repo.get_node(data.target_id)
+    if not source or not target or source.type != "Application" or target.type != "Application":
+        return
+    if data.source_id == data.target_id:
+        raise HTTPException(status_code=409, detail="En applikation kan inte vara en komponent i sig själv")
+    # Everything the target already contains, all the way down.
+    seen: set[UUID] = set()
+    queue = [data.target_id]
+    while queue:
+        current = queue.pop()
+        for e in await repo.list_edges(source_id=current, edge_type=EdgeType.CONTAINS.value):
+            child = UUID(str(e.target_id))
+            if child == data.source_id:
+                raise HTTPException(
+                    status_code=409,
+                    detail=f"{target.name} innehåller redan {source.name} – kopplingen skulle bli en cirkel",
+                )
+            if child not in seen:
+                seen.add(child)
+                queue.append(child)
+
+
 @router.post("", response_model=EdgeRead, status_code=status.HTTP_201_CREATED)
 async def create_edge(data: EdgeCreate, user: CurrentUser = Depends(require_user)) -> EdgeRead:
     await _require_write(user, data.source_id, data.target_id)
+    await _require_no_component_cycle(data)
     repo = get_repository()
     return await repo.create_edge(data)
 

@@ -289,7 +289,7 @@
     "SUPPORTS": "An application provides functional support for a process.",
     "HANDLES": "An application reads, writes, or processes an information object.",
     "REALIZES": "An information source is the physical or logical store that holds an information object.",
-    "CONTAINS": "An application owns or hosts an information source (e.g. a database).",
+    "CONTAINS": "An application owns or hosts an information source (e.g. a database), or has another application as a component (e.g. the EA portal contains Ljuset i huset).",
     "RUNS_ON": "An application or technology component is deployed on a technology component or server.",
     "INTEGRATES_WITH": "Two applications exchange data or functionality directly with each other."
   },

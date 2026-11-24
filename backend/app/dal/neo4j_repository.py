@@ -358,7 +358,9 @@ class Neo4jRepository(GraphRepository):
                 MATCH (app:EANode {id: $aid, type: 'Application'})
                 OPTIONAL MATCH (app)-[r1:EA_REL]->(n1:EANode)
                   WHERE r1.type IN ['SUPPORTS','HANDLES','CONTAINS','RUNS_ON','INTEGRATES_WITH']
-                OPTIONAL MATCH (n2:EANode)-[r2:EA_REL {type: 'INTEGRATES_WITH'}]->(app)
+                OPTIONAL MATCH (n2:EANode)-[r2:EA_REL]->(app)
+                  WHERE r2.type = 'INTEGRATES_WITH'
+                     OR (r2.type = 'CONTAINS' AND n2.type = 'Application')
                 RETURN
                   properties(app) AS app_props,
                   collect(DISTINCT properties(n1)) AS out_nodes,

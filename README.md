@@ -281,7 +281,7 @@ Features: auto-detect delimiter (comma/semicolon), UTF-8 and Latin-1 encoding, u
 | USES | Process → InfoObject | Process uses this information |
 | HANDLES | App → InfoObject | App manages this information |
 | REALIZES | InfoSource → InfoObject | Module/source is the realization |
-| CONTAINS | App → InfoSource | App contains this data source |
+| CONTAINS | App → InfoSource, App → App | App contains this data source; or has the other application as a component (EA portal → Ljuset i huset). A component loop is refused (409) |
 | RUNS_ON | App → TechComponent | App runs on this infrastructure |
 | INTEGRATES_WITH | App → App | Integration; `attributes.direction` is `SOURCE_TO_TARGET` (→), `BIDIRECTIONAL` (↔) or `TARGET_TO_SOURCE` (←) |
 

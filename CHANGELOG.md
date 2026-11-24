@@ -7,6 +7,8 @@ funktioner, en ny korrigering för rättelser.
 
 ## Ej släppt
 
+- **En applikation kan vara en komponent i en annan.** Kopplingstypen *Innehåller* går nu även mellan två applikationer – t.ex. *EA-portalen innehåller Ljuset i huset* – under *Kopplingar*, när man skapar ett objekt och i grafen (*Integrerar med* är fortfarande förvalet). Systemvyn för komponenten visar också applikationen den ingår i. En koppling som skulle göra en applikation till en del av sig själv, direkt eller längre ner, avvisas (409). Ingen migrering.
+
 ## 0.32.1 – 2026-11-24
 
 - **Startsidan varnar bara dagen innan och samma dag.** Bannern om verksamhetskritiska händelser visas från dagen före händelsen (»i morgon«) och medan den pågår – inte längre en vecka i förväg. Bara frontend; ingen migrering.

@@ -289,7 +289,7 @@
     "SUPPORTS": "En applikation ger funktionellt stöd till en process.",
     "HANDLES": "En applikation läser, skriver eller bearbetar ett informationsobjekt.",
     "REALIZES": "En informationskälla är det fysiska eller logiska lager som lagrar ett informationsobjekt.",
-    "CONTAINS": "En applikation äger eller är värd för en informationskälla (t.ex. en databas).",
+    "CONTAINS": "En applikation äger eller är värd för en informationskälla (t.ex. en databas), eller har en annan applikation som komponent (t.ex. EA-portalen innehåller Ljuset i huset).",
     "RUNS_ON": "En applikation eller teknikkomponent är driftsatt på en teknikkomponent eller server.",
     "INTEGRATES_WITH": "Två applikationer utbyter data eller funktionalitet direkt med varandra."
   },
