@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { Box, Link, MenuItem, Stack, TextField, Typography } from "@mui/material";
+import { Box, Link, MenuItem, TextField, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useSnackbar } from "notistack";
 import { isAxiosError } from "axios";
@@ -67,25 +67,25 @@ const OwnFields: React.FC<{
   if (fields.length === 0 && !isAdmin) return null;
 
   return (
-    <Box sx={{ mt: 1 }}>
+    <Box>
       {fields.map((f) => {
         const value = values[f.key] ?? "";
         // A value saved before the choice was taken away is still shown.
         const options = f.type === "choice" && value && !f.options.includes(value) ? [...f.options, value] : f.options;
         return (
-          // Top-aligned: a long text runs over several lines, and its label
-          // belongs with the first of them.
-          <Stack key={f.key} direction="row" spacing={1} sx={{ alignItems: "flex-start", mb: 0.75 }}>
-            <Typography variant="caption" sx={{ color: "text.secondary", width: 96, flexShrink: 0, overflowWrap: "anywhere", pt: "3px" }}>
+          // The label above, the value across the whole panel – as the note.
+          // A label column beside it took a third of the width a text needs.
+          <Box key={f.key} sx={{ mt: 2 }}>
+            <Typography variant="caption" component="div" sx={{ color: "text.secondary", fontWeight: 600, overflowWrap: "anywhere", mb: 0.5 }}>
               {f.label}
             </Typography>
             {!canEdit ? (
-              <Typography variant="body2" sx={{ ...TEXT, color: value ? "text.primary" : "text.disabled", overflowWrap: "anywhere", whiteSpace: "pre-wrap", minWidth: 0 }}>
+              <Typography variant="body2" sx={{ color: value ? "text.primary" : "text.disabled", overflowWrap: "anywhere", whiteSpace: "pre-wrap", minWidth: 0 }}>
                 {value || "—"}
               </Typography>
             ) : f.type === "choice" ? (
               <TextField
-                select fullWidth size="small" variant="standard" value={value} disabled={saving === f.key}
+                select fullWidth size="small" value={value} disabled={saving === f.key}
                 slotProps={{ htmlInput: { "aria-label": f.label }, select: { displayEmpty: true } }}
                 sx={{ "& .MuiSelect-select": TEXT }}
                 onChange={(e) => { setValues((v) => ({ ...v, [f.key]: e.target.value })); void save(f, e.target.value); }}
@@ -97,16 +97,17 @@ const OwnFields: React.FC<{
               <TextField
                 // The field grows with its text: on one line a longer value
                 // ran out of the panel, and all but its beginning was unreadable.
-                fullWidth multiline size="small" variant="standard" value={value} disabled={saving === f.key}
+                fullWidth multiline minRows={2} maxRows={8} size="small" value={value} disabled={saving === f.key}
+                placeholder={t("ownFields.placeholder")}
                 slotProps={{ htmlInput: { "aria-label": f.label, maxLength: 500 } }}
-                sx={{ minWidth: 0, "& .MuiInputBase-root": { ...TEXT, py: "2px" } }}
+                sx={{ minWidth: 0 }}
                 onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
                 onBlur={(e) => void save(f, e.target.value)}
                 // Enter saves, as before; an own value is one text, not paragraphs.
                 onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); (e.target as HTMLElement).blur(); } }}
               />
             )}
-          </Stack>
+          </Box>
         );
       })}
       {isAdmin && (
