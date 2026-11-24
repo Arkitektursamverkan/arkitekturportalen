@@ -7,6 +7,10 @@ funktioner, en ny korrigering för rättelser.
 
 ## Ej släppt
 
+## 0.33.4 – 2026-11-24
+
+- **Egna fält skrivs över hela kortets bredd.** Ett eget fält (t.ex. *Beskrivning* på en koppling) har nu sin rubrik ovanför och en skrivyta över hela bredden – som *Anteckning* – i stället för en etikettkolumn till vänster som tog en tredjedel av platsen. Textfälten börjar med två rader och växer med texten.
+
 ## 0.33.3 – 2026-11-24
 
 - **Kopplingens kort säger också *Har komponent*.** Kortet för en vald koppling, frågan när den tas bort, listan över kopplingar på ett objekt (från komponentens håll: *Ingår i*), den valda kopplingen i grafen under *Kopplingar*, tabellens förklaring och kopplingsguiden visade fortfarande *Innehåller* för en applikation som är komponent i en annan.

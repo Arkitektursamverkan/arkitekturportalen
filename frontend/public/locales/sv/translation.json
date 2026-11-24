@@ -1458,6 +1458,7 @@
     "noConnections": "Inga kopplingar än."
   },
   "ownFields": {
+    "placeholder": "Skriv här…",
     "none": "Inget valt",
     "saveError": "Fältet gick inte att spara.",
     "manage": "Hantera egna fält",

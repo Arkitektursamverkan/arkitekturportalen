@@ -1449,6 +1449,7 @@
     "noConnections": "No connections yet."
   },
   "ownFields": {
+    "placeholder": "Write here…",
     "none": "None chosen",
     "saveError": "The field could not be saved.",
     "manage": "Manage own fields",
