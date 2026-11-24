@@ -7,6 +7,8 @@ funktioner, en ny korrigering för rättelser.
 
 ## Ej släppt
 
+## 0.32.1 – 2026-11-24
+
 - **Startsidan varnar bara dagen innan och samma dag.** Bannern om verksamhetskritiska händelser visas från dagen före händelsen (»i morgon«) och medan den pågår – inte längre en vecka i förväg. Bara frontend; ingen migrering.
 
 ## 0.32.0 – 2026-11-23
