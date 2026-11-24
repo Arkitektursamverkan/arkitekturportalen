@@ -71,19 +71,22 @@ const SystemView: React.FC = () => {
   const setAnchorNodeId = useGraphStore((s) => s.setAnchorNodeId);
   const clearSelection = useGraphStore((s) => s.clearSelection);
 
-  // Count only edges visible in System View: outgoing from app + incoming INTEGRATES_WITH
+  // Count only edges visible in System View: outgoing from app + incoming
+  // INTEGRATES_WITH + the application it is a component of (incoming CONTAINS
+  // from an application).
   const SYSTEM_VIEW_TYPES = new Set(["SUPPORTS", "HANDLES", "CONTAINS", "RUNS_ON", "INTEGRATES_WITH"]);
   const edgeCounts = useMemo(() => {
+    const appIds = new Set((apps ?? []).map((a) => a.id));
     const counts: Record<string, number> = {};
     for (const e of edges) {
       if (!SYSTEM_VIEW_TYPES.has(e.type)) continue;
       counts[e.source_id] = (counts[e.source_id] ?? 0) + 1;
-      if (e.type === "INTEGRATES_WITH") {
+      if (e.type === "INTEGRATES_WITH" || (e.type === "CONTAINS" && appIds.has(e.source_id) && appIds.has(e.target_id))) {
         counts[e.target_id] = (counts[e.target_id] ?? 0) + 1;
       }
     }
     return counts;
-  }, [edges]);
+  }, [edges, apps]);
 
   const statusOptions = useMemo(() => {
     const values = new Set<string>();

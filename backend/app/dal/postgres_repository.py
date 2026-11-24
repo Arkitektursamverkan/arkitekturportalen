@@ -938,6 +938,21 @@ class PostgresRepository(GraphRepository):
             edge_rows.extend(bi_edges)
             node_ids.update(str(e.source_id) for e in bi_edges)
 
+            # The applications this one is a component of (Application CONTAINS
+            # Application) – seen from the component, the whole it belongs to.
+            q_parents = (
+                select(EdgeORM)
+                .join(NodeORM, NodeORM.id == EdgeORM.source_id)
+                .where(
+                    EdgeORM.target_id == app_id,
+                    EdgeORM.type == "CONTAINS",
+                    NodeORM.type == "Application",
+                )
+            )
+            parent_edges = (await s.execute(q_parents)).scalars().all()
+            edge_rows.extend(parent_edges)
+            node_ids.update(str(e.source_id) for e in parent_edges)
+
             node_orms = await self._fetch_nodes_by_ids(s, node_ids)
             return GraphData(
                 nodes=[_node_to_graph(n) for n in node_orms],

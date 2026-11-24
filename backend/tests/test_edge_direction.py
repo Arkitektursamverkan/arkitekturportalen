@@ -102,3 +102,54 @@ async def test_non_integration_edge_gets_no_direction(client, api_headers):
     )
     assert resp.status_code == 201
     assert "direction" not in resp.json()["attributes"]
+
+
+# ── An application as a component of another (Application CONTAINS Application) ──
+
+async def _contains(client, api_headers, src, tgt):
+    return await client.post(
+        "/api/v1/edges",
+        json={"source_id": src, "target_id": tgt, "type": "CONTAINS"},
+        headers=api_headers,
+    )
+
+
+@pytest.mark.asyncio
+async def test_application_can_contain_application(client, api_headers):
+    portal, ljuset = await _make_apps(client, api_headers, "Komponent")
+    resp = await _contains(client, api_headers, portal, ljuset)
+    assert resp.status_code == 201
+    assert resp.json()["type"] == "CONTAINS"
+    assert "direction" not in resp.json()["attributes"]
+
+
+@pytest.mark.asyncio
+async def test_component_cannot_contain_itself(client, api_headers):
+    app, _ = await _make_apps(client, api_headers, "KomponentSjalv")
+    resp = await _contains(client, api_headers, app, app)
+    assert resp.status_code == 409
+
+
+@pytest.mark.asyncio
+async def test_component_cycle_is_refused(client, api_headers):
+    a, b = await _make_apps(client, api_headers, "KomponentCirkel")
+    c = (await client.post(
+        "/api/v1/nodes", json={"type": "Application", "name": "KomponentCirkel C"}, headers=api_headers,
+    )).json()["id"]
+    assert (await _contains(client, api_headers, a, b)).status_code == 201
+    assert (await _contains(client, api_headers, b, c)).status_code == 201
+    # C is already inside A, two levels down.
+    resp = await _contains(client, api_headers, c, a)
+    assert resp.status_code == 409
+    assert "cirkel" in resp.json()["detail"]
+
+
+@pytest.mark.asyncio
+async def test_system_view_of_component_shows_its_whole(client, api_headers):
+    portal, ljuset = await _make_apps(client, api_headers, "KomponentVy")
+    edge_id = (await _contains(client, api_headers, portal, ljuset)).json()["id"]
+    resp = await client.get(f"/api/v1/views/system/{ljuset}", headers=api_headers)
+    assert resp.status_code == 200
+    data = resp.json()
+    assert portal in {n["id"] for n in data["nodes"]}
+    assert edge_id in {e["id"] for e in data["edges"]}
