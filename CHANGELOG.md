@@ -7,6 +7,10 @@ funktioner, en ny korrigering för rättelser.
 
 ## Ej släppt
 
+## 0.34.0 – 2026-11-27
+
+- **Servern har ett eget fält för beskrivningen.** Under *Teknik → Servrar* står **Beskrivning** nu som ett eget fält under serverns uppgifter, över hela bredden, och den som får ändra servern skriver direkt i det – texten sparas när fältet lämnas, och radbrytningar behålls. Förut visades beskrivningen bara som en grå rad under namnet när den fanns, och fylldes i via pennan. Det är samma beskrivning som förut (den som pennan, CSV-mallen och synkar använder); ingen migrering.
+
 ## 0.33.4 – 2026-11-24
 
 - **Egna fält skrivs över hela kortets bredd.** Ett eget fält (t.ex. *Beskrivning* på en koppling) har nu sin rubrik ovanför och en skrivyta över hela bredden – som *Anteckning* – i stället för en etikettkolumn till vänster som tog en tredjedel av platsen. Textfälten börjar med två rader och växer med texten.

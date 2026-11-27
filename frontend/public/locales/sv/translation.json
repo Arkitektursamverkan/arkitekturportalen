@@ -1464,6 +1464,10 @@
     "manage": "Hantera egna fält",
     "add": "Lägg till egna fält"
   },
+  "descriptionField": {
+    "placeholder": "Beskriv vad det här är och används till…",
+    "saveError": "Beskrivningen gick inte att spara."
+  },
   "customReports": {
     "openCount_one": "{{count}} obeslutat",
     "openCount_other": "{{count}} obeslutade",

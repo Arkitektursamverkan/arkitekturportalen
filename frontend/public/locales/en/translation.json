@@ -1455,6 +1455,10 @@
     "manage": "Manage own fields",
     "add": "Add own fields"
   },
+  "descriptionField": {
+    "placeholder": "Describe what this is and what it is used for…",
+    "saveError": "The description could not be saved."
+  },
   "customReports": {
     "openCount_one": "{{count}} undecided",
     "openCount_other": "{{count}} undecided",
