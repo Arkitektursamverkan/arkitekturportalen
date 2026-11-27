@@ -11,10 +11,11 @@ import LinkOffIcon from "@mui/icons-material/LinkOff";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useSnackbar } from "notistack";
-import { useCreateNode, useNodes } from "@/api/nodes";
+import { useCreateNode, useNodes, useUpdateNode } from "@/api/nodes";
 import { useCreateEdge, useDeleteEdge, useEdges } from "@/api/edges";
 import { arkflowsForServer, useArkflows } from "@/api/arkflows";
 import SystemSketchTab from "@/components/flow/SystemSketchTab";
+import DescriptionField from "@/components/common/DescriptionField";
 import ListSearchBox from "@/components/common/ListSearchBox";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import ObjectPane, { selectObject } from "@/components/objectContent/ObjectPane";
@@ -215,6 +216,7 @@ const ServerView: React.FC = () => {
   const serverAccess = useRoleStore((s) => s.serverAccess);
   const isEditor = serverAccess === "edit";
   const selectNode = useGraphStore((s) => s.selectNode);
+  const updateNode = useUpdateNode();
 
   const { data: allNodes = [], isLoading } = useNodes();
   const { data: edges = [] } = useEdges();
@@ -321,15 +323,18 @@ const ServerView: React.FC = () => {
                       </IconButton>
                     </Tooltip>}
                   </Stack>
-                  {selected.description && (
-                    <Typography variant="body2" sx={{ color: "text.secondary", mt: 0.5 }}>{selected.description}</Typography>
-                  )}
                   <Stack direction="row" spacing={1} useFlexGap sx={{ mt: 1, flexWrap: "wrap" }}>
                     {ATTR_FIELDS.Server.filter((f) => attr(selected, f.key)).map((f) => (
                       <Chip key={f.key} size="small" variant="outlined" label={`${fieldLabel("Server", f.key, t(f.labelKey))}: ${attr(selected, f.key)}`} />
                     ))}
                   </Stack>
                 </Box>
+
+                {/* The description, under the server's data: written straight here. */}
+                <DescriptionField
+                  ownerId={selected.id} value={selected.description} canEdit={isEditor}
+                  onSave={(description) => updateNode.mutateAsync({ id: selected.id, description })}
+                />
 
                 {HOSTED.map((spec) => (
                   <HostedSection
